@@ -1,0 +1,17 @@
+:root {
+    --first-color: #dcd6d6;
+    --first-color-rgb: 220, 214, 214;
+
+    --second-color: #bbb8b8;
+    --second-color-rgb: 187, 184, 184;
+
+    --third-color: #918e8e;
+    --third-color-rgb: 145, 142, 142;
+
+    --opacity-standard: 0.9;
+    --border-radius-standard: 10px;
+
+    --first-font-size: 60px;
+    --second-font-size: 40px;
+    --third-font-size: 20px;
+}

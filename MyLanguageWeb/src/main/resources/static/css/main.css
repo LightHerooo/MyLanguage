@@ -1,0 +1,88 @@
+@font-face {
+    src: local('Cuyabra-Regular'),
+        url('../fonts/Cuyabra-Regular.otf') format('opentype');
+
+    font-family: 'Cuyabra-Regular';
+    font-weight: normal;
+    font-style: normal;
+}
+
+html {
+    height: 100%;
+    font-family: "Cuyabra-Regular", "Arial", sans-serif;
+    color: black;
+}
+
+body {
+    margin: 0;
+    min-height: 1000px;
+
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+
+    background: url("../images/background.png");
+    background-size: 100%;
+}
+
+main {
+    padding: 20px;
+}
+
+a.a-button-standard {
+    -webkit-appearance: button;
+    -moz-appearance: button;
+    cursor: pointer;
+
+    border: 5px solid var(--second-color);
+    border-radius: var(--border-radius-standard);
+    background: rgba(var(--first-color-rgb), var(--opacity-standard));
+
+    font-family: inherit;
+    color: black;
+    text-decoration: none;
+}
+
+a.a-button-standard:hover {
+    background: rgba(var(--second-color-rgb), var(--opacity-standard));
+}
+
+table.table-standard {
+    border-spacing: 5px 5px;
+    table-layout: fixed;
+    width: 100%;
+
+    overflow: hidden;
+    overflow-wrap: anywhere;
+}
+
+table.table-standard thead th {
+    background: rgba(var(--third-color-rgb), 1);
+
+    font-size: var(--second-font-size);
+    padding: 10px;
+}
+
+table.table-standard tbody {
+    font-size: var(--third-font-size);
+}
+
+table.table-standard tr {
+
+}
+
+table.table-standard td {
+    padding: 10px;
+}
+
+table.table-standard tbody tr:nth-child(odd){
+    background: rgba(var(--first-color-rgb), 1);;
+}
+
+table.table-standard tbody tr:nth-child(even){
+    background: rgba(var(--second-color-rgb), 1);;
+}
+
+
+
+
+
