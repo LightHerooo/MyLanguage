@@ -1,7 +1,9 @@
 package ru.herooo.mylanguageweb.controllers;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,19 +12,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/all_words")
 public class AllWordsController {
 
-    private String appName;
+    private String webAppName;
 
-    public AllWordsController(@Qualifier("appName") String appName) {
-        this.appName = appName;
+    @Autowired
+    public AllWordsController(
+            @Qualifier("webAppName") String webAppName) {
+        this.webAppName = webAppName;
     }
 
     @GetMapping()
-    public String show() {
+    public String show(Model model) {
+        model.addAttribute("webAppName", webAppName);
         return "all_words";
-    }
-
-    @ModelAttribute("appName")
-    private String getAppName() {
-        return appName;
     }
 }

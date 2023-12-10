@@ -3,12 +3,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>ru.herooo.springapps</groupId>
-        <artifactId>my-language</artifactId>
+        <artifactId>my-lang</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>my-language-web</artifactId>
-    <packaging>war</packaging>
+    <artifactId>my-lang-web</artifactId>
     <name>MyLanguageWeb</name>
 
     <properties>
@@ -17,7 +16,15 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <dependencies>
+        <dependency>
+            <groupId>ru.herooo.springapps</groupId>
+            <artifactId>my-lang-db</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
     <build>
-        <finalName>my-language-web</finalName>
+        <finalName>my-lang-web</finalName>
     </build>
 </project>

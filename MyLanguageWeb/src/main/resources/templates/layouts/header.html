@@ -3,35 +3,35 @@
   <head>
       <meta charset="UTF-8">
       <title>Header</title>
-      <link rel="stylesheet" type="text/css" th:href="@{static/css/color.css}">
-      <link rel="stylesheet" type="text/css" th:href="@{static/css/main.css}">
-      <link rel="stylesheet" type="text/css" th:href="@{static/css/header.css}">
+      <link rel="stylesheet" type="text/css" href="/css/root.css">
+      <link rel="stylesheet" type="text/css" href="/css/main.css">
+      <link rel="stylesheet" type="text/css" href="/css/header.css">
   </head>
   <body>
     <nav>
         <div class="nav-left-container">
-            <a th:href="@{/}" class="nav-logotype">
-                <img class="nav-logotype-img" src="#" th:src="@{static/images/logo.png}" alt="logo.png"/>
-                <p th:text="${appName}"></p>
+            <a href="/" class="nav-logotype">
+                <img class="nav-logotype-img" src="/images/logo.png" alt="logo.png"/>
+                <p th:text="${webAppName}"></p>
             </a>
             <div class="nav-delimiter"></div>
             <a href="#" class="nav-item">
-                <img class="nav-item-img" src="#" th:src="@{static/images/play.png}" alt="play.png"/>
+                <img class="nav-item-img" src="/images/play.png" alt="play.png"/>
                 <p>Тренироваться</p>
             </a>
             <div class="nav-delimiter"></div>
             <a th:href="@{/all_words}" class="nav-item">
-                <img class="nav-item-img" src="#" th:src="@{static/images/all_words.png}" alt="all_words.png"/>
+                <img class="nav-item-img" src="/images/all_words.png" alt="all_words.png"/>
                 <p>Все слова</p>
             </a>
             <div class="nav-delimiter"></div>
             <a href="#" class="nav-item">
-                <img class="nav-item-img" src="#" th:src="@{static/images/my_words.png}" alt="my_words.png"/>
+                <img class="nav-item-img" src="/images/my_words.png" alt="my_words.png"/>
                 <p>Мои слова</p>
             </a>
             <div class="nav-delimiter"></div>
             <a href="#" class="nav-item">
-                <img class="nav-item-img" src="#" th:src="@{static/images/rating.png}" alt="rating.png"/>
+                <img class="nav-item-img" src="/images/rating.png" alt="rating.png"/>
                 <p>Рейтинг</p>
             </a>
             <div class="nav-delimiter"></div>
@@ -39,7 +39,7 @@
         <div class="authorization-container">
             <div class="nav-delimiter"></div>
             <a class="nav-item">
-                <img class="nav-item-img" src="#" th:src="@{static/images/entry.png}" alt="entry.png"/>
+                <img class="nav-item-img" src="/images/entry.png" alt="entry.png"/>
                 <p>Авторизоваться</p>
             </a>
         </div>

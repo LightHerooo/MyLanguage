@@ -1,0 +1,1 @@
+export const A_BUTTON_STANDARD = "a-button-standard"

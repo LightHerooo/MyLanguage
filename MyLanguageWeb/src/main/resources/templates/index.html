@@ -2,39 +2,39 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title th:text="|${appName} - ресурс для тренировки переводов слов|">${appName}</title>
-    <link rel="stylesheet" type="text/css" th:href="@{static/css/color.css}">
-    <link rel="stylesheet" type="text/css" th:href="@{static/css/main.css}">
-    <link rel="stylesheet" type="text/css" th:href="@{/static/css/index.css}">
+    <title th:text="|${webAppName} - ресурс для тренировки переводов слов|">${appName}</title>
+    <link rel="stylesheet" type="text/css" href="/css/root.css">
+    <link rel="stylesheet" type="text/css" href="/css/main.css">
+    <link rel="stylesheet" type="text/css" href="/css/index.css">
 </head>
 <body>
     <header>
-        <div th:insert="templates/header"></div>
+        <div th:insert="layouts/header"></div>
     </header>
     <main>
         <div class="hello-message-container">
             <div class="hello-message-data">
                 <p class="hello-message-header"
-                   th:text="|Добро пожаловать на ресурс ${appName}|">${helloMessageText}</p>
+                   th:text="|Добро пожаловать на ресурс ${webAppName}|">${helloMessageText}</p>
                 <p class="hello-message-text">Тренируйтесь и совершенствуйтесь в переводах слов на различных языках.</p>
                 <p class="hello-message-text">На данный момент доступно более ${numberOfWords} для тренировки!</p>
             </div>
         </div>
         <div class="actions-container">
             <a class="a-button-standard action">
-                <img class="action-img" src="#" th:src="@{static/images/play.png}" alt="play.png">
+                <img class="action-img" src="/images/play.png" alt="play.png">
                 <p>Тренироваться</p>
             </a>
             <a class="a-button-standard action" th:href="@{/all_words}">
-                <img class="action-img" src="#" th:src="@{static/images/all_words.png}" alt="all_words.png">
+                <img class="action-img" src="/images/all_words.png" alt="all_words.png">
                 <p>Все слова</p>
             </a>
             <a class="a-button-standard action">
-                <img class="action-img" src="#" th:src="@{static/images/my_words.png}" alt="my_words.png">
+                <img class="action-img" src="/images/my_words.png" alt="my_words.png">
                 <p>Мои слова</p>
             </a>
             <a class="a-button-standard action">
-                <img class="action-img" src="#" th:src="@{static/images/rating.png}" alt="rating.png">
+                <img class="action-img" src="/images/rating.png" alt="rating.png">
                 <p>Рейтинг</p>
             </a>
         </div>

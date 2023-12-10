@@ -1,15 +1,15 @@
 @font-face {
-    src: local('Cuyabra-Regular'),
-        url('../fonts/Cuyabra-Regular.otf') format('opentype');
+    src: local('Roboto Regular'),
+    url('../fonts/Roboto-Regular.otf') format('opentype');
 
-    font-family: 'Cuyabra-Regular';
+    font-family: 'Roboto Regular';
     font-weight: normal;
     font-style: normal;
 }
 
 html {
     height: 100%;
-    font-family: "Cuyabra-Regular", "Arial", sans-serif;
+    font-family: "Roboto Regular", "Arial", sans-serif;
     color: black;
 }
 
@@ -56,7 +56,7 @@ table.table-standard {
 }
 
 table.table-standard thead th {
-    background: rgba(var(--third-color-rgb), 1);
+    background: var(--third-color);
 
     font-size: var(--second-font-size);
     padding: 10px;
@@ -66,22 +66,38 @@ table.table-standard tbody {
     font-size: var(--third-font-size);
 }
 
-table.table-standard tr {
-
-}
-
 table.table-standard td {
     padding: 10px;
 }
 
 table.table-standard tbody tr:nth-child(odd){
-    background: rgba(var(--first-color-rgb), 1);;
+    background: var(--first-color);
 }
 
 table.table-standard tbody tr:nth-child(even){
-    background: rgba(var(--second-color-rgb), 1);;
+    background: var(--second-color);
 }
 
+input.text-standard {
+    background: var(--first-color);
+
+    font-family: inherit;
+    font-size: var(--third-font-size);
+}
+
+select.select-standard {
+    background: var(--second-color);
+
+    font-family: inherit;
+    font-size: var(--third-font-size);
+}
+
+select.select-standard option {
+    background: var(--first-color);
+
+    font-family: inherit;
+    font-size: var(--third-font-size);
+}
 
 
 

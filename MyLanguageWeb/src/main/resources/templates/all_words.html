@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="|${webAppName} - список слов|">${appName}</title>
+    <link rel="stylesheet" type="text/css" href="/css/root.css">
+    <link rel="stylesheet" type="text/css" href="/css/main.css">
+    <link rel="stylesheet" type="text/css" href="/css/all_words.css">
+    <script type="module" src="/js/all_words.js"></script>
+</head>
+<body>
+    <header>
+        <div th:insert="layouts/header"></div>
+    </header>
+    <main>
+        <div class="words-message-container">
+            <div class="words-message-left">
+                <img class="words-message-img" src="/images/all_words.png" alt="all_words.png"/>
+            </div>
+            <div class="words-message-right">
+                <p class="words-message-header">Все слова</p>
+                <p class="words-message-text" th:text="|В список включены все слова, содержащиеся в базе слов ресурса ${webAppName}.|"></p>
+                <p class="words-message-text" th:text="|Количество слов в базе: 0.|"></p>
+                <p class="words-message-text" th:text="|За сегодня (01.01.1970) добавлено слов: 0.|"></p>
+            </div>
+        </div>
+        <div class="word-list-container">
+            <div class="word-list-new-container">
+                <div class="word-list-new-message">
+                    <p>Обладаете большим словарным запасом? Знаете, какие слова нужно добавить в нашу базу?
+                        Вы всегда можете предложить неограниченное количество слов, а наши администраторы
+                        как можно быстрее рассмотрят их на корректность.</p>
+                </div>
+                <a class="a-button-standard add_word">
+                    <img class="add_word_img" src="/images/add.png" alt="add.png"/>
+                    <p class="add_word-text">Предложить новые слова</p>
+                </a>
+            </div>
+        </div>
+        <div class="word-list-instruments">
+            <div class="word-list-instruments-item">
+                <label class="label-for-filters" for="tb_finder">Поиск:</label>
+                <input id="tb_finder" class="text-standard" type="text">
+            </div>
+            <div class="word-list-instruments-item">
+                <label class="label-for-filters" for="tb_finder">Фильтрация по языку:</label>
+                <select id="cb_langs" class="select-standard"></select>
+            </div>
+            <div class="word-list-instruments-item">
+                <label class="label-for-filters" for="tb_finder">Фильтрация по части речи:</label>
+                <select id="cb_parts_of_speech" class="select-standard"></select>
+            </div>
+
+            <!-- <input id="tb_finder" class="text-standard" type="text">
+            <select id="cb_langs" class="select-standard"></select>
+            <select id="cb_parts_of_speech" class="select-standard"></select> -->
+        </div>
+        <div class="word-list-container" id="word_list_container">
+            <table class="table-standard">
+                <colgroup>
+                    <col style="width: 5%;">
+                    <col style="width: 55%;">
+                    <col style="width: 20%;">
+                    <col style="width: 20%;">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>№</th>
+                    <th>Слово</th>
+                    <th>Язык</th>
+                    <th>Часть речи</th>
+                </tr>
+                </thead>
+                <tbody id="all_words_table_body"></tbody>
+            </table>
+        </div>
+    </main>
+</body>
+</html>
