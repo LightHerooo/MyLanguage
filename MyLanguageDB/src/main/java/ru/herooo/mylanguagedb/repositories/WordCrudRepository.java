@@ -10,6 +10,7 @@ import java.util.Optional;
 
 public interface WordCrudRepository extends CrudRepository<Word, Long> {
     List<Word> findAll();
+    Word findById(long id);
 
     @Query(nativeQuery = true,
             value = "SELECT * FROM get_words_after_filter" +

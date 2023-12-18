@@ -3,45 +3,61 @@
   <head>
       <meta charset="UTF-8">
       <title>Header</title>
+      <link rel="icon" type="image/x-icon" href="/images/logo.ico">
+
       <link rel="stylesheet" type="text/css" href="/css/root.css">
       <link rel="stylesheet" type="text/css" href="/css/main.css">
-      <link rel="stylesheet" type="text/css" href="/css/header.css">
+      <link rel="stylesheet" type="text/css" href="/css/layouts/header.css">
   </head>
   <body>
     <nav>
         <div class="nav-left-container">
             <a href="/" class="nav-logotype">
                 <img class="nav-logotype-img" src="/images/logo.png" alt="logo.png"/>
-                <p th:text="${webAppName}"></p>
+                <p th:text="${WEB_APP_NAME}"></p>
             </a>
-            <div class="nav-delimiter"></div>
+            <div class="vertical-delimiter"></div>
             <a href="#" class="nav-item">
                 <img class="nav-item-img" src="/images/play.png" alt="play.png"/>
                 <p>Тренироваться</p>
             </a>
-            <div class="nav-delimiter"></div>
-            <a th:href="@{/all_words}" class="nav-item">
+            <div class="vertical-delimiter"></div>
+            <a href="/words" class="nav-item">
                 <img class="nav-item-img" src="/images/all_words.png" alt="all_words.png"/>
                 <p>Все слова</p>
             </a>
-            <div class="nav-delimiter"></div>
+            <div class="vertical-delimiter"></div>
             <a href="#" class="nav-item">
                 <img class="nav-item-img" src="/images/my_words.png" alt="my_words.png"/>
                 <p>Мои слова</p>
             </a>
-            <div class="nav-delimiter"></div>
+            <div class="vertical-delimiter"></div>
             <a href="#" class="nav-item">
                 <img class="nav-item-img" src="/images/rating.png" alt="rating.png"/>
                 <p>Рейтинг</p>
             </a>
-            <div class="nav-delimiter"></div>
+            <div class="vertical-delimiter"></div>
         </div>
-        <div class="authorization-container">
-            <div class="nav-delimiter"></div>
-            <a class="nav-item">
-                <img class="nav-item-img" src="/images/entry.png" alt="entry.png"/>
-                <p>Авторизоваться</p>
+        <div class="authorization-container" th:if="${AUTH_CUSTOMER == null}">
+            <div class="vertical-delimiter"></div>
+            <a class="nav-item" href="/customers/new">
+                <img class="nav-item-img" src="/images/registration.png" alt="registration.png"/>
+                <p>Регистрация</p>
             </a>
+            <div class="vertical-delimiter"></div>
+            <a class="nav-item" href="/customers/entry">
+                <img class="nav-item-img" src="/images/entry.png" alt="entry.png"/>
+                <p>Вход</p>
+            </a>
+            <div class="vertical-delimiter"></div>
+        </div>
+        <div class="authorization-container"  th:if="${AUTH_CUSTOMER != null}">
+            <div class="vertical-delimiter"></div>
+            <a class="nav-item" th:href="@{/customers/{id}(id = ${AUTH_CUSTOMER.id})}">
+                <img class="auth-customer-img" src="/images/customer.png" alt="customer.png"/>
+                <p th:text="${AUTH_CUSTOMER.nickname}"/>
+            </a>
+            <div class="vertical-delimiter"></div>
         </div>
     </nav>
   </body>

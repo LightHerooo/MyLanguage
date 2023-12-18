@@ -10,7 +10,7 @@
   </parent>
 
   <groupId>ru.herooo.springapps</groupId>
-  <artifactId>my-lang</artifactId>
+  <artifactId>my-language</artifactId>
   <packaging>pom</packaging>
   <version>1.0-SNAPSHOT</version>
 
@@ -19,6 +19,7 @@
   <modules>
     <module>MyLanguageDB</module>
     <module>MyLanguageWeb</module>
+      <module>MyLanguageUtils</module>
   </modules>
 
   <properties>
@@ -43,6 +44,10 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-thymeleaf</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-validation</artifactId>
     </dependency>
     <dependency>
       <groupId>org.postgresql</groupId>

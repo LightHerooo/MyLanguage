@@ -7,7 +7,8 @@ import jakarta.persistence.*;
 public class Customer {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "customer_id_seq")
+    @SequenceGenerator(name = "customer_id_seq", sequenceName = "customer_id_seq", allocationSize = 1)
     private long id;
 
     @Column(name="login")
@@ -19,9 +20,16 @@ public class Customer {
     @Column(name="nickname")
     private String nickname;
 
+    @Column(name="email")
+    private String email;
+
+    @Column(name="auth_code")
+    private String authCode;
+
     @ManyToOne
     @JoinColumn(name="customer_role_id")
     private CustomerRole role;
+
 
     public Customer() {}
 
@@ -66,5 +74,21 @@ public class Customer {
 
     public void setRole(CustomerRole role) {
         this.role = role;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getAuthCode() {
+        return authCode;
+    }
+
+    public void setAuthCode(String authCode) {
+        this.authCode = authCode;
     }
 }

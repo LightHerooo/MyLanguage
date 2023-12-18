@@ -1,0 +1,46 @@
+main {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+div.entry-container {
+    width: 500px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+div.entry {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+div.entry-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+
+    font-size: var(--second-font-size);
+    font-weight: bold;
+}
+
+img.entry-header-img {
+    width: 128px;
+    height: 128px;
+}
+
+div.dont-have-account-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+
+    color: black;
+}
+

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="|${WEB_APP_NAME} - Регистрация|">Регистрация</title>
+    <link rel="icon" type="image/x-icon" href="/images/logo.ico">
+
+    <link rel="stylesheet" type="text/css" href="/css/root.css">
+    <link rel="stylesheet" type="text/css" href="/css/main.css">
+    <link rel="stylesheet" type="text/css" href="/css/customers/new.css">
+
+    <script type="module" src="/js/customers/new.js"></script>
+</head>
+<body>
+    <header>
+        <div th:insert="~{layouts/header}"></div>
+    </header>
+    <main class="main-standard">
+        <div class="registration-container">
+            <div class="block-info-standard registration-info">
+                <div class="registration-info-header">
+                    <img class="registration-img" src="/images/registration.png" alt="registration.png">
+                    <p>Регистрация</p>
+                </div>
+                <div class="horizontal-delimiter"></div>
+                <div class="registration-info-text">
+                    <p th:text="|Регистрация на ресурсе ${WEB_APP_NAME} открывает
+                дополнительные возможности:|">HeaderText</p>
+                    <p th:text="|- Добавление новых слов в базу ${WEB_APP_NAME}|">FirstAdvantage</p>
+                    <p>- Индивидуальный список для изучения только нужных слов</p>
+                    <p>- Сохранение результатов тренировок</p>
+                    <p>- Участие в рейтинге</p>
+                </div>
+            </div>
+
+            <div class="block-info-standard">
+                <form id="form_register" th:method="POST" th:action="@{/customers}" th:object="${CUSTOMER_REG_VALID_DTO}"
+                      class="form-standard">
+                    <div id="div_container_nickname" class="form-item-standard">
+                        <label for="tb_nickname">Никнейм (публичный):</label>
+                        <input id="tb_nickname" type="text" autocomplete="false"
+                               class="text-standard input-height-standard" th:field="*{nickname}">
+                    </div>
+                    <div id="div_container_email" class="form-item-standard">
+                        <label for="tb_email">Электронная почта:</label>
+                        <input id="tb_email" type="text" autocomplete="false"
+                               class="text-standard input-height-standard" th:field="*{email}">
+                    </div>
+                    <div id="div_container_login" class="form-item-standard">
+                        <label for="tb_login">Логин (приватный, для входа):</label>
+                        <input id="tb_login" type="text" autocomplete="false"
+                               class="text-standard input-height-standard" th:field="*{login}">
+                    </div>
+                    <div id="div_container_password" class="form-item-standard">
+                        <label for="pb_password">Пароль:</label>
+                        <input id="pb_password" type="password" autocomplete="false"
+                               class="text-standard input-height-standard" th:field="*{password}">
+                    </div>
+                    <div id="div_container_password_repeat" class="form-item-standard">
+                        <label for="pb_password_repeat">Повторите пароль:</label>
+                        <input id="pb_password_repeat" type="password" autocomplete="false"
+                               class="text-standard input-height-standard">
+                    </div>
+                    <div class="form-item-standard">
+                        <div class="show-password-container-standard">
+                            <input id="check_show_password" type="checkbox">
+                            <a id="a_check_show_password" class="a-show-password-standard" href="#">Показать пароль</a>
+                        </div>
+                    </div>
+                    <input type="submit" class="submit-standard submit-height-standard" value="Зарегистрироваться">
+                    <div class="form-item-standard text-error-standard text-align-center-standard"
+                         th:if="${#fields.hasAnyErrors()}">
+                        <div th:each="err: ${#fields.allErrors()}" th:text="${err}"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

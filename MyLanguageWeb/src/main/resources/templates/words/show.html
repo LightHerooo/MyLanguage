@@ -2,31 +2,34 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title th:text="|${webAppName} - список слов|">${appName}</title>
+    <title th:text="|${WEB_APP_NAME} - Все слова|">AllWords</title>
+    <link rel="icon" type="image/x-icon" href="/images/logo.ico">
+
     <link rel="stylesheet" type="text/css" href="/css/root.css">
     <link rel="stylesheet" type="text/css" href="/css/main.css">
-    <link rel="stylesheet" type="text/css" href="/css/all_words.css">
-    <script type="module" src="/js/all_words.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/words/all_words.css">
+
+    <script type="module" src="/js/words/show.js"></script>
 </head>
 <body>
     <header>
-        <div th:insert="layouts/header"></div>
+        <div th:insert="~{layouts/header}"></div>
     </header>
     <main>
-        <div class="words-message-container">
+        <div class="block-info-standard words-message-container">
             <div class="words-message-left">
                 <img class="words-message-img" src="/images/all_words.png" alt="all_words.png"/>
             </div>
             <div class="words-message-right">
                 <p class="words-message-header">Все слова</p>
-                <p class="words-message-text" th:text="|В список включены все слова, содержащиеся в базе слов ресурса ${webAppName}.|"></p>
+                <p class="words-message-text" th:text="|В список включены все слова, содержащиеся в базе слов ресурса ${WEB_APP_NAME}.|"></p>
                 <p class="words-message-text" th:text="|Количество слов в базе: 0.|"></p>
                 <p class="words-message-text" th:text="|За сегодня (01.01.1970) добавлено слов: 0.|"></p>
             </div>
         </div>
         <div class="word-list-container">
             <div class="word-list-new-container">
-                <div class="word-list-new-message">
+                <div class="block-info-standard word-list-new-message">
                     <p>Обладаете большим словарным запасом? Знаете, какие слова нужно добавить в нашу базу?
                         Вы всегда можете предложить неограниченное количество слов, а наши администраторы
                         как можно быстрее рассмотрят их на корректность.</p>
@@ -63,15 +66,15 @@
                     <col style="width: 20%;">
                     <col style="width: 20%;">
                 </colgroup>
-                <thead>
-                <tr>
-                    <th>№</th>
-                    <th>Слово</th>
-                    <th>Язык</th>
-                    <th>Часть речи</th>
-                </tr>
+                <thead id="words_table_head">
+                    <tr>
+                        <th>№</th>
+                        <th>Слово</th>
+                        <th>Язык</th>
+                        <th>Часть речи</th>
+                    </tr>
                 </thead>
-                <tbody id="all_words_table_body"></tbody>
+                <tbody id="words_table_body"></tbody>
             </table>
         </div>
     </main>

@@ -2,22 +2,26 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title th:text="|${webAppName} - ресурс для тренировки переводов слов|">${appName}</title>
+    <title th:text="|${WEB_APP_NAME} - ресурс для изучения иностранных слов|">Main</title>
+    <link rel="icon" type="image/x-icon" href="/images/logo.ico">
+
     <link rel="stylesheet" type="text/css" href="/css/root.css">
     <link rel="stylesheet" type="text/css" href="/css/main.css">
     <link rel="stylesheet" type="text/css" href="/css/index.css">
 </head>
 <body>
     <header>
-        <div th:insert="layouts/header"></div>
+        <div th:insert="~{layouts/header}"></div>
     </header>
     <main>
-        <div class="hello-message-container">
+        <div class="block-info-standard hello-message-container">
             <div class="hello-message-data">
                 <p class="hello-message-header"
-                   th:text="|Добро пожаловать на ресурс ${webAppName}|">${helloMessageText}</p>
-                <p class="hello-message-text">Тренируйтесь и совершенствуйтесь в переводах слов на различных языках.</p>
-                <p class="hello-message-text">На данный момент доступно более ${numberOfWords} для тренировки!</p>
+                   th:text="|Добро пожаловать на ресурс ${WEB_APP_NAME}|">${helloMessageText}</p>
+                <p class="hello-message-text"
+                   th:text="|Изучайте и тренируйте слова на ${NUMBER_OF_LANGS} языках.|"></p>
+                <p class="hello-message-text"
+                   th:text="|На данный момент доступно более ${NUMBER_OF_WORDS} слов для тренировки!|"></p>
             </div>
         </div>
         <div class="actions-container">
@@ -25,7 +29,7 @@
                 <img class="action-img" src="/images/play.png" alt="play.png">
                 <p>Тренироваться</p>
             </a>
-            <a class="a-button-standard action" th:href="@{/all_words}">
+            <a class="a-button-standard action" href="/words">
                 <img class="action-img" src="/images/all_words.png" alt="all_words.png">
                 <p>Все слова</p>
             </a>

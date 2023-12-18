@@ -1,12 +1,11 @@
 package ru.herooo.mylanguageweb.controllers.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import ru.herooo.mylanguagedb.entities.PartOfSpeech;
-import ru.herooo.mylanguagedb.repositories.PartOfSpeechCrudRepository;
+import ru.herooo.mylanguageweb.dto.CustomResponseMessage;
+import ru.herooo.mylanguageweb.services.PartOfSpeechService;
 
 import java.util.List;
 
@@ -14,20 +13,33 @@ import java.util.List;
 @RequestMapping("/api/parts_of_speech")
 public class PartsOfSpeechRestController {
 
-    private PartOfSpeechCrudRepository poscr;
+    private PartOfSpeechService PART_OF_SPEECH_SERVICE;
 
     @Autowired
-    public PartsOfSpeechRestController(PartOfSpeechCrudRepository poscr) {
-        this.poscr = poscr;
+    public PartsOfSpeechRestController(PartOfSpeechService partOfSpeechService) {
+        this.PART_OF_SPEECH_SERVICE = partOfSpeechService;
     }
 
     @GetMapping()
-    public List<PartOfSpeech> getAllPartsOfSpeech() {
-        return poscr.findAll();
+    public ResponseEntity<?> getAll() {
+        List<PartOfSpeech> partsOfSpeech = PART_OF_SPEECH_SERVICE.findAll();
+        if (partsOfSpeech != null && partsOfSpeech.size() > 0) {
+            return ResponseEntity.ok(partsOfSpeech);
+        } else {
+            CustomResponseMessage message = new CustomResponseMessage(1, "Части речи не найдены.");
+            return ResponseEntity.badRequest().body(message);
+        }
     }
 
-    @GetMapping("/{code}")
-    public PartOfSpeech getPartOfSpeechByCode(@PathVariable("code") String code) {
-        return poscr.findByCode(code);
+    @GetMapping("/find/by_code")
+    public ResponseEntity<?> findByCode(@RequestParam("code") String code) {
+        PartOfSpeech partOfSpeech = PART_OF_SPEECH_SERVICE.findByCode(code);
+        if (partOfSpeech != null) {
+            return ResponseEntity.ok(partOfSpeech);
+        } else {
+            CustomResponseMessage message = new CustomResponseMessage(1,
+                    String.format("Часть речи с кодом '%s' не найдена.", code));
+            return ResponseEntity.badRequest().body(message);
+        }
     }
 }

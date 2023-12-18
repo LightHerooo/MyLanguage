@@ -25,7 +25,29 @@ body {
 }
 
 main {
-    padding: 20px;
+    padding: 80px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+div.block-info-standard {
+    background: rgba(var(--first-color-rgb), var(--opacity-standard));
+    border-radius: var(--border-radius-standard);
+    padding: 10px;
+}
+
+div.horizontal-delimiter {
+    height: 1px;
+    margin: 5px 25px 5px 25px;
+    background: rgba(var(--third-color-rgb), var(--opacity-standard));
+}
+
+div.vertical-delimiter {
+    width: 1px;
+    margin: 25px 5px 25px 5px;
+    background: rgba(var(--third-color-rgb), var(--opacity-standard));
 }
 
 a.a-button-standard {
@@ -40,6 +62,7 @@ a.a-button-standard {
     font-family: inherit;
     color: black;
     text-decoration: none;
+    text-align: center;
 }
 
 a.a-button-standard:hover {
@@ -77,15 +100,23 @@ table.table-standard tbody tr:nth-child(odd){
 table.table-standard tbody tr:nth-child(even){
     background: var(--second-color);
 }
+form.form-standard {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 15px;
+}
 
-input.text-standard {
-    background: var(--first-color);
-
-    font-family: inherit;
-    font-size: var(--third-font-size);
+div.form-item-standard {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
 }
 
 select.select-standard {
+    cursor: pointer;
+
     background: var(--second-color);
 
     font-family: inherit;
@@ -93,12 +124,58 @@ select.select-standard {
 }
 
 select.select-standard option {
+    cursor: pointer;
+
     background: var(--first-color);
 
     font-family: inherit;
     font-size: var(--third-font-size);
 }
 
+input.input-height-standard {
+    height: 40px;
+}
+
+input.submit-height-standard {
+    height: 50px;
+}
+
+input.text-standard {
+    font-family: inherit;
+    font-size: var(--third-font-size);
+}
+
+input.submit-standard {
+    cursor: pointer;
+    background: var(--second-color);
+
+    font-size: var(--third-font-size);
+    font-style: inherit;
+}
+
+input.submit-standard:hover {
+    background: var(--third-color);
+}
+
+div.text-error-standard {
+    color: #8B0000;
+    opacity: 0.5;
+}
+
+div.show-password-container-standard {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+a.a-show-password-standard {
+    color: black;
+    text-decoration: none;
+}
+
+.text-align-center-standard {
+    text-align: center;
+}
 
 
 

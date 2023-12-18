@@ -1,16 +1,6 @@
-main {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    margin: 80px 80px 80px 80px;
-}
-
 div.hello-message-container {
     display: flex;
     flex-direction: column;
-
-    background: rgba(var(--first-color-rgb), var(--opacity-standard));
-    border-radius: var(--border-radius-standard);
 }
 
 div.hello-message-data {

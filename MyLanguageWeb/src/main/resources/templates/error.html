@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="|${WEB_APP_NAME} - Ошибка ${ERROR_CODE}|"></title>
+    <link rel="icon" type="image/x-icon" href="/images/logo.ico">
+
+    <link rel="stylesheet" type="text/css" href="/css/root.css">
+    <link rel="stylesheet" type="text/css" href="/css/main.css">
+    <link rel="stylesheet" type="text/css" href="/css/error.css">
+</head>
+<body>
+    <header>
+      <div th:insert="~{layouts/header}"></div>
+    </header>
+    <main>
+        <div class="error-container block-info-standard">
+            <div class="error-code" th:text="${ERROR_CODE}"/>
+            <div class="horizontal-delimiter"></div>
+            <div class="error-message" th:text="${ERROR_MESSAGE}"/>
+        </div>
+    </main>
+</body>
+</html>

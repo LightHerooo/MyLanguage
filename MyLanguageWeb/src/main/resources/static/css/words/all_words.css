@@ -1,17 +1,10 @@
 main {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    margin: 80px 80px 80px 80px;
     min-height: 1300px;
 }
 
 div.words-message-container {
     display: grid;
     grid: 1fr / 250px 1fr;
-
-    background: rgba(var(--first-color-rgb), var(--opacity-standard));
-    border-radius: var(--border-radius-standard);
 }
 
 div.words-message-left {
@@ -60,10 +53,6 @@ div.word-list-new-container {
 div.word-list-new-message {
     display: flex;
     align-items: center;
-    padding: 10px;
-
-    background: rgba(var(--first-color-rgb), var(--opacity-standard));
-    border-radius: var(--border-radius-standard);
 
     font-size: var(--third-font-size);
 }
@@ -111,6 +100,7 @@ label.label-for-filters {
 
     font-family: inherit;
     font-size: var(--third-font-size);
+    font-weight: bold;
 }
 
 div.words-list-container {
