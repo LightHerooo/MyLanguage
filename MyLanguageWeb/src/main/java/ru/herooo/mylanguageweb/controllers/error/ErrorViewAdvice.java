@@ -6,23 +6,20 @@ import org.springframework.web.ErrorResponseException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
-import ru.herooo.mylanguageweb.global.GlobalAttributes;
+import ru.herooo.mylanguageweb.controllers.ControllerUtils;
 import ru.herooo.mylanguageweb.services.CustomerService;
 
 @ControllerAdvice
 public class ErrorViewAdvice {
-
-    private final GlobalAttributes WEB_APP_NAME_GLOBAL_ATTRIBUTE = GlobalAttributes.WEB_APP_NAME;
-    private final GlobalAttributes AUTH_CUSTOMER_GLOBAL_ATTRIBUTE = GlobalAttributes.AUTH_CUSTOMER;
-
     private final String ERROR_CODE_ATTRIBUTE_NAME = "ERROR_CODE";
     private final String ERROR_MESSAGE_ATTRIBUTE_NAME = "ERROR_MESSAGE";
 
-    private final CustomerService CUSTOMER_SERVICE;
+    private final ControllerUtils CONTROLLER_UTILS;
 
     @Autowired
-    private ErrorViewAdvice(CustomerService customerService) {
-        this.CUSTOMER_SERVICE = customerService;
+    private ErrorViewAdvice(CustomerService customerService,
+                            ControllerUtils controllerUtils) {
+        this.CONTROLLER_UTILS = controllerUtils;
     }
 
     @ExceptionHandler(NoResourceFoundException.class)
@@ -54,8 +51,7 @@ public class ErrorViewAdvice {
 
         if (message == null) message = "Неизвестная ошибка";
 
-        request.setAttribute(WEB_APP_NAME_GLOBAL_ATTRIBUTE.ATTRIBUTE_NAME, WEB_APP_NAME_GLOBAL_ATTRIBUTE.ATTRIBUTE_VALUE);
-        request.setAttribute(AUTH_CUSTOMER_GLOBAL_ATTRIBUTE.ATTRIBUTE_NAME, CUSTOMER_SERVICE.findAuth(request));
+        CONTROLLER_UTILS.setGeneralAttributes(request);
         request.setAttribute(ERROR_CODE_ATTRIBUTE_NAME, statusCode);
         request.setAttribute(ERROR_MESSAGE_ATTRIBUTE_NAME, message);
 

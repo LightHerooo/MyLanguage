@@ -2,6 +2,8 @@ package ru.herooo.mylanguagedb.entities;
 
 import jakarta.persistence.*;
 
+import java.util.Objects;
+
 @Entity
 @Table(name="lang")
 public class Lang {
@@ -16,11 +18,18 @@ public class Lang {
     @Column(name="code")
     private String code;
 
-    public Lang() {}
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-    public Lang(String title, String code) {
-        this.title = title;
-        this.code = code;
+        Lang lang = (Lang) o;
+        return id == lang.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     public long getId() {
@@ -42,4 +51,6 @@ public class Lang {
     public void setCode(String code) {
         this.code = code;
     }
+
+
 }

@@ -11,56 +11,60 @@ import ru.herooo.mylanguagedb.repositories.CustomerCrudRepository;
 import ru.herooo.mylanguagedb.repositories.customerrole.CustomerRoleCrudRepository;
 import ru.herooo.mylanguagedb.repositories.customerrole.CustomerRoles;
 import ru.herooo.mylanguageutils.StringUtils;
+import ru.herooo.mylanguageweb.dto.customer.CustomerEntryRequestDTO;
 import ru.herooo.mylanguageweb.dto.customer.CustomerMapping;
-import ru.herooo.mylanguageweb.dto.customer.CustomerRegValidDTO;
+import ru.herooo.mylanguageweb.dto.customer.CustomerRequestDTO;
+import ru.herooo.mylanguageweb.global.GlobalCookiesUtils;
 import ru.herooo.mylanguageweb.global.GlobalCookies;
+
+import java.time.LocalDateTime;
 
 @Service
 public class CustomerService {
-
     private final CustomerCrudRepository CUSTOMER_CRUD_REPOSITORY;
     private final CustomerRoleCrudRepository CUSTOMER_ROLE_CRUD_REPOSITORY;
+
     private final CustomerMapping CUSTOMER_MAPPING;
     private final StringUtils STRING_UTILS;
 
     @Autowired
-    public CustomerService(CustomerCrudRepository customerCrudRepository, CustomerRoleCrudRepository CUSTOMER_ROLE_CRUD_REPOSITORY,
-                           CustomerMapping CUSTOMER_MAPPING, StringUtils stringUtils) {
+    public CustomerService(CustomerCrudRepository customerCrudRepository,
+                           CustomerRoleCrudRepository customerRoleCrudRepository,
+                           CustomerMapping customerMapping,
+                           StringUtils stringUtils) {
         this.CUSTOMER_CRUD_REPOSITORY = customerCrudRepository;
-        this.CUSTOMER_ROLE_CRUD_REPOSITORY = CUSTOMER_ROLE_CRUD_REPOSITORY;
-        this.CUSTOMER_MAPPING = CUSTOMER_MAPPING;
+        this.CUSTOMER_ROLE_CRUD_REPOSITORY = customerRoleCrudRepository;
+
+        this.CUSTOMER_MAPPING = customerMapping;
         this.STRING_UTILS = stringUtils;
     }
 
     // Регистрация пользователя
-    public Customer register(CustomerRegValidDTO customerRegValidDTO) {
-        Customer newCustomer = null;
-        try {
-            // Парсим из VALID класса значения
-            newCustomer = CUSTOMER_MAPPING.mapToCustomer(customerRegValidDTO);
+    public Customer register(CustomerRequestDTO customerRequestDTO) {
+        // Парсим из VALID класса значения
+        Customer newCustomer = CUSTOMER_MAPPING.mapToCustomer(customerRequestDTO);
 
-            // Добавляем дополнительную информацию
-            CustomerRole cr = CUSTOMER_ROLE_CRUD_REPOSITORY.findById(CustomerRoles.CUSTOMER);
-            newCustomer.setRole(cr);
-            newCustomer.setAuthCode(STRING_UTILS.getRandomStrEnNum(30));
+        // Добавляем дополнительную информацию
+        CustomerRole cr = CUSTOMER_ROLE_CRUD_REPOSITORY.findById(CustomerRoles.CUSTOMER);
+        newCustomer.setRole(cr);
 
-            // Сохраняем
-            CUSTOMER_CRUD_REPOSITORY.save(newCustomer);
-        } catch (Exception e) {
-            newCustomer = null;
-        }
+        newCustomer.setAuthCode(STRING_UTILS.getRandomStrEnNum(30));
+        newCustomer.setDateOfCreate(LocalDateTime.now());
+        newCustomer.setDateOfLastVisit(LocalDateTime.now());
 
-        return newCustomer;
+        // Сохраняем
+        return CUSTOMER_CRUD_REPOSITORY.save(newCustomer);
     }
 
     // Поиск авторизированного пользователя
     public Customer findAuth(HttpServletRequest request) {
-        Cookie authCookie = GlobalCookies.getCookieInHttpRequest(request, GlobalCookies.AUTH_CODE);
+        Cookie authCookie = GlobalCookiesUtils.getCookieInHttpRequest(request, GlobalCookies.AUTH_CODE);
         Customer customer = null;
         if (authCookie != null) {
             customer = CUSTOMER_CRUD_REPOSITORY.findByAuthCode(authCookie.getValue());
             if (customer != null) {
-                // Установить дату последнего визита
+                customer.setDateOfLastVisit(LocalDateTime.now());
+                CUSTOMER_CRUD_REPOSITORY.save(customer);
             }
         }
 
@@ -68,22 +72,15 @@ public class CustomerService {
     }
 
     // Вход пользователя
-    public Customer entry(HttpServletResponse response, Customer customer) {
-        Customer fullCustomer = null;
-        if (response != null && customer != null) {
-            fullCustomer = CUSTOMER_CRUD_REPOSITORY.findByLoginAndPassword(
-                    customer.getLogin(), customer.getPassword());
-            if (fullCustomer != null) {
-                GlobalCookies.addCookieInHttpResponse(response, GlobalCookies.AUTH_CODE, fullCustomer.getAuthCode());
-            }
-        }
-
-        return fullCustomer;
+    public Customer entry(CustomerEntryRequestDTO dto) {
+        return CUSTOMER_CRUD_REPOSITORY.findByLoginAndPassword(
+                dto.getLogin(), dto.getPassword());
     }
 
     // Выход пользователя
     public void exit(HttpServletResponse response) {
-        GlobalCookies.deleteCookieInHttpResponse(response, GlobalCookies.AUTH_CODE);
+        GlobalCookiesUtils.deleteCookieInHttpResponse(response, GlobalCookies.AUTH_CODE);
+        GlobalCookiesUtils.deleteCookieInHttpResponse(response, GlobalCookies.AUTH_ID);
     }
 
     // Поиск по Id
@@ -109,5 +106,26 @@ public class CustomerService {
     // Поиск по ключу авторизации
     public Customer findByAuthCode(String authCode) {
         return CUSTOMER_CRUD_REPOSITORY.findByAuthCode(authCode);
+    }
+
+    public String validateAuthCode(HttpServletRequest request, String authCode) {
+        try {
+            if (STRING_UTILS.isStringVoid(authCode)) {
+                // Проверяем авторизацию пользователя через куки
+                authCode = GlobalCookiesUtils.getCookieInHttpRequest(request, GlobalCookies.AUTH_CODE).getValue();
+            }
+        } catch (Throwable e) { }
+
+        return authCode;
+    }
+
+    public boolean isCustomerSuperUser(Customer customer) {
+        return customer != null &&
+                (customer.getRole().getId() == CustomerRoles.ADMIN.getId()
+                || customer.getRole().getId() == CustomerRoles.MODERATOR.getId());
+    }
+
+    public void save(Customer customer) {
+        CUSTOMER_CRUD_REPOSITORY.save(customer);
     }
 }

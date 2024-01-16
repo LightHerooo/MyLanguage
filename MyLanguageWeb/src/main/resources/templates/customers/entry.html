@@ -22,8 +22,8 @@
                     <img class="entry-header-img" src="/images/entry.png" alt="entry.png"/>
                     <p>Вход</p>
                 </div>
-                <div class="horizontal-delimiter"></div>
-                <form id="form_entry" th:method="POST" th:action="@{/customers/entry}" th:object="${CUSTOMER_ENTRY}"
+                <div class="horizontal-delimiter-margin"></div>
+                <form id="form_entry" th:method="POST" th:action="@{/customers/entry}" th:object="${CUSTOMER_ENTRY_REQUEST_DTO}"
                       class="form-standard">
                     <div id="div_container_login" class="form-item-standard">
                         <label for="tb_login">Логин:</label>
@@ -41,7 +41,7 @@
                             <a id="a_check_show_password" class="a-show-password-standard" href="#">Показать пароль</a>
                         </div>
                     </div>
-                    <input type="submit" class="submit-standard submit-height-standard" value="Войти">
+                    <input type="submit" class="submit-standard submit-height-standard" value="Войти" id="btn_entry">
                     <div class="form-item-standard text-error-standard text-align-center-standard"
                          th:if="${#fields.hasAnyErrors()}">
                         <div th:each="err: ${#fields.allErrors()}" th:text="${err}"></div>

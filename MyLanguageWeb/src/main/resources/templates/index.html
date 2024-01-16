@@ -16,30 +16,33 @@
     <main>
         <div class="block-info-standard hello-message-container">
             <div class="hello-message-data">
-                <p class="hello-message-header"
-                   th:text="|Добро пожаловать на ресурс ${WEB_APP_NAME}|">${helloMessageText}</p>
-                <p class="hello-message-text"
-                   th:text="|Изучайте и тренируйте слова на ${NUMBER_OF_LANGS} языках.|"></p>
-                <p class="hello-message-text"
-                   th:text="|На данный момент доступно более ${NUMBER_OF_WORDS} слов для тренировки!|"></p>
+                <div class="hello-message-header"
+                   th:text="|Добро пожаловать на ресурс ${WEB_APP_NAME}|">${helloMessageText}</div>
+                <br>
+                <div class="hello-message-text">
+                    Изучайте и тренируйте
+                    <span th:text="|${NUMBER_OF_WORDS_TEXT}|"/>
+                     на
+                    <span th:text="|${NUMBER_OF_LANGS_TEXT}.|"/>
+                </div>
             </div>
         </div>
         <div class="actions-container">
             <a class="a-button-standard action">
                 <img class="action-img" src="/images/play.png" alt="play.png">
-                <p>Тренироваться</p>
+                <div>Тренироваться</div>
             </a>
             <a class="a-button-standard action" href="/words">
-                <img class="action-img" src="/images/all_words.png" alt="all_words.png">
-                <p>Все слова</p>
+                <img class="action-img" src="/images/words.png" alt="all_words.png">
+                <div>Слова</div>
             </a>
-            <a class="a-button-standard action">
-                <img class="action-img" src="/images/my_words.png" alt="my_words.png">
-                <p>Мои слова</p>
+            <a class="a-button-standard action" href="/customer_collections">
+                <img class="action-img" src="/images/customer_collections.png" alt="customer_collections.png">
+                <div>Мои коллекции</div>
             </a>
             <a class="a-button-standard action">
                 <img class="action-img" src="/images/rating.png" alt="rating.png">
-                <p>Рейтинг</p>
+                <div>Рейтинг</div>
             </a>
         </div>
     </main>

@@ -1,0 +1,98 @@
+main {
+    min-height: 1300px;
+}
+
+div.change-words-message-container {
+    display: grid;
+    grid: 1fr / 250px 1fr;
+}
+
+div.change-words-message-left {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+img.change-words-message-img {
+    width: 128px;
+    height: 128px;
+}
+
+div.change-words-message-right {
+    display: flex;
+    flex-direction: column;
+}
+
+p.change-words-message-header {
+    font-size: var(--second-font-size);
+    font-weight: bold;
+    margin-top: 25px;
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+div.change-words-message-text {
+    font-size: var(--third-font-size);
+    margin-top: 5px;
+}
+
+div.change-words-actions-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px;
+}
+
+div.change-words-actions-row {
+    display: grid;
+    grid: 1fr / 1fr 1fr 1fr;
+    gap: 20px;
+}
+
+div.change-words-action {
+    min-height: 40px;
+
+    display: grid;
+    grid: 1fr / 50px 1fr;
+    align-items: center;
+
+    font-size: var(--third-font-size);
+    font-weight: bold;
+}
+
+div.change-words-action-img-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+img.change-words-action-img {
+    width: 32px;
+    height: 32px;
+}
+
+div.change-word-list-instruments {
+    height: 100px;
+
+    display: grid;
+    grid: 1fr / 2fr 1fr 1fr 1fr 50px;
+    gap: 10px;
+    margin-top: 50px;
+}
+
+div.change-word-list-instruments-item {
+    display: grid;
+    grid: 50px 1fr / 1fr;
+    gap: 5px;
+}
+
+div.change-word-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+div.word-status, span.word-status {
+    font-weight: bold;
+}

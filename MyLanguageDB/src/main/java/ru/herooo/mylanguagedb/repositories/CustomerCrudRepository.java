@@ -10,5 +10,4 @@ public interface CustomerCrudRepository extends CrudRepository<Customer, Long> {
     Customer findByNickname(String nickname);
     Customer findByAuthCode(String authCode);
     Customer findByLoginAndPassword(String login, String password);
-
 }

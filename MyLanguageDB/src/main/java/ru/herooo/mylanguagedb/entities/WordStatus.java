@@ -2,6 +2,8 @@ package ru.herooo.mylanguagedb.entities;
 
 import jakarta.persistence.*;
 
+import java.util.Objects;
+
 @Entity
 @Table(name = "word_status")
 public class WordStatus {
@@ -16,12 +18,11 @@ public class WordStatus {
     @Column(name = "code")
     private String code;
 
-    public WordStatus() {}
+    @Column(name = "message")
+    private String message;
 
-    public WordStatus(String title, String code) {
-        this.title = title;
-        this.code = code;
-    }
+    @Column(name = "color_hex_code")
+    private String colorHexCode;
 
     public long getId() {
         return id;
@@ -42,4 +43,34 @@ public class WordStatus {
     public void setCode(String code) {
         this.code = code;
     }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getColorHexCode() {
+        return colorHexCode;
+    }
+
+    public void setColorHexCode(String colorHexCode) {
+        this.colorHexCode = colorHexCode;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        WordStatus that = (WordStatus) o;
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }
+

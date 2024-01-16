@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="|${WEB_APP_NAME} - Мои коллекции|">Мои коллекции</title>
+    <link rel="icon" type="image/x-icon" href="/images/logo.ico">
+
+    <link rel="stylesheet" type="text/css" href="/css/root.css">
+    <link rel="stylesheet" type="text/css" href="/css/main.css">
+    <link rel="stylesheet" type="text/css" href="/css/other/collection_info.css">
+    <link rel="stylesheet" type="text/css" href="/css/customer_collections/show.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
+
+    <script type="module" src="/js/customer_collections/show.js"></script>
+</head>
+<body>
+    <header>
+        <div th:insert="~{layouts/header}"></div>
+    </header>
+    <main>
+        <div class="block-info-standard customer-collections-message-container">
+            <div class="customer-collections-message-left">
+                <img class="customer-collections-message-img" src="/images/customer_collections.png"
+                     alt="customer_collections.png"/>
+            </div>
+            <div class="customer-collections-message-right">
+                <p class="customer-collections-message-header">Мои коллекции</p>
+                <div class="customer-collections-message-text">
+                   Здесь вы можете посмотреть ваши коллекции со словами. Создавайте новые коллекции,
+                    добавляйте в них слова на странице
+                    <a href="/words">"Cлова"</a>.
+                    Вы так же можете создать копию коллекции ваших друзей по ключу.
+                </div>
+                <br>
+                <div class="customer-collections-message-text" id="collections_statistics_container"></div>
+            </div>
+        </div>
+        <div class="customer-collections-actions">
+            <a class="customer-collections-actions-item a-button-standard" href="/customer_collections/new">
+                <img class="customer-collections-actions-img" src="/images/new_collection.png" alt="new_collection.png"/>
+                <p class="customer-collections-actions-text">Создать новые коллекции</p>
+            </a>
+            <a class="customer-collections-actions-item a-button-standard" href="/customer_collections/new_by_key">
+                <img class="customer-collections-actions-img" src="/images/new_collection_by_key.png" alt="new_collection_by_key.png"/>
+                <p class="customer-collections-actions-text">Создать коллекцию по ключу</p>
+            </a>
+        </div>
+        <div class="collection-words-instruments">
+            <div class="collection-words-instruments-item">
+                <label class="label-for-input-standard" for="tb_finder">Поиск:</label>
+                <input id="tb_finder" class="text-standard" type="text">
+            </div>
+            <div class="collection-words-instruments-item">
+                <label class="label-for-input-standard" for="cb_langs">Язык:</label>
+                <select id="cb_langs" class="select-standard"></select>
+            </div>
+            <div class="collection-words-instruments-item">
+                <label class="label-for-input-standard" for="cb_parts_of_speech">Часть речи:</label>
+                <select id="cb_parts_of_speech" class="select-standard"></select>
+            </div>
+            <div class="collection-words-instruments-item">
+                <label class="label-for-input-standard" for="cb_customer_collections">Коллекция:</label>
+                <select id="cb_customer_collections" class="select-standard"></select>
+            </div>
+            <div class="collection-words-instruments-item">
+                <label class="label-for-input-standard" for="btn_refresh"></label>
+                <button id="btn_refresh" class="btn-refresh-standard" title="Обновить">
+                    <img class="btn-refresh-standard-img" src="/images/refresh.png" alt="refresh.png"/>
+                </button>
+            </div>
+        </div>
+        <div id="div_collection_info"></div>
+        <div class="collection-words-container" id="collection_word_list_container">
+            <table class="table-standard">
+                <colgroup>
+                    <col style="width: 5%;">
+                    <col style="width: 55%;">
+                    <col style="width: 20%;">
+                    <col style="width: 20%;">
+                    <col style="width: 50px;">
+                </colgroup>
+                <thead id="collection_word_table_head">
+                <tr>
+                    <th>№</th>
+                    <th>Слово</th>
+                    <th>Язык</th>
+                    <th>Часть речи</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody id="collection_word_table_body"></tbody>
+            </table>
+        </div>
+    </main>
+</body>
+</html>

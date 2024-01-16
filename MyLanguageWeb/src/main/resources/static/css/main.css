@@ -34,29 +34,33 @@ main {
 
 div.block-info-standard {
     background: rgba(var(--first-color-rgb), var(--opacity-standard));
-    border-radius: var(--border-radius-standard);
     padding: 10px;
 }
 
-div.horizontal-delimiter {
+div.horizontal-delimiter, div.horizontal-delimiter-margin {
     height: 1px;
+    background: rgba(var(--third-color-rgb), var(--opacity-standard));
+}
+
+div.horizontal-delimiter-margin {
     margin: 5px 25px 5px 25px;
-    background: rgba(var(--third-color-rgb), var(--opacity-standard));
 }
 
-div.vertical-delimiter {
+div.vertical-delimiter, div.vertical-delimiter-margin {
     width: 1px;
-    margin: 25px 5px 25px 5px;
     background: rgba(var(--third-color-rgb), var(--opacity-standard));
 }
 
-a.a-button-standard {
+div.vertical-delimiter-margin {
+    margin: 25px 5px 25px 5px;
+}
+
+a.a-button-standard, a.a-button-accept-standard, a.a-button-deny-standard {
     -webkit-appearance: button;
     -moz-appearance: button;
     cursor: pointer;
 
-    border: 5px solid var(--second-color);
-    border-radius: var(--border-radius-standard);
+    border: 5px solid var(--third-color);
     background: rgba(var(--first-color-rgb), var(--opacity-standard));
 
     font-family: inherit;
@@ -69,10 +73,37 @@ a.a-button-standard:hover {
     background: rgba(var(--second-color-rgb), var(--opacity-standard));
 }
 
+a.a-button-accept-standard {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border: 5px solid rgb(67, 145, 60);
+    background: rgba(87, 181, 72, var(--opacity-standard));
+}
+
+a.a-button-accept-standard:hover {
+    background: rgba(67, 145, 60, var(--opacity-standard));
+}
+
+a.a-button-deny-standard {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border: 5px solid rgb(145, 60, 60);
+    background: rgba(181, 72, 72, var(--opacity-standard));
+}
+
+a.a-button-deny-standard:hover {
+    background: rgba(145, 60, 60, var(--opacity-standard));
+}
+
 table.table-standard {
     border-spacing: 5px 5px;
     table-layout: fixed;
-    width: 100%;
+    margin: 0 -5px;
+    width: calc(100% + 10px);
 
     overflow: hidden;
     overflow-wrap: anywhere;
@@ -90,7 +121,7 @@ table.table-standard tbody {
 }
 
 table.table-standard td {
-    padding: 10px;
+    padding: 15px;
 }
 
 table.table-standard tbody tr:nth-child(odd){
@@ -150,7 +181,7 @@ input.submit-standard {
     background: var(--second-color);
 
     font-size: var(--third-font-size);
-    font-style: inherit;
+    font-family: inherit;
 }
 
 input.submit-standard:hover {
@@ -177,5 +208,46 @@ a.a-show-password-standard {
     text-align: center;
 }
 
+label.label-for-input-standard {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+
+    background: rgba(var(--first-color-rgb), var(--opacity-standard));
+
+    font-family: inherit;
+    font-size: var(--third-font-size);
+    font-weight: bold;
+}
+
+a.a-show-more-standard {
+    padding: 10px;
+    font-size: var(--third-font-size);
+    text-align: center;
+    font-weight: bold;
+}
+
+button.button-standard, button.btn-refresh-standard {
+    cursor: pointer;
+    background: var(--second-color);
+
+    font-size: var(--third-font-size);
+    font-family: inherit;
+}
+
+button.button-standard:hover, button.btn-refresh-standard:hover {
+    background: var(--third-color);
+}
+
+button.btn-refresh-standard {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+img.btn-refresh-standard-img {
+    width: 32px;
+    height: 32px;
+}
 
 

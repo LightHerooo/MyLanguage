@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title th:text="|${WEB_APP_NAME} - История моих предложенных слов|">История моих предложенных слов</title>
+        <link rel="icon" type="image/x-icon" href="/images/logo.ico">
+
+        <link rel="stylesheet" type="text/css" href="/css/root.css">
+        <link rel="stylesheet" type="text/css" href="/css/main.css">
+        <link rel="stylesheet" type="text/css" href="/css/words/my_words_history.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
+
+        <script type="module" src="/js/words/my_words_history.js"></script>
+    </head>
+    <body>
+        <header>
+            <div th:insert="~{layouts/header}"></div>
+        </header>
+        <main>
+            <div class="block-info-standard my-words-history-message-container">
+                <div class="my-words-history-message-left">
+                    <img class="my-words-history-message-img" src="/images/my_words_history.png"
+                         alt="my_words_history.png"/>
+                </div>
+                <div class="my-words-history-message-right">
+                    <p class="my-words-history-message-header">История моих предложенных слов</p>
+                    <div class="my-words-history-message-text">
+                        На странице находятся все слова, которые вы предлагали для добавления.
+                        Вы можете посмотреть историю изменений статусов слов, нажав на кнопку рядом со строкой слова.
+                        Помните, что слова со статусом
+                        <a class="word-status"
+                           th:style="'color: #' + ${UNCLAIMED_WORD_STATUS.colorHexCode}"
+                           th:text="'&quot;' + ${UNCLAIMED_WORD_STATUS.title} + '&quot;'"
+                           th:title="${UNCLAIMED_WORD_STATUS.message}"/>
+                        со временем удаляются из базы, из-за чего просмотр изменения статуса слова в таких словах
+                        <span style="font-weight: bold" >станет недоступна</span>.
+                    </div>
+                    <br>
+                    <div class="my-words-history-message-text" id="my_words_history_statistics_container"></div>
+                </div>
+            </div>
+            <div class="my-word-history-list-instruments">
+                <div class="my-word-history-list-instruments-item">
+                    <label class="label-for-input-standard" for="tb_finder">Поиск:</label>
+                    <input id="tb_finder" class="text-standard" type="text">
+                </div>
+                <div class="my-word-history-list-instruments-item">
+                    <label class="label-for-input-standard" for="cb_langs">Язык:</label>
+                    <select id="cb_langs" class="select-standard"></select>
+                </div>
+                <div class="my-word-history-list-instruments-item">
+                    <label class="label-for-input-standard" for="cb_parts_of_speech">Часть речи:</label>
+                    <select id="cb_parts_of_speech" class="select-standard"></select>
+                </div>
+                <div class="my-word-history-list-instruments-item">
+                    <label class="label-for-input-standard" for="cb_word_statuses">Статус:</label>
+                    <select id="cb_word_statuses" class="select-standard"></select>
+                </div>
+                <div class="my-word-history-list-instruments-item">
+                    <label class="label-for-input-standard" for="btn_refresh"></label>
+                    <button id="btn_refresh" class="btn-refresh-standard" title="Обновить">
+                        <img class="btn-refresh-standard-img" src="/images/refresh.png" alt="refresh.png"/>
+                    </button>
+                </div>
+            </div>
+            <div class="my-word-history-list-container" id="my_word_history_list_container">
+                <table class="table-standard">
+                    <colgroup id="my_word_history_table_colgroup">
+                        <col style="width: 5%;">
+                        <col style="width: 35%;">
+                        <col style="width: 15%;">
+                        <col style="width: 15%;">
+                        <col style="width: 15%;">
+                        <col style="width: 15%;">
+                        <col style="width: 50px;">
+                    </colgroup>
+                    <thead id="my_word_history_table_head">
+                        <tr>
+                            <th>№</th>
+                            <th>Слово</th>
+                            <th>Язык</th>
+                            <th>Часть речи</th>
+                            <th>Статус</th>
+                            <th>Дата изменения</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="my_word_history_table_body"></tbody>
+                </table>
+            </div>
+        </main>
+    </body>
+</html>

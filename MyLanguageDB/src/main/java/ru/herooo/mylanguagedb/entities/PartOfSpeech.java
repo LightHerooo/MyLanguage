@@ -16,11 +16,6 @@ public class PartOfSpeech {
     @Column(name = "code")
     private String code;
 
-    public PartOfSpeech() {}
-
-    public PartOfSpeech(String title) {
-        this.title = title;
-    }
 
     public long getId() {
         return id;

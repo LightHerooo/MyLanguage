@@ -1,7 +1,4 @@
 import {
-    InputField
-} from "../classes/inputField.js"
-import {
     changeRuleStatus,
     getOrCreateRule
 } from "../utils/div_rules.js";
@@ -12,9 +9,7 @@ const _PB_PASSWORD_ID = "pb_password";
 const _CHECK_SHOW_PASSWORD_ID = "check_show_password";
 const _A_CHECK_SHOW_PASSWORD_ID = "a_check_show_password";
 const _FORM_ENTRY_ID = "form_entry";
-
-let _inFLogin = new InputField(false);
-let _inFPassword = new InputField(false);
+const _BTN_ENTRY_ID = "btn_entry";
 
 window.onload = function () {
     let tbLogin = document.getElementById(_TB_LOGIN_ID);
@@ -38,10 +33,15 @@ window.onload = function () {
     });
 
     let submitEntry = document.getElementById(_FORM_ENTRY_ID);
+    let btnEntry = document.getElementById(_BTN_ENTRY_ID);
     submitEntry.addEventListener("submit", event => {
-        if (!checkCorrectBeforeEntry()) {
-            event.preventDefault();
+        btnEntry.disabled = true;
+        event.preventDefault();
+
+        if (checkCorrectBeforeEntry()) {
+            submitEntry.submit();
         }
+        btnEntry.disabled = false;
     });
 }
 
@@ -49,43 +49,47 @@ function checkCorrectLogin() {
     const DIV_RULE_PARENT_ID = "div_container_login";
     const DIV_RULE_ID = "div_rule_login";
     const INPUT_ELEMENT_ID = _TB_LOGIN_ID;
-    const INPUT_FIELD_OBJECT = _inFLogin;
 
     const LOGIN_REGEXP = /^[A-Za-z0-9_]+$/;
 
+    let isCorrect;
     let divRuleElement = getOrCreateRule(DIV_RULE_ID);
-    let inputText = document.getElementById(INPUT_ELEMENT_ID).value;
+    let inputText = document.getElementById(INPUT_ELEMENT_ID).value.trim();
     if (!inputText) {
-        INPUT_FIELD_OBJECT.isCorrect = false;
+        isCorrect= false;
         divRuleElement.textContent = "Логин не может быть пустым.";
-        changeRuleStatus(divRuleElement, DIV_RULE_PARENT_ID, INPUT_FIELD_OBJECT.isCorrect);
+        changeRuleStatus(divRuleElement, DIV_RULE_PARENT_ID, isCorrect);
     } else if (!LOGIN_REGEXP.test(inputText)) {
-        INPUT_FIELD_OBJECT.isCorrect = false;
+        isCorrect = false;
         divRuleElement.textContent = "Логин должен содержать только английские буквы, цифры и знаки подчеркивания [_].";
-        changeRuleStatus(divRuleElement, DIV_RULE_PARENT_ID, INPUT_FIELD_OBJECT.isCorrect);
+        changeRuleStatus(divRuleElement, DIV_RULE_PARENT_ID, isCorrect);
     }
     else {
-        INPUT_FIELD_OBJECT.isCorrect = true;
-        changeRuleStatus(divRuleElement, DIV_RULE_PARENT_ID, INPUT_FIELD_OBJECT.isCorrect);
+        isCorrect = true;
+        changeRuleStatus(divRuleElement, DIV_RULE_PARENT_ID, isCorrect);
     }
+
+    return isCorrect;
 }
 
 function checkCorrectPassword() {
     const DIV_RULE_PARENT_ID = "div_container_password";
     const DIV_RULE_ID = "div_rule_password";
     const INPUT_ELEMENT_ID = _PB_PASSWORD_ID;
-    const INPUT_FIELD_OBJECT = _inFPassword;
 
+    let isCorrect;
     let divRuleElement = getOrCreateRule(DIV_RULE_ID);
     let inputText = document.getElementById(INPUT_ELEMENT_ID).value;
     if (!inputText) {
-        INPUT_FIELD_OBJECT.isCorrect = false;
+        isCorrect = false;
         divRuleElement.textContent = "Пароль не может быть пустым.";
-        changeRuleStatus(divRuleElement, DIV_RULE_PARENT_ID, INPUT_FIELD_OBJECT.isCorrect);
+        changeRuleStatus(divRuleElement, DIV_RULE_PARENT_ID, isCorrect);
     } else {
-        INPUT_FIELD_OBJECT.isCorrect = true;
-        changeRuleStatus(divRuleElement, DIV_RULE_PARENT_ID, INPUT_FIELD_OBJECT.isCorrect);
+        isCorrect = true;
+        changeRuleStatus(divRuleElement, DIV_RULE_PARENT_ID, isCorrect);
     }
+
+    return isCorrect;
 }
 
 function showPassword() {
@@ -109,8 +113,8 @@ function showPasswordByLink() {
 }
 
 function checkCorrectBeforeEntry() {
-    checkCorrectLogin();
-    checkCorrectPassword();
+    let isLoginCorrect = checkCorrectLogin();
+    let isPasswordCorrect = checkCorrectPassword();
 
-    return (_inFLogin.isCorrect && _inFPassword.isCorrect);
+    return (isLoginCorrect && isPasswordCorrect);
 }

@@ -1,6 +1,8 @@
 import {
-    DIV_TEXT_ERROR_MESSAGE_STANDARD
-} from "../css/css_main_classes.js";
+    CssMain
+} from "../classes/css/css_main.js";
+
+const _CSS_MAIN = new CssMain();
 
 /*
     Отображение предупреждений (правил) при ошибках отдельным DIV элементом
@@ -14,7 +16,7 @@ export function getOrCreateRule(id) {
         // Если предупреждения (правила) нет, генерируем новое
         divRule = document.createElement("div");
         divRule.id = id;
-        divRule.classList.add(DIV_TEXT_ERROR_MESSAGE_STANDARD);
+        divRule.classList.add(_CSS_MAIN.DIV_TEXT_ERROR_MESSAGE_STANDARD_STYLE_ID);
     }
 
     return divRule;

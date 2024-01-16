@@ -2,12 +2,14 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title th:text="|${WEB_APP_NAME} - Все слова|">AllWords</title>
+    <title th:text="|${WEB_APP_NAME} - Все слова|">Все слова</title>
     <link rel="icon" type="image/x-icon" href="/images/logo.ico">
 
     <link rel="stylesheet" type="text/css" href="/css/root.css">
     <link rel="stylesheet" type="text/css" href="/css/main.css">
-    <link rel="stylesheet" type="text/css" href="/css/words/all_words.css">
+    <link rel="stylesheet" type="text/css" href="/css/other/collection_info.css">
+    <link rel="stylesheet" type="text/css" href="/css/words/show.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
 
     <script type="module" src="/js/words/show.js"></script>
 </head>
@@ -18,53 +20,66 @@
     <main>
         <div class="block-info-standard words-message-container">
             <div class="words-message-left">
-                <img class="words-message-img" src="/images/all_words.png" alt="all_words.png"/>
+                <img class="words-message-img" src="/images/words.png" alt="all_words.png"/>
             </div>
             <div class="words-message-right">
-                <p class="words-message-header">Все слова</p>
-                <p class="words-message-text" th:text="|В список включены все слова, содержащиеся в базе слов ресурса ${WEB_APP_NAME}.|"></p>
-                <p class="words-message-text" th:text="|Количество слов в базе: 0.|"></p>
-                <p class="words-message-text" th:text="|За сегодня (01.01.1970) добавлено слов: 0.|"></p>
-            </div>
-        </div>
-        <div class="word-list-container">
-            <div class="word-list-new-container">
-                <div class="block-info-standard word-list-new-message">
-                    <p>Обладаете большим словарным запасом? Знаете, какие слова нужно добавить в нашу базу?
-                        Вы всегда можете предложить неограниченное количество слов, а наши администраторы
-                        как можно быстрее рассмотрят их на корректность.</p>
+                <p class="words-message-header">Слова</p>
+                <div class="words-message-text">
+                    На странице находятся все слова, содержащиеся в базе слов ресурса
+                    <span th:text="${WEB_APP_NAME}"/>.
+                    Авторизированным пользователям открываются возможности предложения новых слов,
+                    просмотра истории своих предложенных слов
+                    и сохранения слов в коллекции.
+                    В таблице отображаются только активные слова.
                 </div>
-                <a class="a-button-standard add_word">
-                    <img class="add_word_img" src="/images/add.png" alt="add.png"/>
-                    <p class="add_word-text">Предложить новые слова</p>
-                </a>
+                <br>
+                <div class="words-message-text" id="words_statistics_container"></div>
+
             </div>
         </div>
-        <div class="word-list-instruments">
+        <div th:if="${AUTH_CUSTOMER != null}" class="words-actions">
+            <a class="words-actions-item a-button-standard" href="/words/new">
+                <img class="words-actions-img" src="/images/new_words.png" alt="new_words.png"/>
+                <p class="words-actions-text">Предложить новые слова</p>
+            </a>
+            <a class="words-actions-item a-button-standard" href="/words/my_words_history">
+                <img class="words-actions-img" src="/images/my_words_history.png" alt="new_words_history.png"/>
+                <p class="words-actions-text">История моих предложенных слов</p>
+            </a>
+        </div>
+        <div th:class="${AUTH_CUSTOMER != null ? 'word-list-instruments-auth' : 'word-list-instruments'}">
             <div class="word-list-instruments-item">
-                <label class="label-for-filters" for="tb_finder">Поиск:</label>
+                <label class="label-for-input-standard" for="tb_finder">Поиск:</label>
                 <input id="tb_finder" class="text-standard" type="text">
             </div>
             <div class="word-list-instruments-item">
-                <label class="label-for-filters" for="tb_finder">Фильтрация по языку:</label>
+                <label class="label-for-input-standard" for="cb_langs">Язык:</label>
                 <select id="cb_langs" class="select-standard"></select>
             </div>
             <div class="word-list-instruments-item">
-                <label class="label-for-filters" for="tb_finder">Фильтрация по части речи:</label>
+                <label class="label-for-input-standard" for="cb_parts_of_speech">Часть речи:</label>
                 <select id="cb_parts_of_speech" class="select-standard"></select>
             </div>
-
-            <!-- <input id="tb_finder" class="text-standard" type="text">
-            <select id="cb_langs" class="select-standard"></select>
-            <select id="cb_parts_of_speech" class="select-standard"></select> -->
+            <div class="word-list-instruments-item" th:if="${AUTH_CUSTOMER != null}">
+                <label class="label-for-input-standard" for="cb_customer_collections">Коллекция:</label>
+                <select id="cb_customer_collections" class="select-standard"></select>
+            </div>
+            <div class="word-list-instruments-item">
+                <label class="label-for-input-standard" for="btn_refresh"></label>
+                <button id="btn_refresh" class="btn-refresh-standard" title="Обновить">
+                    <img class="btn-refresh-standard-img" src="/images/refresh.png" alt="refresh.png"/>
+                </button>
+            </div>
         </div>
+        <div th:if="${AUTH_CUSTOMER != null}" id="div_collection_info"></div>
         <div class="word-list-container" id="word_list_container">
             <table class="table-standard">
-                <colgroup>
+                <colgroup >
                     <col style="width: 5%;">
                     <col style="width: 55%;">
                     <col style="width: 20%;">
                     <col style="width: 20%;">
+                    <col style="width: 50px" th:if="${AUTH_CUSTOMER != null}">
                 </colgroup>
                 <thead id="words_table_head">
                     <tr>
@@ -72,6 +87,7 @@
                         <th>Слово</th>
                         <th>Язык</th>
                         <th>Часть речи</th>
+                        <th th:if="${AUTH_CUSTOMER != null}"></th>
                     </tr>
                 </thead>
                 <tbody id="words_table_body"></tbody>

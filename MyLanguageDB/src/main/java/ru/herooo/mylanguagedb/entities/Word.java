@@ -2,24 +2,27 @@ package ru.herooo.mylanguagedb.entities;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name="word")
 public class Word {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "word_id_seq")
+    @SequenceGenerator(name = "word_id_seq", sequenceName = "word_id_seq", allocationSize = 1)
     private long id;
 
     @Column(name="title")
     private String title;
 
+    @Column(name="date_of_create")
+    private LocalDateTime dateOfCreate;
+
     @ManyToOne
     @JoinColumn(name="author_id")
     private Customer author;
-
-    @ManyToOne
-    @JoinColumn(name="word_status_id")
-    private WordStatus wordStatus;
 
     @ManyToOne
     @JoinColumn(name="part_of_speech_id")
@@ -28,16 +31,6 @@ public class Word {
     @ManyToOne
     @JoinColumn(name="lang_id")
     private Lang lang;
-
-    public Word() {}
-
-    public Word(String title, Customer author, WordStatus wordStatus, PartOfSpeech partOfSpeech, Lang lang) {
-        this.title = title;
-        this.author = author;
-        this.wordStatus = wordStatus;
-        this.partOfSpeech = partOfSpeech;
-        this.lang = lang;
-    }
 
     public long getId() {
         return id;
@@ -59,12 +52,12 @@ public class Word {
         this.author = author;
     }
 
-    public WordStatus getWordStatus() {
-        return wordStatus;
+    public Lang getLang() {
+        return lang;
     }
 
-    public void setWordStatus(WordStatus wordStatus) {
-        this.wordStatus = wordStatus;
+    public void setLang(Lang lang) {
+        this.lang = lang;
     }
 
     public PartOfSpeech getPartOfSpeech() {
@@ -75,11 +68,11 @@ public class Word {
         this.partOfSpeech = partOfSpeech;
     }
 
-    public Lang getLang() {
-        return lang;
+    public LocalDateTime getDateOfCreate() {
+        return dateOfCreate;
     }
 
-    public void setLang(Lang lang) {
-        this.lang = lang;
+    public void setDateOfCreate(LocalDateTime dateOfCreate) {
+        this.dateOfCreate = dateOfCreate;
     }
 }

@@ -9,17 +9,17 @@ div.hello-message-data {
     justify-content: center;
     align-items: center;
     text-align: center;
+
+    padding: 20px;
 }
 
-p.hello-message-header {
-    font-size: 60px;
+div.hello-message-header {
+    font-size: var(--first-font-size);
     font-weight: bold;
-    margin-top: 25px;
-    margin-bottom: 25px;
 }
 
-p.hello-message-text {
-    font-size: 30px;
+div.hello-message-text {
+    font-size: var(--second-font-size);
     margin-top: 5px;
 }
 
@@ -36,7 +36,10 @@ a.action {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    gap: 10px;
+    padding: 10px;
 
+    font-weight: bold;
     font-size: var(--second-font-size);
 }
 
@@ -44,8 +47,3 @@ img.action-img {
     width: 128px;
     height: 128px;
 }
-
-div.info-container {
-
-}
-

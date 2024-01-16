@@ -5,6 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.herooo.mylanguagedb.entities.PartOfSpeech;
 import ru.herooo.mylanguageweb.dto.CustomResponseMessage;
+import ru.herooo.mylanguageweb.dto.partofspeech.PartOfSpeechMapping;
+import ru.herooo.mylanguageweb.dto.partofspeech.PartOfSpeechResponseDTO;
 import ru.herooo.mylanguageweb.services.PartOfSpeechService;
 
 import java.util.List;
@@ -13,18 +15,23 @@ import java.util.List;
 @RequestMapping("/api/parts_of_speech")
 public class PartsOfSpeechRestController {
 
-    private PartOfSpeechService PART_OF_SPEECH_SERVICE;
+    private final PartOfSpeechService PART_OF_SPEECH_SERVICE;
+    private final PartOfSpeechMapping PART_OF_SPEECH_MAPPING;
 
     @Autowired
-    public PartsOfSpeechRestController(PartOfSpeechService partOfSpeechService) {
+    public PartsOfSpeechRestController(PartOfSpeechService partOfSpeechService,
+                                       PartOfSpeechMapping partOfSpeechMapping) {
         this.PART_OF_SPEECH_SERVICE = partOfSpeechService;
+        this.PART_OF_SPEECH_MAPPING = partOfSpeechMapping;
     }
 
     @GetMapping()
     public ResponseEntity<?> getAll() {
         List<PartOfSpeech> partsOfSpeech = PART_OF_SPEECH_SERVICE.findAll();
         if (partsOfSpeech != null && partsOfSpeech.size() > 0) {
-            return ResponseEntity.ok(partsOfSpeech);
+            List<PartOfSpeechResponseDTO> responseDTOs =
+                    partsOfSpeech.stream().map(PART_OF_SPEECH_MAPPING::mapToResponseDTO).toList();
+            return ResponseEntity.ok(responseDTOs);
         } else {
             CustomResponseMessage message = new CustomResponseMessage(1, "Части речи не найдены.");
             return ResponseEntity.badRequest().body(message);
@@ -35,7 +42,8 @@ public class PartsOfSpeechRestController {
     public ResponseEntity<?> findByCode(@RequestParam("code") String code) {
         PartOfSpeech partOfSpeech = PART_OF_SPEECH_SERVICE.findByCode(code);
         if (partOfSpeech != null) {
-            return ResponseEntity.ok(partOfSpeech);
+            PartOfSpeechResponseDTO dto = PART_OF_SPEECH_MAPPING.mapToResponseDTO(partOfSpeech);
+            return ResponseEntity.ok(dto);
         } else {
             CustomResponseMessage message = new CustomResponseMessage(1,
                     String.format("Часть речи с кодом '%s' не найдена.", code));

@@ -1,10 +1,13 @@
 package ru.herooo.mylanguageweb.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import ru.herooo.mylanguageweb.controllers.json.LongDeserializer;
+import ru.herooo.mylanguageweb.controllers.json.LongSerializer;
+
 public class CustomResponseMessage {
     private int id;
     private String text;
-
-    private boolean lol;
 
     public CustomResponseMessage() {}
     public CustomResponseMessage(int id, String text) {
@@ -12,7 +15,7 @@ public class CustomResponseMessage {
         this.text = text;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 

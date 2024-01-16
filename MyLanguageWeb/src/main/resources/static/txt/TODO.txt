@@ -1,0 +1,3 @@
+//todo
+- Сделать бэкап БД
+- Найти Google Translate API Key

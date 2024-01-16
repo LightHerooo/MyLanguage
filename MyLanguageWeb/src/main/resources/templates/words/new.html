@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="|${WEB_APP_NAME} - Предложение новых слов|">Предложение новых слов</title>
+    <link rel="icon" type="image/x-icon" href="/images/logo.ico">
+
+    <link rel="stylesheet" type="text/css" href="/css/root.css">
+    <link rel="stylesheet" type="text/css" href="/css/main.css">
+    <link rel="stylesheet" type="text/css" href="/css/words/new.css">
+
+    <script type="module" src="/js/words/new.js"></script>
+</head>
+    <body>
+        <header>
+            <div th:insert="~{layouts/header}"></div>
+        </header>
+        <main>
+            <div class="block-info-standard new-words-message-container">
+                <div class="new-words-message-left">
+                    <img class="new-words-message-img" src="/images/new_words.png"
+                         alt="new_words.png"/>
+                </div>
+                <div class="new-words-message-right">
+                    <p class="new-words-message-header">Предложение новых слов</p>
+                    <div class="new-words-message-text">
+                        Предлагайте новые слова для добавления в базу
+                        <span th:text="${WEB_APP_NAME}"/>.
+                        За раз можно предложить не более 5-ти слов.
+                        Предложенные слова появятся в базе не сразу, сначала их проверят администраторы.
+                        Чтобы проверить статус предложенного слова, посетите страницу
+                        <a href="/words/my_words_history">"История моих предложенных слов"</a>.
+                    </div>
+                    <br>
+                </div>
+            </div>
+            <div class="new-words-container" id="new_words_container"></div>
+            <a class="a-button-accept-standard btn-new-word" id="btn_new_word">
+                <img class="btn-new-word-img" src="/images/add.png" alt="add.png">
+            </a>
+            <div class="send-new-words-container block-info-standard">
+                <div id="send_new_words_info"></div>
+                <form method="GET" action="/words" class="send-new-words-form" id="submit_send">
+                    <input type="submit" class="submit-standard btn-send" value="Предложить"
+                        id="submit_btn">
+                </form>
+            </div>
+        </main>
+    </body>
+</html>

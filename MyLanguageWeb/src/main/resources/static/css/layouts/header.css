@@ -1,6 +1,6 @@
 nav {
     display: grid;
-    grid: 80px / 1fr 300px;
+    grid: 80px / 1fr 1fr;
 
     background: rgba(var(--second-color-rgb), var(--opacity-standard)) ;
 }
@@ -79,11 +79,14 @@ div.auth-customer-container {
 }
 
 img.auth-customer-img {
-    width: 32px;
-    height: 32px;
+    width: 48px;
+    height: 48px;
+
+    border-radius: 100%;
+    border: 2px solid black;
+    background: white;
 }
 
-/* Когда добавишь дополнительную статистику Customer (рейтинг и т.д.) */
 div.auth-customer-info-container {
     display: flex;
     flex-direction: column;
@@ -92,8 +95,14 @@ div.auth-customer-info-container {
     gap: 5px;
 }
 
-/* Когда добавишь дополнительную статистику Customer (рейтинг и т.д.) */
 div.auth-customer-info-extra-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
+}
+
+div.auth-customer-info-extra-item {
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -101,3 +110,18 @@ div.auth-customer-info-extra-container {
     gap: 5px;
 }
 
+img.auth-customer-info-extra-item-img {
+    width: 16px;
+    height: 16px;
+}
+
+div.customer-nickname {
+    text-decoration: underline dotted;
+    font-size: var(--third-font-size);
+    font-weight: bold;
+}
+
+div.nav-special-actions-text {
+    padding: 5px;
+    max-width: 100px;
+}

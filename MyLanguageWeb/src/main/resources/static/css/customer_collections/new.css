@@ -1,0 +1,92 @@
+div.new-collections-message-container {
+    display: grid;
+    grid: 1fr / 250px 1fr;
+    padding: 15px;
+}
+
+div.new-collections-message-left {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+img.new-collections-message-img {
+    width: 128px;
+    height: 128px;
+}
+
+div.new-collections-message-right {
+    display: flex;
+    flex-direction: column;
+}
+
+p.new-collections-message-header {
+    font-size: var(--second-font-size);
+    font-weight: bold;
+    margin-top: 25px;
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+div.new-collections-message-text {
+    font-size: var(--third-font-size);
+}
+
+div.new-collections-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+div.new-collections-container-item {
+    min-height: 90px;
+
+    display: grid;
+    grid: 1fr / 1fr 60px;
+    gap: 10px;
+}
+
+div.new-collection-data {
+    display: grid;
+    grid: 1fr / 1fr 1fr;
+    gap: 10px;
+}
+
+div.new-collection-data-item {
+    display: grid;
+    grid: 20px 50px 1fr / 1fr;
+    gap: 5px;
+}
+
+a.btn-new-collection {
+    min-height: 50px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+img.btn-new-collection-img {
+    width: 16px;
+    height: 16px;
+}
+
+div.send-new-collections-container {
+    display: grid;
+    align-items: center;
+    grid: 1fr / 4fr 1fr;
+}
+
+form.send-new-collections-form {
+    height: 50px;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+input.btn-send {
+    width: 200px;
+}

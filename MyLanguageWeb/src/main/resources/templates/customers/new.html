@@ -22,19 +22,19 @@
                     <img class="registration-img" src="/images/registration.png" alt="registration.png">
                     <p>Регистрация</p>
                 </div>
-                <div class="horizontal-delimiter"></div>
+                <div class="horizontal-delimiter-margin"></div>
                 <div class="registration-info-text">
                     <p th:text="|Регистрация на ресурсе ${WEB_APP_NAME} открывает
                 дополнительные возможности:|">HeaderText</p>
                     <p th:text="|- Добавление новых слов в базу ${WEB_APP_NAME}|">FirstAdvantage</p>
-                    <p>- Индивидуальный список для изучения только нужных слов</p>
-                    <p>- Сохранение результатов тренировок</p>
-                    <p>- Участие в рейтинге</p>
+                    <p>- Создание коллекций слов для изучения</p>
+                    <p>- Просмотр статистики и результатов тренировок</p>
+                    <p>- Доступ к рейтингу участников</p>
                 </div>
             </div>
 
             <div class="block-info-standard">
-                <form id="form_register" th:method="POST" th:action="@{/customers}" th:object="${CUSTOMER_REG_VALID_DTO}"
+                <form id="form_register" th:method="POST" th:action="@{/customers}" th:object="${CUSTOMER_REQUEST_DTO}"
                       class="form-standard">
                     <div id="div_container_nickname" class="form-item-standard">
                         <label for="tb_nickname">Никнейм (публичный):</label>
@@ -67,7 +67,8 @@
                             <a id="a_check_show_password" class="a-show-password-standard" href="#">Показать пароль</a>
                         </div>
                     </div>
-                    <input type="submit" class="submit-standard submit-height-standard" value="Зарегистрироваться">
+                    <input type="submit" class="submit-standard submit-height-standard" value="Зарегистрироваться"
+                        id="btn_register">
                     <div class="form-item-standard text-error-standard text-align-center-standard"
                          th:if="${#fields.hasAnyErrors()}">
                         <div th:each="err: ${#fields.allErrors()}" th:text="${err}"></div>

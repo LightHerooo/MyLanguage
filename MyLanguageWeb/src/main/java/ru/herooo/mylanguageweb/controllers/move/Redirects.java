@@ -7,7 +7,7 @@ public enum Redirects {
 
     CUSTOMERS_NEW ("/customers/new"),
 
-    ;
+    ENTRY ("/customers/entry");
 
     public final String URL;
     public final String REDIRECT_URL;

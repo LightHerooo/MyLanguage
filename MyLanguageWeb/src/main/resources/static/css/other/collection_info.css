@@ -1,0 +1,33 @@
+div.collection-info-container {
+    min-height: 200px;
+
+    display: grid;
+    align-items: center;
+    grid: 1fr / 150px 4fr;
+    gap: 10px;
+}
+
+div.collection-info-container-left {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+img.collection-info-img {
+    width: 128px;
+    height: 128px;
+}
+
+div.collection-info-container-right {
+    display: flex;
+    flex-direction: column;
+}
+
+div.collection-info-text-header {
+    font-size: var(--second-font-size);
+    font-weight: bold;
+}
+
+div.collection-info-text {
+    font-size: var(--third-font-size);
+}

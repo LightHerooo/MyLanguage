@@ -16,11 +16,13 @@ public class CustomerRole {
     @Column(name="title")
     private String title;
 
-    public CustomerRole() {}
+    @Column(name="path_to_image")
+    private String pathToImage;
 
-    public CustomerRole(String title) {
-        this.title = title;
-    }
+    @Column(name="code")
+    private String code;
+
+    public CustomerRole() {}
 
     public long getId() {
         return id;
@@ -32,5 +34,21 @@ public class CustomerRole {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getPathToImage() {
+        return pathToImage;
+    }
+
+    public void setPathToImage(String pathToImage) {
+        this.pathToImage = pathToImage;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }
