@@ -80,26 +80,29 @@ export async function getJSONResponseFindCollectionByCustomerIdAndTitle(customer
     })
 }
 
-export async function postJSONResponseAddSeveralCollections(newCollectionsArr) {
+export async function postJSONResponseAddSeveralCollections(customerCollectionRequestDTOs) {
     return new Promise(resolve => {
         let requestURL = new URL(URL_TO_API_CUSTOMER_COLLECTIONS_ADD_SEVERAL);
-        let jsonStr = JSON.stringify({
-            'customer_collections': []
-        }, jsonReplacer);
 
-        let jsonObj = JSON.parse(jsonStr, jsonReviver);
-        for (let i = 0; i < newCollectionsArr.length; i++) {
-            let title = newCollectionsArr[i][0];
-            let lang_code = newCollectionsArr[i][1];
+        let newCollectionJsons = [];
+        for (let i = 0; i < customerCollectionRequestDTOs.length; i++) {
+            let customerCollectionRequestDTO = customerCollectionRequestDTOs[i];
+            let newCollectionJsonStr = JSON.stringify({
+                'title': customerCollectionRequestDTO.title,
+                'lang_code': customerCollectionRequestDTO.langCode
+            });
 
-            jsonObj['customer_collections'].push({title, lang_code});
+            newCollectionJsons.push(JSON.parse(newCollectionJsonStr));
         }
 
-        jsonStr = JSON.stringify(jsonObj, jsonReplacer);
+        let jsonStr = JSON.stringify({
+            'customer_collections': newCollectionJsons
+        }, jsonReplacer);
 
         let xml = new XMLHttpRequest();
         xml.open("POST", requestURL);
         xml.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+        xml.responseType = "json";
 
         xml.onload = function () {
             resolve(buildJSONResponseByXml(xml));
@@ -120,6 +123,7 @@ export async function postJSONResponseCopyCollectionByKey(title, key) {
         let xml = new XMLHttpRequest();
         xml.open("POST", requestURL);
         xml.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+        xml.responseType = "json";
 
         xml.onload = function () {
             resolve(buildJSONResponseByXml(xml));

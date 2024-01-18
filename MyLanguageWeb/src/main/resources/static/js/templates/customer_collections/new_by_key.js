@@ -1,57 +1,60 @@
 import {
     checkCorrectCustomerCollectionTitle
-} from "../utils/text_box_utils.js";
+} from "../../utils/text_box_utils.js";
 
 import {
     changeRuleStatus,
     getOrCreateRule
-} from "../utils/div_rules.js";
+} from "../../utils/div_rules.js";
 
 import {
     getJSONResponseFindCollectionByKey,
     postJSONResponseCopyCollectionByKey
-} from "../api/customer_collections.js";
+} from "../../api/customer_collections.js";
 
 import {
     Timer
-} from "../classes/timer.js";
+} from "../../classes/timer.js";
 
 import {
     HttpStatuses
-} from "../classes/http_statuses.js";
+} from "../../classes/http_statuses.js";
 
 import {
     changeCbLangsEnabledByCbCustomerCollectionKey,
     fillCbLangs,
     fillCbPartsOfSpeech, getSelectedOptionId
-} from "../utils/combo_box_utils.js";
+} from "../../utils/combo_box_utils.js";
 
 import {
     getJSONResponseAllWordsInCollectionFilteredPagination
-} from "../api/words_in_collection.js";
-
-import {
-    createSpanLangWithFlag
-} from "../utils/flag_icons_utils.js";
+} from "../../api/words_in_collection.js";
 
 import {
     createBtnShowMore,
     removeBtnShowMore
-} from "../utils/btn_utils.js";
+} from "../../utils/btn_utils.js";
 
 import {
     findInTableWithTimers,
     setMessageInsideTable
-} from "../utils/table_utils.js";
+} from "../../utils/table_utils.js";
 
 import {
     showCollectionInfo
-} from "../utils/word_table_utils.js";
+} from "../../utils/word_table_utils.js";
 
 import {
     CssMain
-} from "../classes/css/css_main.js";
+} from "../../classes/css/css_main.js";
 
+import {
+    WordInCollectionResponseDTO
+} from "../../dto/word_in_collection.js";
+
+import {
+    CustomResponseMessage
+} from "../../dto/other/custom_response_message.js";
 
 const _CSS_MAIN = new CssMain();
 const _HTTP_STATUSES = new HttpStatuses();
@@ -208,7 +211,9 @@ async function sendNewCollectionByKey() {
     let JSONResponse = await postJSONResponseCopyCollectionByKey(title, key);
     if (JSONResponse.status !== _HTTP_STATUSES.OK) {
         isCorrect = false;
-        changeSendNewCollectionByKeyInfoRule(JSONResponse.json["text"], isCorrect);
+
+        let message = new CustomResponseMessage(JSONResponse.json);
+        changeSendNewCollectionByKeyInfoRule(message.text, isCorrect);
     } else {
         isCorrect = true;
         changeSendNewCollectionByKeyInfoRule(null, isCorrect);
@@ -276,11 +281,6 @@ function prepareBtnRefresh() {
     }
 }
 
-// Очистка таблицы
-function clearData() {
-
-}
-
 // Подготавливаем GET-запрос и получаем ответ
 async function getPreparedJSONResponseAllWordsInCollectionFilteredPagination() {
     let customerCollectionKey = document.getElementById(_TB_KEY_ID).value;
@@ -330,7 +330,9 @@ async function tryToFillCollectionWordListTable() {
             allWordsInCollectionFilteredPagination = JSONResponse.json;
         } else {
             readyToFill = false;
-            badRequestText = JSONResponse.json["text"];
+
+            let message = new CustomResponseMessage(JSONResponse.json);
+            badRequestText = message.text;
         }
     }
     //---
@@ -355,35 +357,45 @@ async function tryToFillCollectionWordListTable() {
 async function fillCollectionWordListTable(allWordsInCollectionFilteredPaginationJson) {
     let tableBody = document.getElementById(_COLLECTION_WORD_TABLE_BODY_ID);
     for (let i = 0; i < allWordsInCollectionFilteredPaginationJson.length; i++) {
-        let item = allWordsInCollectionFilteredPaginationJson[i];
+        let wordInCollection =
+            new WordInCollectionResponseDTO(allWordsInCollectionFilteredPaginationJson[i]);
 
+        // Создаём строку таблицы ---
         let row = document.createElement("tr");
-        let numberColumn = document.createElement("td");
-        let titleColumn = document.createElement("td");
-        let langColumn = document.createElement("td");
-        let partOfSpeechColumn = document.createElement("td");
-
-        numberColumn.textContent = `${++_lastWordNumberInList}.`;
-        numberColumn.style.textAlign = "center";
-        titleColumn.textContent = item["word"]["title"];
-        partOfSpeechColumn.textContent = item["word"]["part_of_speech"]["title"];
-
-        // Язык ---
-        let langJSON = item["word"]["lang"];
-        let spanLangFlagWithTitle = createSpanLangWithFlag(langJSON);
-        langColumn.appendChild(spanLangFlagWithTitle);
         //---
 
+        // Порядковый номер строки ---
+        let numberColumn = document.createElement("td");
+        numberColumn.style.textAlign = "center";
+        numberColumn.textContent = `${++_lastWordNumberInList}.`;
         row.appendChild(numberColumn);
-        row.appendChild(titleColumn);
-        row.appendChild(langColumn);
-        row.appendChild(partOfSpeechColumn);
+        //---
 
+        // Название слова ---
+        let titleColumn = document.createElement("td");
+        titleColumn.textContent = wordInCollection.word.title;
+        row.appendChild(titleColumn);
+        //---
+
+        // Язык ---
+        let langColumn = document.createElement("td");
+        langColumn.appendChild(wordInCollection.word.lang.createSpanLangWithFlag());
+        row.appendChild(langColumn);
+        //---
+
+        // Часть речи ---
+        let partOfSpeechColumn = document.createElement("td");
+        partOfSpeechColumn.appendChild(wordInCollection.word.partOfSpeech.createDiv());
+        row.appendChild(partOfSpeechColumn);
+        //---
+
+        // Добавляем строку в таблицу ---
         tableBody.appendChild(row);
+        //---
 
         // Получаем id последнего элемента JSON-коллекции
         if (i === allWordsInCollectionFilteredPaginationJson.length - 1) {
-            _lastWordInCollectionIdOnPreviousPage = item["id"];
+            _lastWordInCollectionIdOnPreviousPage = wordInCollection.id;
         }
     }
 

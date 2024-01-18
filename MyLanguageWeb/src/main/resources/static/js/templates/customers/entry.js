@@ -1,7 +1,7 @@
 import {
     changeRuleStatus,
     getOrCreateRule
-} from "../utils/div_rules.js";
+} from "../../utils/div_rules.js";
 
 const _TB_LOGIN_ID = "tb_login";
 const _PB_PASSWORD_ID = "pb_password";

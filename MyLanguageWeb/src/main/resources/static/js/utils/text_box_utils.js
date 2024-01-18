@@ -15,7 +15,7 @@ import {
 } from "../api/customer_collections.js";
 
 import {
-    getJSONResponseWordFindByTitle
+    getJSONResponseValidateIsItPossibleToAddWord
 } from "../api/words.js";
 
 import {
@@ -23,14 +23,9 @@ import {
 } from "../classes/http_statuses.js";
 
 import {
-    getJSONResponseWordStatusHistoryFindCurrentByWordId
-} from "../api/word_status_histories.js";
+    CustomResponseMessage
+} from "../dto/other/custom_response_message.js";
 
-import {
-    WordStatuses
-} from "../classes/api/word_statuses.js";
-
-const _WORD_STATUSES = new WordStatuses();
 const _HTTP_STATUSES = new HttpStatuses();
 const _GLOBAL_COOKIES = new GlobalCookies();
 
@@ -66,6 +61,7 @@ export async function checkCorrectCustomerCollectionTitle(tbTitle, divRuleId, ti
         let JSONResponse = await JSONResponsePromise;
         if (JSONResponse.status === _HTTP_STATUSES.OK) {
             isCorrect = false;
+
             divRuleElement.textContent = "У вас уже есть коллекция с таким названием.";
             changeRuleStatus(divRuleElement, PARENT_ID, isCorrect);
         } else {
@@ -77,7 +73,8 @@ export async function checkCorrectCustomerCollectionTitle(tbTitle, divRuleId, ti
     return isCorrect;
 }
 
-export async function checkCorrectWordTitle(tbTitle, divRuleId, timerObject, timerMilliseconds) {
+export async function checkCorrectWordTitle(tbTitle, langCode, partOfSpeechCode,
+                                            divRuleId, timerObject, timerMilliseconds) {
     const PARENT_ID = tbTitle.parentNode.id;
 
     const TITLE_MAX_SIZE = 44;
@@ -102,30 +99,24 @@ export async function checkCorrectWordTitle(tbTitle, divRuleId, timerObject, tim
         changeRuleStatus(divRuleElement, PARENT_ID, isCorrect);
     } else {
         changeRuleStatus(divRuleElement, PARENT_ID, true);
+
         let JSONResponsePromise = new Promise(resolve => {
             timerObject.id = setTimeout(async function () {
-                resolve(await getJSONResponseWordFindByTitle(inputText));
+                resolve(await getJSONResponseValidateIsItPossibleToAddWord(inputText, langCode, partOfSpeechCode));
             }, timerMilliseconds);
         });
 
         let JSONResponse = await JSONResponsePromise;
-        if (JSONResponse.status === _HTTP_STATUSES.OK) {
+        if (JSONResponse.status !== _HTTP_STATUSES.OK) {
             isCorrect = false;
-            JSONResponse = await getJSONResponseWordStatusHistoryFindCurrentByWordId(JSONResponse.json["id"]);
-            if (JSONResponse.status === _HTTP_STATUSES.OK) {
-                let wordStatusId = JSONResponse.json["word_status"]["id"];
-                if (wordStatusId === _WORD_STATUSES.BLOCKED.ID) {
-                    divRuleElement.textContent = "Это слово запрещено.";
-                } else {
-                    divRuleElement.textContent = "Это слово уже существует.";
-                }
-            }
 
-            changeRuleStatus(divRuleElement, PARENT_ID, isCorrect);
+            let message = new CustomResponseMessage(JSONResponse.json);
+            divRuleElement.textContent = message.text;
         } else {
             isCorrect = true;
-            changeRuleStatus(divRuleElement, PARENT_ID, isCorrect);
         }
+
+        changeRuleStatus(divRuleElement, PARENT_ID, isCorrect);
     }
 
     return isCorrect;

@@ -52,8 +52,8 @@ public class CustomerCollectionService {
         return CUSTOMER_COLLECTION_CRUD_REPOSITORY.findByKey(key);
     }
 
-    public CustomerCollection findByCustomerAndTitle(Customer customer, String title) {
-        return CUSTOMER_COLLECTION_CRUD_REPOSITORY.findByCustomerAndTitle(customer, title);
+    public CustomerCollection findByCustomerAndTitleIgnoreCase(Customer customer, String title) {
+        return CUSTOMER_COLLECTION_CRUD_REPOSITORY.findByCustomerAndTitleIgnoreCase(customer, title);
     }
 
     public CustomerCollection add(CustomerCollectionRequestDTO dto) {

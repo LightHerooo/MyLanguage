@@ -1,21 +1,25 @@
 import {
     getJSONResponseFindExistsByEmail,
     getJSONResponseFindExistsByLogin, getJSONResponseFindExistsByNickname
-} from "../api/customers.js";
+} from "../../api/customers.js";
 
 import {
     getOrCreateRule,
     changeRuleStatus,
     setMessageInRule
-} from "../utils/div_rules.js";
+} from "../../utils/div_rules.js";
 
 import {
     Timer
-} from "../classes/timer.js";
+} from "../../classes/timer.js";
 
 import {
     HttpStatuses
-} from "../classes/http_statuses.js";
+} from "../../classes/http_statuses.js";
+
+import {
+    CustomResponseMessage
+} from "../../dto/other/custom_response_message.js";
 
 const _HTTP_STATUSES = new HttpStatuses();
 
@@ -49,8 +53,8 @@ window.onload = function () {
     })
 
     let pbPassword = document.getElementById(_PB_PASSWORD_ID);
-    pbPassword.addEventListener("input", async function () {
-        await checkCorrectPassword();
+    pbPassword.addEventListener("input", function () {
+        checkCorrectPassword();
     })
 
     let pbPasswordRepeat = document.getElementById(_PB_PASSWORD_REPEAT_ID);
@@ -87,8 +91,9 @@ function validateInputFieldByAPI(JSONResponse, divRuleId, divRuleParentId) {
     let divRuleElement = getOrCreateRule(divRuleId);
     if (JSONResponse.status === _HTTP_STATUSES.OK) {
         isCorrect = false;
-        let json = JSONResponse.json;
-        setMessageInRule(divRuleElement, json["text"]);
+
+        let message = new CustomResponseMessage(JSONResponse.json);
+        setMessageInRule(divRuleElement, message.text);
     }
 
     changeRuleStatus(divRuleElement, divRuleParentId, isCorrect);

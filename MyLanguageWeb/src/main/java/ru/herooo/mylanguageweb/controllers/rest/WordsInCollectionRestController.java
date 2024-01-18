@@ -10,6 +10,7 @@ import ru.herooo.mylanguagedb.entities.CustomerCollection;
 import ru.herooo.mylanguagedb.entities.Word;
 import ru.herooo.mylanguagedb.entities.WordInCollection;
 import ru.herooo.mylanguageweb.dto.CustomResponseMessage;
+import ru.herooo.mylanguageweb.dto.LongResponse;
 import ru.herooo.mylanguageweb.dto.wordincollection.WordInCollectionMapping;
 import ru.herooo.mylanguageweb.dto.wordincollection.WordInCollectionRequestDTO;
 import ru.herooo.mylanguageweb.dto.wordincollection.WordInCollectionResponseDTO;
@@ -133,8 +134,10 @@ public class WordsInCollectionRestController {
 
     @GetMapping("/count_by_collection_key")
     public ResponseEntity<?> countByCollectionKey(@ModelAttribute("collection_key") String collectionKey) {
-        long countOfWordsInCollection = WORD_IN_COLLECTION_SERVICE.countByCustomerCollectionKey(collectionKey);
-        return ResponseEntity.ok(Collections.singletonMap("count_of_words_in_collection", countOfWordsInCollection));
+        long countOfWords = WORD_IN_COLLECTION_SERVICE.countByCustomerCollectionKey(collectionKey);
+
+        LongResponse longResponse = new LongResponse(countOfWords);
+        return ResponseEntity.ok(longResponse);
     }
 
     @PostMapping

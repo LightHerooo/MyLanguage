@@ -14,7 +14,7 @@ public interface CustomerCollectionCrudRepository extends CrudRepository<Custome
     CustomerCollection findById(long id);
     CustomerCollection findByKey(String key);
     List<CustomerCollection> findAllByCustomerOrderById(Customer customer);
-    CustomerCollection findByCustomerAndTitle(Customer customer, String title);
+    CustomerCollection findByCustomerAndTitleIgnoreCase(Customer customer, String title);
     CustomerCollection findByCustomerAndKey(Customer customer, String key);
 
     long countByCustomer(Customer customer);

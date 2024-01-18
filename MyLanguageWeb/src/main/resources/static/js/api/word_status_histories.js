@@ -46,6 +46,7 @@ export async function postJSONResponseAddWordStatusToWordsWithoutStatus(wordStat
         let xml = new XMLHttpRequest();
         xml.open("POST", requestURL);
         xml.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+        xml.responseType = "json";
 
         xml.onload = function () {
             resolve(buildJSONResponseByXml(xml));

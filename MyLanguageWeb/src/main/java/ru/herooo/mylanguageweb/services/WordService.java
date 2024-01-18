@@ -2,12 +2,15 @@ package ru.herooo.mylanguageweb.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.herooo.mylanguagedb.entities.Lang;
+import ru.herooo.mylanguagedb.entities.PartOfSpeech;
 import ru.herooo.mylanguagedb.entities.Word;
-import ru.herooo.mylanguagedb.repositories.WordCrudRepository;
+import ru.herooo.mylanguagedb.repositories.word.WordCrudRepository;
 import ru.herooo.mylanguageutils.StringUtils;
 import ru.herooo.mylanguageweb.dto.word.WordMapping;
 import ru.herooo.mylanguageweb.dto.word.WordRequestDTO;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -64,12 +67,12 @@ public class WordService {
         return WORD_CRUD_REPOSITORY.findById(id);
     }
 
-    public long getNumberOfWordsByDateOfCreate(LocalDateTime date) {
+    public long getNumberOfWordsByDateOfCreate(LocalDate date) {
         return WORD_CRUD_REPOSITORY.countByDateOfCreate(date);
     }
 
-    public Word findFirstByTitleIgnoreCase(String title) {
-        return WORD_CRUD_REPOSITORY.findFirstByTitleIgnoreCase(title);
+    public Word findFirstByTitleIgnoreCaseAndLangAndPartOfSpeech(String title, Lang lang, PartOfSpeech partOfSpeech) {
+        return WORD_CRUD_REPOSITORY.findFirstByTitleIgnoreCaseAndLangAndPartOfSpeech(title, lang, partOfSpeech);
     }
 
     public Word add(WordRequestDTO dto) {
@@ -95,5 +98,9 @@ public class WordService {
 
     public long getNumberOfWordsByCustomerIdAndWordStatusCode(Long customerId, String wordStatusCode) {
         return WORD_CRUD_REPOSITORY.countByCustomerIdAndWordStatusCode(customerId, wordStatusCode);
+    }
+
+    public long countWordsWithCurrentStatusByTitleAndWordStatusCode(String title, String wordStatusCode) {
+        return WORD_CRUD_REPOSITORY.countWordsWithCurrentStatusByTitleAndWordStatusCode(title, wordStatusCode);
     }
 }

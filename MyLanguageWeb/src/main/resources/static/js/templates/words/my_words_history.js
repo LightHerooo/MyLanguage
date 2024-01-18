@@ -2,70 +2,83 @@ import {
     fillCbLangs,
     fillCbPartsOfSpeech,
     fillCbWordStatuses, getSelectedOptionId
-} from "../utils/combo_box_utils.js";
+} from "../../utils/combo_box_utils.js";
 
 import {
     Timer
-} from "../classes/timer.js";
+} from "../../classes/timer.js";
 
 import {
     getGlobalCookie
-} from "../utils/global_cookie_utils.js";
+} from "../../utils/global_cookie_utils.js";
 
 import {
     GlobalCookies
-} from "../classes/global_cookies.js";
+} from "../../classes/global_cookies.js";
 
 import {
     getJSONResponseCustomerWordsFilteredPagination,
     getJSONResponseWordsCountByCustomerIdAndWordStatusCode,
-} from "../api/words.js";
+} from "../../api/words.js";
 
 import {
     HttpStatuses
-} from "../classes/http_statuses.js";
+} from "../../classes/http_statuses.js";
 
 import {
     findInTableWithTimers,
     setMessageInsideTable
-} from "../utils/table_utils.js";
+} from "../../utils/table_utils.js";
 
 import {
-    createDivLangWithFlag
-} from "../utils/flag_icons_utils.js";
-
-import {
-    buildABtnArrowDown,
-    buildABtnArrowUp, buildABtnDisabled,
+    buildABtnArrowDownInTable,
+    buildABtnArrowUpInTable,
+    buildABtnDisabled,
     createBtnShowMore,
     removeBtnShowMore
-} from "../utils/btn_utils.js";
+} from "../../utils/btn_utils.js";
 
 import {
     getJSONResponseAllWordStatusHisoriesByWordId,
     getJSONResponseWordStatusHistoryFindCurrentByWordId
-} from "../api/word_status_histories.js";
-
-import {
-    createAWordStatus, createDivWordStatusWithCount
-} from "../utils/word_status_utils.js";
+} from "../../api/word_status_histories.js";
 
 import {
     CssMain
-} from "../classes/css/css_main.js";
+} from "../../classes/css/css_main.js";
 
 import {
     getJSONResponseAllWordStatuses
-} from "../api/word_statuses.js";
+} from "../../api/word_statuses.js";
 
 import {
     DateElements
-} from "../utils/date_elements.js";
+} from "../../utils/date_elements.js";
 
 import {
     WordStatusWithCount,
-    compareWordStatusWithCount,
-} from "../classes/word_status_with_count.js";
+    compareWordStatusWithCount
+} from "../../classes/word_status_with_count.js";
+
+import {
+    WordStatusHistoryResponseDTO
+} from "../../dto/word_status_history.js";
+
+import {
+    WordResponseDTO
+} from "../../dto/word.js";
+
+import {
+    CustomResponseMessage
+} from "../../dto/other/custom_response_message.js";
+
+import {
+    WordStatusResponseDTO
+} from "../../dto/word_status.js";
+
+import {
+    LongResponse
+} from "../../dto/other/long_response.js";
 
 const _CSS_MAIN = new CssMain();
 const _HTTP_STATUSES = new HttpStatuses();
@@ -199,7 +212,8 @@ async function tryToFillMyWordHistoryTable() {
         customerWordsFilteredPaginationJson = JSONResponse.json;
     } else {
         readyToFill = false;
-        badRequestText = JSONResponse.json["text"];
+        let message = new CustomResponseMessage(JSONResponse.json);
+        badRequestText = message.text;
     }
     //---
 
@@ -224,16 +238,17 @@ async function tryToFillMyWordHistoryTable() {
 }
 
 async function fillMyWordHistoryTable(customerWordsFilteredPaginationJson) {
-    let tableHead = document.getElementById(_MY_WORD_HISTORY_TABLE_HEAD_ID);
     let tableBody = document.getElementById(_MY_WORD_HISTORY_TABLE_BODY_ID);
     for (let i = 0; i < customerWordsFilteredPaginationJson.length; i++) {
-        let item = customerWordsFilteredPaginationJson[i];
-        let row = await createWordWithStatusAndActionRow(item, i);
-        tableBody.appendChild(row);
+        let word = new WordResponseDTO(customerWordsFilteredPaginationJson[i]);
+        let row = await createWordWithStatusAndActionRow(word.id, i);
+        if (row) {
+            tableBody.appendChild(row);
+        }
 
         // Получаем id последнего элемента JSON-коллекции
         if (i === customerWordsFilteredPaginationJson.length - 1) {
-            _lastWordIdOnPreviousPage = item["id"];
+            _lastWordIdOnPreviousPage = word.id;
         }
     }
 
@@ -254,7 +269,7 @@ async function fillMyWordHistoryTable(customerWordsFilteredPaginationJson) {
     }
 }
 
-async function createWordWithStatusAndActionRow(wordJson, index) {
+async function createWordWithStatusAndActionRow(wordId, index) {
     // Создаём контейнер для информации о слове пользователя
     // В него помещаем:
     // 1. Таблицу о текущем статусе слова
@@ -262,76 +277,77 @@ async function createWordWithStatusAndActionRow(wordJson, index) {
     let divWordContainer = document.createElement("div");
     //---
 
-    // Получаем информацию о текущем статусе слова ---
-    let wordHistoryJson = null;
-    let JSONResponseCurrentStatus = await
-        getJSONResponseWordStatusHistoryFindCurrentByWordId(wordJson["id"]);
-    if (JSONResponseCurrentStatus.status === _HTTP_STATUSES.OK) {
-        wordHistoryJson = JSONResponseCurrentStatus.json;
+    // Получаем информацию о текущем статусе слова, генерируем строку, если успешно ---
+    let wordStatusHistory = null;
+    let JSONResponseCurrentWordStatusHistory = await
+        getJSONResponseWordStatusHistoryFindCurrentByWordId(wordId);
+    if (JSONResponseCurrentWordStatusHistory.status === _HTTP_STATUSES.OK) {
+        wordStatusHistory = new WordStatusHistoryResponseDTO(JSONResponseCurrentWordStatusHistory.json);
+        // Создаём строку таблицы ---
+        let row = createWordWithStatusRow(wordStatusHistory, ++_lastWordNumberInList);
+        //---
+
+        // Создаём кнопку, которой будет показывать/скрывать информацию об изменения статуса слова ---
+        let aBtnHistoryAction = createABtnShowHistoryAction(wordStatusHistory, divWordContainer);
+        let actionColumn = document.createElement("td");
+        actionColumn.appendChild(aBtnHistoryAction);
+
+        row.appendChild(actionColumn);
+        //---
+
+        // Создаём тело таблицы с информацией о слове пользователя с его текущим статусом ---
+        for (let i = 0; i < row.childElementCount; i++) {
+            row.children.item(i).style.padding = "20px";
+        }
+
+        let tBodyWordWithCurrentStatus = document.createElement("tbody");
+        if (index % 2 !== 0) {
+            let invisibleRow = document.createElement("tr");
+            tBodyWordWithCurrentStatus.appendChild(invisibleRow);
+        }
+        tBodyWordWithCurrentStatus.appendChild(row);
+        //---
+
+        // Создаём таблицу с информацией о слове пользователя с его текущим статусом, помещаем её в контейнер ---
+        let tableWordWithCurrentStatus = document.createElement("table");
+        tableWordWithCurrentStatus.classList.add(_CSS_MAIN.TABLE_STANDARD_STYLE_ID);
+        tableWordWithCurrentStatus.style.borderSpacing = "5px 0px";
+
+        let colgroupParent = document.getElementById(_MY_WORD_HISTORY_TABLE_COLGROUP_ID);
+        colgroupParent = colgroupParent.cloneNode(true);
+        tableWordWithCurrentStatus.appendChild(colgroupParent);
+        tableWordWithCurrentStatus.appendChild(tBodyWordWithCurrentStatus);
+
+        divWordContainer.appendChild(tableWordWithCurrentStatus);
+        //---
+
+        // Создаем td элемент на все колонки таблицы, добавляем в него контейнер ---
+        let tdWord = document.createElement("td");
+        tdWord.style.padding = "0px";
+        tdWord.colSpan = colgroupParent.childElementCount;
+        tdWord.appendChild(divWordContainer);
+        //---
+
+        // Создаём итоговую строку ---
+        row = document.createElement("tr");
+        row.style.background = "none";
+        row.appendChild(tdWord);
+        //---
+
+        return row;
     }
     //---
 
-    // Создаём строку таблицы ---
-    let row = createWordWithStatusRow(wordJson, wordHistoryJson, ++_lastWordNumberInList);
-    //---
-
-    // Создаём кнопку, которой будет показывать/скрывать информацию об изменения статуса слова ---
-    let aBtnHistoryAction = createABtnShowHistoryAction(wordHistoryJson, divWordContainer);
-    let actionColumn = document.createElement("td");
-    actionColumn.appendChild(aBtnHistoryAction);
-
-    row.appendChild(actionColumn);
-    //---
-
-    // Создаём тело таблицы с информацией о слове пользователя с его текущим статусом ---
-    for (let i = 0; i < row.childElementCount; i++) {
-        row.children.item(i).style.padding = "20px";
-    }
-
-    let tBodyWordWithCurrentStatus = document.createElement("tbody");
-    if (index % 2 !== 0) {
-        let invisibleRow = document.createElement("tr");
-        tBodyWordWithCurrentStatus.appendChild(invisibleRow);
-    }
-    tBodyWordWithCurrentStatus.appendChild(row);
-    //---
-
-    // Создаём таблицу с информацией о слове пользователя с его текущим статусом, помещаем её в контейнер ---
-    let tableWordWithCurrentStatus = document.createElement("table");
-    tableWordWithCurrentStatus.classList.add(_CSS_MAIN.TABLE_STANDARD_STYLE_ID);
-    tableWordWithCurrentStatus.style.borderSpacing = "5px 0px";
-
-    let colgroupParent = document.getElementById(_MY_WORD_HISTORY_TABLE_COLGROUP_ID);
-    colgroupParent = colgroupParent.cloneNode(true);
-    tableWordWithCurrentStatus.appendChild(colgroupParent);
-    tableWordWithCurrentStatus.appendChild(tBodyWordWithCurrentStatus);
-
-    divWordContainer.appendChild(tableWordWithCurrentStatus);
-    //---
-
-    // Создаем td элемент на все колонки таблицы, добавляем в него контейнер ---
-    let tdWord = document.createElement("td");
-    tdWord.style.padding = "0px";
-    tdWord.colSpan = colgroupParent.childElementCount;
-    tdWord.appendChild(divWordContainer);
-    //---
-
-    // Создаём итоговую строку ---
-    row = document.createElement("tr");
-    row.style.background = "none";
-    row.appendChild(tdWord);
-    //---
-
-    return row;
+    return null;
 }
 
 // Создание кнопки "Показать/скрыть историю изменения слова"
-function createABtnShowHistoryAction(wordHistoryJson, parentContainer) {
+function createABtnShowHistoryAction(wordStatusHistoryObj, parentContainer) {
     let aBtnHistoryAction = document.createElement("a");
-    if (wordHistoryJson) {
-        changeToShowHistory(aBtnHistoryAction, parentContainer, wordHistoryJson["word"]["id"]);
+    if (wordStatusHistoryObj) {
+        changeToShowHistory(aBtnHistoryAction, parentContainer, wordStatusHistoryObj.word.id);
     } else {
-        buildABtnArrowDown(aBtnHistoryAction);
+        buildABtnArrowDownInTable(aBtnHistoryAction);
         buildABtnDisabled(aBtnHistoryAction);
         aBtnHistoryAction.title = "Невозможно получить историю изменения статуса слова.";
     }
@@ -346,29 +362,29 @@ function createABtnShowHistoryAction(wordHistoryJson, parentContainer) {
 }
 
 // Действие показа истории изменения слова
-function changeToShowHistory(aBtnShowAllHistory, parentElement, wordId) {
-    buildABtnArrowDown(aBtnShowAllHistory);
-    aBtnShowAllHistory.title = "Показать историю изменения статуса слова";
-    aBtnShowAllHistory.onclick = null;
+function changeToShowHistory(aBtnShowHistoryAction, parentElement, wordId) {
+    buildABtnArrowDownInTable(aBtnShowHistoryAction);
+    aBtnShowHistoryAction.title = "Показать историю изменения статуса слова";
+    aBtnShowHistoryAction.onclick = null;
 
-    aBtnShowAllHistory.onclick = async function() {
+    aBtnShowHistoryAction.onclick = async function() {
         let divWordStatusHistoryContainer =
             await createDivWordStatusHistoryContainer(parentElement, wordId);
         parentElement.appendChild(divWordStatusHistoryContainer);
 
-        changeToHideHistory(aBtnShowAllHistory, parentElement, wordId, divWordStatusHistoryContainer);
+        changeToHideHistory(aBtnShowHistoryAction, parentElement, wordId, divWordStatusHistoryContainer);
     }
 }
 
 // Действие сокрытия истории изменения слова
-function changeToHideHistory(aBtnShowAllHistory, parentElement, wordId, wordStatusHistoryContainer) {
-    buildABtnArrowUp(aBtnShowAllHistory);
-    aBtnShowAllHistory.title = "Скрыть историю изменения статуса слова";
-    aBtnShowAllHistory.onclick = null;
+function changeToHideHistory(aBtnShowHistoryAction, parentElement, wordId, wordStatusHistoryContainer) {
+    buildABtnArrowUpInTable(aBtnShowHistoryAction);
+    aBtnShowHistoryAction.title = "Скрыть историю изменения статуса слова";
+    aBtnShowHistoryAction.onclick = null;
 
-    aBtnShowAllHistory.onclick = async function() {
+    aBtnShowHistoryAction.onclick = async function() {
         parentElement.removeChild(wordStatusHistoryContainer);
-        changeToShowHistory(aBtnShowAllHistory, parentElement, wordId);
+        changeToShowHistory(aBtnShowHistoryAction, parentElement, wordId);
     }
 }
 
@@ -399,9 +415,8 @@ async function createDivWordStatusHistoryContainer(parentElement, wordId) {
         let tBodyWordStatusHistories = document.createElement("tbody");
         let json = JSONResponseWordStatusHistories.json;
         for (let i = 0; i < json.length; i++) {
-            let wordHistoryJson = json[i];
-            let wordJson = wordHistoryJson["word"];
-            let row = createWordWithStatusRow(wordJson, wordHistoryJson, null);
+            let wordStatusHistory = new WordStatusHistoryResponseDTO(json[i]);
+            let row = createWordWithStatusRow(wordStatusHistory, null);
 
             let tdEmpty = document.createElement("td");
             row.appendChild(tdEmpty);
@@ -434,7 +449,7 @@ async function createDivWordStatusHistoryContainer(parentElement, wordId) {
 }
 
 // Создание строки слова со статусом (без колонки действий)
-function createWordWithStatusRow(wordJson, wordHistoryJson, numberInTable) {
+function createWordWithStatusRow(wordStatusHistoryObj, numberInTable) {
     // Создаём строку для новой таблицы ---
     let row = document.createElement("tr");
     //---
@@ -448,32 +463,28 @@ function createWordWithStatusRow(wordJson, wordHistoryJson, numberInTable) {
     row.appendChild(numberColumn);
     //---
 
-    // Название ---
+    // Название слова ---
     let titleColumn = document.createElement("td");
-    titleColumn.textContent = wordJson["title"];
+    titleColumn.textContent = wordStatusHistoryObj.word.title;
     row.appendChild(titleColumn);
     //---
 
     // Язык ---
     let langColumn = document.createElement("td");
-    let divLang = createDivLangWithFlag(wordJson["lang"]);
-    langColumn.appendChild(divLang);
+    langColumn.appendChild(wordStatusHistoryObj.word.lang.createDivLangWithFlag());
     row.appendChild(langColumn);
     //---
 
     // Часть речи ---
     let partOfSpeechColumn = document.createElement("td");
-    partOfSpeechColumn.textContent = wordJson["part_of_speech"]["title"];
+    partOfSpeechColumn.appendChild(wordStatusHistoryObj.word.partOfSpeech.createDiv());
     row.appendChild(partOfSpeechColumn);
     //---
 
     // Статус ---
-    if (wordHistoryJson) {
-        let wordStatusJSON = wordHistoryJson["word_status"];
-        let aCurrentWordStatus = createAWordStatus(wordStatusJSON);
-
+    if (wordStatusHistoryObj.wordStatus) {
         let wordStatusColumn = document.createElement("td");
-        wordStatusColumn.appendChild(aCurrentWordStatus);
+        wordStatusColumn.appendChild(wordStatusHistoryObj.wordStatus.createA());
 
         row.appendChild(wordStatusColumn);
     } else {
@@ -485,8 +496,8 @@ function createWordWithStatusRow(wordJson, wordHistoryJson, numberInTable) {
     //---
 
     // Дата изменения статуса ---
-    if (wordHistoryJson) {
-        let dateOfStartStr = wordHistoryJson["date_of_start"];
+    if (wordStatusHistoryObj.dateOfStart) {
+        let dateOfStartStr = wordStatusHistoryObj.dateOfStart;
         let dateOfStart = new Date(dateOfStartStr);
         let dateOfStartElements = new DateElements(dateOfStart);
 
@@ -511,8 +522,6 @@ async function generateMyWordsHistoryStatistics() {
         // Генерируем статистику по всем статусам слов пользователя
         let JSONResponseWordStatuses = await getJSONResponseAllWordStatuses();
         if (JSONResponseWordStatuses.status === _HTTP_STATUSES.OK) {
-            let jsonWordStatuses = JSONResponseWordStatuses.json;
-
             // Генерируем контейнер для статистики всех статусов слов ---
             let divStatisticForCustomerWords = document.createElement("div");
             //---
@@ -520,16 +529,17 @@ async function generateMyWordsHistoryStatistics() {
             // Генерируем статистику по всем статусам ---
             let wordStatusesWithCount = [];
             let customerId = getGlobalCookie(_GLOBAL_COOKIES.AUTH_ID);
-            let numberOfWordsSum = 0;
-            for (let i = 0; i < jsonWordStatuses.length; i++) {
-                let wordStatusJson = jsonWordStatuses[i];
+            let wordStatusesJson = JSONResponseWordStatuses.json;
+            let numberOfWordsSum = 0n;
+            for (let i = 0; i < wordStatusesJson.length; i++) {
+                let wordStatus = new WordStatusResponseDTO(wordStatusesJson[i]);
                 let JSONResponseNumberOfWords =
-                    await getJSONResponseWordsCountByCustomerIdAndWordStatusCode(customerId, wordStatusJson["code"]);
+                    await getJSONResponseWordsCountByCustomerIdAndWordStatusCode(customerId, wordStatus.code);
                 if (JSONResponseNumberOfWords.status === _HTTP_STATUSES.OK) {
-                    let numberOfWords = JSONResponseNumberOfWords.json["count_of_words"];
-                    numberOfWordsSum += numberOfWords;
+                    let longResponse = new LongResponse(JSONResponseNumberOfWords.json);
+                    numberOfWordsSum += longResponse.value;
 
-                    let wordStatusWithCount = new WordStatusWithCount(wordStatusJson, numberOfWords);
+                    let wordStatusWithCount = new WordStatusWithCount(wordStatus, longResponse.value);
                     wordStatusesWithCount.push(wordStatusWithCount);
                 }
             }
@@ -537,11 +547,7 @@ async function generateMyWordsHistoryStatistics() {
             // Сортируем статусы по убыванию количества
             wordStatusesWithCount.sort(compareWordStatusWithCount);
             for (let i = 0; i < wordStatusesWithCount.length; i++) {
-                let item = wordStatusesWithCount[i];
-                let divWordStatusWithCount =
-                    createDivWordStatusWithCount(item.wordStatusJson, item.count);
-
-                divStatisticForCustomerWords.appendChild(divWordStatusWithCount);
+                divStatisticForCustomerWords.appendChild(wordStatusesWithCount[i].createDiv());
             }
             //---
 

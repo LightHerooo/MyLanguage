@@ -35,12 +35,27 @@ import {
 } from "../api/word_statuses.js";
 
 import {
-    setFlag
-} from "./flag_icons_utils.js";
+    PartOfSpeechResponseDTO
+} from "../dto/part_of_speech.js";
+
+import {
+    LangResponseDTO
+} from "../dto/lang.js";
+
+import {
+    CustomerCollectionResponseDTO
+} from "../dto/customer_collection.js";
+
+import {
+    WordStatusResponseDTO
+} from "../dto/word_status.js";
+
+import {
+    CustomResponseMessage
+} from "../dto/other/custom_response_message.js";
 
 const _HTTP_STATUSES = new HttpStatuses();
 const _GLOBAL_COOKIES = new GlobalCookies();
-
 
 export function getSelectedOption(cbElementId) {
     let cbElement = document.getElementById(cbElementId);
@@ -89,14 +104,20 @@ export async function fillCbPartsOfSpeech(cbPartsOfSpeechElement) {
     if (JSONResponse.status === _HTTP_STATUSES.OK) {
         let json = JSONResponse.json;
         for (let i = 0; i < json.length; i++) {
-            let jsonItem = json[i];
+            let partOfSpeech = new PartOfSpeechResponseDTO(json[i]);
 
             let option = document.createElement("option");
-            option.textContent = jsonItem["title"];
-            option.id = jsonItem["code"];
+            option.style.color = "#" + partOfSpeech.colorHexCode;
+            option.textContent = partOfSpeech.title;
+            option.id = partOfSpeech.code;
 
             cbPartsOfSpeechElement.appendChild(option);
         }
+
+        cbPartsOfSpeechElement.addEventListener("change", function () {
+            let selectedOption = getSelectedOption(this.id);
+            this.style.backgroundColor = selectedOption.style.color;
+        })
     }
 }
 
@@ -106,12 +127,11 @@ export async function fillCbLangs(cbLangsElement) {
     if (jsonResponse.status === _HTTP_STATUSES.OK) {
         let json = jsonResponse.json;
         for (let i = 0; i < json.length; i++) {
-            let jsonItem = json[i];
+            let lang = new LangResponseDTO(json[i]);
 
             let option = document.createElement("option");
-            option.id = jsonItem["code"];
-            option.textContent = jsonItem["title"];
-            option.value = "RU";
+            option.id = lang.code;
+            option.textContent = lang.title;
 
             cbLangsElement.appendChild(option);
         }
@@ -125,11 +145,11 @@ export async function fillCbCustomerCollections(cbCustomerCollectionsElement) {
     if (JSONResponse.status === _HTTP_STATUSES.OK) {
         let json = JSONResponse.json;
         for (let i = 0; i < json.length; i++) {
-            let jsonItem = json[i];
+            let customerCollection = new CustomerCollectionResponseDTO(json[i]);
 
             let option = document.createElement("option");
-            option.textContent = jsonItem["title"];
-            option.id = jsonItem["key"];
+            option.textContent = customerCollection.title;
+            option.id = customerCollection.key;
 
             cbCustomerCollectionsElement.appendChild(option);
         }
@@ -141,12 +161,12 @@ export async function fillCbWordStatuses(cbWordStatusesElement) {
     if (jsonResponse.status === _HTTP_STATUSES.OK) {
         let json = jsonResponse.json;
         for (let i = 0; i < json.length; i++) {
-            let jsonItem = json[i];
+            let wordStatus = new WordStatusResponseDTO(json[i]);
 
             let option = document.createElement("option");
-            option.style.color = "#" + jsonItem['color_hex_code'];
-            option.textContent = jsonItem["title"];
-            option.id = jsonItem["code"];
+            option.style.color = "#" + wordStatus.colorHexCode;
+            option.textContent = wordStatus.title;
+            option.id = wordStatus.code;
 
             cbWordStatusesElement.appendChild(option);
         }
@@ -162,10 +182,9 @@ export async function changeCbLangsEnabledByCbCustomerCollectionKey(customerColl
     let JSONResponse = await getJSONResponseFindCollectionByKey(customerCollectionKey);
     let customerCollectionLangCode = null;
     if (JSONResponse.status === _HTTP_STATUSES.OK) {
-        let json = JSONResponse.json;
-        let lang = json["lang"];
-        if (lang) {
-            customerCollectionLangCode = lang["code"];
+        let customerCollection = new CustomerCollectionResponseDTO(JSONResponse.json);
+        if (customerCollection.lang) {
+            customerCollectionLangCode = customerCollection.lang.code;
         }
     }
 
@@ -189,7 +208,9 @@ export async function checkCorrectCbLangs(cbLangs, divRuleId) {
     let JSONResponse = await getJSONResponseFindLangByCode(langCode);
     if (JSONResponse.status !== _HTTP_STATUSES.OK) {
         isCorrect = false;
-        divRuleElement.textContent = JSONResponse.json["text"];
+
+        let message = new CustomResponseMessage(JSONResponse.json);
+        divRuleElement.textContent = message.text;
     }
 
     changeRuleStatus(divRuleElement, PARENT_ID, isCorrect);
@@ -205,7 +226,9 @@ export async function checkCorrectCbPartsOfSpeech(cbPartsOfSpeech, divRuleId) {
     let JSONResponse = await getJSONResponseFindPartOfSpeechByCode(partOfSpeechCode);
     if (JSONResponse.status !== _HTTP_STATUSES.OK) {
         isCorrect = false;
-        divRuleElement.textContent = JSONResponse.json["text"];
+
+        let message = new CustomResponseMessage(JSONResponse.json);
+        divRuleElement.textContent = message.text;
     }
 
     changeRuleStatus(divRuleElement, PARENT_ID, isCorrect);

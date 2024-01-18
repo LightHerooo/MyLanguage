@@ -20,6 +20,9 @@ public class PartOfSpeechResponseDTO {
     @JsonProperty("code")
     private String code;
 
+    @JsonProperty("color_hex_code")
+    private String colorHexCode;
+
     public long getId() {
         return id;
     }
@@ -42,5 +45,13 @@ public class PartOfSpeechResponseDTO {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public String getColorHexCode() {
+        return colorHexCode;
+    }
+
+    public void setColorHexCode(String colorHexCode) {
+        this.colorHexCode = colorHexCode;
     }
 }

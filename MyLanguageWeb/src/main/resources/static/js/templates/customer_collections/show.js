@@ -1,6 +1,6 @@
 import {
     getJSONResponseAllWordsInCollectionFilteredPagination,
-} from "../api/words_in_collection.js";
+} from "../../api/words_in_collection.js";
 
 import {
     getSelectedOptionId,
@@ -8,63 +8,74 @@ import {
     fillCbPartsOfSpeech,
     fillCbCustomerCollections,
     changeCbLangsEnabledByCbCustomerCollectionKey
-} from "../utils/combo_box_utils.js";
+} from "../../utils/combo_box_utils.js";
 
 import {
     createBtnDenyInTable,
     createBtnShowMore,
     removeBtnShowMore
-} from "../utils/btn_utils.js";
+} from "../../utils/btn_utils.js";
 
 import {
     findInTableWithTimers,
     setMessageInsideTable
-} from "../utils/table_utils.js";
+} from "../../utils/table_utils.js";
 
 import {
     changeToDenyInWordTable,
     showCollectionInfo
-} from "../utils/word_table_utils.js";
+} from "../../utils/word_table_utils.js";
 
 import {
     Timer
-} from "../classes/timer.js";
+} from "../../classes/timer.js";
 
 import {
     HttpStatuses
-} from "../classes/http_statuses.js";
+} from "../../classes/http_statuses.js";
 
 import {
     getJSONResponseAllLangs
-} from "../api/langs.js";
+} from "../../api/langs.js";
 
 import {
     getJSONResponseCountOfCollectionsByCustomerIdAndLangCode,
     getJSONResponseFindCollectionByCustomerIdAndKey
-} from "../api/customer_collections.js";
+} from "../../api/customer_collections.js";
 
 import {
     getGlobalCookie
-} from "../utils/global_cookie_utils.js";
+} from "../../utils/global_cookie_utils.js";
 
 import {
     GlobalCookies
-} from "../classes/global_cookies.js";
-
-import {
-    createSpanLangWithFlag,
-    setFlag
-} from "../utils/flag_icons_utils.js";
+} from "../../classes/global_cookies.js";
 
 import {
     compareLangWithCount,
     LangWithCount
-} from "../classes/lang_with_count.js";
+} from "../../classes/lang_with_count.js";
 
 import {
     changeEndOfTheWordByNumberOfItems,
     EndOfTheWord
-} from "../classes/end_of_the_word.js";
+} from "../../classes/end_of_the_word.js";
+
+import {
+    WordInCollectionResponseDTO
+} from "../../dto/word_in_collection.js";
+
+import {
+    LangResponseDTO
+} from "../../dto/lang.js";
+
+import {
+    LongResponse
+} from "../../dto/other/long_response.js";
+
+import {
+    CustomResponseMessage
+} from "../../dto/other/custom_response_message.js";
 
 const _HTTP_STATUSES = new HttpStatuses();
 const _GLOBAL_COOKIES = new GlobalCookies();
@@ -176,19 +187,6 @@ function prepareBtnRefresh() {
     }
 }
 
-// Очистка таблицы
-async function clearData() {
-    // Генерируем статистику по коллекциям ---
-    await generateCollectionsStatistics();
-    //---
-
-    // Чистим таблицу ---
-    removeBtnShowMore(_BTN_SHOW_MORE_ID);
-    let tableBody = document.getElementById(_COLLECTION_WORD_TABLE_BODY_ID);
-    tableBody.replaceChildren();
-    //---
-}
-
 // Подготавливаем GET-запрос и получаем ответ
 async function getPreparedJSONResponseAllWordsInCollectionFilteredPagination() {
     let tbFinderValue = document.getElementById(_TB_FINDER_ID).value;
@@ -217,7 +215,9 @@ async function tryTofillCollectionWordListTable() {
         await showCollectionInfo(_DIV_COLLECTION_INFO_ID, collectionKey);
     } else {
         readyToFill = false;
-        badRequestText = JSONResponse.json["text"];
+
+        let message = new CustomResponseMessage(JSONResponse.json);
+        badRequestText = message.text;
 
         let divCollectionInfo = document.getElementById(_DIV_COLLECTION_INFO_ID);
         divCollectionInfo.replaceChildren();
@@ -232,7 +232,9 @@ async function tryTofillCollectionWordListTable() {
             allWordsInCollectionFilteredPaginationJson = JSONResponse.json;
         } else {
             readyToFill = false;
-            badRequestText = JSONResponse.json["text"];
+
+            let message = new CustomResponseMessage(JSONResponse.json);
+            badRequestText = message.text;
         }
     }
     //---
@@ -259,38 +261,51 @@ async function tryTofillCollectionWordListTable() {
 async function fillCollectionWordListTable(allWordsInCollectionFilteredPaginationJson) {
     let tableBody = document.getElementById(_COLLECTION_WORD_TABLE_BODY_ID);
     for (let i = 0; i < allWordsInCollectionFilteredPaginationJson.length; i++) {
-        let item = allWordsInCollectionFilteredPaginationJson[i];
+        let wordInCollection =
+            new WordInCollectionResponseDTO(allWordsInCollectionFilteredPaginationJson[i]);
 
+        // Создаём строку таблицы ---
         let row = document.createElement("tr");
-        let numberColumn = document.createElement("td");
-        let titleColumn = document.createElement("td");
-        let langColumn = document.createElement("td");
-        let partOfSpeechColumn = document.createElement("td");
-        let actionColumn = document.createElement("td");
-
-        numberColumn.textContent = `${++_lastWordNumberInList}.`;
-        numberColumn.style.textAlign = "center";
-        titleColumn.textContent = item["word"]["title"];
-        partOfSpeechColumn.textContent = item["word"]["part_of_speech"]["title"];
-        actionColumn.appendChild(await createBtnAction(item["id"]));
-
-        // Язык ---
-        let langJSON = item["word"]["lang"];
-        let spanLangFlagWithTitle = createSpanLangWithFlag(langJSON);
-        langColumn.appendChild(spanLangFlagWithTitle);
         //---
 
+        // Порядковый номер ---
+        let numberColumn = document.createElement("td");
+        numberColumn.style.textAlign = "center";
+        numberColumn.textContent = `${++_lastWordNumberInList}.`;
         row.appendChild(numberColumn);
-        row.appendChild(titleColumn);
-        row.appendChild(langColumn);
-        row.appendChild(partOfSpeechColumn);
-        row.appendChild(actionColumn);
+        //---
 
+        // Название слова ---
+        let titleColumn = document.createElement("td");
+        titleColumn.textContent = wordInCollection.word.title;
+        row.appendChild(titleColumn);
+        //---
+
+        // Язык ---
+        let langColumn = document.createElement("td");
+        langColumn.appendChild(wordInCollection.word.lang.createSpanLangWithFlag());
+        row.appendChild(langColumn);
+        //---
+
+        // Часть речи ---
+        let partOfSpeechColumn = document.createElement("td");
+        partOfSpeechColumn.appendChild(wordInCollection.word.partOfSpeech.createDiv());
+        row.appendChild(partOfSpeechColumn);
+        //---
+
+        // Действия ---
+        let actionColumn = document.createElement("td");
+        actionColumn.appendChild(await createBtnAction(wordInCollection.id));
+        row.appendChild(actionColumn);
+        //---
+
+        // Добавляем строку в таблицу ---
         tableBody.appendChild(row);
+        //---
 
         // Получаем id последнего элемента JSON-коллекции
         if (i === allWordsInCollectionFilteredPaginationJson.length - 1) {
-            _lastWordInCollectionIdOnPreviousPage = item["id"];
+            _lastWordInCollectionIdOnPreviousPage = wordInCollection.id;
         }
     }
 
@@ -332,41 +347,40 @@ async function generateCollectionsStatistics() {
         let JSONResponseLangs = await getJSONResponseAllLangs();
         if (JSONResponseLangs.status === _HTTP_STATUSES.OK) {
             let langsWithCount = [];
-            let numberOfCollectionsSum = 0;
+            let numberOfCollectionsSum = 0n;
 
             // Ищем коллекции пользователя без языка ---
+            let langWithoutCode = new LangResponseDTO(null);
             let authId = getGlobalCookie(_GLOBAL_COOKIES.AUTH_ID);
-            let langWithoutCodeJson = JSON.parse(
-                JSON.stringify({
-                    'title': "Без языка",
-                    'code': null
-                })
-            );
             let JSONResponse =
-                await getJSONResponseCountOfCollectionsByCustomerIdAndLangCode(authId, langWithoutCodeJson["code"]);
+                await getJSONResponseCountOfCollectionsByCustomerIdAndLangCode(authId, langWithoutCode.code);
             if (JSONResponse.status === _HTTP_STATUSES.OK) {
-                let countOfWords = JSONResponse.json["count_of_collections"];
-                numberOfCollectionsSum += countOfWords;
+                let longResponse = new LongResponse(JSONResponse.json);
+                let numberOfCollections = longResponse.value;
+                if (numberOfCollections > 0) {
+                    numberOfCollectionsSum += numberOfCollections;
 
-                let langWithCount =
-                    new LangWithCount(langWithoutCodeJson, countOfWords);
-                langsWithCount.push(langWithCount);
+                    let langWithCount =
+                        new LangWithCount(langWithoutCode, longResponse.value);
+                    langsWithCount.push(langWithCount);
+                }
             }
             //---
 
             // Ищем остальные коллекции пользователя по всем языкам ---
             let json = JSONResponseLangs.json;
             for (let i = 0; i < json.length; i++) {
-                let item = json[i];
+                let lang = new LangResponseDTO(json[i]);
                 let JSONResponse =
-                    await getJSONResponseCountOfCollectionsByCustomerIdAndLangCode(authId, item["code"]);
+                    await getJSONResponseCountOfCollectionsByCustomerIdAndLangCode(authId, lang.code);
                 if (JSONResponse.status === _HTTP_STATUSES.OK) {
-                    let numberOfCollections = JSONResponse.json["count_of_collections"];
+                    let longResponse = new LongResponse(JSONResponse.json);
+                    let numberOfCollections = longResponse.value;
                     if (numberOfCollections > 0) {
                         numberOfCollectionsSum += numberOfCollections;
 
                         let langWithCount =
-                            new LangWithCount(item, numberOfCollections);
+                            new LangWithCount(lang, numberOfCollections);
                         langsWithCount.push(langWithCount);
                     }
                 }
@@ -376,46 +390,42 @@ async function generateCollectionsStatistics() {
             // Генерируем статистику по коллекциям пользователя ---
             langsWithCount.sort(compareLangWithCount);
 
-            let mostImportantCollectionsSum = 0;
+            let mostImportantCollectionsSum = 0n;
             let divStatisticForCollectionsWithLangs = document.createElement("div");
             for (let i = 0; i < langsWithCount.length; i++) {
-                let item = langsWithCount[i];
+                let langWithCount = langsWithCount[i];
 
                 if (i !== _MAX_NUMBER_OF_COLLECTIONS_FOR_STATISTICS) {
-                    mostImportantCollectionsSum += item.count;
+                    mostImportantCollectionsSum += langWithCount.count;
                 } else {
                     break;
                 }
 
+                // Создаём основной контейнер ---
+                let divLangItem = document.createElement("div");
+                //---
+
                 // Флаг ---
-                let spanLangFlag = document.createElement("span");
-                setFlag(spanLangFlag, item.langJson["code"]);
+                divLangItem.appendChild(langWithCount.lang.createSpanFlag());
                 //---
 
                 // Название статуса слова ---
-                let spanSpace = document.createElement("span");
-                spanSpace.textContent = " ";
-
                 let aLangTitle = document.createElement("a");
-                aLangTitle.textContent = item.langJson["title"];
+                aLangTitle.textContent = " " + langWithCount.lang.title;
                 aLangTitle.style.textDecoration = "underline";
                 aLangTitle.style.fontWeight = "bold";
+
+                divLangItem.appendChild(aLangTitle);
                 //---
 
                 // Количество коллекций ---
                 let spanNumberOfCollections = document.createElement("span");
-                spanNumberOfCollections.textContent = `: ${item.count}`;
-                //---
+                spanNumberOfCollections.textContent = `: ${langWithCount.count}`;
 
-                // Оборачиваем в тег div ---
-                let divLangItem = document.createElement("div");
-                divLangItem.appendChild(spanLangFlag);
-                divLangItem.appendChild(spanSpace);
-                divLangItem.appendChild(aLangTitle);
                 divLangItem.appendChild(spanNumberOfCollections);
                 //---
 
-                // Добавляем div в основной контейнер ---
+                // Полученный контейнер помещаем в основной ---
                 divStatisticForCollectionsWithLangs.appendChild(divLangItem);
                 //---
             }

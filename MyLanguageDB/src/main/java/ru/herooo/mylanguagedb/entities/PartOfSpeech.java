@@ -16,6 +16,9 @@ public class PartOfSpeech {
     @Column(name = "code")
     private String code;
 
+    @Column(name = "color_hex_code")
+    private String colorHexCode;
+
 
     public long getId() {
         return id;
@@ -35,5 +38,13 @@ public class PartOfSpeech {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public String getColorHexCode() {
+        return colorHexCode;
+    }
+
+    public void setColorHexCode(String colorHexCode) {
+        this.colorHexCode = colorHexCode;
     }
 }

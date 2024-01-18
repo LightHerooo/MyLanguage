@@ -9,10 +9,10 @@ public enum WordStatuses {
     ;
 
     public final long ID;
-    public final String TITLE;
+    public final String CODE;
 
     WordStatuses(long id, String title) {
         this.ID = id;
-        this.TITLE = title;
+        this.CODE = title;
     }
 }

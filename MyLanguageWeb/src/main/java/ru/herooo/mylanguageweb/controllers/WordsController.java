@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import ru.herooo.mylanguagedb.entities.Customer;
 import ru.herooo.mylanguagedb.entities.WordStatus;
 import ru.herooo.mylanguagedb.repositories.wordstatus.WordStatuses;
-import ru.herooo.mylanguageweb.controllers.classes.WordStatusWithNumberOfWords;
 import ru.herooo.mylanguageutils.StringUtils;
 import ru.herooo.mylanguageweb.controllers.move.Redirects;
 import ru.herooo.mylanguageweb.controllers.move.Views;
@@ -18,8 +17,6 @@ import ru.herooo.mylanguageweb.services.WordStatusService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Controller
 @RequestMapping("/words")
@@ -57,7 +54,7 @@ public class WordsController {
         CONTROLLER_UTILS.changeDateLastVisitToAuthCustomer(request);
         request.setAttribute(DATE_NOW_ATTRIBUTE_NAME, STRING_UTILS.getDateFormat(LocalDateTime.now()));
         request.setAttribute(NUMBER_OF_WORDS_TODAY_ATTRIBUTE_NAME,
-                WORD_SERVICE.getNumberOfWordsByDateOfCreate(LocalDateTime.now()));
+                WORD_SERVICE.getNumberOfWordsByDateOfCreate(LocalDate.now()));
 
         return Views.WORDS_SHOW.PATH_TO_FILE;
     }

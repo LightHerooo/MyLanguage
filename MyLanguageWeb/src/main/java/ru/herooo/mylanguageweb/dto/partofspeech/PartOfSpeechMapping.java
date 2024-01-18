@@ -10,7 +10,7 @@ public class PartOfSpeechMapping {
         dto.setId(partOfSpeech.getId());
         dto.setTitle(partOfSpeech.getTitle());
         dto.setCode(partOfSpeech.getCode());
-
+        dto.setColorHexCode(partOfSpeech.getColorHexCode());
         return dto;
     }
 }

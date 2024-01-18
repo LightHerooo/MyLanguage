@@ -41,7 +41,7 @@ public class IndexController {
         CONTROLLER_UTILS.changeDateLastVisitToAuthCustomer(request);
 
         // Генерируем строку количества слов (с правильным окончанием слова)
-        long numberOfWords = WORD_SERVICE.getNumberOfWordsByWordStatusCode(WordStatuses.ACTIVE.TITLE);
+        long numberOfWords = WORD_SERVICE.getNumberOfWordsByWordStatusCode(WordStatuses.ACTIVE.CODE);
         String wordText = STRING_UTILS.
                 changeEndOfTheWordByNumberOfItems("слово", numberOfWords,
                         new EndOfTheWord("", 1),

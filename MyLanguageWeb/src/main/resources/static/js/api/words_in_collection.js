@@ -37,6 +37,7 @@ export async function postJSONResponseAddWordInCollection(wordId, customerCollec
         let xml = new XMLHttpRequest();
         xml.open("POST", requestURL);
         xml.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+        xml.responseType = "json";
 
         xml.onload = function () {
             resolve(buildJSONResponseByXml(xml));
@@ -56,6 +57,7 @@ export async function deleteJSONResponseDeleteWordInCollection(wordInCollectionI
         let xml = new XMLHttpRequest();
         xml.open("DELETE", requestURL);
         xml.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+        xml.responseType = "json";
 
         xml.onload = function () {
             resolve(buildJSONResponseByXml(xml));
@@ -139,6 +141,7 @@ export async function deleteJSONResponseDeleteInactiveWordsInCollections() {
         let xml = new XMLHttpRequest();
         xml.open("DELETE", requestURL);
         xml.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+        xml.responseType = "json";
 
         xml.onload = function () {
             resolve(buildJSONResponseByXml(xml));

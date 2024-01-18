@@ -4,54 +4,62 @@ import {
     buildABtnDisabled,
     createBtnShowMore,
     removeBtnShowMore
-} from "../utils/btn_utils.js";
+} from "../../utils/btn_utils.js";
 
 import {
     findInTableWithTimers,
     setMessageInsideTable
-} from "../utils/table_utils.js";
+} from "../../utils/table_utils.js";
 
 import {
     changeSelectedOptionById,
     fillCbLangs,
     fillCbPartsOfSpeech,
     fillCbWordStatuses, getSelectedOptionId
-} from "../utils/combo_box_utils.js";
+} from "../../utils/combo_box_utils.js";
 
 import {
     Timer
-} from "../classes/timer.js";
+} from "../../classes/timer.js";
 
 import {
     deleteJSONResponseDeleteAllUnclaimedWords,
     getJSONResponseWordsFilteredPagination,
     patchJSONResponseEditWord
-} from "../api/words.js";
+} from "../../api/words.js";
 
 import {
     HttpStatuses
-} from "../classes/http_statuses.js";
+} from "../../classes/http_statuses.js";
 
 import {
     getJSONResponseWordStatusHistoryFindCurrentByWordId,
     postJSONResponseAddWordStatusToWordsWithoutStatus
-} from "../api/word_status_histories.js";
+} from "../../api/word_status_histories.js";
 
 import {
     CssMain
-} from "../classes/css/css_main.js";
+} from "../../classes/css/css_main.js";
 
 import {
     WordStatuses
-} from "../classes/api/word_statuses.js";
+} from "../../classes/api/word_statuses.js";
 
 import {
     deleteJSONResponseDeleteInactiveWordsInCollections
-} from "../api/words_in_collection.js";
+} from "../../api/words_in_collection.js";
 
 import {
-    createSpanLangWithFlag
-} from "../utils/flag_icons_utils.js";
+    WordStatusHistoryResponseDTO
+} from "../../dto/word_status_history.js";
+
+import {
+    WordResponseDTO
+} from "../../dto/word.js";
+
+import {
+    CustomResponseMessage
+} from "../../dto/other/custom_response_message.js";
 
 const _CSS_MAIN = new CssMain();
 const _HTTP_STATUSES = new HttpStatuses();
@@ -236,7 +244,9 @@ async function tryToFillChangeWordsTable() {
         wordsFilteredPaginationJson = JSONResponse.json;
     } else {
         readyToFill = false;
-        badRequestText = JSONResponse.json["text"];
+
+        let message = new CustomResponseMessage(JSONResponse.json);
+        badRequestText = message.text;
     }
     //---
 
@@ -259,10 +269,11 @@ async function tryToFillChangeWordsTable() {
 
 async function fillChangeWordsTable(wordsFilteredPaginationJson) {
     for (let i = 0; i < wordsFilteredPaginationJson.length; i++) {
-        await createChangeWordsTableRow(wordsFilteredPaginationJson[i]);
+        let word = new WordResponseDTO(wordsFilteredPaginationJson[i]);
+        await tryToAppendNewTableRow(word.id);
         // Получаем id последнего элемента JSON-коллекции
         if (i === wordsFilteredPaginationJson.length - 1) {
-            _lastWordIdOnPreviousPage = wordsFilteredPaginationJson[i]["id"];
+            _lastWordIdOnPreviousPage = word.id;
         }
     }
 
@@ -283,20 +294,20 @@ async function fillChangeWordsTable(wordsFilteredPaginationJson) {
     }
 }
 
-async function createChangeWordsTableRow(JSONResponseWordItem) {
+async function tryToAppendNewTableRow(wordId) {
     const CHANGE_ROW_TABLE_ROW_ITEM_ID_PATTERN = "change_word_table_row_item";
     const ROW_HEIGHT = "50px";
 
-    // Ищем актуальный статус слова
-    let wordId = JSONResponseWordItem["id"];
+    // Ищем актуальный статус слова ---
     let JSONResponseWordStatusHistory = await getJSONResponseWordStatusHistoryFindCurrentByWordId(wordId);
-
-    // Если статус найден, генерируем строку
     if (JSONResponseWordStatusHistory.status === _HTTP_STATUSES.OK) {
-        let jsonWordStatusHistory = JSONResponseWordStatusHistory.json;
+        let wordStatusHistory =
+            new WordStatusHistoryResponseDTO(JSONResponseWordStatusHistory.json);
 
+        // Создаём строку ---
         let row = document.createElement("tr");
         row.style.height = ROW_HEIGHT;
+        //---
 
         // Порядковый номер ---
         let numberColumn = document.createElement("td");
@@ -306,22 +317,19 @@ async function createChangeWordsTableRow(JSONResponseWordItem) {
 
         // Слово ---
         let titleColumn = document.createElement("td");
-        titleColumn.textContent = JSONResponseWordItem["title"];
+        titleColumn.textContent = wordStatusHistory.word.title;
         row.appendChild(titleColumn);
         //---
 
         // Язык ---
-        let langJSON = JSONResponseWordItem["lang"];
-        let spanLangFlagWithTitle = createSpanLangWithFlag(langJSON);
-
         let langColumn = document.createElement("td");
-        langColumn.appendChild(spanLangFlagWithTitle);
+        langColumn.appendChild(wordStatusHistory.word.lang.createSpanLangWithFlag());
         row.appendChild(langColumn);
         //---
 
         // Часть речи ---
         let partOfSpeechColumn = document.createElement("td");
-        partOfSpeechColumn.textContent = JSONResponseWordItem["part_of_speech"]["title"];
+        partOfSpeechColumn.appendChild(wordStatusHistory.word.partOfSpeech.createDiv());
         row.appendChild(partOfSpeechColumn);
         //---
 
@@ -346,17 +354,18 @@ async function createChangeWordsTableRow(JSONResponseWordItem) {
         //---
 
         // При изменении значения выпадающего списка, будет меняться статус слова ---
-        changeSelectedOptionById(cbWordStatuses.id, jsonWordStatusHistory["word_status"]["code"]);
+        changeSelectedOptionById(cbWordStatuses.id, wordStatusHistory.wordStatus.code);
         let event = new Event('change');
         cbWordStatuses.dispatchEvent(event);
 
         cbWordStatuses.addEventListener("change", async function() {
-            let title = JSONResponseWordItem["title"];
-            let langCode = JSONResponseWordItem["lang"]["code"];
-            let partOfSpeechCode = JSONResponseWordItem["part_of_speech"]["code"];
+            let title = wordStatusHistory.word.title;
+            let langCode = wordStatusHistory.word.lang.code;
+            let partOfSpeechCode = wordStatusHistory.word.partOfSpeech.code;
             let wordStatusCode = getSelectedOptionId(cbWordStatuses.id);
 
-            await patchJSONResponseEditWord(wordId, title, langCode, partOfSpeechCode, wordStatusCode);
+            await patchJSONResponseEditWord(wordStatusHistory.word.id, title, langCode,
+                partOfSpeechCode, wordStatusCode);
         })
         //---
     }

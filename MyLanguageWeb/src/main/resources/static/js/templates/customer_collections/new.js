@@ -1,38 +1,56 @@
 import {
     checkCorrectCbLangs,
     fillCbLangs, getSelectedOptionId
-} from "../utils/combo_box_utils.js";
+} from "../../utils/combo_box_utils.js";
 
 import {
     buildABtnAccept,
     buildABtnDisabled,
     createABtnDeny
-} from "../utils/btn_utils.js";
+} from "../../utils/btn_utils.js";
 
 import {
     changeRuleStatus,
     getOrCreateRule
-} from "../utils/div_rules.js";
+} from "../../utils/div_rules.js";
 
 import {
     postJSONResponseAddSeveralCollections
-} from "../api/customer_collections.js";
+} from "../../api/customer_collections.js";
 
 import {
     checkCorrectCustomerCollectionTitle
-} from "../utils/text_box_utils.js";
+} from "../../utils/text_box_utils.js";
 
 import {
     Timer
-} from "../classes/timer.js";
+} from "../../classes/timer.js";
 
 import {
     HttpStatuses
-} from "../classes/http_statuses.js";
+} from "../../classes/http_statuses.js";
 
 import {
     CssMain
-} from "../classes/css/css_main.js";
+} from "../../classes/css/css_main.js";
+
+import {
+    CustomerCollectionRequestDTO
+} from "../../dto/customer_collection.js";
+
+import {
+    CustomResponseMessage
+} from "../../dto/other/custom_response_message.js";
+
+class CustomerCollectionRowElements {
+    tbTitle;
+    cbLangs;
+
+    constructor(tbTitle, cbLangs) {
+        this.tbTitle = tbTitle;
+        this.cbLangs = cbLangs;
+    }
+}
 
 const _CSS_MAIN = new CssMain();
 const _HTTP_STATUSES = new HttpStatuses();
@@ -145,10 +163,11 @@ async function createNewCollectionElement() {
         if (_newCollectionsMap.size > MIN_NUMBER_OF_NEW_COLLECTION_ITEMS) {
             changeSendNewCollectionInfoRule(null, true);
             for (let key of _newCollectionsMap.keys()) {
-                let item = _newCollectionsMap.get(key);
-                let itemTbTitle = item[0];
-                let itemCbLangs = item[1];
-                if (tbTitle.id === itemTbTitle.id && itemCbLangs.id === cbLangs.id) {
+                let customerCollectionRowElements = _newCollectionsMap.get(key);
+                let iTbTitle = customerCollectionRowElements.tbTitle;
+                let iCbLangs = customerCollectionRowElements.cbLangs;
+                if (tbTitle.id === iTbTitle.id
+                    && cbLangs.id === iCbLangs.id) {
                     _newCollectionsMap.delete(key);
                     break;
                 }
@@ -175,7 +194,9 @@ async function createNewCollectionElement() {
     //---
 
     // Добавляем элементы ввода в Map ---
-    _newCollectionsMap.set(_indexOfNewCollection++, [tbTitle, cbLangs]);
+    let customerCollectionRowElements =
+        new CustomerCollectionRowElements(tbTitle, cbLangs);
+    _newCollectionsMap.set(_indexOfNewCollection++, customerCollectionRowElements);
     //---
 }
 
@@ -199,18 +220,20 @@ async function checkCorrectLang(cbLangs) {
 function checkAllTitles() {
     let isCorrectAll = true;
     for (let iKey of _newCollectionsMap.keys()) {
-        let iTbTitle = _newCollectionsMap.get(iKey)[0];
-
+        let iCustomerCollectionRowElements = _newCollectionsMap.get(iKey);
+        let iTbTitle = iCustomerCollectionRowElements.tbTitle;
         const DIV_RULE_ID = iTbTitle.id + "_div_rule";
         const PARENT_ID = iTbTitle.parentElement.id;
 
+        let iTitle = iTbTitle.value.toLowerCase().trim();
         let isCorrectOne = true;
         let divRuleElement = getOrCreateRule(DIV_RULE_ID);
         for (let jKey of _newCollectionsMap.keys()) {
             if (iKey === jKey) continue;
+            let jCustomerCollectionRowElements = _newCollectionsMap.get(jKey);
 
-            let jTbTitle = _newCollectionsMap.get(jKey)[0];
-            if (iTbTitle.value === jTbTitle.value) {
+            let jTitle = jCustomerCollectionRowElements.tbTitle.value.toLowerCase().trim();
+            if (iTitle === jTitle) {
                 isCorrectAll = false;
                 isCorrectOne = false;
                 divRuleElement.textContent = "Названия не могут повторяться.";
@@ -255,9 +278,9 @@ function changeBtnNewCollectionStatus() {
 async function checkBeforeSend() {
     let isCorrect = true;
     for (let key of _newCollectionsMap.keys()) {
-        let item = _newCollectionsMap.get(key);
-        let titleIsCorrect = await checkCorrectTitle(item[0]);
-        let langIsCorrect = await checkCorrectLang(item[1]);
+        let customerCollectionRowElements = _newCollectionsMap.get(key);
+        let titleIsCorrect = await checkCorrectTitle(customerCollectionRowElements.tbTitle);
+        let langIsCorrect = await checkCorrectLang(customerCollectionRowElements.cbLangs);
 
         if (isCorrect) {
             isCorrect = (titleIsCorrect && langIsCorrect);
@@ -274,17 +297,22 @@ async function checkBeforeSend() {
 async function sendNewCollections() {
     let newCollections = [];
     for (let key of _newCollectionsMap.keys()) {
-        let item = _newCollectionsMap.get(key);
-        let newCollectionData = [item[0].value, getSelectedOptionId(item[1].id)];
-        newCollections.push(newCollectionData);
+        let customerCollectionRowElements = _newCollectionsMap.get(key);
+
+        let customerCollectionRequestDTO = new CustomerCollectionRequestDTO();
+        customerCollectionRequestDTO.title = customerCollectionRowElements.tbTitle.value.trim();
+        customerCollectionRequestDTO.langCode = getSelectedOptionId(customerCollectionRowElements.cbLangs.id);
+
+        newCollections.push(customerCollectionRequestDTO);
     }
 
     let isCorrect = true;
     let JSONResponse = await postJSONResponseAddSeveralCollections(newCollections);
     if (JSONResponse.status !== _HTTP_STATUSES.OK) {
         isCorrect = false;
-        let json = JSONResponse.json;
-        changeSendNewCollectionInfoRule(json["text"], false);
+
+        let message = new CustomResponseMessage(JSONResponse.json);
+        changeSendNewCollectionInfoRule(message.text, false);
     }
 
     return isCorrect;

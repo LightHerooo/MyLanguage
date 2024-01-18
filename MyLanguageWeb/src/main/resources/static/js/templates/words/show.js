@@ -2,20 +2,20 @@ import {
     getJSONResponseWordsCountByDateOfCreate,
     getJSONResponseWordsCountByWordStatusCode,
     getJSONResponseWordsFilteredPagination
-} from "../api/words.js";
+} from "../../api/words.js";
 
 import {
     getJSONResponseFindWordInCollectionByCollectionKeyAndWordId,
     getJSONResponseValidateCollectionAndWordLangs,
 
-} from "../api/words_in_collection.js";
+} from "../../api/words_in_collection.js";
 
 import {
     createBtnShowMore,
     removeBtnShowMore,
     createBtnAcceptInTable,
     buildABtnDisabledInTable
-} from "../utils/btn_utils.js";
+} from "../../utils/btn_utils.js";
 
 import {
     getSelectedOptionId,
@@ -23,63 +23,75 @@ import {
     fillCbLangs,
     fillCbCustomerCollections,
     changeCbLangsEnabledByCbCustomerCollectionKey
-} from "../utils/combo_box_utils.js";
+} from "../../utils/combo_box_utils.js";
 
 import {
     findInTableWithTimers,
     setMessageInsideTable
-} from "../utils/table_utils.js";
+} from "../../utils/table_utils.js";
 
 import {
     changeToAcceptInWordTable,
     changeToDenyInWordTable,
     showCollectionInfo
-} from "../utils/word_table_utils.js";
+} from "../../utils/word_table_utils.js";
 
 import {
     getGlobalCookie
-} from "../utils/global_cookie_utils.js";
+} from "../../utils/global_cookie_utils.js";
 
 import {
     GlobalCookies
-} from "../classes/global_cookies.js";
+} from "../../classes/global_cookies.js";
 
 import {
     Timer
-} from "../classes/timer.js";
+} from "../../classes/timer.js";
 
 import {
     HttpStatuses
-} from "../classes/http_statuses.js";
+} from "../../classes/http_statuses.js";
 
 import {
     WordStatuses
-} from "../classes/api/word_statuses.js";
+} from "../../classes/api/word_statuses.js";
 
 import {
     getJSONResponseAllWordStatuses
-} from "../api/word_statuses.js";
-
-import {
-    createDivLangWithFlag,
-} from "../utils/flag_icons_utils.js";
+} from "../../api/word_statuses.js";
 
 import {
     getJSONResponseFindCollectionByCustomerIdAndKey
-} from "../api/customer_collections.js";
-
-import {
-    createDivWordStatusWithCount,
-} from "../utils/word_status_utils.js";
+} from "../../api/customer_collections.js";
 
 import {
     DateElements
-} from "../utils/date_elements.js";
+} from "../../utils/date_elements.js";
 
 import {
     WordStatusWithCount,
     compareWordStatusWithCount
-} from "../classes/word_status_with_count.js";
+} from "../../classes/word_status_with_count.js";
+
+import {
+    CustomResponseMessage
+} from "../../dto/other/custom_response_message.js";
+
+import {
+    WordResponseDTO
+} from "../../dto/word.js";
+
+import {
+    WordInCollectionResponseDTO
+} from "../../dto/word_in_collection.js";
+
+import {
+    WordStatusResponseDTO
+} from "../../dto/word_status.js";
+
+import {
+    LongResponse
+} from "../../dto/other/long_response.js";
 
 const _HTTP_STATUSES = new HttpStatuses();
 const _GLOBAL_COOKIES = new GlobalCookies();
@@ -223,7 +235,9 @@ async function tryToFillTable() {
             await showCollectionInfo(_DIV_COLLECTION_INFO_ID, collectionKey);
         } else {
             readyToFill = false;
-            badRequestText = JSONResponse.json["text"];
+
+            let message = new CustomResponseMessage(JSONResponse.json);
+            badRequestText = message.text;
 
             let divCollectionInfo = document.getElementById(_DIV_COLLECTION_INFO_ID);
             divCollectionInfo.replaceChildren();
@@ -239,7 +253,9 @@ async function tryToFillTable() {
             wordsFilteredPaginationJson = JSONResponse.json;
         } else {
             readyToFill = false;
-            badRequestText = JSONResponse.json["text"];
+
+            let message = new CustomResponseMessage(JSONResponse.json);
+            badRequestText = message.text;
         }
     }
     //---
@@ -266,43 +282,56 @@ async function tryToFillTable() {
 // Заполнение таблицы
 async function fillWordsTable(wordsFilteredPaginationJson) {
     let tableBody = document.getElementById(_WORDS_TABLE_BODY_ID);
-
     let authCustomerId = getGlobalCookie(_GLOBAL_COOKIES.AUTH_ID);
     for (let i = 0; i < wordsFilteredPaginationJson.length; i++) {
-        let item = wordsFilteredPaginationJson[i];
+        let word = new WordResponseDTO(wordsFilteredPaginationJson[i]);
 
+        // Создаём строку таблицы ---
         let row = document.createElement("tr");
-        let numberColumn = document.createElement("td");
-        let titleColumn = document.createElement("td");
-        let langColumn = document.createElement("td");
-        let partOfSpeechColumn = document.createElement("td");
-
-        numberColumn.textContent = `${++_lastWordNumberInList}.`;
-        numberColumn.style.textAlign = "center";
-        titleColumn.textContent = item["title"];
-        partOfSpeechColumn.textContent = item["part_of_speech"]["title"];
-
-        // Язык ---
-        let divLang = createDivLangWithFlag(item["lang"]);
-        langColumn.appendChild(divLang);
         //---
 
+        // Порядковый номер строки ---
+        let numberColumn = document.createElement("td");
+        numberColumn.style.textAlign = "center";
+        numberColumn.textContent = `${++_lastWordNumberInList}.`;
         row.appendChild(numberColumn);
-        row.appendChild(titleColumn);
-        row.appendChild(langColumn);
-        row.appendChild(partOfSpeechColumn);
+        //---
 
+        // Текст слова ---
+        let titleColumn = document.createElement("td");
+        titleColumn.textContent = word.title;
+        row.appendChild(titleColumn);
+        //---
+
+        // Язык ---
+        let langColumn = document.createElement("td");
+        langColumn.appendChild(word.lang.createDivLangWithFlag());
+        row.appendChild(langColumn);
+        //---
+
+        // Часть речи ---
+        let partOfSpeechColumn = document.createElement("td");
+        partOfSpeechColumn.appendChild(word.partOfSpeech.createDiv());
+        row.appendChild(partOfSpeechColumn);
+        //---
+
+        // кнопка добавления/удаления слова (только для авторизированных пользователей) ---
         if (authCustomerId) {
             let actionColumn = document.createElement("td");
-            actionColumn.appendChild(await createBtnAction(item["id"]));
+            actionColumn.appendChild(await createBtnAction(word.id));
             row.appendChild(actionColumn);
         }
-        tableBody.appendChild(row);
+        //---
 
-        // Получаем id последнего элемента JSON-коллекции
+        // Добавляем строку в таблицу ---
+        tableBody.appendChild(row);
+        //---
+
+        // Получаем id последнего элемента JSON-коллекции ---
         if (i === wordsFilteredPaginationJson.length - 1) {
-            _lastWordIdOnPreviousPage = item["id"];
+            _lastWordIdOnPreviousPage = word.id;
         }
+        //---
     }
 
     // Создаем кнопку "Показать больше", если запрос вернул максимальное количество на страницу
@@ -332,14 +361,16 @@ async function createBtnAction(wordId) {
         JSONResponse = await
             getJSONResponseFindWordInCollectionByCollectionKeyAndWordId(collectionKey, wordId);
         if (JSONResponse.status === _HTTP_STATUSES.OK) {
-            let wordInCollectionId = JSONResponse.json["id"];
-            await changeToDenyInWordTable(btnAction, wordInCollectionId);
+            let wordInCollection = new WordInCollectionResponseDTO(JSONResponse.json);
+            await changeToDenyInWordTable(btnAction, wordInCollection.id);
         } else {
             await changeToAcceptInWordTable(btnAction, collectionKey, wordId);
         }
     } else {
         buildABtnDisabledInTable(btnAction);
-        btnAction.title = JSONResponse.json["text"];
+
+        let message = new CustomResponseMessage(JSONResponse.json);
+        btnAction.title = message.text;
     }
 
     let divContainer = document.createElement("div");
@@ -360,25 +391,23 @@ async function generateWordStatistics() {
         let JSONResponseWordsToday = await getJSONResponseWordsCountByDateOfCreate(dateNow);
         if (JSONResponseWordStatuses.status === _HTTP_STATUSES.OK
             && JSONResponseWordsToday.status === _HTTP_STATUSES.OK) {
-            let jsonWordStatuses = JSONResponseWordStatuses.json;
-            let jsonWordsToday = JSONResponseWordsToday.json;
-
             // Генерируем контейнер для статистики всех статусов слов ---
             let divStatisticForWordStatuses = document.createElement("div");
             //---
 
             // Генерируем статистику по всем статусам ---
+            let wordStatusesJson = JSONResponseWordStatuses.json;
             let wordStatusesWithCount = [];
-            let numberOfWordsSum = 0;
-            for (let i = 0; i < jsonWordStatuses.length; i++) {
-                let wordStatusJson = jsonWordStatuses[i];
+            let numberOfWordsSum = 0n;
+            for (let i = 0; i < wordStatusesJson.length; i++) {
+                let wordStatus = new WordStatusResponseDTO(wordStatusesJson[i]);
                 let JSONResponseNumberOfWords =
-                    await getJSONResponseWordsCountByWordStatusCode(wordStatusJson["code"]);
+                    await getJSONResponseWordsCountByWordStatusCode(wordStatus.code);
                 if (JSONResponseNumberOfWords.status === _HTTP_STATUSES.OK) {
-                    let numberOfWords = JSONResponseNumberOfWords.json["count_of_words"];
-                    numberOfWordsSum += numberOfWords;
+                    let longResponse = new LongResponse(JSONResponseNumberOfWords.json);
+                    numberOfWordsSum += longResponse.value;
 
-                    let wordStatusWithCount = new WordStatusWithCount(wordStatusJson, numberOfWords);
+                    let wordStatusWithCount = new WordStatusWithCount(wordStatus, longResponse.value);
                     wordStatusesWithCount.push(wordStatusWithCount);
                 }
             }
@@ -386,11 +415,7 @@ async function generateWordStatistics() {
             // Генерируем статистику по словам ---
             wordStatusesWithCount.sort(compareWordStatusWithCount);
             for (let i = 0; i < wordStatusesWithCount.length; i++) {
-                let item = wordStatusesWithCount[i];
-                let divWordStatusWithCount =
-                    createDivWordStatusWithCount(item.wordStatusJson, item.count);
-
-                divStatisticForWordStatuses.appendChild(divWordStatusWithCount);
+                divStatisticForWordStatuses.appendChild(wordStatusesWithCount[i].createDiv());
             }
             //---
 
@@ -408,15 +433,15 @@ async function generateWordStatistics() {
             //---
 
             // Количество слов за сегодняшний день
+            let numberOfWordsToday = new LongResponse(JSONResponseWordsToday.json);
             let dateNowElements = new DateElements(dateNow);
-            let numberOfWordsToday = jsonWordsToday["count_of_words"];
 
             let spanNumberOfWordsTodayText = document.createElement("span");
             spanNumberOfWordsTodayText.style.fontWeight = "bold";
             spanNumberOfWordsTodayText.textContent = `За сегодня (${dateNowElements.getDateStr()}) добавлено`;
 
             let spanNumberOfWordsTodaySum = document.createElement("span");
-            spanNumberOfWordsTodaySum.textContent = `: ${numberOfWordsToday}`;
+            spanNumberOfWordsTodaySum.textContent = `: ${numberOfWordsToday.value}`;
 
             let divNumberOfWordsTodayContainer = document.createElement("div");
             divNumberOfWordsTodayContainer.appendChild(spanNumberOfWordsTodayText);

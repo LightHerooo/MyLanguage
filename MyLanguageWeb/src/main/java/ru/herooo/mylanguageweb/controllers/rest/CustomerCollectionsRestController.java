@@ -11,6 +11,7 @@ import ru.herooo.mylanguagedb.entities.Lang;
 import ru.herooo.mylanguagedb.entities.WordInCollection;
 import ru.herooo.mylanguageutils.StringUtils;
 import ru.herooo.mylanguageweb.dto.CustomResponseMessage;
+import ru.herooo.mylanguageweb.dto.LongResponse;
 import ru.herooo.mylanguageweb.dto.customercollection.CustomerCollectionAddMoreRequestDTO;
 import ru.herooo.mylanguageweb.dto.customercollection.CustomerCollectionMapping;
 import ru.herooo.mylanguageweb.dto.customercollection.CustomerCollectionRequestDTO;
@@ -92,8 +93,10 @@ public class CustomerCollectionsRestController {
 
         Customer customer = CUSTOMER_SERVICE.findById(customerId);
         Lang lang = LANG_SERVICE.findByCode(langCode);
+
         long countOfCollections = CUSTOMER_COLLECTION_SERVICE.countByCustomerAndLang(customer, lang);
-        return ResponseEntity.ok(Collections.singletonMap("count_of_collections", countOfCollections));
+        LongResponse longResponse = new LongResponse(countOfCollections);
+        return ResponseEntity.ok(longResponse);
     }
 
     @GetMapping("/count_by_customer_id")
@@ -104,8 +107,10 @@ public class CustomerCollectionsRestController {
         }
 
         Customer customer = CUSTOMER_SERVICE.findById(customerId);
+
         long numberOfCollections = CUSTOMER_COLLECTION_SERVICE.countByCustomer(customer);
-        return ResponseEntity.ok(Collections.singletonMap("number_of_collections", numberOfCollections));
+        LongResponse longResponse = new LongResponse(numberOfCollections);
+        return ResponseEntity.ok(longResponse);
     }
 
     @PostMapping("/copy_by_key")
@@ -207,9 +212,8 @@ public class CustomerCollectionsRestController {
         // Проверяем, нет ли повторных названий коллекций
         Set<String> titles =
                 Arrays.stream(dto.getCustomerCollections())
-                        .map(CustomerCollectionRequestDTO::getTitle)
+                        .map(collection -> collection.getTitle().toLowerCase().trim())
                         .collect(Collectors.toSet());
-
         if (titles.size() != dto.getCustomerCollections().length) {
             CustomResponseMessage message = new CustomResponseMessage(1,
                     "Названия коллекций не могут повторяться.");
@@ -297,7 +301,8 @@ public class CustomerCollectionsRestController {
         }
 
         Customer customer = CUSTOMER_SERVICE.findById(id);
-        CustomerCollection customerCollection = CUSTOMER_COLLECTION_SERVICE.findByCustomerAndTitle(customer, title);
+        CustomerCollection customerCollection =
+                CUSTOMER_COLLECTION_SERVICE.findByCustomerAndTitleIgnoreCase(customer, title);
         if (customerCollection != null) {
             CustomerCollectionResponseDTO dto = CUSTOMER_COLLECTION_MAPPING.mapToResponseDTO(customerCollection);
             return ResponseEntity.ok(dto);
@@ -319,16 +324,9 @@ public class CustomerCollectionsRestController {
             return response;
         }
 
-        // Чистим от лишних пробелов
-        if (dto.getTitle() != null) {
-            dto.setTitle(dto.getTitle().trim());
-        }
-
-        if (dto.getId() == 0 && STRING_UTILS.isStringVoid(dto.getKey())) {
-            //
-        } else {
-            //
-        }
+        // Преобразуем строку
+        String title = STRING_UTILS.getClearString(dto.getTitle());
+        dto.setTitle(title);
 
         return ResponseEntity.ok(dto);
     }
