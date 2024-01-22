@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title th:text="|${WEB_APP_NAME} - Вход|">Вход</title>
-    <link rel="icon" type="image/x-icon" href="/images/logo.ico">
+    <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
 
     <link rel="stylesheet" type="text/css" href="/css/root.css">
     <link rel="stylesheet" type="text/css" href="/css/main.css">
@@ -17,38 +17,39 @@
     </header>
     <main>
         <div class="entry-container">
-            <div class="entry block-info-standard">
+            <div class="entry info-block-standard">
                 <div class="entry-header">
-                    <img class="entry-header-img" src="/images/entry.png" alt="entry.png"/>
+                    <img class="entry-header-img" src="/images/customers/entry.png" alt="entry.png"/>
                     <p>Вход</p>
                 </div>
                 <div class="horizontal-delimiter-margin"></div>
                 <form id="form_entry" th:method="POST" th:action="@{/customers/entry}" th:object="${CUSTOMER_ENTRY_REQUEST_DTO}"
                       class="form-standard">
                     <div id="div_container_login" class="form-item-standard">
-                        <label for="tb_login">Логин:</label>
+                        <label for="tb_login" class="label-standard">Логин:</label>
                         <input id="tb_login" type="text" autocomplete="false"
-                               class="text-standard input-height-standard" th:field="*{login}">
+                               class="text-standard" th:field="*{login}">
                     </div>
                     <div id="div_container_password" class="form-item-standard">
-                        <label for="pb_password">Пароль:</label>
+                        <label for="pb_password" class="label-standard">Пароль:</label>
                         <input id="pb_password" type="password" autocomplete="false"
-                               class="text-standard input-height-standard" th:field="*{password}">
+                               class="text-standard" th:field="*{password}">
                     </div>
                     <div class="form-item-standard">
-                        <div class="show-password-container-standard">
-                            <input id="check_show_password" type="checkbox">
-                            <a id="a_check_show_password" class="a-show-password-standard" href="#">Показать пароль</a>
+                        <div class="checkbox-container-standard">
+                            <input id="check_show_password" type="checkbox" class="checkbox-standard">
+                            <a id="a_check_show_password" class="a-checkbox-standard">Показать пароль</a>
                         </div>
                     </div>
-                    <input type="submit" class="submit-standard submit-height-standard" value="Войти" id="btn_entry">
+                    <div class="horizontal-delimiter"></div>
+                    <input type="submit" class="submit-standard" value="Войти" id="btn_entry">
                     <div class="form-item-standard text-error-standard text-align-center-standard"
                          th:if="${#fields.hasAnyErrors()}">
                         <div th:each="err: ${#fields.allErrors()}" th:text="${err}"></div>
                     </div>
                 </form>
             </div>
-            <div class="dont-have-account-container block-info-standard">
+            <div class="dont-have-account-container info-block-standard">
                 <div>Нет аккаунта?</div>
                 <a href="/customers/new">Регистрация</a>
             </div>

@@ -41,10 +41,6 @@ import {
 } from "../../utils/table_utils.js";
 
 import {
-    showCollectionInfo
-} from "../../utils/word_table_utils.js";
-
-import {
     CssMain
 } from "../../classes/css/css_main.js";
 
@@ -55,6 +51,10 @@ import {
 import {
     CustomResponseMessage
 } from "../../dto/other/custom_response_message.js";
+
+import {
+    CustomerCollectionResponseDTO
+} from "../../dto/customer_collection.js";
 
 const _CSS_MAIN = new CssMain();
 const _HTTP_STATUSES = new HttpStatuses();
@@ -304,10 +304,22 @@ async function tryToFillCollectionWordListTable() {
     let collectionKey = document.getElementById(_TB_KEY_ID).value;
     let JSONResponse = await getJSONResponseFindCollectionByKey(collectionKey);
     if (JSONResponse.status === _HTTP_STATUSES.OK) {
-        let divCollectionInfo = document.getElementById(_DIV_COLLECTION_INFO_ID);
-        divCollectionInfo.replaceChildren();
+        let customerCollection = new CustomerCollectionResponseDTO(JSONResponse.json);
 
-        await showCollectionInfo(_DIV_COLLECTION_INFO_ID, collectionKey);
+        // Генерируем информацию о коллекции
+        // Если информация уже существовала, мы должны удалить предыдущую,
+        // сгенерировать новую, но не удалять сам контейнер!
+        let divCustomerCollectionId = "customer_collection_info";
+        let divCustomerCollection = document.getElementById(divCustomerCollectionId);
+        if (divCustomerCollection) {
+            await customerCollection.changeDiv(divCustomerCollection);
+        } else {
+            divCustomerCollection = await customerCollection.createDiv();
+
+            let divCollectionInfo = document.getElementById(_DIV_COLLECTION_INFO_ID);
+            divCollectionInfo.replaceChildren();
+            divCollectionInfo.appendChild(divCustomerCollection);
+        }
     } else {
         readyToFill = false;
         badRequestText = "Введите корректный ключ коллекции, чтобы увидеть информацию о ней.";
@@ -317,7 +329,7 @@ async function tryToFillCollectionWordListTable() {
 
         let divBadMessageForCollectionInfo = document.createElement("div");
         divBadMessageForCollectionInfo.classList.add(_BAD_MESSAGE_FOR_COLLECTION_INFO_STYLE_ID);
-        divBadMessageForCollectionInfo.classList.add(_CSS_MAIN.DIV_BLOCK_INFO_STANDARD_STYLE_ID);
+        divBadMessageForCollectionInfo.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
         divBadMessageForCollectionInfo.textContent = badRequestText;
         divCollectionInfo.appendChild(divBadMessageForCollectionInfo);
     }

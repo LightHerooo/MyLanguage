@@ -20,7 +20,7 @@ body {
     display: grid;
     grid-template-rows: auto 1fr auto;
 
-    background: url("../images/background.png");
+    background: url("../images/other/background.png");
     background-size: 100%;
 }
 
@@ -32,7 +32,7 @@ main {
     gap: 20px;
 }
 
-div.block-info-standard {
+div.info-block-standard {
     background: rgba(var(--first-color-rgb), var(--opacity-standard));
     padding: 10px;
 }
@@ -55,7 +55,7 @@ div.vertical-delimiter-margin {
     margin: 25px 5px 25px 5px;
 }
 
-a.a-button-standard, a.a-button-accept-standard, a.a-button-deny-standard {
+a.a-button-standard, a.a-button-accept-standard, a.a-button-deny-standard, a.a-button-disabled-standard {
     -webkit-appearance: button;
     -moz-appearance: button;
     cursor: pointer;
@@ -99,6 +99,17 @@ a.a-button-deny-standard:hover {
     background: rgba(145, 60, 60, var(--opacity-standard));
 }
 
+a.a-button-disabled-standard {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    pointer-events: none;
+    cursor: default;
+
+    opacity: 0.5;
+}
+
 table.table-standard {
     border-spacing: 5px 5px;
     table-layout: fixed;
@@ -131,6 +142,7 @@ table.table-standard tbody tr:nth-child(odd){
 table.table-standard tbody tr:nth-child(even){
     background: var(--second-color);
 }
+
 form.form-standard {
     display: flex;
     flex-direction: column;
@@ -145,7 +157,12 @@ div.form-item-standard {
     gap: 5px;
 }
 
+label.label-standard {
+    font-size: var(--third-font-size);
+}
+
 select.select-standard {
+    min-height: 40px;
     cursor: pointer;
 
     background: var(--second-color);
@@ -163,20 +180,16 @@ select.select-standard option {
     font-size: var(--third-font-size);
 }
 
-input.input-height-standard {
-    height: 40px;
-}
-
-input.submit-height-standard {
-    height: 50px;
-}
-
 input.text-standard {
+    min-height: 40px;
+
     font-family: inherit;
     font-size: var(--third-font-size);
 }
 
 input.submit-standard {
+    min-height: 50px;
+
     cursor: pointer;
     background: var(--second-color);
 
@@ -191,17 +204,6 @@ input.submit-standard:hover {
 div.text-error-standard {
     color: #8B0000;
     opacity: 0.5;
-}
-
-div.show-password-container-standard {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-}
-
-a.a-show-password-standard {
-    color: black;
-    text-decoration: none;
 }
 
 .text-align-center-standard {
@@ -250,4 +252,25 @@ img.btn-refresh-standard-img {
     height: 32px;
 }
 
+a.word-status-standard {
+    font-weight: bold;
+    text-decoration: underline dotted;
+    cursor: pointer;
+}
+
+div.checkbox-container-standard {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+a.a-checkbox-standard {
+    cursor: pointer;
+    text-decoration: none;
+    font-size: var(--third-font-size);
+}
+
+input.checkbox-standard {
+    cursor: pointer;
+}
 

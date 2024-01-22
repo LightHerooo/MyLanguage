@@ -22,8 +22,7 @@ import {
 } from "../../utils/table_utils.js";
 
 import {
-    changeToDenyInWordTable,
-    showCollectionInfo
+    changeToDenyInWordTable
 } from "../../utils/word_table_utils.js";
 
 import {
@@ -76,6 +75,10 @@ import {
 import {
     CustomResponseMessage
 } from "../../dto/other/custom_response_message.js";
+
+import {
+    CustomerCollectionResponseDTO
+} from "../../dto/customer_collection.js";
 
 const _HTTP_STATUSES = new HttpStatuses();
 const _GLOBAL_COOKIES = new GlobalCookies();
@@ -212,7 +215,22 @@ async function tryTofillCollectionWordListTable() {
     let JSONResponse = await
         getJSONResponseFindCollectionByCustomerIdAndKey(authCustomerId, collectionKey);
     if (JSONResponse.status === _HTTP_STATUSES.OK) {
-        await showCollectionInfo(_DIV_COLLECTION_INFO_ID, collectionKey);
+        let customerCollection = new CustomerCollectionResponseDTO(JSONResponse.json);
+
+        // Генерируем информацию о коллекции
+        // Если информация уже существовала, мы должны удалить предыдущую,
+        // сгенерировать новую, но не удалять сам контейнер!
+        let divCustomerCollectionId = "customer_collection_info";
+        let divCustomerCollection = document.getElementById(divCustomerCollectionId);
+        if (divCustomerCollection) {
+            await customerCollection.changeDiv(divCustomerCollection);
+        } else {
+            divCustomerCollection = await customerCollection.createDiv();
+
+            let divCollectionInfo = document.getElementById(_DIV_COLLECTION_INFO_ID);
+            divCollectionInfo.replaceChildren();
+            divCollectionInfo.appendChild(divCustomerCollection);
+        }
     } else {
         readyToFill = false;
 
@@ -409,12 +427,16 @@ async function generateCollectionsStatistics() {
                 divLangItem.appendChild(langWithCount.lang.createSpanFlag());
                 //---
 
-                // Название статуса слова ---
+                // Название языка ---
+                let spanSpace = document.createElement("span");
+                spanSpace.textContent = " ";
+
                 let aLangTitle = document.createElement("a");
-                aLangTitle.textContent = " " + langWithCount.lang.title;
+                aLangTitle.textContent = langWithCount.lang.title;
                 aLangTitle.style.textDecoration = "underline";
                 aLangTitle.style.fontWeight = "bold";
 
+                divLangItem.appendChild(spanSpace);
                 divLangItem.appendChild(aLangTitle);
                 //---
 

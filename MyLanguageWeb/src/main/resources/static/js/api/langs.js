@@ -1,4 +1,4 @@
-import { URL_TO_API } from "./api_variables.js";
+import { URL_TO_API } from "./variables.js";
 
 import {
     buildJSONResponseByXml

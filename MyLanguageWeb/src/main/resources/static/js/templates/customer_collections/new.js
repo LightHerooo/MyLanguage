@@ -101,6 +101,7 @@ function prepareSubmitSend() {
 async function createNewCollectionElement() {
     // Создаём поле "Название" ---
     let lbTitle = document.createElement("label");
+    lbTitle.classList.add(_CSS_MAIN.LABEL_STANDARD_STYLE_ID);
     lbTitle.textContent = "Название:";
 
     let tbTitle = document.createElement("input");
@@ -122,6 +123,7 @@ async function createNewCollectionElement() {
 
     // Создаём выпадающий список "Язык" ---
     let lbLang = document.createElement("label");
+    lbLang.classList.add(_CSS_MAIN.LABEL_STANDARD_STYLE_ID);
     lbLang.textContent = "Язык:";
 
     let cbLangs = document.createElement("select");
@@ -148,7 +150,7 @@ async function createNewCollectionElement() {
     // Создаём элемент "Данные новой коллекции" ---
     let divNewCollectionData = document.createElement("div");
     divNewCollectionData.classList.add(NEW_COLLECTION_DATA_STYLE_ID);
-    divNewCollectionData.classList.add(_CSS_MAIN.DIV_BLOCK_INFO_STANDARD_STYLE_ID);
+    divNewCollectionData.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
     divNewCollectionData.appendChild(divTitle);
     divNewCollectionData.appendChild(divLang);
     //---
@@ -211,7 +213,7 @@ async function checkCorrectLang(cbLangs) {
     let isCorrect = true;
     let langCode = getSelectedOptionId(cbLangs.id);
     if (langCode) {
-        isCorrect = checkCorrectCbLangs(cbLangs, DIV_RULE_ID);
+        isCorrect = checkCorrectCbLangs(cbLangs, DIV_RULE_ID, cbLangs.parentElement.id);
     }
 
     return isCorrect;

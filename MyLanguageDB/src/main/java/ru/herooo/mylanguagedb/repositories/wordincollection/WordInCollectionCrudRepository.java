@@ -14,8 +14,6 @@ import java.util.List;
 
 @Repository
 public interface WordInCollectionCrudRepository extends CrudRepository<WordInCollection, Long>, WordInCollectionRepository<WordInCollection> {
-    List<WordInCollection> findAll();
-
     WordInCollection findById(long id);
 
     void deleteById(long id);

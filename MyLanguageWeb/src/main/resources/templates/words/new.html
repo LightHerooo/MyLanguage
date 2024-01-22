@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title th:text="|${WEB_APP_NAME} - Предложение новых слов|">Предложение новых слов</title>
-    <link rel="icon" type="image/x-icon" href="/images/logo.ico">
+    <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
 
     <link rel="stylesheet" type="text/css" href="/css/root.css">
     <link rel="stylesheet" type="text/css" href="/css/main.css">
+    <link rel="stylesheet" type="text/css" href="/css/info_blocks/info_block_with_img_and_header.css">
     <link rel="stylesheet" type="text/css" href="/css/words/new.css">
 
     <script type="module" src="/js/templates/words/new.js"></script>
@@ -16,14 +17,14 @@
             <div th:insert="~{layouts/header}"></div>
         </header>
         <main>
-            <div class="block-info-standard new-words-message-container">
-                <div class="new-words-message-left">
-                    <img class="new-words-message-img" src="/images/new_words.png"
+            <div class="info-block-with-img-and-header-container">
+                <div class="info-block-with-img-and-header-left-container">
+                    <img class="img-info-block-with-img-and-header" src="/images/words/new_words.png"
                          alt="new_words.png"/>
                 </div>
-                <div class="new-words-message-right">
-                    <p class="new-words-message-header">Предложение новых слов</p>
-                    <div class="new-words-message-text">
+                <div class="info-block-with-img-and-header-right-container">
+                    <h1 class="h1-info-block-with-img-and-header">Предложение новых слов</h1>
+                    <div class="info-block-with-img-and-header-text">
                         Предлагайте новые слова для добавления в базу
                         <span th:text="${WEB_APP_NAME}"/>.
                         За раз можно предложить не более 5-ти слов.
@@ -36,9 +37,9 @@
             </div>
             <div class="new-words-container" id="new_words_container"></div>
             <a class="a-button-accept-standard btn-new-word" id="btn_new_word">
-                <img class="btn-new-word-img" src="/images/add.png" alt="add.png">
+                <img class="btn-new-word-img" src="/images/other/add.png" alt="add.png">
             </a>
-            <div class="send-new-words-container block-info-standard">
+            <div class="send-new-words-container info-block-standard">
                 <div id="send_new_words_info"></div>
                 <form method="GET" action="/words" class="send-new-words-form" id="submit_send">
                     <input type="submit" class="submit-standard btn-send" value="Предложить"

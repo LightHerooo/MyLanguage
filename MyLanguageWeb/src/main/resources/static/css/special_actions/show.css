@@ -1,38 +1,3 @@
-div.special-actions-message-container {
-    display: grid;
-    grid: 1fr / 250px 1fr;
-}
-
-div.special-actions-message-left {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-}
-
-img.special-actions-message-img {
-    width: 128px;
-    height: 128px;
-}
-
-div.special-actions-message-right {
-    display: flex;
-    flex-direction: column;
-}
-
-p.special-actions-message-header {
-    font-size: var(--second-font-size);
-    font-weight: bold;
-    margin-top: 25px;
-    margin-bottom: 25px;
-    text-align: center;
-}
-
-div.special-actions-message-text {
-    font-size: var(--third-font-size);
-    margin-top: 5px;
-}
-
 div.special-actions-container {
     display: flex;
     flex-direction: column;
@@ -46,7 +11,7 @@ div.special-actions-row {
     gap: 20px;
 }
 
-a.action {
+a.special-action {
     height: 300px;
 
     display: flex;
@@ -58,4 +23,8 @@ a.action {
 
     font-weight: bold;
     font-size: var(--second-font-size);
+}
+
+img.img-special-action {
+
 }

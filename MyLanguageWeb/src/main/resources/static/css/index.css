@@ -1,26 +1,15 @@
 div.hello-message-container {
-    display: flex;
-    flex-direction: column;
+    gap: 5px;
 }
 
-div.hello-message-data {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-
-    padding: 20px;
-}
-
-div.hello-message-header {
+h1.h1-hello-message {
     font-size: var(--first-font-size);
     font-weight: bold;
 }
 
 div.hello-message-text {
     font-size: var(--second-font-size);
-    margin-top: 5px;
+    text-align: center;
 }
 
 div.actions-container {

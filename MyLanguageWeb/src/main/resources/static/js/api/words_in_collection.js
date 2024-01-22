@@ -1,6 +1,6 @@
 import {
     URL_TO_API
-} from "./api_variables.js";
+} from "./variables.js";
 
 import {
     jsonReplacer

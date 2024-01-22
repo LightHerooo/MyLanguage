@@ -10,7 +10,6 @@ import java.util.List;
 
 @Repository
 public interface CustomerCollectionCrudRepository extends CrudRepository<CustomerCollection, Long> {
-    List<CustomerCollection> findAll();
     CustomerCollection findById(long id);
     CustomerCollection findByKey(String key);
     List<CustomerCollection> findAllByCustomerOrderById(Customer customer);

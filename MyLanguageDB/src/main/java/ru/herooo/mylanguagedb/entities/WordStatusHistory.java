@@ -6,12 +6,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "word_status_history")
 public class WordStatusHistory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "word_status_history_id_seq")
     @SequenceGenerator(name = "word_status_history_id_seq", sequenceName = "word_status_history_id_seq", allocationSize = 1)
-    long id;
+    private long id;
 
     @Column(name = "date_of_start")
     private LocalDateTime dateOfStart;

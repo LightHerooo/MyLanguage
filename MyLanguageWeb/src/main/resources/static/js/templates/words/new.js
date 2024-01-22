@@ -133,6 +133,7 @@ function changeSendNewWordsInfoRule(text, isRuleCorrect) {
 async function createNewWordElement() {
     // Создаём поле "Название ---
     let lbTitle = document.createElement("label");
+    lbTitle.classList.add(_CSS_MAIN.LABEL_STANDARD_STYLE_ID);
     lbTitle.textContent = "Слово:";
 
     let tbTitle = document.createElement("input");
@@ -149,6 +150,7 @@ async function createNewWordElement() {
 
     // Создаём выпадающий список "Часть речи" ---
     let lbPartOfSpeech = document.createElement("label");
+    lbPartOfSpeech.classList.add(_CSS_MAIN.LABEL_STANDARD_STYLE_ID);
     lbPartOfSpeech.textContent = "Часть речи:";
 
     let cbPartsOfSpeech = document.createElement("select");
@@ -169,6 +171,7 @@ async function createNewWordElement() {
 
     // Создаём выпадающий список "Язык" ---
     let lbLang = document.createElement("label");
+    lbLang.classList.add(_CSS_MAIN.LABEL_STANDARD_STYLE_ID);
     lbLang.textContent = "Язык:";
 
     let cbLangs = document.createElement("select");
@@ -209,7 +212,7 @@ async function createNewWordElement() {
     // Создаём элемент "Данные нового слова" ---
     let divNewWordData = document.createElement("div");
     divNewWordData.classList.add(_NEW_WORD_DATA_STYLE_ID);
-    divNewWordData.classList.add(_CSS_MAIN.DIV_BLOCK_INFO_STANDARD_STYLE_ID);
+    divNewWordData.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
     divNewWordData.appendChild(divTitle);
     divNewWordData.appendChild(divLang);
     divNewWordData.appendChild(divPartOfSpeech);
@@ -284,7 +287,7 @@ async function checkCorrectLang(cbLangs) {
         divRuleElement.textContent = "Выберите язык.";
         changeRuleStatus(divRuleElement, PARENT_ID, isCorrect);
     } else {
-        isCorrect = await checkCorrectCbLangs(cbLangs, DIV_RULE_ID);
+        isCorrect = await checkCorrectCbLangs(cbLangs, DIV_RULE_ID, cbLangs.parentElement.id);
     }
 
     return isCorrect;
@@ -302,7 +305,7 @@ async function checkCorrectPartOfSpeech(cbPartsOfSpeech) {
         divRuleElement.textContent = "Выберите часть речи.";
         changeRuleStatus(divRuleElement, PARENT_ID, isCorrect);
     } else {
-        isCorrect = await checkCorrectCbPartsOfSpeech(cbPartsOfSpeech, DIV_RULE_ID);
+        isCorrect = await checkCorrectCbPartsOfSpeech(cbPartsOfSpeech, DIV_RULE_ID, PARENT_ID);
     }
 
     return isCorrect;

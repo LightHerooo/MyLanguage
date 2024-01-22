@@ -8,7 +8,7 @@ import java.util.List;
 
 @Repository
 public interface WordStatusCrudRepository extends CrudRepository<WordStatus, Long>, WordStatusRepository<WordStatus> {
-    List<WordStatus> findAll();
+    List<WordStatus> findAllByOrderById();
 
     WordStatus findByCode(String code);
 }

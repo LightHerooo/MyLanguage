@@ -22,29 +22,21 @@ import java.time.LocalDateTime;
 @RequestMapping("/words")
 public class WordsController {
 
-    private final String DATE_NOW_ATTRIBUTE_NAME = "DATE_NOW";
-    private final String NUMBER_OF_WORDS_TODAY_ATTRIBUTE_NAME = "NUMBER_OF_WORDS_TODAY";
     private final String UNCLAIMED_WORD_STATUS_ATTRIBUTE_NAME = "UNCLAIMED_WORD_STATUS";
+    private final String ACTIVE_WORD_STATUS_ATTRIBUTE_NAME = "ACTIVE_WORD_STATUS";
 
     private final CustomerService CUSTOMER_SERVICE;
-    private final WordService WORD_SERVICE;
     private final WordStatusService WORD_STATUS_SERVICE;
 
-    private final StringUtils STRING_UTILS;
     private final ControllerUtils CONTROLLER_UTILS;
 
     @Autowired
     public WordsController(CustomerService customerService,
-                           WordService wordService,
                            WordStatusService wordStatusService,
-                           StringUtils stringUtils,
-                           ControllerUtils controllerUtils)
-    {
+                           ControllerUtils controllerUtils) {
         this.CUSTOMER_SERVICE = customerService;
-        this.WORD_SERVICE = wordService;
         this.WORD_STATUS_SERVICE = wordStatusService;
 
-        this.STRING_UTILS = stringUtils;
         this.CONTROLLER_UTILS = controllerUtils;
     }
 
@@ -52,10 +44,7 @@ public class WordsController {
     public String showWordsPage(HttpServletRequest request) {
         CONTROLLER_UTILS.setGeneralAttributes(request);
         CONTROLLER_UTILS.changeDateLastVisitToAuthCustomer(request);
-        request.setAttribute(DATE_NOW_ATTRIBUTE_NAME, STRING_UTILS.getDateFormat(LocalDateTime.now()));
-        request.setAttribute(NUMBER_OF_WORDS_TODAY_ATTRIBUTE_NAME,
-                WORD_SERVICE.getNumberOfWordsByDateOfCreate(LocalDate.now()));
-
+        request.setAttribute(ACTIVE_WORD_STATUS_ATTRIBUTE_NAME, WORD_STATUS_SERVICE.findById(WordStatuses.ACTIVE));
         return Views.WORDS_SHOW.PATH_TO_FILE;
     }
 

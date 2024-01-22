@@ -13,20 +13,6 @@ export class LangResponseDTO {
             this.title = "Без языка";
         }
     }
-
-    createSpanFlag() {
-
-        let spanFlag = document.createElement("span");
-        spanFlag.classList.add("fi");
-        if (this.code) {
-            spanFlag.classList.add(`fi-${this.code}`);
-        } else {
-            spanFlag.style.backgroundImage = "url(/images/empty_flag.png)";
-        }
-
-        return spanFlag;
-    }
-
     #createElementLangWithFlag(differentElement) {
         let spanLangFlag = this.createSpanFlag();
 
@@ -35,6 +21,25 @@ export class LangResponseDTO {
 
         differentElement.appendChild(spanLangFlag);
         differentElement.appendChild(spanLangTitle);
+    }
+
+    setFlagStyle(differentElement) {
+        differentElement.className = "";
+        differentElement.style.cssText = null;
+
+        differentElement.classList.add("fi");
+        if (this.code) {
+            differentElement.classList.add(`fi-${this.code}`);
+        } else {
+            differentElement.style.backgroundImage = "url(/images/other/empty_flag.png)";
+        }
+    }
+
+    createSpanFlag() {
+        let spanFlag = document.createElement("span");
+        this.setFlagStyle(spanFlag);
+
+        return spanFlag;
     }
 
     createDivLangWithFlag() {

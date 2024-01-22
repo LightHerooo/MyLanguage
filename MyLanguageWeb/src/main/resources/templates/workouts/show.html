@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="|${WEB_APP_NAME} - Тренироваться|">Тренироваться</title>
+    <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
+    <link rel="stylesheet" type="text/css" href="/css/root.css">
+    <link rel="stylesheet" type="text/css" href="/css/main.css">
+    <link rel="stylesheet" type="text/css" href="/css/info_blocks/info_block_with_img_and_header.css">
+    <link rel="stylesheet" type="text/css" href="/css/workouts/show.css">
+
+    <script type="module" src="/js/templates/workouts/show.js"></script>
+</head>
+    <body>
+        <header>
+            <div th:insert="~{layouts/header}"></div>
+        </header>
+        <main>
+            <div class="info-block-with-img-and-header-container">
+                <div class="info-block-with-img-and-header-left-container">
+                    <img class="img-info-block-with-img-and-header" src="/images/workouts/brain.png" alt="workout.png"/>
+                </div>
+                <div class="info-block-with-img-and-header-right-container">
+                    <h1 class="h1-info-block-with-img-and-header">Тренироваться</h1>
+                    <div class="info-block-with-img-and-header-text">
+                        Тренировки созданы с целью повысить ваш словарный запас.
+                        Каждая тренировка продолжается до тех пор, пока вы не ответите правильно на все слова.
+                        Советуем не выбирать больше 50 слов, чтобы не затягивать сеанс тренировки. Вы сможете в
+                        любой момент прервать тренировку, если это необходимо.
+                    </div>
+                    <div class="info-block-with-img-and-header-text">
+                        Наведите на интересующий вас режим тренировки, чтобы увидеть дополнительную информацию.
+                    </div>
+                    <br>
+                </div>
+            </div>
+            <div id="workout_types_container"></div>
+            <div id="workout_type_info_container"></div>
+        </main>
+    </body>
+</html>

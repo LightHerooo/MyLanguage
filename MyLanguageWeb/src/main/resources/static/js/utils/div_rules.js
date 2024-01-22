@@ -4,11 +4,6 @@ import {
 
 const _CSS_MAIN = new CssMain();
 
-/*
-    Отображение предупреждений (правил) при ошибках отдельным DIV элементом
-    Указывайте ID будущего элемента и ID его родителя (для генерации внутри него)
-*/
-
 // Получение или создание предупреждения (правила).
 export function getOrCreateRule(id) {
     let divRule= document.getElementById(id);

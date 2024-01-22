@@ -3,10 +3,11 @@
     <head>
         <meta charset="UTF-8">
         <title th:text="|${WEB_APP_NAME} - Специальные возможности|">Специальные возможности</title>
-        <link rel="icon" type="image/x-icon" href="/images/logo.ico">
+        <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
 
         <link rel="stylesheet" type="text/css" href="/css/root.css">
         <link rel="stylesheet" type="text/css" href="/css/main.css">
+        <link rel="stylesheet" type="text/css" href="/css/info_blocks/info_block_with_img_and_header.css">
         <link rel="stylesheet" type="text/css" href="/css/special_actions/show.css">
     </head>
     <body>
@@ -14,16 +15,16 @@
             <div th:insert="~{layouts/header}"></div>
         </header>
         <main>
-            <div class="block-info-standard special-actions-message-container">
-                <div class="special-actions-message-left">
-                    <img class="special-actions-message-img"
+            <div class="info-block-with-img-and-header-container">
+                <div class="info-block-with-img-and-header-left-container">
+                    <img class="img-info-block-with-img-and-header"
                          src="#"
                          th:src="${AUTH_CUSTOMER.role.pathToImage}"
                          alt="role.png"/>
                 </div>
-                <div class="special-actions-message-right">
-                    <p class="special-actions-message-header">Специальные возможности</p>
-                    <div class="special-actions-message-text">
+                <div class="info-block-with-img-and-header-right-container">
+                    <h1 class="h1-info-block-with-img-and-header">Специальные возможности</h1>
+                    <div class="info-block-with-img-and-header-text">
                         Только для администраторов и модераторов. Работа с данными ресурса
                         <span th:text="${WEB_APP_NAME}"/>.
                     </div>
@@ -32,22 +33,22 @@
             </div>
             <div class="special-actions-container">
                 <div class="special-actions-row">
-                    <a class="a-button-standard action" href="/special_actions/change_current_status_to_words">
-                        <img class="special-actions-message-img" src="/images/cards.png" alt="cards.png">
+                    <a class="a-button-standard special-action" href="/special_actions/change_current_status_to_words">
+                        <img class="img-special-action" src="/images/words/cards.png" alt="cards.png">
                         <div>Изменение текущего статуса в словах</div>
                     </a>
-                    <a class="a-button-standard action">
-                        <img class="special-actions-message-img" src="/images/books.png" alt="books.png">
+                    <a class="a-button-standard special-action">
+                        <img class="img-special-action" src="/images/customer_collections/books.png" alt="books.png">
                         <p>Test</p>
                     </a>
-                    <a class="a-button-standard action">
-                        <img class="special-actions-message-img" src="/images/books.png" alt="books.png">
+                    <a class="a-button-standard special-action">
+                        <img class="img-special-action" src="/images/customer_collections/books.png" alt="books.png">
                         <p>Test</p>
                     </a>
                 </div>
                 <div class="special-actions-row">
-                    <a class="a-button-standard action">
-                        <img class="special-actions-message-img" src="/images/books.png" alt="books.png">
+                    <a class="a-button-standard special-action">
+                        <img class="img-special-action" src="/images/customer_collections/books.png" alt="books.png">
                         <p>Test</p>
                     </a>
                 </div>

@@ -2,41 +2,6 @@ main {
     min-height: 1300px;
 }
 
-div.new-collection-by-key-message-container {
-    display: grid;
-    grid: 1fr / 250px 1fr;
-    padding: 15px;
-}
-
-div.new-collection-by-key-message-left {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-}
-
-img.new-collection-by-key-message-img {
-    width: 128px;
-    height: 128px;
-}
-
-div.new-collection-by-key-message-right {
-    display: flex;
-    flex-direction: column;
-}
-
-p.new-collection-by-key-message-header {
-    font-size: var(--second-font-size);
-    font-weight: bold;
-    margin-top: 25px;
-    margin-bottom: 25px;
-    text-align: center;
-}
-
-div.new-collection-by-key-message-text {
-    font-size: var(--third-font-size);
-}
-
 div.new-collection-by-key-container {
     display: grid;
     grid: 1fr / 1fr 2fr;

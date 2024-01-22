@@ -13,7 +13,7 @@ div.nav-left-container {
     justify-content: flex-start;
 }
 
-a.nav-item {
+a.nav-item, a.nav-item-disabled {
     -webkit-appearance: button;
     -moz-appearance: button;
     cursor: pointer;
@@ -35,6 +35,13 @@ a.nav-item {
 
 a.nav-item:hover {
     background: rgba(var(--third-color-rgb), var(--opacity-standard));
+}
+
+a.nav-item-disabled {
+    pointer-events: none;
+    cursor: default;
+
+    opacity: 0.5;
 }
 
 img.nav-item-img {

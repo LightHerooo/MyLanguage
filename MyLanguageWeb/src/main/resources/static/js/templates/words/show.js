@@ -32,8 +32,7 @@ import {
 
 import {
     changeToAcceptInWordTable,
-    changeToDenyInWordTable,
-    showCollectionInfo
+    changeToDenyInWordTable
 } from "../../utils/word_table_utils.js";
 
 import {
@@ -66,7 +65,7 @@ import {
 
 import {
     DateElements
-} from "../../utils/date_elements.js";
+} from "../../classes/date_elements.js";
 
 import {
     WordStatusWithCount,
@@ -92,6 +91,10 @@ import {
 import {
     LongResponse
 } from "../../dto/other/long_response.js";
+
+import {
+    CustomerCollectionResponseDTO
+} from "../../dto/customer_collection.js";
 
 const _HTTP_STATUSES = new HttpStatuses();
 const _GLOBAL_COOKIES = new GlobalCookies();
@@ -232,7 +235,22 @@ async function tryToFillTable() {
         let JSONResponse = await
             getJSONResponseFindCollectionByCustomerIdAndKey(authCustomerId, collectionKey);
         if (JSONResponse.status === _HTTP_STATUSES.OK) {
-            await showCollectionInfo(_DIV_COLLECTION_INFO_ID, collectionKey);
+            let customerCollection = new CustomerCollectionResponseDTO(JSONResponse.json);
+
+            // Генерируем информацию о коллекции
+            // Если информация уже существовала, мы должны удалить предыдущую,
+            // сгенерировать новую, но не удалять сам контейнер!
+            let divCustomerCollectionId = "customer_collection_info";
+            let divCustomerCollection = document.getElementById(divCustomerCollectionId);
+            if (divCustomerCollection) {
+                await customerCollection.changeDiv(divCustomerCollection);
+            } else {
+                divCustomerCollection = await customerCollection.createDiv();
+
+                let divCollectionInfo = document.getElementById(_DIV_COLLECTION_INFO_ID);
+                divCollectionInfo.replaceChildren();
+                divCollectionInfo.appendChild(divCustomerCollection);
+            }
         } else {
             readyToFill = false;
 

@@ -198,9 +198,7 @@ export async function changeCbLangsEnabledByCbCustomerCollectionKey(customerColl
     }
 }
 
-export async function checkCorrectCbLangs(cbLangs, divRuleId) {
-    const PARENT_ID = cbLangs.parentElement.id;
-
+export async function checkCorrectCbLangs(cbLangs, divRuleId, divRuleParentContainerId) {
     let isCorrect = true;
     let divRuleElement = getOrCreateRule(divRuleId);
     let langCode = getSelectedOptionId(cbLangs.id);
@@ -213,13 +211,11 @@ export async function checkCorrectCbLangs(cbLangs, divRuleId) {
         divRuleElement.textContent = message.text;
     }
 
-    changeRuleStatus(divRuleElement, PARENT_ID, isCorrect);
+    changeRuleStatus(divRuleElement, divRuleParentContainerId, isCorrect);
     return isCorrect;
 }
 
-export async function checkCorrectCbPartsOfSpeech(cbPartsOfSpeech, divRuleId) {
-    const PARENT_ID = cbPartsOfSpeech.parentElement.id;
-
+export async function checkCorrectCbPartsOfSpeech(cbPartsOfSpeech, divRuleId, divRuleParentContainerId) {
     let isCorrect = true;
     let divRuleElement = getOrCreateRule(divRuleId);
     let partOfSpeechCode = getSelectedOptionId(cbPartsOfSpeech.id);
@@ -231,7 +227,7 @@ export async function checkCorrectCbPartsOfSpeech(cbPartsOfSpeech, divRuleId) {
         divRuleElement.textContent = message.text;
     }
 
-    changeRuleStatus(divRuleElement, PARENT_ID, isCorrect);
+    changeRuleStatus(divRuleElement, divRuleParentContainerId, isCorrect);
     return isCorrect;
 }
 

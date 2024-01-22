@@ -1,0 +1,20 @@
+div.info-block-with-header-container {
+    min-height: 200px;
+    background: rgba(var(--first-color-rgb), var(--opacity-standard));
+    padding: 10px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+h1.h1-info-block-with-header {
+    font-size: var(--second-font-size);
+    text-align: center;
+}
+
+div.info-block-with-header-text {
+    font-size: var(--third-font-size);
+    margin-top: -20px;
+}
+

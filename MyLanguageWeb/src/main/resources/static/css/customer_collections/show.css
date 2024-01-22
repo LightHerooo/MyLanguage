@@ -2,41 +2,6 @@ main {
     min-height: 1300px;
 }
 
-div.customer-collections-message-container {
-    display: grid;
-    grid: 1fr / 250px 1fr;
-    padding: 15px;
-}
-
-div.customer-collections-message-left {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-}
-
-img.customer-collections-message-img {
-    width: 128px;
-    height: 128px;
-}
-
-div.customer-collections-message-right {
-    display: flex;
-    flex-direction: column;
-}
-
-p.customer-collections-message-header {
-    font-size: var(--second-font-size);
-    font-weight: bold;
-    margin-top: 25px;
-    margin-bottom: 25px;
-    text-align: center;
-}
-
-div.customer-collections-message-text {
-    font-size: var(--third-font-size);
-}
-
 div.customer-collections-actions {
     display: grid;
     grid: 1fr / 1fr 1fr;

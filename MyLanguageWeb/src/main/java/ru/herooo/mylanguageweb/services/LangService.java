@@ -19,7 +19,7 @@ public class LangService {
 
     // Получение всех языков
     public List<Lang> findAll() {
-        return LANG_CRUD_REPOSITORY.findAll();
+        return LANG_CRUD_REPOSITORY.findAllByOrderById();
     }
 
     // Поиск по коду

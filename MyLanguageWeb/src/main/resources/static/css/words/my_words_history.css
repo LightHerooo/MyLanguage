@@ -2,46 +2,6 @@ main {
     min-height: 1300px;
 }
 
-div.my-words-history-message-container {
-    display: grid;
-    grid: 1fr / 250px 1fr;
-}
-
-div.my-words-history-message-left {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-}
-
-img.my-words-history-message-img {
-    width: 128px;
-    height: 128px;
-}
-
-div.my-words-history-message-right {
-    display: flex;
-    flex-direction: column;
-}
-
-p.my-words-history-message-header {
-    font-size: var(--second-font-size);
-    font-weight: bold;
-    margin-top: 25px;
-    margin-bottom: 25px;
-    text-align: center;
-}
-
-div.my-words-history-message-text {
-    font-size: var(--third-font-size);
-    margin-top: 5px;
-}
-
-a.word-status {
-    font-weight: bold;
-    text-decoration: underline dotted;
-}
-
 div.my-word-history-list-instruments {
     height: 100px;
 

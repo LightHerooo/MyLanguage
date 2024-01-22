@@ -3,10 +3,11 @@
     <head>
         <meta charset="UTF-8">
         <title th:text="|${WEB_APP_NAME} - Изменение текущего статуса в словах|"> Изменение текущего статуса в словах</title>
-        <link rel="icon" type="image/x-icon" href="/images/logo.ico">
+        <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
 
         <link rel="stylesheet" type="text/css" href="/css/root.css">
         <link rel="stylesheet" type="text/css" href="/css/main.css">
+        <link rel="stylesheet" type="text/css" href="/css/info_blocks/info_block_with_img_and_header.css">
         <link rel="stylesheet" type="text/css" href="/css/special_actions/change_current_status_to_words.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
 
@@ -17,20 +18,20 @@
             <div th:insert="~{layouts/header}"></div>
         </header>
         <main>
-            <div class="block-info-standard change-words-message-container">
-                <div class="change-words-message-left">
-                    <img class="change-words-message-img"
-                         src="/images/cards.png"
+            <div class="info-block-with-img-and-header-container">
+                <div class="info-block-with-img-and-header-left-container">
+                    <img class="img-info-block-with-img-and-header"
+                         src="/images/words/cards.png"
                          alt="cards.png"/>
                 </div>
-                <div class="change-words-message-right">
-                    <p class="change-words-message-header">Изменение текущего статуса в словах</p>
-                    <div class="change-words-message-text">
+                <div class="info-block-with-img-and-header-right-container">
+                    <h1 class="h1-info-block-with-img-and-header">Изменение текущего статуса в словах</h1>
+                    <div class="info-block-with-img-and-header-text">
                         Изменяйте статус словам, чтобы контролировать их использование пользователями ресурса.
                         Изменение статуса слова мгновенно изменяет его в базе данных.
                     </div>
                     <br>
-                    <div class="change-words-message-text">
+                    <div class="info-block-with-img-and-header-text">
                         <div class="word-status">Статусы слов:</div>
                         <div th:each="wordStatus: ${WORD_STATUSES}">
                             <span class="word-status"
@@ -48,7 +49,7 @@
                     <a class="a-button-deny-standard" id="btn_delete_inactive_words_in_collections">
                         <div class="change-words-action">
                             <div class="change-words-action-img-container">
-                                <img class="change-words-action-img" src="/images/delete.png" alt="delete.png"/>
+                                <img class="change-words-action-img" src="/images/other/delete.png" alt="delete.png"/>
                             </div>
                             <div>Удалить неактивные слова из коллекций пользователей</div>
                         </div>
@@ -56,7 +57,7 @@
                     <a class="a-button-deny-standard" id="btn_delete_all_unclaimed_words">
                         <div class="change-words-action">
                             <div class="change-words-action-img-container">
-                                <img class="change-words-action-img" src="/images/delete.png" alt="delete.png"/>
+                                <img class="change-words-action-img" src="/images/other/delete.png" alt="delete.png"/>
                             </div>
                             <div>Удалить все невостребованные слова</div>
                         </div>
@@ -64,7 +65,7 @@
                     <a class="a-button-accept-standard" id="btn_add_word_status_to_words_without_status">
                         <div class="change-words-action">
                             <div class="change-words-action-img-container">
-                                <img class="change-words-action-img" src="/images/add.png" alt="add.png"/>
+                                <img class="change-words-action-img" src="/images/other/add.png" alt="add.png"/>
                             </div>
                             <div>Добавить статусы словам без статуса</div>
                         </div>
@@ -91,7 +92,7 @@
                 <div class="change-word-list-instruments-item">
                     <label class="label-for-input-standard" for="btn_refresh"></label>
                     <button id="btn_refresh" class="btn-refresh-standard" title="Обновить">
-                        <img class="btn-refresh-standard-img" src="/images/refresh.png" alt="refresh.png"/>
+                        <img class="btn-refresh-standard-img" src="/images/other/refresh.png" alt="refresh.png"/>
                     </button>
                 </div>
             </div>

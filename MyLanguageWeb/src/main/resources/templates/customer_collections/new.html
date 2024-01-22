@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title th:text="|${WEB_APP_NAME} - Создание новых коллекций|">Создание новых коллекций</title>
-    <link rel="icon" type="image/x-icon" href="/images/logo.ico">
+    <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
 
     <link rel="stylesheet" type="text/css" href="/css/root.css">
     <link rel="stylesheet" type="text/css" href="/css/main.css">
+    <link rel="stylesheet" type="text/css" href="/css/info_blocks/info_block_with_img_and_header.css">
     <link rel="stylesheet" type="text/css" href="/css/customer_collections/new.css">
 
     <script type="module" src="/js/templates/customer_collections/new.js"></script>
@@ -16,14 +17,14 @@
         <div th:insert="~{layouts/header}"></div>
     </header>
     <main>
-        <div class="block-info-standard new-collections-message-container">
-            <div class="new-collections-message-left">
-                <img class="new-collections-message-img" src="/images/new_collection.png"
+        <div class="info-block-with-img-and-header-container">
+            <div class="info-block-with-img-and-header-left-container">
+                <img class="img-info-block-with-img-and-header" src="/images/customer_collections/new_collection.png"
                      alt="new_collection.png"/>
             </div>
-            <div class="new-collections-message-right">
-                <p class="new-collections-message-header">Создание новых коллекций</p>
-                <div class="new-collections-message-text">
+            <div class="info-block-with-img-and-header-right-container">
+                <h1 class="h1-info-block-with-img-and-header">Создание новых коллекций</h1>
+                <div class="info-block-with-img-and-header-text">
                     Создавайте коллекции слов для изучения и тренировки.
                     За раз можно создать не более 5-ти коллекций.
                     Помните, что коллекции без конкретного языка нельзя тренировать.
@@ -33,9 +34,9 @@
         </div>
         <div class="new-collections-container" id="new_collections_container"></div>
         <a class="a-button-accept-standard btn-new-collection" id="btn_new_collection">
-            <img class="btn-new-collection-img" src="/images/add.png" alt="add.png">
+            <img class="btn-new-collection-img" src="/images/other/add.png" alt="add.png">
         </a>
-        <div class="send-new-collections-container block-info-standard">
+        <div class="send-new-collections-container info-block-standard">
             <div id="send_new_collections_info"></div>
             <form method="GET" action="/customer_collections" class="send-new-collections-form" id="submit_send">
                 <input type="submit" class="submit-standard btn-send" value="Создать" id="submit_btn">

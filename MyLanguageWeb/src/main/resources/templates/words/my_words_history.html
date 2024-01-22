@@ -3,10 +3,11 @@
     <head>
         <meta charset="UTF-8">
         <title th:text="|${WEB_APP_NAME} - История моих предложенных слов|">История моих предложенных слов</title>
-        <link rel="icon" type="image/x-icon" href="/images/logo.ico">
+        <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
 
         <link rel="stylesheet" type="text/css" href="/css/root.css">
         <link rel="stylesheet" type="text/css" href="/css/main.css">
+        <link rel="stylesheet" type="text/css" href="/css/info_blocks/info_block_with_img_and_header.css">
         <link rel="stylesheet" type="text/css" href="/css/words/my_words_history.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
 
@@ -17,18 +18,18 @@
             <div th:insert="~{layouts/header}"></div>
         </header>
         <main>
-            <div class="block-info-standard my-words-history-message-container">
-                <div class="my-words-history-message-left">
-                    <img class="my-words-history-message-img" src="/images/my_words_history.png"
+            <div class="info-block-with-img-and-header-container">
+                <div class="info-block-with-img-and-header-left-container">
+                    <img class="img-info-block-with-img-and-header" src="/images/words/my_words_history.png"
                          alt="my_words_history.png"/>
                 </div>
-                <div class="my-words-history-message-right">
-                    <p class="my-words-history-message-header">История моих предложенных слов</p>
-                    <div class="my-words-history-message-text">
+                <div class="info-block-with-img-and-header-right-container">
+                    <h1 class="h1-info-block-with-img-and-header">История моих предложенных слов</h1>
+                    <div class="info-block-with-img-and-header-text">
                         На странице находятся все слова, которые вы предлагали для добавления.
                         Вы можете посмотреть историю изменений статусов слов, нажав на кнопку рядом со строкой слова.
                         Помните, что слова со статусом
-                        <a class="word-status"
+                        <a class="word-status-standard"
                            th:style="'color: #' + ${UNCLAIMED_WORD_STATUS.colorHexCode}"
                            th:text="'&quot;' + ${UNCLAIMED_WORD_STATUS.title} + '&quot;'"
                            th:title="${UNCLAIMED_WORD_STATUS.message}"/>
@@ -36,7 +37,7 @@
                         <span style="font-weight: bold" >станет недоступна</span>.
                     </div>
                     <br>
-                    <div class="my-words-history-message-text" id="my_words_history_statistics_container"></div>
+                    <div class="info-block-with-img-and-header-text" id="my_words_history_statistics_container"></div>
                 </div>
             </div>
             <div class="my-word-history-list-instruments">
@@ -59,7 +60,7 @@
                 <div class="my-word-history-list-instruments-item">
                     <label class="label-for-input-standard" for="btn_refresh"></label>
                     <button id="btn_refresh" class="btn-refresh-standard" title="Обновить">
-                        <img class="btn-refresh-standard-img" src="/images/refresh.png" alt="refresh.png"/>
+                        <img class="btn-refresh-standard-img" src="/images/other/refresh.png" alt="refresh.png"/>
                     </button>
                 </div>
             </div>

@@ -1,38 +1,3 @@
-div.new-collections-message-container {
-    display: grid;
-    grid: 1fr / 250px 1fr;
-    padding: 15px;
-}
-
-div.new-collections-message-left {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-}
-
-img.new-collections-message-img {
-    width: 128px;
-    height: 128px;
-}
-
-div.new-collections-message-right {
-    display: flex;
-    flex-direction: column;
-}
-
-p.new-collections-message-header {
-    font-size: var(--second-font-size);
-    font-weight: bold;
-    margin-top: 25px;
-    margin-bottom: 25px;
-    text-align: center;
-}
-
-div.new-collections-message-text {
-    font-size: var(--third-font-size);
-}
-
 div.new-collections-container {
     display: flex;
     flex-direction: column;
@@ -55,7 +20,7 @@ div.new-collection-data {
 
 div.new-collection-data-item {
     display: grid;
-    grid: 20px 50px 1fr / 1fr;
+    grid: 25px 50px 1fr / 1fr;
     gap: 5px;
 }
 

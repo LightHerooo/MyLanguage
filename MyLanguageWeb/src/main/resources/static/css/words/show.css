@@ -2,41 +2,6 @@ main {
     min-height: 1300px;
 }
 
-div.words-message-container {
-    display: grid;
-    grid: 1fr / 250px 1fr;
-}
-
-div.words-message-left {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-}
-
-img.words-message-img {
-    width: 128px;
-    height: 128px;
-}
-
-div.words-message-right {
-    display: flex;
-    flex-direction: column;
-}
-
-p.words-message-header {
-    font-size: var(--second-font-size);
-    font-weight: bold;
-    margin-top: 25px;
-    margin-bottom: 25px;
-    text-align: center;
-}
-
-div.words-message-text {
-    font-size: var(--third-font-size);
-    margin-top: 5px;
-}
-
 div.words-actions {
     display: grid;
     grid: 1fr / 1fr 1fr;

@@ -502,7 +502,6 @@ public class WordsRestController {
     public ResponseEntity<?> validateIsItPossibleToAddWord(@RequestParam("title") String title,
                                                            @RequestParam("lang_code") String langCode,
                                                            @RequestParam("part_of_speech_code") String partOfSpeechCode) {
-
         // Если хотя бы одно слово с искомым названием заблокировано, нужно запретить его добавлять
         long countOfBlockedWords =
                 WORD_SERVICE.countWordsWithCurrentStatusByTitleAndWordStatusCode(title, WordStatuses.BLOCKED.CODE);

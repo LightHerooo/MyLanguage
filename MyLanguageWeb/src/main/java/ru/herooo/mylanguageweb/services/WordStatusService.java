@@ -19,7 +19,7 @@ public class WordStatusService {
 
     // Получение всех статусов слов
     public List<WordStatus> findAll() {
-        return WORD_STATUS_CRUD_REPOSITORY.findAll();
+        return WORD_STATUS_CRUD_REPOSITORY.findAllByOrderById();
     }
 
     // Поиск по коду

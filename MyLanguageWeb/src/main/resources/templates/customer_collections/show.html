@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title th:text="|${WEB_APP_NAME} - Мои коллекции|">Мои коллекции</title>
-    <link rel="icon" type="image/x-icon" href="/images/logo.ico">
+    <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
 
     <link rel="stylesheet" type="text/css" href="/css/root.css">
     <link rel="stylesheet" type="text/css" href="/css/main.css">
-    <link rel="stylesheet" type="text/css" href="/css/other/collection_info.css">
+    <link rel="stylesheet" type="text/css" href="/css/info_blocks/info_block_with_img_and_header.css">
     <link rel="stylesheet" type="text/css" href="/css/customer_collections/show.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
 
@@ -18,30 +18,31 @@
         <div th:insert="~{layouts/header}"></div>
     </header>
     <main>
-        <div class="block-info-standard customer-collections-message-container">
-            <div class="customer-collections-message-left">
-                <img class="customer-collections-message-img" src="/images/customer_collections.png"
+        <div class="info-block-with-img-and-header-container">
+            <div class="info-block-with-img-and-header-left-container">
+                <img class="img-info-block-with-img-and-header"
+                     src="/images/customer_collections/customer_collections.png"
                      alt="customer_collections.png"/>
             </div>
-            <div class="customer-collections-message-right">
-                <p class="customer-collections-message-header">Мои коллекции</p>
-                <div class="customer-collections-message-text">
+            <div class="info-block-with-img-and-header-right-container">
+                <h1 class="h1-info-block-with-img-and-header">Мои коллекции</h1>
+                <div class="info-block-with-img-and-header-text">
                    Здесь вы можете посмотреть ваши коллекции со словами. Создавайте новые коллекции,
                     добавляйте в них слова на странице
                     <a href="/words">"Cлова"</a>.
-                    Вы так же можете создать копию коллекции ваших друзей по ключу.
+                    Вы так же можете создать копии коллекций других пользователей по ключу.
                 </div>
                 <br>
-                <div class="customer-collections-message-text" id="collections_statistics_container"></div>
+                <div class="info-block-with-img-and-header-text" id="collections_statistics_container"></div>
             </div>
         </div>
         <div class="customer-collections-actions">
             <a class="customer-collections-actions-item a-button-standard" href="/customer_collections/new">
-                <img class="customer-collections-actions-img" src="/images/new_collection.png" alt="new_collection.png"/>
+                <img class="customer-collections-actions-img" src="/images/customer_collections/new_collection.png" alt="new_collection.png"/>
                 <p class="customer-collections-actions-text">Создать новые коллекции</p>
             </a>
             <a class="customer-collections-actions-item a-button-standard" href="/customer_collections/new_by_key">
-                <img class="customer-collections-actions-img" src="/images/new_collection_by_key.png" alt="new_collection_by_key.png"/>
+                <img class="customer-collections-actions-img" src="/images/customer_collections/new_collection_by_key.png" alt="new_collection_by_key.png"/>
                 <p class="customer-collections-actions-text">Создать коллекцию по ключу</p>
             </a>
         </div>
@@ -65,7 +66,7 @@
             <div class="collection-words-instruments-item">
                 <label class="label-for-input-standard" for="btn_refresh"></label>
                 <button id="btn_refresh" class="btn-refresh-standard" title="Обновить">
-                    <img class="btn-refresh-standard-img" src="/images/refresh.png" alt="refresh.png"/>
+                    <img class="btn-refresh-standard-img" src="/images/other/refresh.png" alt="refresh.png"/>
                 </button>
             </div>
         </div>

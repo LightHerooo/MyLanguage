@@ -3,7 +3,7 @@
   <head>
       <meta charset="UTF-8">
       <title>Header</title>
-      <link rel="icon" type="image/x-icon" href="/images/logo.ico">
+      <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
 
       <link rel="stylesheet" type="text/css" href="/css/root.css">
       <link rel="stylesheet" type="text/css" href="/css/main.css">
@@ -13,26 +13,26 @@
     <nav>
         <div class="nav-left-container">
             <a href="/" class="nav-logotype">
-                <img class="nav-logotype-img" src="/images/logo.png" alt="logo.png"/>
+                <img class="nav-logotype-img" src="/images/logo/logo.png" alt="logo.png"/>
                 <p th:text="${WEB_APP_NAME}"></p>
             </a>
             <div class="vertical-delimiter-margin"></div>
-            <a href="#" class="nav-item">
-                <img class="nav-item-img" src="/images/play.png" alt="play.png"/>
+            <a href="/workouts" class="nav-item">
+                <img class="nav-item-img" src="/images/workouts/brain.png" alt="workout.png"/>
                 <p>Тренироваться</p>
             </a>
             <div class="vertical-delimiter-margin"></div>
             <a href="/words" class="nav-item">
-                <img class="nav-item-img" src="/images/words.png" alt="words.png"/>
+                <img class="nav-item-img" src="/images/words/words.png" alt="words.png"/>
                 <p>Слова</p>
             </a>
             <div class="vertical-delimiter-margin"></div>
             <a href="/customer_collections" class="nav-item">
-                <img class="nav-item-img" src="/images/customer_collections.png" alt="customer_collections.png"/>
+                <img class="nav-item-img" src="/images/customer_collections/customer_collections.png" alt="customer_collections.png"/>
                 <p>Мои коллекции</p>
             </a>
             <div class="vertical-delimiter-margin"></div>
-            <a href="#" class="nav-item">
+            <a href="#" class="nav-item-disabled">
                 <img class="nav-item-img" src="/images/rating.png" alt="rating.png"/>
                 <p>Рейтинг</p>
             </a>
@@ -41,12 +41,12 @@
         <div class="authorization-container" th:if="${AUTH_CUSTOMER == null}">
             <div class="vertical-delimiter-margin"></div>
             <a class="nav-item" href="/customers/new">
-                <img class="nav-item-img" src="/images/registration.png" alt="registration.png"/>
+                <img class="nav-item-img" src="/images/customers/registration.png" alt="registration.png"/>
                 <p>Регистрация</p>
             </a>
             <div class="vertical-delimiter-margin"></div>
             <a class="nav-item" href="/customers/entry">
-                <img class="nav-item-img" src="/images/entry.png" alt="entry.png"/>
+                <img class="nav-item-img" src="/images/customers/entry.png" alt="entry.png"/>
                 <p>Вход</p>
             </a>
             <div class="vertical-delimiter-margin"></div>
@@ -61,7 +61,7 @@
             </a>
             <div class="vertical-delimiter-margin"></div>
             <a class="nav-item" th:href="@{/customers/{id}(id = ${AUTH_CUSTOMER.id})}">
-                <img class="auth-customer-img" src="/images/customer.png" alt="customer.png"/>
+                <img class="auth-customer-img" src="/images/customer_roles/customer.png" alt="customer.png"/>
                 <div class="auth-customer-info-container">
                     <div class="customer-nickname" th:text="${AUTH_CUSTOMER.nickname}"/>
                     <div class="auth-customer-info-extra-container">

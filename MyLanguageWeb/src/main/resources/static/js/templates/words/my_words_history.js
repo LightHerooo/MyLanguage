@@ -53,7 +53,7 @@ import {
 
 import {
     DateElements
-} from "../../utils/date_elements.js";
+} from "../../classes/date_elements.js";
 
 import {
     WordStatusWithCount,

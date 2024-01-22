@@ -1,6 +1,6 @@
 import {
     URL_TO_API
-} from "./api_variables.js";
+} from "./variables.js";
 
 import {
     buildJSONResponseByXml
@@ -12,7 +12,7 @@ import {
 
 import {
     DateElements
-} from "../utils/date_elements.js";
+} from "../classes/date_elements.js";
 
 const URL_TO_API_WORDS = URL_TO_API + "/words";
 const URL_TO_API_WORDS_FILTERED_PAGINATION = URL_TO_API_WORDS + "/filtered_pagination";

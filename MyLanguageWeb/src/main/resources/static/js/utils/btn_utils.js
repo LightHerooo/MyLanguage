@@ -79,7 +79,7 @@ export function buildABtnAccept(aBtnElement, doRemoveChildren) {
 
             aBtnElement.replaceChildren();
             let aAcceptButtonImg = document.createElement("img");
-            aAcceptButtonImg.src = "/images/add.png";
+            aAcceptButtonImg.src = "/images/other/add.png";
             aAcceptButtonImg.width = 16;
             aAcceptButtonImg.height = 16;
 
@@ -99,7 +99,7 @@ export function buildABtnDeny(aBtnElement, doRemoveChildren) {
 
             aBtnElement.replaceChildren();
             let aDenyButtonImg = document.createElement("img");
-            aDenyButtonImg.src = "/images/delete.png";
+            aDenyButtonImg.src = "/images/other/delete.png";
             aDenyButtonImg.width = 16;
             aDenyButtonImg.height = 16;
 
@@ -112,12 +112,8 @@ export function buildABtnDisabled(aBtnElement) {
     if (aBtnElement != null) {
         aBtnElement.className = "";
         aBtnElement.style.cssText = null;
-        aBtnElement.classList.add(_CSS_MAIN.A_BUTTON_STANDARD_STYLE_ID);
+        aBtnElement.classList.add(_CSS_MAIN.A_BUTTON_DISABLED_STANDARD_STYLE_ID);
 
-        aBtnElement.style.pointerEvents = "none";
-        aBtnElement.style.cursor = "default";
-
-        aBtnElement.style.opacity = "0.5";
         aBtnElement.style.padding = "3px";
     }
 }
@@ -132,7 +128,7 @@ export function buildABtnArrowDown(aBtnElement) {
 
         aBtnElement.replaceChildren();
         let aDenyButtonImg = document.createElement("img");
-        aDenyButtonImg.src = "/images/arrow_down.png";
+        aDenyButtonImg.src = "/images/other/arrow_down.png";
         aDenyButtonImg.width = 16;
         aDenyButtonImg.height = 16;
 
@@ -150,7 +146,7 @@ export function buildABtnArrowUp(aBtnElement) {
 
         aBtnElement.replaceChildren();
         let aDenyButtonImg = document.createElement("img");
-        aDenyButtonImg.src = "/images/arrow_up.png";
+        aDenyButtonImg.src = "/images/other/arrow_up.png";
         aDenyButtonImg.width = 16;
         aDenyButtonImg.height = 16;
 

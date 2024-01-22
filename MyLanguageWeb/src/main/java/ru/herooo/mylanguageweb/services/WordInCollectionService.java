@@ -19,10 +19,6 @@ public class WordInCollectionService {
         this.WORD_IN_COLLECTION_CRUD_REPOSITORY = wordInCollectionCrudRepository;
     }
 
-    public List<WordInCollection> findAll() {
-        return WORD_IN_COLLECTION_CRUD_REPOSITORY.findAll();
-    }
-
     public List<WordInCollection> findWordsInCollectionAfterFilter(String title, String langCode, String partOfSpeechCode,
            String customerCollectionKey) {
         return WORD_IN_COLLECTION_CRUD_REPOSITORY.findWordsInCollectionAfterFilter(title, langCode, partOfSpeechCode, customerCollectionKey);

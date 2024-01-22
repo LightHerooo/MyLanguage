@@ -18,7 +18,7 @@ public class PartOfSpeechService {
 
     // Получение всех частей речи
     public List<PartOfSpeech> findAll() {
-        return PART_OF_SPEECH_CRUD_REPOSITORY.findAll();
+        return PART_OF_SPEECH_CRUD_REPOSITORY.findAllByOrderById();
     }
 
     // Поиск по коду

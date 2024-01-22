@@ -1,38 +1,3 @@
-div.new-words-message-container {
-    display: grid;
-    grid: 1fr / 250px 1fr;
-    padding: 15px;
-}
-
-div.new-words-message-left {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-}
-
-img.new-words-message-img {
-    width: 128px;
-    height: 128px;
-}
-
-div.new-words-message-right {
-    display: flex;
-    flex-direction: column;
-}
-
-p.new-words-message-header {
-    font-size: var(--second-font-size);
-    font-weight: bold;
-    margin-top: 25px;
-    margin-bottom: 25px;
-    text-align: center;
-}
-
-div.new-words-message-text {
-    font-size: var(--third-font-size);
-}
-
 div.new-words-container {
     display: flex;
     flex-direction: column;
@@ -55,7 +20,7 @@ div.new-word-data {
 
 div.new-word-data-item {
     display: grid;
-    grid: 20px 50px 1fr / 1fr;
+    grid: 25px 50px 1fr / 1fr;
     gap: 5px;
 }
 

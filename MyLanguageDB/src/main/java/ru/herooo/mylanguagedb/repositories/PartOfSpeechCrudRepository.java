@@ -6,7 +6,7 @@ import ru.herooo.mylanguagedb.entities.PartOfSpeech;
 import java.util.List;
 
 public interface PartOfSpeechCrudRepository extends CrudRepository<PartOfSpeech, Long> {
-    List<PartOfSpeech> findAll();
+    List<PartOfSpeech> findAllByOrderById();
 
     PartOfSpeech findByCode(String code);
 }
