@@ -9,6 +9,9 @@
     <link rel="stylesheet" type="text/css" href="/css/root.css">
     <link rel="stylesheet" type="text/css" href="/css/main.css">
     <link rel="stylesheet" type="text/css" href="/css/info_blocks/info_block_with_img_and_header.css">
+    <link rel="stylesheet" type="text/css" href="/css/other/rule.css">
+    <link rel="stylesheet" type="text/css" href="/css/other/loading.css">
+    <link rel="stylesheet" type="text/css" href="/css/other/element_with_flag.css">
     <link rel="stylesheet" type="text/css" href="/css/workouts/general.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
 
@@ -70,16 +73,20 @@
                     <form action="/workouts" id="submit_send" class="form-standard">
                         <div class="form-item-standard" id="div_in_lang_container">
                             <label class="label-standard" for="cb_in_langs">Язык, с которого будете переводить:</label>
-                            <div class="lang-with-flag-container">
+                            <div class="element-with-flag-container">
                                 <select id="cb_in_langs" class="select-standard"></select>
-                                <div id="div_in_lang_flag"></div>
+                                <div class="flag-container">
+                                    <div id="in_lang_flag"></div>
+                                </div>
                             </div>
                         </div>
                         <div class="form-item-standard" id="div_out_lang_container">
                             <label class="label-standard" for="cb_out_langs">Язык, на который будете переводить:</label>
-                            <div class="lang-with-flag-container">
+                            <div class="element-with-flag-container">
                                 <select id="cb_out_langs" class="select-standard"></select>
-                                <div id="div_out_lang_flag"></div>
+                                <div class="flag-container">
+                                    <div id="out_lang_flag"></div>
+                                </div>
                             </div>
                         </div>
                         <div class="form-item-standard" id="div_number_of_words_container">

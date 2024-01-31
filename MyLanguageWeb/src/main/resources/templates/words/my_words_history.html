@@ -8,6 +8,8 @@
         <link rel="stylesheet" type="text/css" href="/css/root.css">
         <link rel="stylesheet" type="text/css" href="/css/main.css">
         <link rel="stylesheet" type="text/css" href="/css/info_blocks/info_block_with_img_and_header.css">
+        <link rel="stylesheet" type="text/css" href="/css/other/loading.css">
+        <link rel="stylesheet" type="text/css" href="/css/other/element_with_flag.css">
         <link rel="stylesheet" type="text/css" href="/css/words/my_words_history.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
 
@@ -37,7 +39,8 @@
                         <span style="font-weight: bold" >станет недоступна</span>.
                     </div>
                     <br>
-                    <div class="info-block-with-img-and-header-text" id="my_words_history_statistics_container"></div>
+                    <div class="info-block-with-img-and-header-text words-statistics-container"
+                         id="my_words_history_statistics_container"></div>
                 </div>
             </div>
             <div class="my-word-history-list-instruments">
@@ -47,7 +50,12 @@
                 </div>
                 <div class="my-word-history-list-instruments-item">
                     <label class="label-for-input-standard" for="cb_langs">Язык:</label>
-                    <select id="cb_langs" class="select-standard"></select>
+                    <div class="element-with-flag-container">
+                        <select id="cb_langs" class="select-standard"></select>
+                        <div class="flag-container">
+                            <div id="lang_flag"></div>
+                        </div>
+                    </div>
                 </div>
                 <div class="my-word-history-list-instruments-item">
                     <label class="label-for-input-standard" for="cb_parts_of_speech">Часть речи:</label>

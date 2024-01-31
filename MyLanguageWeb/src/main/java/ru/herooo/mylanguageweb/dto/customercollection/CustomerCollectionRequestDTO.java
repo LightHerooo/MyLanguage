@@ -3,14 +3,21 @@ package ru.herooo.mylanguageweb.dto.customercollection;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import ru.herooo.mylanguageutils.StringUtils;
 import ru.herooo.mylanguageweb.controllers.json.LongDeserializer;
 import ru.herooo.mylanguageweb.controllers.json.LongSerializer;
 
 public class CustomerCollectionRequestDTO {
+    private final StringUtils STRING_UTILS = new StringUtils();
 
     @JsonSerialize(using = LongSerializer.class)
     @JsonDeserialize(using = LongDeserializer.class)
     private long id;
+
+    @NotBlank(message = "Название не может быть пустым.")
+    @Size(min = 3, max = 30, message = "Название должно быть от 3-х до 30-ти символов.")
     @JsonProperty("title")
     private String title;
 
@@ -36,7 +43,9 @@ public class CustomerCollectionRequestDTO {
     }
 
     public void setTitle(String title) {
-        this.title = title;
+        if (STRING_UTILS.isNotStringVoid(title)) {
+            this.title = title.trim();
+        }
     }
 
     public String getLangCode() {

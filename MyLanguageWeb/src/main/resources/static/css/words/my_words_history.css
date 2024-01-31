@@ -2,6 +2,13 @@ main {
     min-height: 1300px;
 }
 
+div.words-statistics-container {
+    min-height: 150px;
+
+    display: grid;
+    align-items: center;
+}
+
 div.my-word-history-list-instruments {
     height: 100px;
 

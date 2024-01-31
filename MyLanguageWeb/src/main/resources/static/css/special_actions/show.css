@@ -26,5 +26,6 @@ a.special-action {
 }
 
 img.img-special-action {
-
+    width: 128px;
+    height: 128px;
 }

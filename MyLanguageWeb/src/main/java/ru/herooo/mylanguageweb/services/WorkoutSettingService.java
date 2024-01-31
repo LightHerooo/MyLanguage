@@ -21,8 +21,8 @@ public class WorkoutSettingService {
         return WORKOUT_SETTING_CRUD_REPOSITORY.findById(id);
     }
 
-    public WorkoutSetting findByWorkoutTypeAndCustomer(WorkoutType workoutType, Customer customer) {
-        return WORKOUT_SETTING_CRUD_REPOSITORY.findByWorkoutTypeAndCustomer(workoutType, customer);
+    public WorkoutSetting findByCustomerAndWorkoutType(Customer customer, WorkoutType workoutType) {
+        return WORKOUT_SETTING_CRUD_REPOSITORY.findByCustomerAndWorkoutType(customer, workoutType);
     }
 
     public WorkoutSetting save(WorkoutSetting workoutSetting) {

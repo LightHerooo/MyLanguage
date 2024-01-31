@@ -1,0 +1,26 @@
+div.rule-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+
+    opacity: 0.5;
+    font-size: var(--third-font-size);
+}
+
+img.img-rule {
+    width: 16px;
+    height: 16px;
+}
+
+span.rule-accept-text {
+    color: darkgreen;
+}
+
+span.rule-warning-text {
+    color: darkgoldenrod;
+}
+
+span.rule-error-text {
+    color: darkred;
+}

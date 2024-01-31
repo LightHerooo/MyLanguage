@@ -100,7 +100,7 @@ public class WordService {
         return WORD_CRUD_REPOSITORY.countByCustomerIdAndWordStatusCode(customerId, wordStatusCode);
     }
 
-    public long countWordsWithCurrentStatusByTitleAndWordStatusCode(String title, String wordStatusCode) {
-        return WORD_CRUD_REPOSITORY.countWordsWithCurrentStatusByTitleAndWordStatusCode(title, wordStatusCode);
+    public List<Word> findWordsWithCurrentStatusByTitleAndWordStatusCode(String title, String wordStatusCode) {
+        return WORD_CRUD_REPOSITORY.findWordsWithCurrentStatusByTitleAndWordStatusCode(title, wordStatusCode);
     }
 }

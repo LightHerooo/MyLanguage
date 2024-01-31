@@ -8,6 +8,10 @@
     <link rel="stylesheet" type="text/css" href="/css/root.css">
     <link rel="stylesheet" type="text/css" href="/css/main.css">
     <link rel="stylesheet" type="text/css" href="/css/info_blocks/info_block_with_img_and_header.css">
+    <link rel="stylesheet" type="text/css" href="/css/info_blocks/collection_info.css">
+    <link rel="stylesheet" type="text/css" href="/css/other/rule.css">
+    <link rel="stylesheet" type="text/css" href="/css/other/loading.css">
+    <link rel="stylesheet" type="text/css" href="/css/other/element_with_flag.css">
     <link rel="stylesheet" type="text/css" href="/css/customer_collections/new_by_key.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
 
@@ -36,21 +40,26 @@
             </div>
             <div class="new-collection-by-key-container">
                 <div class="info-block-standard new-collection-by-key-data">
-                    <div class="new-collection-by-key-data-item" id="tb_title_container">
+                    <div id="tb_title_container" class="new-collection-by-key-data-item">
                         <label for="tb_title" class="label-standard">Название новой коллекции:</label>
-                        <input type="text" class="text-standard" id="tb_title">
+                        <input id="tb_title" type="text" class="text-standard">
                     </div>
-                    <div class="new-collection-by-key-data-item" id="tb_key_container">
+                    <div id="tb_key_container" class="new-collection-by-key-data-item">
                         <label for="tb_key" class="label-standard">Ключ существующей коллекции:</label>
-                        <input type="text" class="text-standard" id="tb_key" placeholder="ZRX22JR761HDWOSLE3OD">
+                        <div class="element-with-flag-container">
+                            <input id="tb_key" type="text" class="text-standard"
+                                   placeholder="ZRX22JR761HDWOSLE3OD">
+                            <div class="flag-container">
+                                <div id="collection_flag"></div>
+                            </div>
+                        </div>
                     </div>
-                    <form method="GET" action="/customer_collections" id="submit_send">
-                        <input type="submit" class="submit-standard btn-send" value="Создать"
-                               id="btn_send">
+                    <form id="submit_send" method="GET" action="/customer_collections">
+                        <input id="btn_send" type="submit" class="submit-standard btn-send" value="Создать">
                     </form>
                     <div class="send-new-collection-by-key-info" id="send_new_collection_by_key_info"></div>
                 </div>
-                <div id="div_collection_info" class="collection-info"></div>
+                <div id="div_collection_info" class="collection-info info-block-standard"></div>
             </div>
             <div class="collection-words-instruments">
                 <div class="collection-words-instruments-item">
@@ -59,7 +68,12 @@
                 </div>
                 <div class="collection-words-instruments-item">
                     <label class="label-for-input-standard" for="cb_langs">Язык:</label>
-                    <select id="cb_langs" class="select-standard"></select>
+                    <div class="element-with-flag-container">
+                        <select id="cb_langs" class="select-standard"></select>
+                        <div class="flag-container">
+                            <div id="lang_flag"></div>
+                        </div>
+                    </div>
                 </div>
                 <div class="collection-words-instruments-item">
                     <label class="label-for-input-standard" for="cb_parts_of_speech">Часть речи:</label>

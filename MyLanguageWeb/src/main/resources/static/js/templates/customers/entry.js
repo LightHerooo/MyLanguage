@@ -1,7 +1,13 @@
 import {
-    changeRuleStatus,
-    getOrCreateRule
-} from "../../utils/div_rules.js";
+    RuleElement,
+    RuleTypes
+} from "../../classes/rule_element.js";
+
+import {
+    LoadingElement
+} from "../../classes/loading_element.js";
+
+const  _RULE_TYPES = new RuleTypes();
 
 const _TB_LOGIN_ID = "tb_login";
 const _PB_PASSWORD_ID = "pb_password";
@@ -10,18 +16,30 @@ const _CHECK_SHOW_PASSWORD_ID = "check_show_password";
 const _A_CHECK_SHOW_PASSWORD_ID = "a_check_show_password";
 const _FORM_ENTRY_ID = "form_entry";
 const _BTN_ENTRY_ID = "btn_entry";
+const _DIV_ERRORS_CONTAINER_ID = "errors_container";
 
 window.onload = function () {
+    prepareTbLogin();
+    preparePbPassword();
+    prepareShowPasswordContainer();
+    prepareSubmit();
+}
+
+function prepareTbLogin() {
     let tbLogin = document.getElementById(_TB_LOGIN_ID);
     tbLogin.addEventListener("input", function () {
         checkCorrectLogin();
     });
+}
 
+function preparePbPassword() {
     let tbPassword = document.getElementById(_PB_PASSWORD_ID);
     tbPassword.addEventListener("input", function () {
         checkCorrectPassword();
     });
+}
 
+function prepareShowPasswordContainer() {
     let checkShowPassword = document.getElementById(_CHECK_SHOW_PASSWORD_ID);
     checkShowPassword.addEventListener("click", function () {
         showPassword();
@@ -29,67 +47,10 @@ window.onload = function () {
 
     let aCheckShowPassword = document.getElementById(_A_CHECK_SHOW_PASSWORD_ID);
     aCheckShowPassword.addEventListener("click", function () {
-        showPasswordByLink();
+        let checkShowPassword = document.getElementById(_CHECK_SHOW_PASSWORD_ID);
+        checkShowPassword.checked = !checkShowPassword.checked;
+        showPassword();
     });
-
-    let submitEntry = document.getElementById(_FORM_ENTRY_ID);
-    let btnEntry = document.getElementById(_BTN_ENTRY_ID);
-    submitEntry.addEventListener("submit", event => {
-        btnEntry.disabled = true;
-        event.preventDefault();
-
-        if (checkCorrectBeforeEntry()) {
-            submitEntry.submit();
-        }
-        btnEntry.disabled = false;
-    });
-}
-
-function checkCorrectLogin() {
-    const DIV_RULE_PARENT_ID = "div_container_login";
-    const DIV_RULE_ID = "div_rule_login";
-    const INPUT_ELEMENT_ID = _TB_LOGIN_ID;
-
-    const LOGIN_REGEXP = /^[A-Za-z0-9_]+$/;
-
-    let isCorrect;
-    let divRuleElement = getOrCreateRule(DIV_RULE_ID);
-    let inputText = document.getElementById(INPUT_ELEMENT_ID).value.trim();
-    if (!inputText) {
-        isCorrect= false;
-        divRuleElement.textContent = "Логин не может быть пустым.";
-        changeRuleStatus(divRuleElement, DIV_RULE_PARENT_ID, isCorrect);
-    } else if (!LOGIN_REGEXP.test(inputText)) {
-        isCorrect = false;
-        divRuleElement.textContent = "Логин должен содержать только английские буквы, цифры и знаки подчеркивания [_].";
-        changeRuleStatus(divRuleElement, DIV_RULE_PARENT_ID, isCorrect);
-    }
-    else {
-        isCorrect = true;
-        changeRuleStatus(divRuleElement, DIV_RULE_PARENT_ID, isCorrect);
-    }
-
-    return isCorrect;
-}
-
-function checkCorrectPassword() {
-    const DIV_RULE_PARENT_ID = "div_container_password";
-    const DIV_RULE_ID = "div_rule_password";
-    const INPUT_ELEMENT_ID = _PB_PASSWORD_ID;
-
-    let isCorrect;
-    let divRuleElement = getOrCreateRule(DIV_RULE_ID);
-    let inputText = document.getElementById(INPUT_ELEMENT_ID).value;
-    if (!inputText) {
-        isCorrect = false;
-        divRuleElement.textContent = "Пароль не может быть пустым.";
-        changeRuleStatus(divRuleElement, DIV_RULE_PARENT_ID, isCorrect);
-    } else {
-        isCorrect = true;
-        changeRuleStatus(divRuleElement, DIV_RULE_PARENT_ID, isCorrect);
-    }
-
-    return isCorrect;
 }
 
 function showPassword() {
@@ -106,10 +67,90 @@ function showPassword() {
     }
 }
 
-function showPasswordByLink() {
-    let checkShowPassword = document.getElementById(_CHECK_SHOW_PASSWORD_ID);
-    checkShowPassword.checked = !checkShowPassword.checked;
-    showPassword();
+function prepareSubmit() {
+    let submitEntry = document.getElementById(_FORM_ENTRY_ID);
+    let btnEntry = document.getElementById(_BTN_ENTRY_ID);
+    submitEntry.addEventListener("submit", event => {
+        btnEntry.disabled = true;
+        event.preventDefault();
+
+        // Показываем анимацию загрузки (предварительно удалив предыдущие ошибки) ---
+        let divErrorsContainer = document.getElementById(_DIV_ERRORS_CONTAINER_ID);
+        if (divErrorsContainer) {
+            divErrorsContainer.replaceChildren();
+        }
+
+        let divLoading = new LoadingElement().createDiv();
+        let form = document.getElementById(_FORM_ENTRY_ID);
+        form.appendChild(divLoading);
+        //---
+
+        if (checkCorrectBeforeEntry() === true) {
+            submitEntry.submit();
+        } else {
+            form.removeChild(divLoading);
+        }
+
+        btnEntry.disabled = false;
+    });
+}
+
+function checkCorrectLogin() {
+    const LOGIN_REGEXP = /^[A-Za-z0-9_]+$/;
+
+    let tbLogin = document.getElementById(_TB_LOGIN_ID);
+
+    let isCorrect = true;
+    let message;
+    let ruleType;
+
+    let inputText = tbLogin.value.trim();
+    if (!inputText) {
+        isCorrect = false;
+        message = "Логин не может быть пустым.";
+        ruleType = _RULE_TYPES.ERROR;
+    } else if (!LOGIN_REGEXP.test(inputText)) {
+        isCorrect = false;
+        message = "Логин должен содержать только английские буквы, цифры и знаки подчеркивания [_].";
+        ruleType = _RULE_TYPES.ERROR;
+    }
+
+    // Отображаем предупреждение (правило), если это необходимо ---
+    let ruleElement = new RuleElement(tbLogin.parentElement.id);
+    if (isCorrect === false) {
+        ruleElement.createOrChangeDiv(message, ruleType);
+    } else {
+        ruleElement.removeDiv();
+    }
+    //---
+
+    return isCorrect;
+}
+
+function checkCorrectPassword() {
+    let pbPassword = document.getElementById(_PB_PASSWORD_ID);
+
+    let isCorrect = true;
+    let message;
+    let ruleType;
+
+    let inputText = pbPassword.value;
+    if (!inputText) {
+        isCorrect = false;
+        message = "Пароль не может быть пустым.";
+        ruleType = _RULE_TYPES.ERROR;
+    }
+
+    // Отображаем предупреждение (правило), если это необходимо ---
+    let ruleElement = new RuleElement(pbPassword.parentElement.id);
+    if (isCorrect === false) {
+        ruleElement.createOrChangeDiv(message, ruleType);
+    } else {
+        ruleElement.removeDiv();
+    }
+    //---
+
+    return isCorrect;
 }
 
 function checkCorrectBeforeEntry() {

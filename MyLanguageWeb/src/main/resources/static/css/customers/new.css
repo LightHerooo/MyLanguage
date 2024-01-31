@@ -40,3 +40,9 @@ div.registration-info-text {
 
     font-size: var(--third-font-size);
 }
+
+div.error-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

@@ -9,5 +9,5 @@ import ru.herooo.mylanguagedb.entities.WorkoutType;
 @Repository
 public interface WorkoutSettingCrudRepository extends CrudRepository<WorkoutSetting, Long> {
     WorkoutSetting findById(long id);
-    WorkoutSetting findByWorkoutTypeAndCustomer(WorkoutType workoutType, Customer customer);
+    WorkoutSetting findByCustomerAndWorkoutType(Customer customer, WorkoutType workoutType);
 }

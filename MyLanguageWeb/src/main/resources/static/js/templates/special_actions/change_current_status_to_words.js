@@ -1,41 +1,10 @@
 import {
-    buildABtnAccept,
-    buildABtnDeny,
-    buildABtnDisabled,
-    createBtnShowMore,
-    removeBtnShowMore
-} from "../../utils/btn_utils.js";
-
-import {
-    findInTableWithTimers,
-    setMessageInsideTable
-} from "../../utils/table_utils.js";
-
-import {
-    changeSelectedOptionById,
-    fillCbLangs,
-    fillCbPartsOfSpeech,
-    fillCbWordStatuses, getSelectedOptionId
-} from "../../utils/combo_box_utils.js";
-
-import {
-    Timer
-} from "../../classes/timer.js";
-
-import {
-    deleteJSONResponseDeleteAllUnclaimedWords,
-    getJSONResponseWordsFilteredPagination,
-    patchJSONResponseEditWord
-} from "../../api/words.js";
+    CustomTimer
+} from "../../classes/custom_timer.js";
 
 import {
     HttpStatuses
 } from "../../classes/http_statuses.js";
-
-import {
-    getJSONResponseWordStatusHistoryFindCurrentByWordId,
-    postJSONResponseAddWordStatusToWordsWithoutStatus
-} from "../../api/word_status_histories.js";
 
 import {
     CssMain
@@ -43,50 +12,100 @@ import {
 
 import {
     WordStatuses
-} from "../../classes/api/word_statuses.js";
+} from "../../classes/api/word_statuses/word_statuses.js";
 
 import {
-    deleteJSONResponseDeleteInactiveWordsInCollections
-} from "../../api/words_in_collection.js";
-
-import {
+    WordStatusHistoryRequestDTO,
     WordStatusHistoryResponseDTO
-} from "../../dto/word_status_history.js";
+} from "../../classes/dto/word_status_history.js";
 
 import {
+    WordRequestDTO,
     WordResponseDTO
-} from "../../dto/word.js";
+} from "../../classes/dto/word.js";
 
 import {
     CustomResponseMessage
-} from "../../dto/other/custom_response_message.js";
+} from "../../classes/dto/other/custom_response_message.js";
+
+import {
+    LangUtils
+} from "../../classes/utils/entity/lang_utils.js";
+
+import {
+    PartOfSpeechUtils
+} from "../../classes/utils/entity/part_of_speech_utils.js";
+
+import {
+    WordStatusUtils
+} from "../../classes/utils/entity/word_status_utils.js";
+
+import {
+    WordsAPI
+} from "../../classes/api/words_api.js";
+
+import {
+    WordsInCollectionAPI
+} from "../../classes/api/words_in_collection_api.js";
+
+import {
+    WordStatusHistoriesAPI
+} from "../../classes/api/word_status_histories_api.js";
+
+import {
+    TableUtils
+} from "../../classes/utils/table_utils.js";
+
+import {
+    AButtons
+} from "../../classes/a_buttons.js";
+
+import {
+    ComboBoxUtils
+} from "../../classes/utils/combo_box_utils.js";
+
+import {
+    CustomTimerUtils
+} from "../../classes/utils/custom_timer_utils.js";
+
+const _WORDS_API = new WordsAPI();
+const _WORDS_IN_COLLECTION_API = new WordsInCollectionAPI();
+const _WORD_STATUS_HISTORIES_API = new WordStatusHistoriesAPI();
 
 const _CSS_MAIN = new CssMain();
 const _HTTP_STATUSES = new HttpStatuses();
 const _WORD_STATUSES = new WordStatuses();
+const _LANG_UTILS = new LangUtils();
+const _PART_OF_SPEECH_UTILS = new PartOfSpeechUtils();
+const _WORD_STATUS_UTILS = new WordStatusUtils();
+const _TABLE_UTILS = new TableUtils();
+const _A_BUTTONS = new AButtons();
+const _COMBO_BOX_UTILS = new ComboBoxUtils();
+const _CUSTOM_TIMER_UTILS = new CustomTimerUtils();
 
 const _TB_FINDER_ID = "tb_finder";
 const _CB_LANGS_ID = "cb_langs";
 const _CB_PARTS_OF_SPEECH_ID = "cb_parts_of_speech";
 const _CB_WORD_STATUSES = "cb_word_statuses";
-const _CHANGE_WORD_LIST_CONTAINER = "change_word_list_container";
 const _CHANGE_WORD_TABLE_HEAD_ID = "change_word_table_head";
 const _CHANGE_WORD_TABLE_BODY_ID = "change_word_table_body";
-const _BTN_SHOW_MORE_ID = "btn_show_more";
 const _BTN_DELETE_INACTIVE_WORDS_IN_COLLECTIONS_ID = "btn_delete_inactive_words_in_collections";
 const _BTN_DELETE_ALL_UNCLAIMED_WORDS_ID = "btn_delete_all_unclaimed_words";
 const _BTN_ADD_WORD_STATUS_TO_WORDS_WITHOUT_STATUS = "btn_add_word_status_to_words_without_status";
 const _BTN_REFRESH_ID = "btn_refresh";
+const _DIV_LANG_FLAG_ID = "lang_flag";
 
-const _NUMBER_OF_WORDS = 20;
-
+const _NUMBER_OF_WORDS = 10;
 let _lastWordNumberInList = 0;
 let _lastWordIdOnPreviousPage = 0n;
 
-let _tWaiter = new Timer(null);
-let _tFinder = new Timer(null);
+const _CUSTOM_TIMER_TABLE_WAITER = new CustomTimer();
+const _CUSTOM_TIMER_TABLE_FINDER = new CustomTimer();
+let _accessToFillTable = true;
 
 window.onload = async function() {
+    prepareTableTimers();
+
     await prepareCbPartsOfSpeech();
     await prepareCbLangs();
     await prepareCbWordStatuses();
@@ -96,70 +115,87 @@ window.onload = async function() {
     prepareBtnAddWordStatusToWordsWithoutStatus();
     prepareBtnRefresh();
 
-    await tryToFillChangeWordsTable();
+    startTimers();
 }
 
-function waiter() {
-    removeBtnShowMore(_BTN_SHOW_MORE_ID);
-    let tableHead = document.getElementById(_CHANGE_WORD_TABLE_HEAD_ID);
-    let tableBody = document.getElementById(_CHANGE_WORD_TABLE_BODY_ID);
-    setMessageInsideTable(tableHead, tableBody, "Идёт поиск...", true);
+function prepareTableTimers() {
+    _CUSTOM_TIMER_TABLE_WAITER.handler = function () {
+        _accessToFillTable = false;
+
+        let tableHead = document.getElementById(_CHANGE_WORD_TABLE_HEAD_ID);
+        let numberOfColumns = _TABLE_UTILS.getNumberOfColumnsByTableHead(tableHead);
+        let trMessage = _TABLE_UTILS.MESSAGES_INSIDE_TABLE.createTrLoading(numberOfColumns);
+
+        let tableBody = document.getElementById(_CHANGE_WORD_TABLE_BODY_ID);
+        tableBody.replaceChildren();
+        tableBody.appendChild(trMessage);
+    }
+
+    _CUSTOM_TIMER_TABLE_FINDER.handler = async function() {
+        _accessToFillTable = true;
+        await tryToFillTable();
+    }
+}
+
+function startTimers() {
+    _CUSTOM_TIMER_UTILS.findAfterWait(_CUSTOM_TIMER_TABLE_WAITER, _CUSTOM_TIMER_TABLE_FINDER);
 }
 
 function prepareTbFinder() {
     let tbFinder = document.getElementById(_TB_FINDER_ID);
 
-    // Вешаем событие обновления списка при изменении текста
-    tbFinder.addEventListener("input", async function () {
-        findInTableWithTimers(_tWaiter, _tFinder, waiter, tryToFillChangeWordsTable);
-    });
+    if (tbFinder) {
+        // Вешаем событие обновления списка при изменении текста
+        tbFinder.addEventListener("input", async function () {
+            startTimers();
+        });
+    }
 }
 
 async function prepareCbLangs() {
     let cbLangs = document.getElementById(_CB_LANGS_ID);
-    if (cbLangs != null) {
+    if (cbLangs) {
         let firstOption = document.createElement("option");
         firstOption.textContent = "Все";
-        cbLangs.appendChild(firstOption);
 
-        await fillCbLangs(cbLangs);
+        let divLangFlag = document.getElementById(_DIV_LANG_FLAG_ID);
+        await _LANG_UTILS.prepareComboBox(cbLangs, firstOption, divLangFlag);
+
         // Вешаем событие обновления списка при изменении элемента выпадающего списка
         cbLangs.addEventListener("change", function () {
-            findInTableWithTimers(_tWaiter, _tFinder, waiter, tryToFillChangeWordsTable);
+            startTimers();
         })
     }
 }
 
 async function prepareCbPartsOfSpeech() {
     let cbPartsOfSpeech = document.getElementById(_CB_PARTS_OF_SPEECH_ID);
-    if (cbPartsOfSpeech != null) {
+    if (cbPartsOfSpeech) {
         let firstOption = document.createElement("option");
         firstOption.textContent = "Все";
-        cbPartsOfSpeech.appendChild(firstOption);
 
-        await fillCbPartsOfSpeech(cbPartsOfSpeech);
+        await _PART_OF_SPEECH_UTILS.fillComboBox(cbPartsOfSpeech, firstOption);
+
         // Вешаем событие обновления списка при изменении элемента выпадающего списка
         cbPartsOfSpeech.addEventListener("change", function () {
-            findInTableWithTimers(_tWaiter, _tFinder, waiter, tryToFillChangeWordsTable);
+            startTimers();
         });
     }
 }
 
 async function prepareCbWordStatuses() {
     let cbWordStatuses = document.getElementById(_CB_WORD_STATUSES);
-    if (cbWordStatuses != null) {
+    if (cbWordStatuses) {
         let firstOption = document.createElement("option");
         firstOption.textContent = "Все";
-        cbWordStatuses.appendChild(firstOption);
+        await _WORD_STATUS_UTILS.fillComboBox(cbWordStatuses, firstOption);
 
-        await fillCbWordStatuses(cbWordStatuses);
-        changeSelectedOptionById(cbWordStatuses.id, _WORD_STATUSES.NEW.CODE);
-        let event = new Event('change');
-        cbWordStatuses.dispatchEvent(event);
+        _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemId(
+            cbWordStatuses, _WORD_STATUSES.NEW.CODE, true);
 
         // Вешаем событие обновления списка при изменении элемента выпадающего списка
         cbWordStatuses.addEventListener("change", function () {
-            findInTableWithTimers(_tWaiter, _tFinder, waiter, tryToFillChangeWordsTable);
+            startTimers();
         });
     }
 }
@@ -167,13 +203,13 @@ async function prepareCbWordStatuses() {
 function prepareBtnDeleteInactiveWordsInCollections() {
     let btnDeleteInactiveWordsInCollections =
         document.getElementById(_BTN_DELETE_INACTIVE_WORDS_IN_COLLECTIONS_ID);
-    if (btnDeleteInactiveWordsInCollections != null) {
+    if (btnDeleteInactiveWordsInCollections) {
         btnDeleteInactiveWordsInCollections.addEventListener("click", async function() {
-            buildABtnDisabled(this);
-            let JSONResponse = await deleteJSONResponseDeleteInactiveWordsInCollections();
+            _A_BUTTONS.A_BUTTON_DISABLED.setStyles(this);
+            let JSONResponse = await _WORDS_IN_COLLECTION_API.DELETE.deleteInactiveWordsInCollections();
             if (JSONResponse.status === _HTTP_STATUSES.OK) {
-                buildABtnDeny(this, false);
-                findInTableWithTimers(_tWaiter, _tFinder, waiter, tryToFillChangeWordsTable);
+                _A_BUTTONS.A_BUTTON_DENY.setStyles(this, false);
+                startTimers();
             }
         })
     }
@@ -182,13 +218,13 @@ function prepareBtnDeleteInactiveWordsInCollections() {
 function prepareBtnDeleteAllUnclaimedWords() {
     let btnDeleteAllUnclaimedWords =
         document.getElementById(_BTN_DELETE_ALL_UNCLAIMED_WORDS_ID);
-    if (btnDeleteAllUnclaimedWords != null) {
+    if (btnDeleteAllUnclaimedWords) {
         btnDeleteAllUnclaimedWords.addEventListener("click", async function() {
-            buildABtnDisabled(this);
-            let JSONResponse = await deleteJSONResponseDeleteAllUnclaimedWords();
+            _A_BUTTONS.A_BUTTON_DISABLED.setStyles(this);
+            let JSONResponse = await _WORDS_API.DELETE.deleteAllUnclaimedWords();
             if (JSONResponse.status === _HTTP_STATUSES.OK) {
-                buildABtnDeny(this, false);
-                findInTableWithTimers(_tWaiter, _tFinder, waiter, tryToFillChangeWordsTable);
+                _A_BUTTONS.A_BUTTON_DENY.setStyles(this, false);
+                startTimers();
             }
         })
     }
@@ -197,13 +233,16 @@ function prepareBtnDeleteAllUnclaimedWords() {
 function prepareBtnAddWordStatusToWordsWithoutStatus() {
     let btnAddWordStatusToWordsWithoutStatus =
         document.getElementById(_BTN_ADD_WORD_STATUS_TO_WORDS_WITHOUT_STATUS);
-    if (btnAddWordStatusToWordsWithoutStatus != null) {
+    if (btnAddWordStatusToWordsWithoutStatus) {
         btnAddWordStatusToWordsWithoutStatus.addEventListener("click", async function() {
-            buildABtnDisabled(this);
-            let JSONResponse = await postJSONResponseAddWordStatusToWordsWithoutStatus(_WORD_STATUSES.NEW.CODE);
+            _A_BUTTONS.A_BUTTON_DISABLED.setStyles(this);
+
+            let requestDTO = new WordStatusHistoryRequestDTO();
+            requestDTO.wordStatusCode = _WORD_STATUSES.NEW.CODE;
+            let JSONResponse = await _WORD_STATUS_HISTORIES_API.POST.addWordStatusToWordsWithoutStatus(requestDTO);
             if (JSONResponse.status === _HTTP_STATUSES.OK) {
-                buildABtnAccept(this, false);
-                findInTableWithTimers(_tWaiter, _tFinder, waiter, tryToFillChangeWordsTable);
+                _A_BUTTONS.A_BUTTON_ACCEPT.setStyles(this, false);
+                startTimers();
             }
         })
     }
@@ -211,98 +250,109 @@ function prepareBtnAddWordStatusToWordsWithoutStatus() {
 
 function prepareBtnRefresh() {
     let btnRefresh = document.getElementById(_BTN_REFRESH_ID);
-    if (btnRefresh != null) {
+    if (btnRefresh) {
         btnRefresh.addEventListener("click", async function() {
-            btnRefresh.disabled = true;
-            findInTableWithTimers(_tWaiter, _tFinder, waiter, tryToFillChangeWordsTable);
-            btnRefresh.disabled = false;
+            startTimers();
         })
     }
 }
 
-async function getPreparedJSONResponseWordsFilteredPagination() {
+async function sendPreparedRequest() {
     let title = document.getElementById(_TB_FINDER_ID).value;
-    let partOfSpeechCode =  getSelectedOptionId(_CB_PARTS_OF_SPEECH_ID);
-    let langCode =  getSelectedOptionId(_CB_LANGS_ID);
-    let wordStatusCode = getSelectedOptionId(_CB_WORD_STATUSES);
+    let partOfSpeechCode =  _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_PARTS_OF_SPEECH_ID);
+    let langCode =  _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_LANGS_ID);
+    let wordStatusCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_WORD_STATUSES);
 
-    return  await getJSONResponseWordsFilteredPagination(_NUMBER_OF_WORDS, title,
+    return await _WORDS_API.GET.getAllFilteredPagination(_NUMBER_OF_WORDS, title,
         wordStatusCode, partOfSpeechCode, langCode, _lastWordIdOnPreviousPage);
 }
 
-async function tryToFillChangeWordsTable() {
+async function tryToFillTable() {
     _lastWordNumberInList = 0;
     _lastWordIdOnPreviousPage = 0n;
 
-    let readyToFill = true;
-    let badRequestText = null;
-
-    // Получаем JSON для заполнения таблицы ---
-    let wordsFilteredPaginationJson = null;
-    let JSONResponse = await getPreparedJSONResponseWordsFilteredPagination();
-    if (JSONResponse.status === _HTTP_STATUSES.OK) {
-        wordsFilteredPaginationJson = JSONResponse.json;
-    } else {
-        readyToFill = false;
-
-        let message = new CustomResponseMessage(JSONResponse.json);
-        badRequestText = message.text;
-    }
-    //---
-
-    // Чистим таблицу ---
-    removeBtnShowMore(_BTN_SHOW_MORE_ID);
     let tableBody = document.getElementById(_CHANGE_WORD_TABLE_BODY_ID);
-    tableBody.replaceChildren();
-    //---
-
-    if (readyToFill) {
-        // Заполняем таблицу
-        await fillChangeWordsTable(wordsFilteredPaginationJson);
+    let JSONResponse = await sendPreparedRequest();
+    if (JSONResponse.status === _HTTP_STATUSES.OK) {
+        let tableRows = await createTableRows(JSONResponse.json);
+        if (_accessToFillTable === true) {
+            tableBody.replaceChildren();
+            for (let i = 0; i < tableRows.length; i++) {
+                if (_accessToFillTable === true) {
+                    tableBody.appendChild(tableRows[i]);
+                }
+            }
+        }
     } else {
-        // Выводим сообщение об ошибке
         let tableHead = document.getElementById(_CHANGE_WORD_TABLE_HEAD_ID);
-        let tableBody = document.getElementById(_CHANGE_WORD_TABLE_BODY_ID);
-        setMessageInsideTable(tableHead, tableBody, badRequestText, true);
+        let numberOfColumns = _TABLE_UTILS.getNumberOfColumnsByTableHead(tableHead);
+        let trMessage = _TABLE_UTILS.MESSAGES_INSIDE_TABLE
+            .createTrCommon(numberOfColumns, new CustomResponseMessage(JSONResponse.json).text);
+
+        if (_accessToFillTable === true) {
+            tableBody.replaceChildren();
+            if (_accessToFillTable === true) {
+                tableBody.appendChild(trMessage);
+            }
+        }
     }
 }
 
-async function fillChangeWordsTable(wordsFilteredPaginationJson) {
+async function createTableRows(wordsFilteredPaginationJson){
+    let tableRows = [];
+
     for (let i = 0; i < wordsFilteredPaginationJson.length; i++) {
-        let word = new WordResponseDTO(wordsFilteredPaginationJson[i]);
-        await tryToAppendNewTableRow(word.id);
-        // Получаем id последнего элемента JSON-коллекции
-        if (i === wordsFilteredPaginationJson.length - 1) {
-            _lastWordIdOnPreviousPage = word.id;
+        if (_accessToFillTable === true) {
+            let word = new WordResponseDTO(wordsFilteredPaginationJson[i]);
+
+            let row = await createTableRow(word);
+            if (row) {
+                tableRows.push(row);
+            }
+
+            // Получаем id последнего элемента JSON-коллекции
+            if (i === wordsFilteredPaginationJson.length - 1) {
+                _lastWordIdOnPreviousPage = word.id;
+            }
         }
     }
 
     // Создаем кнопку, только если запрос вернул максимальное количество на страницу
-    if (wordsFilteredPaginationJson.length === _NUMBER_OF_WORDS) {
-        let collectionWordListContainer =
-            document.getElementById(_CHANGE_WORD_LIST_CONTAINER);
-        let btnShowMore = createBtnShowMore(_BTN_SHOW_MORE_ID, _NUMBER_OF_WORDS);
-        if (collectionWordListContainer != null && btnShowMore != null) {
-            btnShowMore.addEventListener("click", async function () {
-                let JSONResponse = await getPreparedJSONResponseWordsFilteredPagination();
+    if (_accessToFillTable === true && wordsFilteredPaginationJson.length === _NUMBER_OF_WORDS) {
+        let tableHead = document.getElementById(_CHANGE_WORD_TABLE_HEAD_ID);
+        let numberOfColumns = _TABLE_UTILS.getNumberOfColumnsByTableHead(tableHead);
+
+        let trShowMore = _TABLE_UTILS.createTrShowMore(numberOfColumns,
+            _NUMBER_OF_WORDS, async function () {
+                let JSONResponse = await sendPreparedRequest();
                 if (JSONResponse.status === _HTTP_STATUSES.OK) {
-                    await fillChangeWordsTable(JSONResponse.json);
+                    let tableRows = await createTableRows(JSONResponse.json);
+                    if (_accessToFillTable === true) {
+                        let tableBody = document.getElementById(_CHANGE_WORD_TABLE_BODY_ID);
+                        for (let i = 0; i < tableRows.length; i++) {
+                            if (_accessToFillTable === true) {
+                                tableBody.appendChild(tableRows[i]);
+                            }
+                        }
+                    }
                 }
             });
-            collectionWordListContainer.appendChild(btnShowMore);
-        }
+
+        tableRows.push(trShowMore);
     }
+
+    return tableRows;
 }
 
-async function tryToAppendNewTableRow(wordId) {
+async function createTableRow(wordResponseDTO) {
     const CHANGE_ROW_TABLE_ROW_ITEM_ID_PATTERN = "change_word_table_row_item";
     const ROW_HEIGHT = "50px";
 
     // Ищем актуальный статус слова ---
-    let JSONResponseWordStatusHistory = await getJSONResponseWordStatusHistoryFindCurrentByWordId(wordId);
-    if (JSONResponseWordStatusHistory.status === _HTTP_STATUSES.OK) {
+    let JSONResponse = await _WORD_STATUS_HISTORIES_API.GET.findCurrentByWordId(wordResponseDTO.id);
+    if (JSONResponse.status === _HTTP_STATUSES.OK) {
         let wordStatusHistory =
-            new WordStatusHistoryResponseDTO(JSONResponseWordStatusHistory.json);
+            new WordStatusHistoryResponseDTO(JSONResponse.json);
 
         // Создаём строку ---
         let row = document.createElement("tr");
@@ -311,6 +361,7 @@ async function tryToAppendNewTableRow(wordId) {
 
         // Порядковый номер ---
         let numberColumn = document.createElement("td");
+        numberColumn.style.textAlign = "center";
         numberColumn.textContent = `${++_lastWordNumberInList}.`;
         row.appendChild(numberColumn);
         //---
@@ -323,7 +374,7 @@ async function tryToAppendNewTableRow(wordId) {
 
         // Язык ---
         let langColumn = document.createElement("td");
-        langColumn.appendChild(wordStatusHistory.word.lang.createSpanLangWithFlag());
+        langColumn.appendChild(wordStatusHistory.word.lang.createSpan());
         row.appendChild(langColumn);
         //---
 
@@ -340,7 +391,10 @@ async function tryToAppendNewTableRow(wordId) {
         cbWordStatuses.style.height = ROW_HEIGHT;
         cbWordStatuses.style.width = "100%";
 
-        await fillCbWordStatuses(cbWordStatuses);
+        await _WORD_STATUS_UTILS.fillComboBox(cbWordStatuses, null);
+
+        _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemId(
+            cbWordStatuses, wordStatusHistory.wordStatus.code, true);
 
         let wordStatusColumn = document.createElement("td");
         wordStatusColumn.style.padding = "1px";
@@ -348,25 +402,25 @@ async function tryToAppendNewTableRow(wordId) {
         row.appendChild(wordStatusColumn);
         //---
 
-        // Добавляем строку в таблицу ---
-        let tableBody = document.getElementById(_CHANGE_WORD_TABLE_BODY_ID);
-        tableBody.appendChild(row);
-        //---
-
         // При изменении значения выпадающего списка, будет меняться статус слова ---
-        changeSelectedOptionById(cbWordStatuses.id, wordStatusHistory.wordStatus.code);
-        let event = new Event('change');
-        cbWordStatuses.dispatchEvent(event);
-
         cbWordStatuses.addEventListener("change", async function() {
-            let title = wordStatusHistory.word.title;
-            let langCode = wordStatusHistory.word.lang.code;
-            let partOfSpeechCode = wordStatusHistory.word.partOfSpeech.code;
-            let wordStatusCode = getSelectedOptionId(cbWordStatuses.id);
+            cbWordStatuses.disabled = true;
 
-            await patchJSONResponseEditWord(wordStatusHistory.word.id, title, langCode,
-                partOfSpeechCode, wordStatusCode);
+            let wordRequestDTO = new WordRequestDTO();
+            wordRequestDTO.id = wordStatusHistory.word.id;
+            wordRequestDTO.title = wordStatusHistory.word.title;
+            wordRequestDTO.langCode = wordStatusHistory.word.lang.code;
+            wordRequestDTO.partOfSpeechCode = wordStatusHistory.word.partOfSpeech.code;
+            wordRequestDTO.wordStatusCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbWordStatuses);
+
+            let JSONResponse = await _WORDS_API.PATCH.edit(wordRequestDTO);
+            if (JSONResponse.status === _HTTP_STATUSES.OK) {
+                cbWordStatuses.disabled = false;
+            }
         })
+
+        return row;
         //---
     }
 }
+

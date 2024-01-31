@@ -3,19 +3,31 @@ package ru.herooo.mylanguageweb.dto.word;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import ru.herooo.mylanguageutils.StringUtils;
 import ru.herooo.mylanguageweb.controllers.json.LongDeserializer;
 import ru.herooo.mylanguageweb.controllers.json.LongSerializer;
 
 public class WordRequestDTO {
+    private final StringUtils STRING_UTILS = new StringUtils();
+
     @JsonSerialize(using = LongSerializer.class)
     @JsonDeserialize(using = LongDeserializer.class)
     private long id;
+
+    @NotBlank(message = "Слово не может быть пустым.")
+    @Size(max = 44, message = "Длина должна быть не более 44-х символов.")
+    @Pattern(regexp = "^[^ ]+$", message = "Слово не должно содержать пробелов.")
     @JsonProperty("title")
     private String title;
 
+    @NotBlank(message = "Выберите язык.")
     @JsonProperty("lang_code")
     private String langCode;
 
+    @NotBlank(message = "Выберите часть речи.")
     @JsonProperty("part_of_speech_code")
     private String partOfSpeechCode;
 
@@ -38,7 +50,9 @@ public class WordRequestDTO {
     }
 
     public void setTitle(String title) {
-        this.title = title;
+        if (STRING_UTILS.isNotStringVoid(title)) {
+            this.title = STRING_UTILS.getClearString(title);
+        }
     }
 
     public String getLangCode() {

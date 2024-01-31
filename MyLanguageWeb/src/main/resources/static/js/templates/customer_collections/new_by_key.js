@@ -1,67 +1,90 @@
 import {
-    checkCorrectCustomerCollectionTitle
-} from "../../utils/text_box_utils.js";
-
-import {
-    changeRuleStatus,
-    getOrCreateRule
-} from "../../utils/div_rules.js";
-
-import {
-    getJSONResponseFindCollectionByKey,
-    postJSONResponseCopyCollectionByKey
-} from "../../api/customer_collections.js";
-
-import {
-    Timer
-} from "../../classes/timer.js";
+    CustomTimer
+} from "../../classes/custom_timer.js";
 
 import {
     HttpStatuses
 } from "../../classes/http_statuses.js";
 
 import {
-    changeCbLangsEnabledByCbCustomerCollectionKey,
-    fillCbLangs,
-    fillCbPartsOfSpeech, getSelectedOptionId
-} from "../../utils/combo_box_utils.js";
-
-import {
-    getJSONResponseAllWordsInCollectionFilteredPagination
-} from "../../api/words_in_collection.js";
-
-import {
-    createBtnShowMore,
-    removeBtnShowMore
-} from "../../utils/btn_utils.js";
-
-import {
-    findInTableWithTimers,
-    setMessageInsideTable
-} from "../../utils/table_utils.js";
-
-import {
-    CssMain
-} from "../../classes/css/css_main.js";
-
-import {
     WordInCollectionResponseDTO
-} from "../../dto/word_in_collection.js";
+} from "../../classes/dto/word_in_collection.js";
 
 import {
     CustomResponseMessage
-} from "../../dto/other/custom_response_message.js";
+} from "../../classes/dto/other/custom_response_message.js";
 
 import {
+    CustomerCollectionRequestDTO,
     CustomerCollectionResponseDTO
-} from "../../dto/customer_collection.js";
+} from "../../classes/dto/customer_collection.js";
 
-const _CSS_MAIN = new CssMain();
+import {
+    RuleTypes,
+    RuleElement
+} from "../../classes/rule_element.js";
+
+import {
+    LangUtils
+} from "../../classes/utils/entity/lang_utils.js";
+
+import {
+    PartOfSpeechUtils
+} from "../../classes/utils/entity/part_of_speech_utils.js";
+
+import {
+    CustomerCollectionUtils
+} from "../../classes/utils/entity/customer_collection_utils.js";
+
+import {
+    CustomerCollectionsAPI
+} from "../../classes/api/customer_collections_api.js";
+
+import {
+    WordsInCollectionAPI
+} from "../../classes/api/words_in_collection_api.js";
+
+import {
+    TableUtils
+} from "../../classes/utils/table_utils.js";
+
+import {
+    LoadingElement
+} from "../../classes/loading_element.js";
+
+import {
+    ComboBoxUtils
+} from "../../classes/utils/combo_box_utils.js";
+
+import {
+    CssCollectionInfo
+} from "../../classes/css/css_collection_info.js";
+
+import {
+    CustomTimerUtils
+} from "../../classes/utils/custom_timer_utils.js";
+
+import {
+    FlagElements
+} from "../../classes/flag_elements.js";
+
+const _CSS_COLLECTION_INFO = new CssCollectionInfo();
+
+const _CUSTOMER_COLLECTIONS_API = new CustomerCollectionsAPI();
+const _WORDS_IN_COLLECTION_API = new WordsInCollectionAPI();
+
 const _HTTP_STATUSES = new HttpStatuses();
-
-const _BAD_MESSAGE_FOR_COLLECTION_INFO_STYLE_ID = "bad-message-for-collection-info";
+const _RULE_TYPES = new RuleTypes();
+const _LANG_UTILS = new LangUtils();
+const _PART_OF_SPEECH_UTILS = new PartOfSpeechUtils();
+const _CUSTOMER_COLLECTION_UTILS = new CustomerCollectionUtils();
+const _TABLE_UTILS = new TableUtils();
+const _COMBO_BOX_UTILS = new ComboBoxUtils();
+const _CUSTOM_TIMER_UTILS = new CustomTimerUtils();
+const _FLAG_ELEMENTS = new FlagElements();
 
 const _TB_TITLE_ID = "tb_title";
+const _DIV_KEY_CONTAINER = "tb_key_container";
 const _TB_KEY_ID = "tb_key";
 const _SUBMIT_SEND_ID = "submit_send";
 const _BTN_SEND = "btn_send";
@@ -70,67 +93,132 @@ const _DIV_COLLECTION_INFO_ID = "div_collection_info";
 const _TB_FINDER_ID = "tb_finder";
 const _CB_LANGS_ID = "cb_langs";
 const _CB_PARTS_OF_SPEECH_ID = "cb_parts_of_speech";
-const _COLLECTION_WORD_LIST_CONTAINER_ID = "collection_word_list_container";
 const _COLLECTION_WORD_TABLE_HEAD_ID = "collection_word_table_head";
 const _COLLECTION_WORD_TABLE_BODY_ID = "collection_word_table_body";
 const _BTN_REFRESH_ID = "btn_refresh";
-
-const _BTN_SHOW_MORE_ID = "btn_show_more";
+const _DIV_COLLECTION_FLAG_ID = "collection_flag";
+const _DIV_LANG_FLAG_ID = "lang_flag";
 
 const _NUMBER_OF_WORDS = 20;
 let _lastWordNumberInList = 0;
 let _lastWordInCollectionIdOnPreviousPage = 0n;
 
-const _T_CHECKER_MILLISECONDS = 250;
-let _tChecker = new Timer(null);
-let _tWaiter = new Timer(null);
-let _tFinder = new Timer(null);
+const _CUSTOM_TIMER_COLLECTION_INFO_WAITER = new CustomTimer();
+const _CUSTOM_TIMER_COLLECTION_INFO_FINDER = new CustomTimer();
+let _accessToFillCollectionInfo = true;
+
+const _CUSTOM_TIMER_TABLE_WAITER = new CustomTimer();
+const _CUSTOM_TIMER_TABLE_FINDER = new CustomTimer();
+let _accessToFillTable = true;
+
+const _CUSTOM_TIMER_CHECKER = new CustomTimer();
 
 window.onload = async function () {
+    prepareCollectionInfoTimers();
+    prepareTableTimers();
+
+    await prepareCbLangs();
+    await prepareCbPartsOfSpeech();
+    prepareTbFinder();
+    prepareBtnRefresh();
+
     prepareTbTitle();
     prepareTbKey();
     prepareSubmitSend();
 
-    await prepareCbLangs();
-    await prepareCbPartsOfSpeech();
-
-    let collectionKey = document.getElementById(_TB_KEY_ID).value;
-    await changeCbLangsEnabledByCbCustomerCollectionKey(collectionKey, _CB_LANGS_ID);
-
-    prepareTbFinder();
-    prepareBtnRefresh();
-
-    await tryToFillCollectionWordListTable();
+    startTimers();
 }
 
-function waiter() {
-    removeBtnShowMore(_BTN_SHOW_MORE_ID);
-    let tableHead = document.getElementById(_COLLECTION_WORD_TABLE_HEAD_ID);
-    let tableBody = document.getElementById(_COLLECTION_WORD_TABLE_BODY_ID);
-    setMessageInsideTable(tableHead, tableBody, "Идёт поиск...", true);
+function startTimers() {
+    _CUSTOM_TIMER_UTILS.findAfterWait(_CUSTOM_TIMER_COLLECTION_INFO_WAITER, _CUSTOM_TIMER_COLLECTION_INFO_FINDER);
+    _CUSTOM_TIMER_UTILS.findAfterWait(_CUSTOM_TIMER_TABLE_WAITER, _CUSTOM_TIMER_TABLE_FINDER);
+}
+
+function prepareCollectionInfoTimers() {
+    _CUSTOM_TIMER_COLLECTION_INFO_WAITER.handler = function () {
+        _accessToFillCollectionInfo = false;
+
+        let divCollectionInfo = document.getElementById(_DIV_COLLECTION_INFO_ID);
+        divCollectionInfo.replaceChildren();
+        divCollectionInfo.appendChild(new LoadingElement().createDiv());
+    }
+
+    _CUSTOM_TIMER_COLLECTION_INFO_FINDER.handler = async function () {
+        _accessToFillCollectionInfo = true;
+        await tryToFillCollectionInfo();
+    }
+}
+
+function prepareTableTimers() {
+    _CUSTOM_TIMER_TABLE_WAITER.handler = function () {
+        _accessToFillTable = false;
+
+        // Отображаем загрузку в таблице ---
+        let tableHead = document.getElementById(_COLLECTION_WORD_TABLE_HEAD_ID);
+        let numberOfColumns = _TABLE_UTILS.getNumberOfColumnsByTableHead(tableHead);
+        let trMessage = _TABLE_UTILS.MESSAGES_INSIDE_TABLE.createTrLoading(numberOfColumns);
+
+        let tableBody = document.getElementById(_COLLECTION_WORD_TABLE_BODY_ID);
+        tableBody.replaceChildren();
+        tableBody.appendChild(trMessage);
+        //---
+
+        // Отображаем загрузку в блоке с информацией о коллекции ---
+        let divCollectionInfoContainer = document.getElementById(_DIV_COLLECTION_INFO_ID);
+        divCollectionInfoContainer.replaceChildren();
+        divCollectionInfoContainer.appendChild(new LoadingElement().createDiv());
+        //---
+    }
+
+    _CUSTOM_TIMER_TABLE_FINDER.handler = async function() {
+        _accessToFillTable = true;
+        await tryToFillTable();
+    }
 }
 
 function prepareTbTitle() {
     let tbTitle = document.getElementById(_TB_TITLE_ID);
-    if (tbTitle != null) {
+    if (tbTitle) {
         tbTitle.addEventListener("input", async function() {
-            changeSendNewCollectionByKeyInfoRule(null, true);
+            setInfoRuleMessage(true, null, null);
+
             await checkCorrectTitle();
         });
     }
 }
 
 function prepareTbKey() {
-    let tbTitle = document.getElementById(_TB_KEY_ID);
-    if (tbTitle != null) {
-        tbTitle.addEventListener("input", async function() {
-            changeSendNewCollectionByKeyInfoRule(null, true);
+    let tbKey = document.getElementById(_TB_KEY_ID);
+    if (tbKey) {
+        let divCollectionFlag = document.getElementById(_DIV_COLLECTION_FLAG_ID);
+        _CUSTOMER_COLLECTION_UTILS.prepareTextBox(tbKey, divCollectionFlag);
+
+        let customTimerLangFlagChanger = new CustomTimer();
+        customTimerLangFlagChanger.timeout = 250;
+        customTimerLangFlagChanger.handler = async function () {
+            // Ищем по ключу коллекцию и получаем из неё язык ---
+            let langCode;
+            let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.findByKey(tbKey.value);
+            if (JSONResponse.status === _HTTP_STATUSES.OK) {
+                let customerCollection = new CustomerCollectionResponseDTO(JSONResponse.json);
+                langCode = customerCollection.lang.code;
+            }
+            //---
+
+            // Меняем язык в списке языков + его флаг ---
+            let cbLangs = document.getElementById(_CB_LANGS_ID);
+            cbLangs.removeEventListener("change", startTimers);
+            _LANG_UTILS.changeCbLangsItemByLangCode(cbLangs, langCode, true);
+            cbLangs.addEventListener("change", startTimers);
+            //---
+        }
+
+        tbKey.addEventListener("input", async function() {
+            setInfoRuleMessage(true, null, null);
+
+            customTimerLangFlagChanger.start();
+            startTimers();
             await checkCorrectKey();
-
-            let collectionKey = document.getElementById(_TB_KEY_ID).value;
-            await changeCbLangsEnabledByCbCustomerCollectionKey(collectionKey, _CB_LANGS_ID);
-
-            await tryToFillCollectionWordListTable();
         });
     }
 }
@@ -143,7 +231,8 @@ function prepareSubmitSend() {
             btnSend.disabled = true;
             event.preventDefault();
 
-            if (await checkBeforeSend() && await sendNewCollectionByKey()) {
+            if (await checkBeforeSend() === true
+                && await sendNewCollectionByKey() === true) {
                 submitSend.submit();
             }
 
@@ -154,46 +243,38 @@ function prepareSubmitSend() {
 
 async function checkCorrectTitle() {
     let tbTitle = document.getElementById(_TB_TITLE_ID);
-    const DIV_RULE_ID = tbTitle.id + "_div_rule";
-
-    return await checkCorrectCustomerCollectionTitle(tbTitle, DIV_RULE_ID, _tChecker, _T_CHECKER_MILLISECONDS);
+    return await _CUSTOMER_COLLECTION_UTILS
+        .checkCorrectValueInTbTitle(tbTitle, tbTitle.parentElement, _CUSTOM_TIMER_CHECKER);
 }
 
 async function checkCorrectKey() {
     let tbKey = document.getElementById(_TB_KEY_ID);
-    const DIV_RULE_ID = tbKey.id + "_div_rule";
-    const PARENT_ID = tbKey.parentElement.id;
+    let tbKeyParent = document.getElementById(_DIV_KEY_CONTAINER);
+    return await _CUSTOMER_COLLECTION_UTILS
+        .checkCorrectValueInTbKey(tbKey, tbKeyParent, _CUSTOM_TIMER_CHECKER);
+}
 
-    let isCorrect = true;
-    let divRuleElement = getOrCreateRule(DIV_RULE_ID);
-    let inputText = tbKey.value.trim();
+async function tryToFillCollectionInfo() {
+    let collectionKey = document.getElementById(_TB_KEY_ID).value;
 
-    clearTimeout(_tChecker.id);
-    if (!inputText) {
-        isCorrect = false;
-        divRuleElement.textContent = "Ключ не может быть пустым.";
-        changeRuleStatus(divRuleElement, PARENT_ID, isCorrect);
+    let divCollectionInfo;
+    let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.findByKey(collectionKey);
+    if (JSONResponse.status === _HTTP_STATUSES.OK) {
+        let customerCollection = new CustomerCollectionResponseDTO(JSONResponse.json);
+        divCollectionInfo = await customerCollection.createDivInfo();
     } else {
-        changeRuleStatus(divRuleElement, PARENT_ID, true);
-
-        let JSONResponsePromise = new Promise(resolve => {
-            _tChecker.id = setTimeout(async function () {
-                resolve(await getJSONResponseFindCollectionByKey(inputText));
-            }, _T_CHECKER_MILLISECONDS);
-        });
-
-        let JSONResponse = await JSONResponsePromise;
-        if (JSONResponse.status !== _HTTP_STATUSES.OK) {
-            isCorrect = false;
-            divRuleElement.textContent = "Коллекции с таким ключом не существует.";
-            changeRuleStatus(divRuleElement, PARENT_ID, isCorrect);
-        } else {
-            isCorrect = true;
-            changeRuleStatus(divRuleElement, PARENT_ID, isCorrect);
-        }
+        divCollectionInfo = document.createElement("div");
+        divCollectionInfo.classList.add(_CSS_COLLECTION_INFO.DIV_COLLECTION_INFO_ERROR_CONTAINER_STYLE_ID);
+        divCollectionInfo.textContent = "Введите корректный ключ коллекции, чтобы увидеть информацию о ней.";
     }
 
-    return isCorrect;
+    let divCollectionInfoContainer = document.getElementById(_DIV_COLLECTION_INFO_ID);
+    if (_accessToFillCollectionInfo === true) {
+        divCollectionInfoContainer.replaceChildren();
+        if (_accessToFillCollectionInfo === true) {
+            divCollectionInfoContainer.appendChild(divCollectionInfo);
+        }
+    }
 }
 
 async function checkBeforeSend() {
@@ -205,67 +286,75 @@ async function checkBeforeSend() {
 
 async function sendNewCollectionByKey() {
     let isCorrect = true;
+    let message;
+    let ruleType;
 
-    let title = document.getElementById(_TB_TITLE_ID).value;
-    let key = document.getElementById(_TB_KEY_ID).value;
-    let JSONResponse = await postJSONResponseCopyCollectionByKey(title, key);
+    let customerCollectionRequestDTO = new CustomerCollectionRequestDTO();
+    customerCollectionRequestDTO.title = document.getElementById(_TB_TITLE_ID).value;
+    customerCollectionRequestDTO.key = document.getElementById(_TB_KEY_ID).value;
+
+    let JSONResponse = await _CUSTOMER_COLLECTIONS_API.POST.copyByKey(customerCollectionRequestDTO);
     if (JSONResponse.status !== _HTTP_STATUSES.OK) {
         isCorrect = false;
+        message = new CustomResponseMessage(JSONResponse.json).text;
+        ruleType = _RULE_TYPES.ERROR;
+    }
 
-        let message = new CustomResponseMessage(JSONResponse.json);
-        changeSendNewCollectionByKeyInfoRule(message.text, isCorrect);
+    if (isCorrect === false) {
+        setInfoRuleMessage(isCorrect, message, ruleType);
     } else {
-        isCorrect = true;
-        changeSendNewCollectionByKeyInfoRule(null, isCorrect);
+        setInfoRuleMessage(isCorrect, null, null);
     }
 
     return isCorrect;
 }
 
-function changeSendNewCollectionByKeyInfoRule(text, isRuleCorrect) {
-    let divRuleElement =
-        getOrCreateRule(_DIV_SEND_NEW_COLLECTION_BY_KEY_INFO_ID + "_div_rule");
-    divRuleElement.textContent = text;
-    changeRuleStatus(divRuleElement, _DIV_SEND_NEW_COLLECTION_BY_KEY_INFO_ID, isRuleCorrect);
+function setInfoRuleMessage(isCorrect, message, ruleType) {
+    let ruleElement = new RuleElement(_DIV_SEND_NEW_COLLECTION_BY_KEY_INFO_ID);
+
+    // Отображаем предупреждение (правило), если это необходимо ---
+    if (isCorrect === false) {
+        ruleElement.createOrChangeDiv(message, ruleType);
+    } else {
+        ruleElement.removeDiv();
+    }
+    //---
 }
 
-// Подготовка поля "Поиск"
 function prepareTbFinder() {
     let tbFinder = document.getElementById(_TB_FINDER_ID);
-
-    if (tbFinder != null) {
+    if (tbFinder) {
         tbFinder.addEventListener("input", async function () {
-           findInTableWithTimers(_tWaiter, _tFinder, waiter, tryToFillCollectionWordListTable);
+            startTimers();
         });
     }
 }
 
-// Подготовка выпадающего списка "Языки"
 async function prepareCbLangs() {
     let cbLangs = document.getElementById(_CB_LANGS_ID);
-    if (cbLangs != null) {
+    if (cbLangs) {
         let firstOption = document.createElement("option");
         firstOption.textContent = "Все";
-        cbLangs.appendChild(firstOption);
 
-        await fillCbLangs(cbLangs);
-        cbLangs.addEventListener("change", function () {
-           findInTableWithTimers(_tWaiter, _tFinder, waiter, tryToFillCollectionWordListTable);
-        })
+        let divLangFlag = document.getElementById(_DIV_LANG_FLAG_ID);
+        await _LANG_UTILS.prepareComboBox(cbLangs, firstOption, divLangFlag);
+
+        cbLangs.addEventListener("change", startTimers);
     }
 }
 
-// Подготовка выпадающего списка "Части речи"
 async function prepareCbPartsOfSpeech() {
     let cbPartsOfSpeech = document.getElementById(_CB_PARTS_OF_SPEECH_ID);
-    if (cbPartsOfSpeech != null) {
+    if (cbPartsOfSpeech) {
         let firstOption = document.createElement("option");
         firstOption.textContent = "Все";
-        cbPartsOfSpeech.appendChild(firstOption);
 
-        await fillCbPartsOfSpeech(cbPartsOfSpeech);
+        let divLangFlag = document.getElementById(_DIV_LANG_FLAG_ID);
+        _FLAG_ELEMENTS.DIV.setStyles(divLangFlag, null, true);
+        await _PART_OF_SPEECH_UTILS.fillComboBox(cbPartsOfSpeech, firstOption, divLangFlag);
+
         cbPartsOfSpeech.addEventListener("change", function () {
-            findInTableWithTimers(_tWaiter, _tFinder, waiter, tryToFillCollectionWordListTable);
+            startTimers();
         });
     }
 }
@@ -274,156 +363,140 @@ function prepareBtnRefresh() {
     let btnRefresh = document.getElementById(_BTN_REFRESH_ID);
     if (btnRefresh != null) {
         btnRefresh.addEventListener("click", async function() {
-            btnRefresh.disabled = true;
-            findInTableWithTimers(_tWaiter, _tFinder, waiter, tryToFillCollectionWordListTable);
-            btnRefresh.disabled = false;
+            startTimers();
         })
     }
 }
 
-// Подготавливаем GET-запрос и получаем ответ
-async function getPreparedJSONResponseAllWordsInCollectionFilteredPagination() {
-    let customerCollectionKey = document.getElementById(_TB_KEY_ID).value;
-    let tbFinderValue = document.getElementById(_TB_FINDER_ID).value;
-    let cbPartsOfSpeechValue = getSelectedOptionId(_CB_PARTS_OF_SPEECH_ID);
-    let cbLangCodeValue = getSelectedOptionId(_CB_LANGS_ID);
-
-    return await getJSONResponseAllWordsInCollectionFilteredPagination(tbFinderValue,
-        _NUMBER_OF_WORDS, BigInt(_lastWordInCollectionIdOnPreviousPage), customerCollectionKey,
-        cbPartsOfSpeechValue, cbLangCodeValue);
-}
-
-async function tryToFillCollectionWordListTable() {
-    _lastWordNumberInList = 0;
-    _lastWordInCollectionIdOnPreviousPage = 0n;
-
-    let readyToFill = true;
-    let badRequestText = null;
-
-    // Проверяем, существует ли коллекция с таким ключом
+async function sendPrepareRequest() {
     let collectionKey = document.getElementById(_TB_KEY_ID).value;
-    let JSONResponse = await getJSONResponseFindCollectionByKey(collectionKey);
-    if (JSONResponse.status === _HTTP_STATUSES.OK) {
-        let customerCollection = new CustomerCollectionResponseDTO(JSONResponse.json);
+    let title = document.getElementById(_TB_FINDER_ID).value;
+    let partOfSpeechCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_PARTS_OF_SPEECH_ID);
+    let langCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_LANGS_ID);
 
-        // Генерируем информацию о коллекции
-        // Если информация уже существовала, мы должны удалить предыдущую,
-        // сгенерировать новую, но не удалять сам контейнер!
-        let divCustomerCollectionId = "customer_collection_info";
-        let divCustomerCollection = document.getElementById(divCustomerCollectionId);
-        if (divCustomerCollection) {
-            await customerCollection.changeDiv(divCustomerCollection);
-        } else {
-            divCustomerCollection = await customerCollection.createDiv();
+    return await _WORDS_IN_COLLECTION_API.GET.getAllInCollectionFilteredPagination(collectionKey,
+        _NUMBER_OF_WORDS, title, partOfSpeechCode, langCode, BigInt(_lastWordInCollectionIdOnPreviousPage));
+}
 
-            let divCollectionInfo = document.getElementById(_DIV_COLLECTION_INFO_ID);
-            divCollectionInfo.replaceChildren();
-            divCollectionInfo.appendChild(divCustomerCollection);
-        }
-    } else {
+async function tryToFillTable() {
+    let readyToFill = true;
+    let collectionKey = document.getElementById(_TB_KEY_ID).value;
+    let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.findByKey(collectionKey);
+    if (JSONResponse.status !== _HTTP_STATUSES.OK) {
         readyToFill = false;
-        badRequestText = "Введите корректный ключ коллекции, чтобы увидеть информацию о ней.";
-
-        let divCollectionInfo = document.getElementById(_DIV_COLLECTION_INFO_ID);
-        divCollectionInfo.replaceChildren();
-
-        let divBadMessageForCollectionInfo = document.createElement("div");
-        divBadMessageForCollectionInfo.classList.add(_BAD_MESSAGE_FOR_COLLECTION_INFO_STYLE_ID);
-        divBadMessageForCollectionInfo.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
-        divBadMessageForCollectionInfo.textContent = badRequestText;
-        divCollectionInfo.appendChild(divBadMessageForCollectionInfo);
+        setMessageInsideTable("Введите корректный ключ коллекции, чтобы увидеть слова, находящиеся в ней.");
     }
 
-    // Получаем JSON для заполнения таблицы ---
-    let allWordsInCollectionFilteredPagination = null;
-    if (readyToFill) {
-        let JSONResponse = await getPreparedJSONResponseAllWordsInCollectionFilteredPagination();
+    if (readyToFill === true) {
+        _lastWordNumberInList = 0;
+        _lastWordInCollectionIdOnPreviousPage = 0n;
+
+        // Ищем слова в коллекции ---
+        JSONResponse = await sendPrepareRequest();
         if (JSONResponse.status === _HTTP_STATUSES.OK) {
-            allWordsInCollectionFilteredPagination = JSONResponse.json;
+            let tableRows = await createTableRows(JSONResponse.json);
+            if (_accessToFillTable === true) {
+                let tableBody = document.getElementById(_COLLECTION_WORD_TABLE_BODY_ID);
+                tableBody.replaceChildren();
+                for (let i = 0; i < tableRows.length; i++) {
+                    if (_accessToFillTable === true) {
+                        tableBody.appendChild(tableRows[i]);
+                    }
+                }
+            }
         } else {
-            readyToFill = false;
-
-            let message = new CustomResponseMessage(JSONResponse.json);
-            badRequestText = message.text;
+            setMessageInsideTable(new CustomResponseMessage(JSONResponse.json).text);
         }
-    }
-    //---
-
-    // Чистим таблицу ---
-    removeBtnShowMore(_BTN_SHOW_MORE_ID);
-    let tableBody = document.getElementById(_COLLECTION_WORD_TABLE_BODY_ID);
-    tableBody.replaceChildren();
-    //---
-
-    if (readyToFill) {
-        // Заполняем таблицу
-        await fillCollectionWordListTable(allWordsInCollectionFilteredPagination);
-    } else {
-        // Выводим сообщение об ошибке
-        let tableHead = document.getElementById(_COLLECTION_WORD_TABLE_HEAD_ID);
-        let tableBody = document.getElementById(_COLLECTION_WORD_TABLE_BODY_ID);
-        setMessageInsideTable(tableHead, tableBody, badRequestText, true);
     }
 }
 
-async function fillCollectionWordListTable(allWordsInCollectionFilteredPaginationJson) {
-    let tableBody = document.getElementById(_COLLECTION_WORD_TABLE_BODY_ID);
+async function createTableRows(allWordsInCollectionFilteredPaginationJson) {
+    let tableRows = [];
+
     for (let i = 0; i < allWordsInCollectionFilteredPaginationJson.length; i++) {
-        let wordInCollection =
-            new WordInCollectionResponseDTO(allWordsInCollectionFilteredPaginationJson[i]);
+        if (_accessToFillTable === true) {
+            let wordInCollection =
+                new WordInCollectionResponseDTO(allWordsInCollectionFilteredPaginationJson[i]);
 
-        // Создаём строку таблицы ---
-        let row = document.createElement("tr");
-        //---
+            let row = await createTableRow(wordInCollection);
+            if (row) {
+                tableRows.push(row);
+            }
 
-        // Порядковый номер строки ---
-        let numberColumn = document.createElement("td");
-        numberColumn.style.textAlign = "center";
-        numberColumn.textContent = `${++_lastWordNumberInList}.`;
-        row.appendChild(numberColumn);
-        //---
-
-        // Название слова ---
-        let titleColumn = document.createElement("td");
-        titleColumn.textContent = wordInCollection.word.title;
-        row.appendChild(titleColumn);
-        //---
-
-        // Язык ---
-        let langColumn = document.createElement("td");
-        langColumn.appendChild(wordInCollection.word.lang.createSpanLangWithFlag());
-        row.appendChild(langColumn);
-        //---
-
-        // Часть речи ---
-        let partOfSpeechColumn = document.createElement("td");
-        partOfSpeechColumn.appendChild(wordInCollection.word.partOfSpeech.createDiv());
-        row.appendChild(partOfSpeechColumn);
-        //---
-
-        // Добавляем строку в таблицу ---
-        tableBody.appendChild(row);
-        //---
-
-        // Получаем id последнего элемента JSON-коллекции
-        if (i === allWordsInCollectionFilteredPaginationJson.length - 1) {
-            _lastWordInCollectionIdOnPreviousPage = wordInCollection.id;
+            // Получаем id последнего элемента JSON-коллекции
+            if (i === allWordsInCollectionFilteredPaginationJson.length - 1) {
+                _lastWordInCollectionIdOnPreviousPage = wordInCollection.id;
+            }
         }
     }
 
     // Создаем кнопку, только если запрос вернул максимальное количество на страницу
-    if (allWordsInCollectionFilteredPaginationJson.length === _NUMBER_OF_WORDS) {
-        let collectionWordListContainer =
-            document.getElementById(_COLLECTION_WORD_LIST_CONTAINER_ID);
-        let btnShowMore = createBtnShowMore(_BTN_SHOW_MORE_ID, _NUMBER_OF_WORDS);
-        if (collectionWordListContainer != null && btnShowMore != null) {
-            btnShowMore.addEventListener("click", async function () {
-            let JSONResponse = await getPreparedJSONResponseAllWordsInCollectionFilteredPagination();
+    if (_accessToFillTable === true && allWordsInCollectionFilteredPaginationJson.length === _NUMBER_OF_WORDS) {
+        let tableHead = document.getElementById(_COLLECTION_WORD_TABLE_HEAD_ID);
+        let numberOfColumns = _TABLE_UTILS.getNumberOfColumnsByTableHead(tableHead);
+
+        let trShowMore = _TABLE_UTILS.createTrShowMore(numberOfColumns,
+            _NUMBER_OF_WORDS, async function () {
+                let JSONResponse = await sendPrepareRequest();
                 if (JSONResponse.status === _HTTP_STATUSES.OK) {
-                    await fillCollectionWordListTable(JSONResponse.json);
+                    let tableBody = document.getElementById(_COLLECTION_WORD_TABLE_BODY_ID);
+                    let tableRows = await createTableRows(JSONResponse.json);
+                    for (let i = 0; i < tableRows.length; i++) {
+                        if (_accessToFillTable === true) {
+                            tableBody.appendChild(tableRows[i]);
+                        }
+                    }
                 }
             });
-            collectionWordListContainer.appendChild(btnShowMore);
+
+        tableRows.push(trShowMore);
+    }
+
+    return tableRows;
+}
+
+async function createTableRow(wordInCollectionResponseDTO) {
+    let row = document.createElement("tr");
+
+    // Порядковый номер строки ---
+    let numberColumn = document.createElement("td");
+    numberColumn.style.textAlign = "center";
+    numberColumn.textContent = `${++_lastWordNumberInList}.`;
+    row.appendChild(numberColumn);
+    //---
+
+    // Название слова ---
+    let titleColumn = document.createElement("td");
+    titleColumn.textContent = wordInCollectionResponseDTO.word.title;
+    row.appendChild(titleColumn);
+    //---
+
+    // Язык ---
+    let langColumn = document.createElement("td");
+    langColumn.appendChild(wordInCollectionResponseDTO.word.lang.createSpan());
+    row.appendChild(langColumn);
+    //---
+
+    // Часть речи ---
+    let partOfSpeechColumn = document.createElement("td");
+    partOfSpeechColumn.appendChild(wordInCollectionResponseDTO.word.partOfSpeech.createDiv());
+    row.appendChild(partOfSpeechColumn);
+    //---
+
+    return row;
+}
+
+function setMessageInsideTable(message) {
+    let tableHead = document.getElementById(_COLLECTION_WORD_TABLE_HEAD_ID);
+    let numberOfColumns = _TABLE_UTILS.getNumberOfColumnsByTableHead(tableHead);
+    let trMessage = _TABLE_UTILS.MESSAGES_INSIDE_TABLE
+        .createTrCommon(numberOfColumns, message);
+
+    let tableBody = document.getElementById(_COLLECTION_WORD_TABLE_BODY_ID);
+    if (_accessToFillTable === true) {
+        tableBody.replaceChildren();
+        if (_accessToFillTable === true) {
+            tableBody.appendChild(trMessage);
         }
     }
 }

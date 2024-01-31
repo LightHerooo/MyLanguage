@@ -8,10 +8,7 @@ import ru.herooo.mylanguagedb.entities.Lang;
 import ru.herooo.mylanguagedb.entities.PartOfSpeech;
 import ru.herooo.mylanguagedb.entities.Word;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 public interface WordCrudRepository extends CrudRepository<Word, Long>, WordRepository<Word> {
     @Query(nativeQuery = true,
@@ -63,8 +60,8 @@ public interface WordCrudRepository extends CrudRepository<Word, Long>, WordRepo
                                             @Param("word_status_code") String wordStatusCode);
 
     @Query(nativeQuery = true,
-            value = "SELECT COUNT (*) FROM get_words_with_current_status_by_title_and_word_status_code" +
+            value = "SELECT * FROM get_words_with_current_status_by_title_and_word_status_code" +
                     "(:title, :word_status_code)")
-    long countWordsWithCurrentStatusByTitleAndWordStatusCode(@Param("title") String title,
-                                                             @Param("word_status_code") String wordStatusCode);
+    List<Word> findWordsWithCurrentStatusByTitleAndWordStatusCode(@Param("title") String title,
+                                                                  @Param("word_status_code") String wordStatusCode);
 }

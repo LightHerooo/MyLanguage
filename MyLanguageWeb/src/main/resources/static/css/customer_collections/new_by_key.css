@@ -52,16 +52,7 @@ div.collection-words-instruments-item {
     gap: 5px;
 }
 
-div.bad-message-for-collection-info {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 10px;
-
-    text-align: center;
-    font-size: var(--second-font-size);
-}
-
 div.collection-info {
     display: grid;
+    align-items: center;
 }

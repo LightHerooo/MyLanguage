@@ -1,14 +1,10 @@
 import {
-    getJSONResponseAllWorkoutTypes
-} from "../../api/workout_types.js";
-
-import {
     HttpStatuses
 } from "../../classes/http_statuses.js";
 
 import {
     WorkoutTypeResponseDTO
-} from "../../dto/workout_type.js";
+} from "../../classes/dto/workout_type.js";
 
 import {
     CssMain
@@ -17,6 +13,12 @@ import {
 import {
     CssInfoBlockWithImgAndHeader
 } from "../../classes/css/css_info_block_with_img_and_header.js";
+
+import {
+    WorkoutTypesAPI
+} from "../../classes/api/workout_types/workout_types_api.js";
+
+const _WORKOUT_TYPES_API = new WorkoutTypesAPI();
 
 const _HTTP_STATUSES = new HttpStatuses();
 const _CSS_MAIN = new CssMain();
@@ -35,7 +37,7 @@ window.onload = async function () {
 async function prepareWorkoutTypesContainer() {
     let divWorkoutTypesContainer = document.getElementById(_DIV_WORKOUT_TYPES_CONTAINER_ID);
     if (divWorkoutTypesContainer) {
-        let JSONResponse = await getJSONResponseAllWorkoutTypes();
+        let JSONResponse = await _WORKOUT_TYPES_API.GET.getAll();
         if (JSONResponse.status === _HTTP_STATUSES.OK) {
             let workoutTypesJson = JSONResponse.json;
 

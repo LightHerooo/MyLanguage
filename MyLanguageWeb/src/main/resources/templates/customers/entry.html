@@ -7,6 +7,8 @@
 
     <link rel="stylesheet" type="text/css" href="/css/root.css">
     <link rel="stylesheet" type="text/css" href="/css/main.css">
+    <link rel="stylesheet" type="text/css" href="/css/other/rule.css">
+    <link rel="stylesheet" type="text/css" href="/css/other/loading.css">
     <link rel="stylesheet" type="text/css" href="/css/customers/entry.css">
 
     <script type="module" src="/js/templates/customers/entry.js"></script>
@@ -25,12 +27,12 @@
                 <div class="horizontal-delimiter-margin"></div>
                 <form id="form_entry" th:method="POST" th:action="@{/customers/entry}" th:object="${CUSTOMER_ENTRY_REQUEST_DTO}"
                       class="form-standard">
-                    <div id="div_container_login" class="form-item-standard">
+                    <div id="div_login_container" class="form-item-standard">
                         <label for="tb_login" class="label-standard">Логин:</label>
                         <input id="tb_login" type="text" autocomplete="false"
                                class="text-standard" th:field="*{login}">
                     </div>
-                    <div id="div_container_password" class="form-item-standard">
+                    <div id="div_password_container" class="form-item-standard">
                         <label for="pb_password" class="label-standard">Пароль:</label>
                         <input id="pb_password" type="password" autocomplete="false"
                                class="text-standard" th:field="*{password}">
@@ -43,9 +45,12 @@
                     </div>
                     <div class="horizontal-delimiter"></div>
                     <input type="submit" class="submit-standard" value="Войти" id="btn_entry">
-                    <div class="form-item-standard text-error-standard text-align-center-standard"
+                    <div class="form-item-standard error-container"
                          th:if="${#fields.hasAnyErrors()}">
-                        <div th:each="err: ${#fields.allErrors()}" th:text="${err}"></div>
+                        <div th:each="err: ${#fields.allErrors()}" class="rule-container" id="errors_container">
+                            <img class="img-rule" src="/images/rules/error.png" alt="error.png">
+                            <span class="rule-error-text" th:text="${err}"/>
+                        </div>
                     </div>
                 </form>
             </div>

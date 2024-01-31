@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.herooo.mylanguagedb.entities.Customer;
-import ru.herooo.mylanguagedb.entities.Lang;
 import ru.herooo.mylanguagedb.entities.WorkoutSetting;
 import ru.herooo.mylanguagedb.entities.WorkoutType;
 import ru.herooo.mylanguagedb.repositories.workouttype.WorkoutTypes;
@@ -15,7 +14,6 @@ import ru.herooo.mylanguageweb.dto.workoutsetting.WorkoutSettingMapping;
 import ru.herooo.mylanguageweb.dto.workoutsetting.WorkoutSettingRequestDTO;
 import ru.herooo.mylanguageweb.dto.workoutsetting.WorkoutSettingResponseDTO;
 import ru.herooo.mylanguageweb.services.CustomerService;
-import ru.herooo.mylanguageweb.services.LangService;
 import ru.herooo.mylanguageweb.services.WorkoutSettingService;
 import ru.herooo.mylanguageweb.services.WorkoutTypeService;
 
@@ -69,23 +67,23 @@ public class WorkoutSettingsRestController {
         }
     }
 
-    @GetMapping("/find/by_workout_type_code_and_customer_id")
-    public ResponseEntity<?> findByWorkoutTypeCodeAndCustomerId(
-            @RequestParam("workout_type_code") String workoutTypeCode,
-            @RequestParam("customer_id") Long customerId) {
-        ResponseEntity<?> response = WORKOUT_TYPES_REST_CONTROLLER.findByCode(workoutTypeCode);
+    @GetMapping("/find/by_customer_id_and_workout_type_code")
+    public ResponseEntity<?> findByCustomerIdAndWorkoutTypeCode(
+            @RequestParam("customer_id") Long customerId,
+            @RequestParam("workout_type_code") String workoutTypeCode) {
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.findById(customerId);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
 
-        response = CUSTOMERS_REST_CONTROLLER.findById(customerId);
+        response = WORKOUT_TYPES_REST_CONTROLLER.findByCode(workoutTypeCode);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
 
-        WorkoutType workoutType = WORKOUT_TYPE_SERVICE.findByCode(workoutTypeCode);
         Customer customer = CUSTOMER_SERVICE.findById(customerId);
-        WorkoutSetting workoutSetting = WORKOUT_SETTING_SERVICE.findByWorkoutTypeAndCustomer(workoutType, customer);
+        WorkoutType workoutType = WORKOUT_TYPE_SERVICE.findByCode(workoutTypeCode);
+        WorkoutSetting workoutSetting = WORKOUT_SETTING_SERVICE.findByCustomerAndWorkoutType(customer, workoutType);
         if (workoutSetting != null) {
             WorkoutSettingResponseDTO dto = WORKOUT_SETTING_MAPPING.mapToResponseDTO(workoutSetting);
             return ResponseEntity.ok(dto);
@@ -98,7 +96,7 @@ public class WorkoutSettingsRestController {
         }
     }
 
-    @PostMapping("/add/random_words")
+    @PostMapping("/random_words")
     public ResponseEntity<?> addRandomWords(HttpServletRequest request,
                                             @RequestBody WorkoutSettingRequestDTO dto) {
         ResponseEntity<?> response = validateRandomWords(request, dto);
@@ -124,7 +122,7 @@ public class WorkoutSettingsRestController {
         }
     }
 
-    @PatchMapping("/edit/random_words")
+    @PatchMapping("/random_words")
     public ResponseEntity<?> editRandomWords(HttpServletRequest request,
                                              @RequestBody WorkoutSettingRequestDTO dto) {
         ResponseEntity<?> response = validateRandomWords(request, dto);

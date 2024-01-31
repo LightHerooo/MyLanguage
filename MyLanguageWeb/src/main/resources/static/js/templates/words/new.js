@@ -1,31 +1,6 @@
 import {
-    buildABtnAccept,
-    buildABtnDisabled,
-    createABtnDeny
-} from "../../utils/btn_utils.js";
-
-import {
-    changeRuleStatus,
-    getOrCreateRule
-} from "../../utils/div_rules.js";
-
-import {
-    checkCorrectCbLangs, checkCorrectCbPartsOfSpeech,
-    fillCbLangs,
-    fillCbPartsOfSpeech, getSelectedOptionId
-} from "../../utils/combo_box_utils.js";
-
-import {
-    checkCorrectWordTitle
-} from "../../utils/text_box_utils.js";
-
-import {
-    Timer
-} from "../../classes/timer.js";
-
-import {
-    postJSONResponseAddSeveralWords
-} from "../../api/words.js";
+    CustomTimer
+} from "../../classes/custom_timer.js";
 
 import {
     HttpStatuses
@@ -37,10 +12,57 @@ import {
 
 import {
     WordRequestDTO
-} from "../../dto/word.js";
+} from "../../classes/dto/word.js";
+
+import {
+    RuleElement,
+    RuleTypes
+} from "../../classes/rule_element.js";
+
+import {
+    LangUtils
+} from "../../classes/utils/entity/lang_utils.js";
+
+import {
+    PartOfSpeechUtils
+} from "../../classes/utils/entity/part_of_speech_utils.js";
+
+import {
+    WordUtils
+} from "../../classes/utils/entity/word_utils.js";
+
+import {
+    WordsAPI
+} from "../../classes/api/words_api.js";
+
+import {
+    AButtons
+} from "../../classes/a_buttons.js";
+
+import {
+    ComboBoxUtils
+} from "../../classes/utils/combo_box_utils.js";
+
+import {
+    CssElementWithFlag
+} from "../../classes/css/css_element_with_flag.js";
+
+import {
+    LoadingElement
+} from "../../classes/loading_element.js";
+
+const _WORDS_API = new WordsAPI();
 
 const _CSS_MAIN = new CssMain();
+const _CSS_ELEMENT_WITH_FLAG = new CssElementWithFlag();
+
 const _HTTP_STATUSES = new HttpStatuses();
+const _RULE_TYPES = new RuleTypes();
+const _LANG_UTILS = new LangUtils();
+const _PART_OF_SPEECH_UTILS = new PartOfSpeechUtils();
+const _WORD_UTILS = new WordUtils();
+const _A_BUTTONS = new AButtons();
+const _COMBO_BOX_UTILS = new ComboBoxUtils();
 
 const _NEW_WORD_DATA_ITEM_STYLE_ID = "new-word-data-item";
 const _NEW_WORD_DATA_STYLE_ID = "new-word-data";
@@ -59,17 +81,24 @@ const _MAX_NUMBER_OF_NEW_WORD_ITEMS = 5;
 let _indexOfNewWord = 0;
 let _newWordsMap = new Map();
 
-let _T_CHECKER_MILLISECONDS = 250;
-let _tChecker = new Timer(null);
+const _CUSTOM_TIMER_CHECKER = new CustomTimer();
 
 class WordRowElements {
+    divRow;
+    tbTitleParent;
     tbTitle;
+    cbLangsParent;
     cbLangs;
+    cbPartsOfSpeechParent
     cbPartsOfSpeech;
 
-    constructor(tbTitle, cbLangs, cbPartsOfSpeech) {
+    constructor(divRow, tbTitleParent, tbTitle,
+                cbLangsParent, cbLangs, cbPartsOfSpeechParent, cbPartsOfSpeech) {
+        this.tbTitleParent = tbTitleParent
         this.tbTitle = tbTitle;
+        this.cbLangsParent = cbLangsParent;
         this.cbLangs = cbLangs;
+        this.cbPartsOfSpeechParent = cbPartsOfSpeechParent;
         this.cbPartsOfSpeech = cbPartsOfSpeech;
     }
 }
@@ -88,8 +117,21 @@ function prepareSubmitSend() {
         submitBtn.disabled = true;
         event.preventDefault();
 
-        if (await checkBeforeSend() && await sendNewWords()) {
-            submitSend.submit();
+        // Показываем анимацию загрузки (предварительно очистив информацию в контейнере) ---
+        let divSendNewWordsInfo = document.getElementById(_DIV_SEND_NEW_WORDS_INFO_ID);
+        divSendNewWordsInfo.replaceChildren();
+
+        let divLoading = new LoadingElement().createDiv();
+        divLoading.style.justifyContent = "left";
+        divSendNewWordsInfo.appendChild(divLoading);
+        //---
+
+        if (await checkBeforeSend() === true) {
+            if (await sendNewWords() === true) {
+                submitSend.submit();
+            }
+        } else {
+            divSendNewWordsInfo.removeChild(divLoading);
         }
 
         submitBtn.disabled = false;
@@ -102,32 +144,40 @@ function buildBtnNewWord() {
 }
 
 function changeBtnNewWordStatus() {
-    let btnNewWord = document.getElementById(_BTN_NEW_WORD_ID);
-    if (btnNewWord != null) {
-        buildABtnDisabled(btnNewWord);
+    let aBtnNewWord = document.getElementById(_BTN_NEW_WORD_ID);
+    if (aBtnNewWord != null) {
+        _A_BUTTONS.A_BUTTON_DISABLED.setStyles(aBtnNewWord);
         buildBtnNewWord();
-        btnNewWord.onclick = null;
+        aBtnNewWord.onclick = null;
 
         if (_newWordsMap.size < _MAX_NUMBER_OF_NEW_WORD_ITEMS) {
-            buildABtnAccept(btnNewWord, true);
+            _A_BUTTONS.A_BUTTON_ACCEPT.setStyles(aBtnNewWord, true);
             buildBtnNewWord();
 
-            btnNewWord.title = "Предложить новое слово.";
-            btnNewWord.onclick = async function() {
-                changeSendNewWordsInfoRule(null, true);
+            aBtnNewWord.title = "Предложить новое слово.";
+            aBtnNewWord.onclick = async function() {
+                changeSendNewWordsInfoRule(true, null, null);
                 await createNewWordElement();
                 changeBtnNewWordStatus();
             }
         } else {
-            btnNewWord.title = `За раз можно предложить не более ${_MAX_NUMBER_OF_NEW_WORD_ITEMS} слов.`;
+            aBtnNewWord.title = `За раз можно предложить не более ${_MAX_NUMBER_OF_NEW_WORD_ITEMS} слов.`;
         }
     }
 }
 
-function changeSendNewWordsInfoRule(text, isRuleCorrect) {
-    let divRuleElement = getOrCreateRule(_DIV_SEND_NEW_WORDS_INFO_ID + "_div_rule");
-    divRuleElement.textContent = text;
-    changeRuleStatus(divRuleElement, _DIV_SEND_NEW_WORDS_INFO_ID, isRuleCorrect);
+function changeSendNewWordsInfoRule(isCorrect, message, ruleType) {
+    let divSendNewWordsInfo = document.getElementById(_DIV_SEND_NEW_WORDS_INFO_ID);
+    divSendNewWordsInfo.replaceChildren();
+
+    // Отображаем предупреждение (правило), если это необходимо ---
+    let ruleElement = new RuleElement(_DIV_SEND_NEW_WORDS_INFO_ID);
+    if (isCorrect === false) {
+        ruleElement.createOrChangeDiv(message, ruleType);
+    } else {
+        ruleElement.removeDiv();
+    }
+    //---
 }
 
 async function createNewWordElement() {
@@ -159,8 +209,7 @@ async function createNewWordElement() {
 
     let firstOption = document.createElement("option");
     firstOption.textContent = "Выберите часть речи";
-    cbPartsOfSpeech.appendChild(firstOption);
-    await fillCbPartsOfSpeech(cbPartsOfSpeech);
+    await _PART_OF_SPEECH_UTILS.fillComboBox(cbPartsOfSpeech, firstOption);
 
     let divPartOfSpeech = document.createElement("div");
     divPartOfSpeech.id = "div_part_of_speech" + "_" + _indexOfNewWord;
@@ -169,10 +218,11 @@ async function createNewWordElement() {
     divPartOfSpeech.appendChild(cbPartsOfSpeech);
     //---
 
-    // Создаём выпадающий список "Язык" ---
-    let lbLang = document.createElement("label");
-    lbLang.classList.add(_CSS_MAIN.LABEL_STANDARD_STYLE_ID);
-    lbLang.textContent = "Язык:";
+    // Создаём выпадающий список "Язык" с флагом ---
+    let divLangFlag = document.createElement("div");
+    let divFlagContainer = document.createElement("div");
+    divFlagContainer.classList.add(_CSS_ELEMENT_WITH_FLAG.DIV_FLAG_CONTAINER_STYLE_ID);
+    divFlagContainer.appendChild(divLangFlag);
 
     let cbLangs = document.createElement("select");
     cbLangs.id = "cb_langs" + "_" + _indexOfNewWord;
@@ -180,32 +230,42 @@ async function createNewWordElement() {
 
     firstOption = document.createElement("option");
     firstOption.textContent = "Выберите язык";
-    cbLangs.appendChild(firstOption);
-    await fillCbLangs(cbLangs);
+    await _LANG_UTILS.prepareComboBox(cbLangs, firstOption, divLangFlag);
+
+    let divElementWithFlagContainer = document.createElement("div");
+    divElementWithFlagContainer.classList.add(_CSS_ELEMENT_WITH_FLAG.DIV_ELEMENT_WITH_FLAG_CONTAINER_STYLE_ID);
+    divElementWithFlagContainer.appendChild(cbLangs);
+    divElementWithFlagContainer.appendChild(divFlagContainer);
+    //---
+
+    // Создаём контейнер со списком языков ---
+    let lbLang = document.createElement("label");
+    lbLang.classList.add(_CSS_MAIN.LABEL_STANDARD_STYLE_ID);
+    lbLang.textContent = "Язык:";
 
     let divLang = document.createElement("div");
     divLang.id = "div_lang" + "_" + _indexOfNewWord;
     divLang.classList.add(_NEW_WORD_DATA_ITEM_STYLE_ID);
     divLang.appendChild(lbLang);
-    divLang.appendChild(cbLangs);
+    divLang.appendChild(divElementWithFlagContainer);
     //---
 
     // Вешаем обработчики на каждый созданный объект ---
     tbTitle.addEventListener("input", async function () {
-        changeSendNewWordsInfoRule(null, true);
-        await checkCorrectTitle(this, cbLangs, cbPartsOfSpeech);
+        changeSendNewWordsInfoRule(true, null, null);
+        await checkCorrectTitle(this, cbLangs, cbPartsOfSpeech, divTitle);
     })
 
     cbLangs.addEventListener("change", async function() {
-        changeSendNewWordsInfoRule(null, true);
-        await checkCorrectLang(this);
-        await checkCorrectTitle(tbTitle, this, cbPartsOfSpeech);
+        changeSendNewWordsInfoRule(true, null, null);
+        await checkCorrectLang(this, divLang);
+        await checkCorrectTitle(tbTitle, this, cbPartsOfSpeech, divTitle);
     });
 
     cbPartsOfSpeech.addEventListener("change", async function() {
-        changeSendNewWordsInfoRule(null, true);
-        await checkCorrectPartOfSpeech(this);
-        await checkCorrectTitle(tbTitle, cbLangs, this);
+        changeSendNewWordsInfoRule(true, null, null);
+        await checkCorrectPartOfSpeech(this, divPartOfSpeech);
+        await checkCorrectTitle(tbTitle, cbLangs, this, divTitle);
     });
     //---
 
@@ -223,10 +283,21 @@ async function createNewWordElement() {
     divNewWord.classList.add(_NEW_WORDS_CONTAINER_ITEM_STYLE_ID);
 
     // Внутри элемента создаём кнопку удаления
-    let aDeleteButton = createABtnDeny();
+    let aDeleteButton = _A_BUTTONS.A_BUTTON_DENY.createA();
     aDeleteButton.addEventListener("click", function () {
-        if (_newWordsMap.size > _MIN_NUMBER_OF_NEW_WORD_ITEMS) {
-            changeSendNewWordsInfoRule(null, true);
+        let isCorrect = true;
+        let message;
+        let ruleType;
+        if (_newWordsMap.size === _MIN_NUMBER_OF_NEW_WORD_ITEMS) {
+            isCorrect = false;
+            message = `Новых коллекций не должно быть менее ${_MIN_NUMBER_OF_NEW_WORD_ITEMS}.`;
+            ruleType = _RULE_TYPES.WARNING;
+        }
+
+        if (isCorrect === false) {
+            changeSendNewWordsInfoRule(isCorrect, message, ruleType);
+        } else {
+            changeSendNewWordsInfoRule(isCorrect, null, null);
             for (let key of _newWordsMap.keys()) {
                 let wordRowElements = _newWordsMap.get(key);
                 let itemTbTitle = wordRowElements.tbTitle;
@@ -243,9 +314,6 @@ async function createNewWordElement() {
             let divCollectionsContainer = document.getElementById(_DIV_NEW_WORDS_CONTAINER_ID);
             divCollectionsContainer.removeChild(divNewWord);
             changeBtnNewWordStatus();
-        } else {
-            let text = `Новых коллекций не должно быть менее ${_MIN_NUMBER_OF_NEW_WORD_ITEMS}.`;
-            changeSendNewWordsInfoRule(text, false);
         }
     });
 
@@ -261,88 +329,67 @@ async function createNewWordElement() {
     //---
 
     // Добавляем элементы ввода в Map
-    let newWordRowElements = new WordRowElements(tbTitle, cbLangs, cbPartsOfSpeech);
+    let newWordRowElements =
+        new WordRowElements(divNewWord, divTitle, tbTitle, divLang, cbLangs, divPartOfSpeech, cbPartsOfSpeech);
     _newWordsMap.set(_indexOfNewWord++, newWordRowElements);
     //---
 }
 
-async function checkCorrectTitle(tbTitle, tbLangs, cbPartsOfSpeech) {
-    const DIV_RULE_ID = tbTitle.id + "_div_rule";
-    let langCode = getSelectedOptionId(tbLangs.id);
-    let partOfSpeechCode = getSelectedOptionId(cbPartsOfSpeech.id);
+async function checkCorrectTitle(tbTitle, tbLangs, cbPartsOfSpeech, parentElement) {
+    let langCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(tbLangs);
+    let partOfSpeechCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbPartsOfSpeech);
 
-    return await checkCorrectWordTitle(tbTitle, langCode, partOfSpeechCode,
-        DIV_RULE_ID, _tChecker, _T_CHECKER_MILLISECONDS);
+    return await _WORD_UTILS.checkCorrectValueInTbTitle(tbTitle, parentElement, langCode,
+        partOfSpeechCode, _CUSTOM_TIMER_CHECKER);
 }
 
-async function checkCorrectLang(cbLangs) {
-    const DIV_RULE_ID = cbLangs.id + "_div_rule";
-    const PARENT_ID = cbLangs.parentNode.id;
-
-    let isCorrect = true;
-    let divRuleElement = getOrCreateRule(DIV_RULE_ID);
-    let langCode = getSelectedOptionId(cbLangs.id);
-    if (!langCode) {
-        isCorrect = false;
-        divRuleElement.textContent = "Выберите язык.";
-        changeRuleStatus(divRuleElement, PARENT_ID, isCorrect);
-    } else {
-        isCorrect = await checkCorrectCbLangs(cbLangs, DIV_RULE_ID, cbLangs.parentElement.id);
-    }
-
-    return isCorrect;
+async function checkCorrectLang(cbLangs, parentElement) {
+    return await _LANG_UTILS.checkCorrectValueInComboBox(cbLangs, parentElement, false);
 }
 
-async function checkCorrectPartOfSpeech(cbPartsOfSpeech) {
-    const DIV_RULE_ID = cbPartsOfSpeech.id + "_div_rule";
-    const PARENT_ID = cbPartsOfSpeech.parentNode.id;
-
-    let isCorrect = true;
-    let divRuleElement = getOrCreateRule(DIV_RULE_ID);
-    let partOfSpeechCode = getSelectedOptionId(cbPartsOfSpeech.id);
-    if (!partOfSpeechCode) {
-        isCorrect = false;
-        divRuleElement.textContent = "Выберите часть речи.";
-        changeRuleStatus(divRuleElement, PARENT_ID, isCorrect);
-    } else {
-        isCorrect = await checkCorrectCbPartsOfSpeech(cbPartsOfSpeech, DIV_RULE_ID, PARENT_ID);
-    }
-
-    return isCorrect;
+async function checkCorrectPartOfSpeech(cbPartsOfSpeech, parentElement) {
+    return await _PART_OF_SPEECH_UTILS
+        .checkCorrectValueInComboBox(cbPartsOfSpeech, parentElement, false);
 }
 
 function checkAllTitles() {
     let isCorrectAll = true;
     for (let iKey of _newWordsMap.keys()) {
         let iWordRowElements = _newWordsMap.get(iKey);
-        let iTbTitle = iWordRowElements.tbTitle;
-        const DIV_RULE_ID = iTbTitle.id + "_div_rule";
-        const PARENT_ID = iTbTitle.parentElement.id;
 
-        let iTitleValue = iTbTitle.value.toLowerCase().trim();
-        let iLangCode = getSelectedOptionId(iWordRowElements.cbLangs.id);
-        let iPartOfSpeechCode = getSelectedOptionId(iWordRowElements.cbPartsOfSpeech.id);
+        let iTitleValue = iWordRowElements.tbTitle.value.toLowerCase().trim();
+        let iLangCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(iWordRowElements.cbLangs);
+        let iPartOfSpeechCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(iWordRowElements.cbPartsOfSpeech);
 
         let isCorrectOne = true;
-        let divRuleElement = getOrCreateRule(DIV_RULE_ID);
+        let message;
+        let ruleType;
         for (let jKey of _newWordsMap.keys()) {
             if (iKey === jKey) continue;
             let jWordRowElements = _newWordsMap.get(jKey);
 
             let jTitleValue = jWordRowElements.tbTitle.value.toLowerCase().trim();
-            let jLangCode = getSelectedOptionId(jWordRowElements.cbLangs.id);
-            let jPartOfSpeechCode = getSelectedOptionId(jWordRowElements.cbPartsOfSpeech.id);
+            let jLangCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(jWordRowElements.cbLangs);
+            let jPartOfSpeechCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(jWordRowElements.cbPartsOfSpeech);
             if (iTitleValue === jTitleValue
                 && iLangCode === jLangCode
                 && iPartOfSpeechCode === jPartOfSpeechCode) {
                 isCorrectAll = false;
                 isCorrectOne = false;
-                divRuleElement.textContent = "Язык и часть речи в словах с одинаковым названием не должны повторяться.";
+                message = "Язык и часть речи в словах с одинаковым названием не должны повторяться.";
+                ruleType = _RULE_TYPES.ERROR;
                 break;
             }
         }
 
-        changeRuleStatus(divRuleElement, PARENT_ID, isCorrectOne);
+        // Отображаем предупреждение (правило), если это необходимо ---
+        let ruleElement = new RuleElement(iWordRowElements.tbTitle.parentNode.id);
+        if (isCorrectOne === false) {
+            ruleElement.createOrChangeDiv(message, ruleType);
+        } else {
+            ruleElement.removeDiv();
+        }
+        //---
     }
 
     return isCorrectAll;
@@ -354,16 +401,18 @@ async function checkBeforeSend() {
         let wordRowElements = _newWordsMap.get(key);
 
         let titleIsCorrect =
-            await checkCorrectTitle(wordRowElements.tbTitle, wordRowElements.cbLangs, wordRowElements.cbPartsOfSpeech);
-        let langIsCorrect = await checkCorrectLang(wordRowElements.cbLangs);
-        let partOfSpeechIsCorrect = await checkCorrectPartOfSpeech(wordRowElements.cbPartsOfSpeech);
+            await checkCorrectTitle(wordRowElements.tbTitle, wordRowElements.cbLangs, wordRowElements.cbPartsOfSpeech,
+                wordRowElements.tbTitleParent);
+        let langIsCorrect = await checkCorrectLang(wordRowElements.cbLangs, wordRowElements.cbLangsParent);
+        let partOfSpeechIsCorrect =
+            await checkCorrectPartOfSpeech(wordRowElements.cbPartsOfSpeech, wordRowElements.cbPartsOfSpeechParent);
 
-        if (isCorrect) {
+        if (isCorrect === true) {
             isCorrect = (titleIsCorrect && langIsCorrect && partOfSpeechIsCorrect);
         }
     }
 
-    if (isCorrect) {
+    if (isCorrect === true) {
         isCorrect = checkAllTitles();
     }
 
@@ -371,24 +420,40 @@ async function checkBeforeSend() {
 }
 
 async function sendNewWords() {
-    let newWords = [];
+    let acceptWordKeys = [];
     for (let key of _newWordsMap.keys()) {
         let wordRowElements = _newWordsMap.get(key);
 
         let dto = new WordRequestDTO();
         dto.title = wordRowElements.tbTitle.value.trim();
-        dto.langCode = getSelectedOptionId(wordRowElements.cbLangs.id);
-        dto.partOfSpeechCode = getSelectedOptionId(wordRowElements.cbPartsOfSpeech.id);
+        dto.langCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(wordRowElements.cbLangs);
+        dto.partOfSpeechCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(wordRowElements.cbPartsOfSpeech);
 
-        newWords.push(dto);
+        let JSONResponse = await _WORDS_API.POST.add(dto);
+        if (JSONResponse.status === _HTTP_STATUSES.OK) {
+            acceptWordKeys.push(key);
+        }
     }
 
     let isCorrect = true;
-    let JSONResponse = await postJSONResponseAddSeveralWords(newWords);
-    if (JSONResponse.status !== _HTTP_STATUSES.OK) {
+    let message;
+    let ruleType;
+    if (acceptWordKeys.length !== _newWordsMap.size) {
         isCorrect = false;
-        let json = JSONResponse.json;
-        changeSendNewWordsInfoRule(json["text"], false);
+        message = "Произошла ошибка при попытке предложения некоторых слов. Попробуйте ещё раз.";
+        ruleType = _RULE_TYPES.ERROR;
+
+        for (let i = 0; i < acceptWordKeys.length; i++) {
+            let key = acceptWordKeys[i];
+            let divRow = _newWordsMap.get(key).divRow;
+            divRow.parentNode.removeChild(divRow);
+
+            _newWordsMap.delete(acceptWordKeys[i]);
+        }
+    }
+
+    if (isCorrect === false) {
+        changeSendNewWordsInfoRule(isCorrect, message, ruleType);
     }
 
     return isCorrect;

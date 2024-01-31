@@ -1,9 +1,11 @@
 package ru.herooo.mylanguageweb.controllers.rest;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.herooo.mylanguagedb.entities.*;
 import ru.herooo.mylanguagedb.repositories.wordstatus.WordStatuses;
@@ -18,7 +20,6 @@ import ru.herooo.mylanguageweb.dto.wordstatushistory.WordStatusHistoryRequestDTO
 import ru.herooo.mylanguageweb.services.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -125,7 +126,7 @@ public class WordsRestController {
         }
     }
 
-    @GetMapping("/customer_words_filtered_pagination")
+    @GetMapping("/customer_filtered_pagination")
     public ResponseEntity<?> getCustomerWordsFilteredPagination(
             @RequestParam("number_of_words") Long numberOfWords,
             @RequestParam("customer_id") Long customerId,
@@ -196,9 +197,11 @@ public class WordsRestController {
         return ResponseEntity.ok(longResponse);
     }
 
-    @PostMapping
-    public ResponseEntity<?> add(HttpServletRequest request, @RequestBody WordRequestDTO dto) {
-        ResponseEntity<?> response = validateBeforeCrud(request, dto);
+    @PostMapping()
+    public ResponseEntity<?> add(HttpServletRequest request,
+                                 @Valid @RequestBody WordRequestDTO dto,
+                                 BindingResult bindingResult) {
+        ResponseEntity<?> response = validateBeforeCrud(request, dto, bindingResult);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
@@ -226,66 +229,11 @@ public class WordsRestController {
         }
     }
 
-    @PostMapping("/add_several")
-    public ResponseEntity<?> addSeveral(HttpServletRequest request, @RequestBody WordAddMoreRequestDTO dto) {
-        String validateAuthCode = CUSTOMER_SERVICE.validateAuthCode(request, dto.getAuthCode());
-        dto.setAuthCode(validateAuthCode);
-
-        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.findExistsByAuthCode(dto.getAuthCode());
-        if (response.getStatusCode() != HttpStatus.OK) {
-            return response;
-        }
-
-        if (dto.getWords().length == 0) {
-            CustomResponseMessage message = new CustomResponseMessage(1, "Слова не указаны.");
-            return ResponseEntity.badRequest().body(message);
-        }
-
-        Set<String> titles =
-                Arrays.stream(dto.getWords())
-                        .map(word -> word.getTitle().toLowerCase().trim() +
-                                word.getLangCode() +
-                                word.getPartOfSpeechCode())
-                        .collect(Collectors.toSet());
-        if (titles.size() != dto.getWords().length) {
-            CustomResponseMessage message = new CustomResponseMessage(2, "Язык и часть речи" +
-                    " в словах с одинаковым названием не должны повторяться.");
-            return ResponseEntity.badRequest().body(message);
-        }
-
-        List<WordRequestDTO> badRequestDTOs = new ArrayList<>();
-        for (WordRequestDTO requestDTO: dto.getWords()) {
-            requestDTO.setAuthCode(dto.getAuthCode());
-            response = add(request, requestDTO);
-            if (response.getStatusCode() != HttpStatus.OK) {
-                badRequestDTOs.add(requestDTO);
-            }
-        }
-
-        if (badRequestDTOs.size() > 0) {
-            StringBuilder badTitlesBuilder = new StringBuilder();
-            badRequestDTOs.forEach(brd -> badTitlesBuilder.append(brd.getTitle()).append(", "));
-            String badTitles = badTitlesBuilder.toString();
-            badTitles = badTitles.substring(0, badTitles.length() - 2);
-
-            CustomResponseMessage message = new CustomResponseMessage(1,
-                    String.format("Добавлено %d из %d слов.\nНе добавлены: [%s].",
-                            dto.getWords().length,
-                            dto.getWords().length - badRequestDTOs.size(),
-                            badTitles));
-            return ResponseEntity.ok(message);
-        } else {
-            CustomResponseMessage message = new CustomResponseMessage(2,
-                    String.format("Добавлено %d из %d слов.",
-                            dto.getWords().length,
-                            dto.getWords().length));
-            return ResponseEntity.ok(message);
-        }
-    }
-
-    @PatchMapping("/edit")
-    public ResponseEntity<?> edit(HttpServletRequest request, @RequestBody WordRequestDTO dto) {
-        ResponseEntity<?> response = validateBeforeCrud(request, dto);
+    @PatchMapping()
+    public ResponseEntity<?> edit(HttpServletRequest request,
+                                  @RequestBody WordRequestDTO dto,
+                                  BindingResult bindingResult) {
+        ResponseEntity<?> response = validateBeforeCrud(request, dto, bindingResult);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
@@ -345,34 +293,6 @@ public class WordsRestController {
         } else {
             CustomResponseMessage message = new CustomResponseMessage(2,
                     String.format("Слово с id = '%d' не найдено.", id));
-            return ResponseEntity.badRequest().body(message);
-        }
-    }
-
-    @GetMapping("/find/by_title_and_lang_code_and_part_of_speech_code")
-    public ResponseEntity<?> findByTitleAndLangCodeAndPartOfSpeechCode(@RequestParam("title") String title,
-                                                                       @RequestParam("lang_code") String langCode,
-                                                                       @RequestParam("part_of_speech_code") String partOfSpeechCode) {
-        ResponseEntity<?> response = PARTS_OF_SPEECH_REST_CONTROLLER.findByCode(partOfSpeechCode);
-        if (response.getStatusCode() != HttpStatus.OK) {
-            return response;
-        }
-
-        response = LANGS_REST_CONTROLLER.findByCode(langCode);
-        if (response.getStatusCode() != HttpStatus.OK) {
-            return response;
-        }
-
-        PartOfSpeech partOfSpeech = PART_OF_SPEECH_SERVICE.findByCode(partOfSpeechCode);
-        Lang lang = LANG_SERVICE.findByCode(langCode);
-        Word word = WORD_SERVICE.findFirstByTitleIgnoreCaseAndLangAndPartOfSpeech(title, lang, partOfSpeech);
-        if (word != null) {
-            WordResponseDTO dto = WORD_MAPPING.mapToResponseDTO(word);
-            return ResponseEntity.ok(dto);
-        } else {
-            CustomResponseMessage message = new CustomResponseMessage(1,
-                    String.format("Слова '%s' с языком '%s' и частью речи '%s' не существует.",
-                            title, langCode, partOfSpeechCode));
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -442,7 +362,9 @@ public class WordsRestController {
     }
 
     @PostMapping("/validate/before_crud")
-    public ResponseEntity<?> validateBeforeCrud(HttpServletRequest request, @RequestBody WordRequestDTO dto) {
+    public ResponseEntity<?> validateBeforeCrud(HttpServletRequest request,
+                                                @Valid @RequestBody WordRequestDTO dto,
+                                                BindingResult bindingResult) {
         String validateAuthCode = CUSTOMER_SERVICE.validateAuthCode(request, dto.getAuthCode());
         dto.setAuthCode(validateAuthCode);
 
@@ -460,6 +382,19 @@ public class WordsRestController {
             }
         }
 
+        // Проверяем наличие ошибок привязки DTO
+        if (bindingResult.hasErrors()) {
+            String errorMessage = bindingResult
+                    .getAllErrors()
+                    .stream()
+                    .findFirst()
+                    .get()
+                    .getDefaultMessage();
+
+            CustomResponseMessage message = new CustomResponseMessage(2, errorMessage);
+            return ResponseEntity.badRequest().body(message);
+        }
+
         // Проверяем язык
         response = LANGS_REST_CONTROLLER.findByCode(dto.getLangCode());
         if (response.getStatusCode() != HttpStatus.OK) {
@@ -472,51 +407,45 @@ public class WordsRestController {
             return response;
         }
 
-        // Преобразуем строку
-        String title = STRING_UTILS.getClearString(dto.getTitle());
-        dto.setTitle(title);
+        // Проверяем, не запрещено ли слово с таким названием
+        List<Word> blockedWords = WORD_SERVICE.findWordsWithCurrentStatusByTitleAndWordStatusCode(dto.getTitle(),
+                WordStatuses.BLOCKED.CODE);
+        if (dto.getId() == 0 && blockedWords.size() > 0) {
+            // Если слово новое, смотрим количество запрещённых слов по указанному названию
+            CustomResponseMessage message = new CustomResponseMessage(3, "Это слово запрещено.");
+            return ResponseEntity.badRequest().body(message);
+        } else if (dto.getId() != 0) {
+            // Если слово не новое, удаляем из списка запрещённых слов пришедшее
+            blockedWords = blockedWords
+                    .stream()
+                    .filter(w -> w.getId() != dto.getId())
+                    .toList();
 
-        // Ищем похожее слово в БД
-        response = validateIsItPossibleToAddWord(dto.getTitle(), dto.getLangCode(), dto.getPartOfSpeechCode());
-        if (response.getStatusCode() != HttpStatus.OK) {
-            if (dto.getId() != 0) {
-                // Ищем слово напрямую, если хотим изменить
-                PartOfSpeech partOfSpeech = PART_OF_SPEECH_SERVICE.findByCode(dto.getPartOfSpeechCode());
-                Lang lang = LANG_SERVICE.findByCode(dto.getLangCode());
-                Word word = WORD_SERVICE
-                        .findFirstByTitleIgnoreCaseAndLangAndPartOfSpeech(dto.getTitle(), lang, partOfSpeech);
-
-                // Если id найденного слова не равно входящему, выводим BadRequest
-                if (word.getId() != dto.getId()) {
-                    return response;
-                }
-            } else {
+            // Проверяем статус слова
+            response = WORD_STATUSES_REST_CONTROLLER.findByCode(dto.getWordStatusCode());
+            if (response.getStatusCode() != HttpStatus.OK) {
                 return response;
+            }
+
+            // Если список запрещённых слов не пуст, то мы можем изменить статус слова только на "Невостребованный"
+            WordStatus wordStatus = WORD_STATUS_SERVICE.findByCode(dto.getWordStatusCode());
+            if (blockedWords.size() > 0 && wordStatus.getId() != WordStatuses.UNCLAIMED.ID) {
+                CustomResponseMessage message = new CustomResponseMessage(4,
+                        "Это слово уже запрещено. Ему можно поставить статус 'Невостребованный'.");
+                return ResponseEntity.badRequest().body(message);
             }
         }
 
+        // Ищем похожее слово в БД
+        Lang lang = LANG_SERVICE.findByCode(dto.getLangCode());
+        PartOfSpeech partOfSpeech = PART_OF_SPEECH_SERVICE.findByCode(dto.getPartOfSpeechCode());
+        Word word = WORD_SERVICE
+                .findFirstByTitleIgnoreCaseAndLangAndPartOfSpeech(dto.getTitle(), lang, partOfSpeech);
+        if (word != null && (word.getId() == 0 || word.getId() != dto.getId())) {
+            CustomResponseMessage message = new CustomResponseMessage(5, "Это слово уже существует.");
+            return ResponseEntity.badRequest().body(message);
+        }
+
         return ResponseEntity.ok(dto);
-    }
-
-    @GetMapping("/validate/is_it_possible_to_add_word")
-    public ResponseEntity<?> validateIsItPossibleToAddWord(@RequestParam("title") String title,
-                                                           @RequestParam("lang_code") String langCode,
-                                                           @RequestParam("part_of_speech_code") String partOfSpeechCode) {
-        // Если хотя бы одно слово с искомым названием заблокировано, нужно запретить его добавлять
-        long countOfBlockedWords =
-                WORD_SERVICE.countWordsWithCurrentStatusByTitleAndWordStatusCode(title, WordStatuses.BLOCKED.CODE);
-        if (countOfBlockedWords > 0) {
-            CustomResponseMessage message = new CustomResponseMessage(1, "Это слово запрещено.");
-            return ResponseEntity.badRequest().body(message);
-        }
-
-        ResponseEntity<?> response = findByTitleAndLangCodeAndPartOfSpeechCode(title, langCode, partOfSpeechCode);
-        if (response.getStatusCode() == HttpStatus.OK) {
-            CustomResponseMessage message = new CustomResponseMessage(2, "Это слово уже существует.");
-            return ResponseEntity.badRequest().body(message);
-        } else {
-            CustomResponseMessage message = (CustomResponseMessage) response.getBody();
-            return ResponseEntity.ok(message);
-        }
     }
 }

@@ -1,5 +1,12 @@
 main {
-    min-height: 1300px;
+    min-height: 1500px;
+}
+
+div.words-statistics-container {
+    min-height: 150px;
+
+    display: grid;
+    align-items: center;
 }
 
 div.customer-collections-actions {
@@ -47,4 +54,11 @@ div.collection-words-instruments-item {
     display: grid;
     grid: 50px 1fr / 1fr;
     gap: 5px;
+}
+
+div.collection-info {
+    height: 250px;
+
+    display: grid;
+    align-items: center;
 }

@@ -201,15 +201,6 @@ input.submit-standard:hover {
     background: var(--third-color);
 }
 
-div.text-error-standard {
-    color: #8B0000;
-    opacity: 0.5;
-}
-
-.text-align-center-standard {
-    text-align: center;
-}
-
 label.label-for-input-standard {
     display: flex;
     align-items: center;
