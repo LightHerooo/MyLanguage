@@ -19,6 +19,7 @@ public class MyLanguageApplication {
 
     @Bean
     public StringUtils stringUtils() {
-       return new StringUtils();
+        return new StringUtils();
     }
 }
+
