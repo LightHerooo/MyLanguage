@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.herooo.mylanguagedb.entities.Word;
 import ru.herooo.mylanguagedb.entities.WordStatus;
 import ru.herooo.mylanguagedb.entities.WordStatusHistory;
+import ru.herooo.mylanguageutils.StringUtils;
 import ru.herooo.mylanguageweb.dto.word.WordMapping;
 import ru.herooo.mylanguageweb.dto.word.WordResponseDTO;
 import ru.herooo.mylanguageweb.dto.wordstatus.WordStatusMapping;
@@ -21,16 +22,21 @@ public class WordStatusHistoryMapping {
     private final WordMapping WORD_MAPPING;
     private final WordStatusMapping WORD_STATUS_MAPPING;
 
+    private final StringUtils STRING_UTILS;
+
     @Autowired
     public WordStatusHistoryMapping(WordService wordService,
                                     WordStatusService wordStatusService,
                                     WordMapping wordMapping,
-                                    WordStatusMapping wordStatusMapping) {
+                                    WordStatusMapping wordStatusMapping,
+                                    StringUtils stringUtils) {
         this.WORD_SERVICE = wordService;
         this.WORD_STATUS_SERVICE = wordStatusService;
 
         this.WORD_MAPPING = wordMapping;
         this.WORD_STATUS_MAPPING = wordStatusMapping;
+
+        this.STRING_UTILS = stringUtils;
     }
 
     public WordStatusHistoryResponseDTO mapToResponseDTO(WordStatusHistory wordStatusHistory) {
@@ -55,11 +61,17 @@ public class WordStatusHistoryMapping {
     public WordStatusHistory mapToWordStatusHistory(WordStatusHistoryRequestDTO dto) {
         WordStatusHistory wordStatusHistory = new WordStatusHistory();
 
-        Word word = WORD_SERVICE.findById(dto.getWordId());
-        wordStatusHistory.setWord(word);
+        long wordId = dto.getWordId();
+        if (wordId > 0) {
+            Word word = WORD_SERVICE.findById(wordId);
+            wordStatusHistory.setWord(word);
+        }
 
-        WordStatus wordStatus = WORD_STATUS_SERVICE.findByCode(dto.getWordStatusCode());
-        wordStatusHistory.setWordStatus(wordStatus);
+        String wordStatusCode = dto.getWordStatusCode();
+        if (STRING_UTILS.isNotStringVoid(wordStatusCode)) {
+            WordStatus wordStatus = WORD_STATUS_SERVICE.findByCode(wordStatusCode);
+            wordStatusHistory.setWordStatus(wordStatus);
+        }
 
         return wordStatusHistory;
     }

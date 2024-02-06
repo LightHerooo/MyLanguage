@@ -3,14 +3,10 @@ package ru.herooo.mylanguageweb.dto.word;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import ru.herooo.mylanguagedb.entities.Lang;
-import ru.herooo.mylanguagedb.entities.PartOfSpeech;
-import ru.herooo.mylanguagedb.entities.WordStatus;
 import ru.herooo.mylanguageweb.controllers.json.LongDeserializer;
 import ru.herooo.mylanguageweb.controllers.json.LongSerializer;
 import ru.herooo.mylanguageweb.dto.customer.CustomerResponseDTO;
 import ru.herooo.mylanguageweb.dto.lang.LangResponseDTO;
-import ru.herooo.mylanguageweb.dto.partofspeech.PartOfSpeechResponseDTO;
 
 public class WordResponseDTO {
 
@@ -20,9 +16,6 @@ public class WordResponseDTO {
 
     @JsonProperty("title")
     private String title;
-
-    @JsonProperty("part_of_speech")
-    private PartOfSpeechResponseDTO partOfSpeech;
 
     @JsonProperty("lang")
     private LangResponseDTO lang;
@@ -44,14 +37,6 @@ public class WordResponseDTO {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public PartOfSpeechResponseDTO getPartOfSpeech() {
-        return partOfSpeech;
-    }
-
-    public void setPartOfSpeech(PartOfSpeechResponseDTO partOfSpeech) {
-        this.partOfSpeech = partOfSpeech;
     }
 
     public LangResponseDTO getLang() {

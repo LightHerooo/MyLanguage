@@ -27,7 +27,6 @@ public class WordsInCollectionRestController {
 
     private final CustomersRestController CUSTOMERS_REST_CONTROLLER;
     private final LangsRestController LANGS_REST_CONTROLLER;
-    private final PartsOfSpeechRestController PARTS_OF_SPEECH_REST_CONTROLLER;
     private final CustomerCollectionsRestController CUSTOMER_COLLECTIONS_REST_CONTROLLER;
     private final WordsRestController WORDS_REST_CONTROLLER;
 
@@ -42,7 +41,6 @@ public class WordsInCollectionRestController {
     public WordsInCollectionRestController(
             CustomersRestController customersRestController,
             LangsRestController langsRestController,
-            PartsOfSpeechRestController partsOfSpeechRestController,
            CustomerCollectionsRestController customerCollectionsRestController,
            WordsRestController wordsRestController,
            CustomerService customerService,
@@ -52,7 +50,6 @@ public class WordsInCollectionRestController {
             WordInCollectionMapping wordInCollectionMapping) {
         this.CUSTOMERS_REST_CONTROLLER = customersRestController;
         this.LANGS_REST_CONTROLLER = langsRestController;
-        this.PARTS_OF_SPEECH_REST_CONTROLLER = partsOfSpeechRestController;
         this.CUSTOMER_COLLECTIONS_REST_CONTROLLER = customerCollectionsRestController;
         this.WORDS_REST_CONTROLLER = wordsRestController;
 
@@ -67,15 +64,14 @@ public class WordsInCollectionRestController {
     public ResponseEntity<?> getFilteredInCollection(
             @RequestParam("collection_key") String collectionKey,
             @RequestParam(value = "title", required = false) String title,
-            @RequestParam(value = "lang_code", required = false) String langCode,
-            @RequestParam(value = "part_of_speech_code", required = false) String partOfSpeechCode) {
-        ResponseEntity<?> response = validateBeforeFilter(collectionKey, langCode, partOfSpeechCode);
+            @RequestParam(value = "lang_code", required = false) String langCode) {
+        ResponseEntity<?> response = validateBeforeFilter(collectionKey, langCode);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
 
         List<WordInCollection> wordsInCollection = WORD_IN_COLLECTION_SERVICE.findWordsInCollectionAfterFilter
-                (title, langCode, partOfSpeechCode, collectionKey);
+                (title, langCode, collectionKey);
         if (wordsInCollection != null && wordsInCollection.size() > 0) {
             List<WordInCollectionResponseDTO> wordsDTO =
                     wordsInCollection.stream().map(WORD_IN_COLLECTION_MAPPING::mapToResponseDTO).toList();
@@ -93,11 +89,10 @@ public class WordsInCollectionRestController {
             @RequestParam(value = "number_of_words") Long numberOfWords,
             @RequestParam(value = "title", required = false) String title,
             @RequestParam(value = "lang_code", required = false) String langCode,
-            @RequestParam(value = "part_of_speech_code", required = false) String partOfSpeechCode,
             @RequestParam(value = "last_word_in_collection_id_on_previous_page", required = false, defaultValue = "0")
                 Long lastWordInCollectionIdOnPreviousPage) {
         ResponseEntity<?> response = validateBeforeFilterPagination(collectionKey, numberOfWords,
-                langCode, partOfSpeechCode, lastWordInCollectionIdOnPreviousPage);
+                langCode, lastWordInCollectionIdOnPreviousPage);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
@@ -117,7 +112,7 @@ public class WordsInCollectionRestController {
         }
 
         List<WordInCollection> wordsInCollection = WORD_IN_COLLECTION_SERVICE.
-                findWordsInCollectionAfterFilterWithPagination(title, langCode, partOfSpeechCode, collectionKey,
+                findWordsInCollectionAfterFilterWithPagination(title, langCode, collectionKey,
                         numberOfWords, lastWordInCollectionIdOnPreviousPage);
         if (wordsInCollection != null && wordsInCollection.size() > 0) {
             List<WordInCollectionResponseDTO> wordsDTO =
@@ -161,15 +156,21 @@ public class WordsInCollectionRestController {
 
         WordInCollection wordInCollection = WORD_IN_COLLECTION_SERVICE
                 .findByWordAndCustomerCollection(word, customerCollection);
-        if (wordInCollection == null) {
-            wordInCollection = WORD_IN_COLLECTION_SERVICE.add(word, customerCollection);
-            WordInCollectionResponseDTO responseDTO = WORD_IN_COLLECTION_MAPPING.mapToResponseDTO(wordInCollection);
-            return ResponseEntity.ok(responseDTO);
-        } else {
-            CustomResponseMessage message = new CustomResponseMessage(1, "Такое слово уже есть в коллекции.");
+        if (wordInCollection != null) {
+            CustomResponseMessage message = new CustomResponseMessage(1,
+                    "Это слово уже есть в коллекции.");
             return ResponseEntity.badRequest().body(message);
         }
 
+        wordInCollection = WORD_IN_COLLECTION_SERVICE.add(dto);
+        if (wordInCollection != null) {
+            WordInCollectionResponseDTO responseDTO = WORD_IN_COLLECTION_MAPPING.mapToResponseDTO(wordInCollection);
+            return ResponseEntity.ok(responseDTO);
+        } else {
+            CustomResponseMessage message = new CustomResponseMessage(2,
+                    "Произошла ошибка при добавлении слова в коллекцию.");
+            return ResponseEntity.badRequest().body(message);
+        }
     }
 
     @DeleteMapping
@@ -180,11 +181,17 @@ public class WordsInCollectionRestController {
         }
 
         response = findById(dto.getId());
-        if (response.getStatusCode() == HttpStatus.OK) {
-            WORD_IN_COLLECTION_SERVICE.deleteById(dto.getId());
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
         }
 
-        return response;
+        WordInCollection wordInCollection = WORD_IN_COLLECTION_SERVICE.findById(dto.getId());
+        WORD_IN_COLLECTION_SERVICE.delete(wordInCollection);
+
+        CustomResponseMessage message = new CustomResponseMessage(1,
+                String.format("Слово '%s' успешно удалено из коллекции '%s'.",
+                        wordInCollection.getWord().getTitle(), wordInCollection.getCustomerCollection().getTitle()));
+        return ResponseEntity.ok(message);
     }
 
     @DeleteMapping("/delete_inactive_words_in_collections")
@@ -252,8 +259,7 @@ public class WordsInCollectionRestController {
     @GetMapping("/validate/before_filter")
     public ResponseEntity<?> validateBeforeFilter(
             @RequestParam("collection_key") String collectionKey,
-            @RequestParam(value = "lang_code", required = false) String langCode,
-            @RequestParam(value = "part_of_speech_code", required = false) String partOfSpeechCode) {
+            @RequestParam(value = "lang_code", required = false) String langCode) {
         ResponseEntity<?> response = CUSTOMER_COLLECTIONS_REST_CONTROLLER.findByKey(collectionKey);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
@@ -261,13 +267,6 @@ public class WordsInCollectionRestController {
 
         if (langCode != null) {
             response = LANGS_REST_CONTROLLER.findByCode(langCode);
-            if (response.getStatusCode() != HttpStatus.OK) {
-                return response;
-            }
-        }
-
-        if (partOfSpeechCode != null) {
-            response = PARTS_OF_SPEECH_REST_CONTROLLER.findByCode(partOfSpeechCode);
             if (response.getStatusCode() != HttpStatus.OK) {
                 return response;
             }
@@ -282,10 +281,9 @@ public class WordsInCollectionRestController {
             @RequestParam("collection_key") String collectionKey,
             @RequestParam(value = "number_of_words") Long numberOfWords,
             @RequestParam(value = "lang_code", required = false) String langCode,
-            @RequestParam(value = "part_of_speech_code", required = false) String partOfSpeechCode,
             @RequestParam(value = "last_word_in_collection_id_on_previous_page", required = false, defaultValue = "0")
             Long lastWordInCollectionIdOnPreviousPage) {
-        ResponseEntity<?> response = validateBeforeFilter(collectionKey, langCode, partOfSpeechCode);
+        ResponseEntity<?> response = validateBeforeFilter(collectionKey, langCode);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
@@ -320,16 +318,24 @@ public class WordsInCollectionRestController {
             return response;
         }
 
-        // Если мы хотим изменить/удалить слово
+        String collectionKey = null;
+        Customer authCustomer = CUSTOMER_SERVICE.findByAuthCode(dto.getAuthCode());
         if (dto.getId() != 0) {
+            // Если слово в коллекции не новое, достаём ключ коллекции из этого слова
+            response = findById(dto.getId());
+            if (response.getStatusCode() != HttpStatus.OK) {
+                return response;
+            }
+
             WordInCollection wordInCollection = WORD_IN_COLLECTION_SERVICE.findById(dto.getId());
-            dto = WORD_IN_COLLECTION_MAPPING.mapToRequestDTO(dto, wordInCollection);
+            collectionKey = wordInCollection.getCustomerCollection().getKey();
+        } else {
+            collectionKey = dto.getCustomerCollectionKey();
         }
 
         // Проверяем принадлежность пользователя к коллекции, с которой он хочет взаимодействовать
-        Customer authCustomer = CUSTOMER_SERVICE.findByAuthCode(dto.getAuthCode());
         response = CUSTOMER_COLLECTIONS_REST_CONTROLLER.
-                findByCustomerIdAndKey(authCustomer.getId(), dto.getCustomerCollectionKey());
+                findByCustomerIdAndKey(authCustomer.getId(), collectionKey);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }

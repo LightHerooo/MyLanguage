@@ -17,6 +17,11 @@ public class WordRequestDTO {
     @JsonDeserialize(using = LongDeserializer.class)
     private long id;
 
+    @JsonSerialize(using = LongSerializer.class)
+    @JsonDeserialize(using = LongDeserializer.class)
+    @JsonProperty("customer_id")
+    private long customerId;
+
     @NotBlank(message = "Слово не может быть пустым.")
     @Size(max = 44, message = "Длина должна быть не более 44-х символов.")
     @Pattern(regexp = "^[^ ]+$", message = "Слово не должно содержать пробелов.")
@@ -26,10 +31,6 @@ public class WordRequestDTO {
     @NotBlank(message = "Выберите язык.")
     @JsonProperty("lang_code")
     private String langCode;
-
-    @NotBlank(message = "Выберите часть речи.")
-    @JsonProperty("part_of_speech_code")
-    private String partOfSpeechCode;
 
     @JsonProperty("word_status_code")
     private String wordStatusCode;
@@ -63,14 +64,6 @@ public class WordRequestDTO {
         this.langCode = langCode;
     }
 
-    public String getPartOfSpeechCode() {
-        return partOfSpeechCode;
-    }
-
-    public void setPartOfSpeechCode(String partOfSpeechCode) {
-        this.partOfSpeechCode = partOfSpeechCode;
-    }
-
     public String getAuthCode() {
         return authCode;
     }
@@ -85,5 +78,13 @@ public class WordRequestDTO {
 
     public void setWordStatusCode(String wordStatusCode) {
         this.wordStatusCode = wordStatusCode;
+    }
+
+    public long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(long customerId) {
+        this.customerId = customerId;
     }
 }

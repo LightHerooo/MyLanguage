@@ -10,11 +10,9 @@ import org.springframework.web.bind.annotation.*;
 import ru.herooo.mylanguagedb.entities.Customer;
 import ru.herooo.mylanguagedb.entities.CustomerCollection;
 import ru.herooo.mylanguagedb.entities.Lang;
-import ru.herooo.mylanguagedb.entities.WordInCollection;
 import ru.herooo.mylanguageutils.StringUtils;
 import ru.herooo.mylanguageweb.dto.CustomResponseMessage;
 import ru.herooo.mylanguageweb.dto.LongResponse;
-import ru.herooo.mylanguageweb.dto.customercollection.CustomerCollectionAddMoreRequestDTO;
 import ru.herooo.mylanguageweb.dto.customercollection.CustomerCollectionMapping;
 import ru.herooo.mylanguageweb.dto.customercollection.CustomerCollectionRequestDTO;
 import ru.herooo.mylanguageweb.dto.customercollection.CustomerCollectionResponseDTO;
@@ -24,7 +22,6 @@ import ru.herooo.mylanguageweb.services.LangService;
 import ru.herooo.mylanguageweb.services.WordInCollectionService;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/customer_collections")
@@ -176,6 +173,19 @@ public class CustomerCollectionsRestController {
         }
     }
 
+    @GetMapping("/find/by_id")
+    public ResponseEntity<?> findById(@RequestParam("id") Long id) {
+        CustomerCollection collection = CUSTOMER_COLLECTION_SERVICE.findById(id);
+        if (collection != null) {
+            CustomerCollectionResponseDTO dto = CUSTOMER_COLLECTION_MAPPING.mapToResponseDTO(collection);
+            return ResponseEntity.ok(dto);
+        } else {
+            CustomResponseMessage message = new CustomResponseMessage(1,
+                    String.format("Коллекция с id = '%d' не найдена.", id));
+            return ResponseEntity.badRequest().body(message);
+        }
+    }
+
     @GetMapping("/find/by_key")
     public ResponseEntity<?> findByKey(
             @RequestParam("key") String key) {
@@ -241,12 +251,11 @@ public class CustomerCollectionsRestController {
             return ResponseEntity.badRequest().body(message);
         }
 
-        Customer customer = CUSTOMER_SERVICE.findByAuthCode(dto.getAuthCode());
+        // Проверяем наличие коллекции с таким же названием у создающего
+        Customer authCustomer = CUSTOMER_SERVICE.findByAuthCode(dto.getAuthCode());
         CustomerCollection collection =
-                CUSTOMER_COLLECTION_SERVICE.findByCustomerAndTitleIgnoreCase(customer, dto.getTitle());
-        if (collection != null
-                && (dto.getId() == 0
-                    || dto.getId() != collection.getId())) {
+                CUSTOMER_COLLECTION_SERVICE.findByCustomerAndTitleIgnoreCase(authCustomer, dto.getTitle());
+        if (collection != null && (dto.getId() == 0 || dto.getId() != collection.getId())) {
             CustomResponseMessage message = new CustomResponseMessage(2,
                     "У вас уже есть коллекция с таким названием.");
             return ResponseEntity.badRequest().body(message);

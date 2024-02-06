@@ -11,15 +11,6 @@ import {
 } from "../../classes/api/workout_types/workout_types.js";
 
 import {
-    WorkoutSettingRequestDTO,
-    WorkoutSettingResponseDTO
-} from "../../classes/dto/workout_setting.js";
-
-import {
-    CustomResponseMessage
-} from "../../classes/dto/other/custom_response_message.js";
-
-import {
     RuleTypes,
     RuleElement
 } from "../../classes/rule_element.js";
@@ -29,10 +20,6 @@ import {
 } from "../../classes/utils/entity/lang_utils.js";
 
 import {
-    WorkoutSettingsAPI
-} from "../../classes/api/workout_settings_api.js";
-
-import {
     ComboBoxUtils
 } from "../../classes/utils/combo_box_utils.js";
 
@@ -40,12 +27,26 @@ import {
     LoadingElement
 } from "../../classes/loading_element.js";
 
-const _WORKOUT_SETTINGS_API = new WorkoutSettingsAPI();
+import {
+    WorkoutsAPI
+} from "../../classes/api/workouts_api.js";
+
+import {
+    WorkoutRequestDTO,
+    WorkoutResponseDTO
+} from "../../classes/dto/workout.js";
+
+import {
+    CustomResponseMessage
+} from "../../classes/dto/other/custom_response_message.js";
+
+const _WORKOUTS_API = new WorkoutsAPI();
+
+const _CURRENT_WORKOUT_TYPE = new WorkoutTypes().RANDOM_WORDS;
 
 const _HTTP_STATUSES = new HttpStatuses();
 const _GLOBAL_COOKIES = new GlobalCookies();
 const _RULE_TYPES = new RuleTypes();
-const _CURRENT_WORKOUT_TYPE = new WorkoutTypes().RANDOM_WORDS;
 const _LANG_UTILS = new LangUtils();
 const _COMBO_BOX_UTILS = new ComboBoxUtils();
 
@@ -58,13 +59,9 @@ const _CB_OUT_LANGS_ID = "cb_out_langs";
 const _DIV_OUT_LANG_FLAG_ID = "out_lang_flag";
 
 const _CB_NUMBER_OF_WORDS_ID = "cb_number_of_words";
-const _CHECK_SAVE_SETTINGS_ID = "check_save_settings";
-const _A_SAVE_SETTINGS = "a_save_settings";
 const _SUBMIT_SEND_ID = "submit_send";
 const _SUBMIT_BTN_ID = "submit_btn";
 const _DIV_WORKOUT_START_INFO_CONTAINER_ID = "workout_start_info_container";
-
-
 
 const _NUMBER_OF_WORDS_POSSIBLE_ARR = [10, 20, 30, 40, 50]
 
@@ -73,10 +70,9 @@ window.onload = async function() {
     await prepareCbOutLangs();
 
     prepareCbNumberOfWords();
-    prepareSaveSettingsContainer();
     prepareSubmitSend();
 
-    await tryToSetSavedSettings();
+    await tryToSetLastWorkoutSettings();
 }
 
 async function prepareCbInLangs() {
@@ -135,16 +131,6 @@ function prepareCbNumberOfWords() {
     }
 }
 
-function prepareSaveSettingsContainer() {
-    let checkSaveSettings = document.getElementById(_CHECK_SAVE_SETTINGS_ID);
-    checkSaveSettings.checked = true;
-
-    let aSaveSettings = document.getElementById(_A_SAVE_SETTINGS);
-    aSaveSettings.addEventListener("click", function () {
-        checkSaveSettings.checked = !checkSaveSettings.checked;
-    })
-}
-
 function prepareSubmitSend() {
     let submitSend = document.getElementById(_SUBMIT_SEND_ID);
     let submitBtn = document.getElementById(_SUBMIT_BTN_ID);
@@ -161,16 +147,7 @@ function prepareSubmitSend() {
         //---
 
         if (await checkBeforeWorkoutStart() === true) {
-            let acceptSend = true;
-
-            // Добаляем/изменяем настройки, если этого хочет пользователь ---
-            let checkSaveSettings = document.getElementById(_CHECK_SAVE_SETTINGS_ID);
-            if (checkSaveSettings && checkSaveSettings.checked) {
-                acceptSend = await createOrChangeWorkoutSetting();
-            }
-            //---
-
-            if (acceptSend === true) {
+            if (await createWorkout() === true) {
                 submitSend.submit();
             }
         } else {
@@ -181,34 +158,34 @@ function prepareSubmitSend() {
     })
 }
 
-async function tryToSetSavedSettings() {
+async function tryToSetLastWorkoutSettings() {
     let authId = _GLOBAL_COOKIES.AUTH_ID.getValue();
     let workoutTypeCode = _CURRENT_WORKOUT_TYPE.CODE;
-    let JSONResponse = await _WORKOUT_SETTINGS_API.GET.findByCustomerIdAndWorkoutTypeCode(authId, workoutTypeCode);
+    let JSONResponse = await _WORKOUTS_API.GET.findLastByCustomerIdAndWorkoutTypeCode(authId, workoutTypeCode);
     if (JSONResponse.status === _HTTP_STATUSES.OK) {
-        let workoutSetting = new WorkoutSettingResponseDTO(JSONResponse.json);
+        let workout = new WorkoutResponseDTO(JSONResponse.json);
 
-        if (workoutSetting.langIn) {
+        if (workout.langIn) {
             let cbInLangs = document.getElementById(_CB_IN_LANGS_ID);
             if (cbInLangs) {
                 _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemId(
-                    cbInLangs, workoutSetting.langIn.code, true);
+                    cbInLangs, workout.langIn.code, true);
             }
         }
 
-        if (workoutSetting.langOut) {
+        if (workout.langOut) {
             let cbOutLangs = document.getElementById(_CB_OUT_LANGS_ID);
             if (cbOutLangs) {
                 _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemId(
-                    cbOutLangs, workoutSetting.langOut.code, true);
+                    cbOutLangs, workout.langOut.code, true);
             }
         }
 
-        if (workoutSetting.numberOfWords) {
+        if (workout.numberOfWords) {
             let cbNumberOfWords = document.getElementById(_CB_NUMBER_OF_WORDS_ID);
             for (let i = 0; i < cbNumberOfWords.childNodes.length; i++) {
                 let iOption = cbNumberOfWords.childNodes[i];
-                if (BigInt(iOption.value) === workoutSetting.numberOfWords) {
+                if (BigInt(iOption.value) === workout.numberOfWords) {
                     _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemIndex(
                         cbNumberOfWords, i, false);
                     break;
@@ -322,55 +299,27 @@ async function checkBeforeWorkoutStart() {
     return isCorrect;
 }
 
-async function createOrChangeWorkoutSetting() {
-    let acceptOperation = true;
+async function createWorkout() {
+    let workoutRequestDTO = new WorkoutRequestDTO();
+    workoutRequestDTO.workoutTypeCode = _CURRENT_WORKOUT_TYPE.CODE;
+    workoutRequestDTO.langInCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_IN_LANGS_ID);
+    workoutRequestDTO.langOutCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_OUT_LANGS_ID);
+    workoutRequestDTO.numberOfWords =
+        BigInt(_COMBO_BOX_UTILS.GET_SELECTED_ITEM.byComboBoxId(_CB_NUMBER_OF_WORDS_ID).value);
+
+    let isCorrect = true;
     let message;
     let ruleType;
 
-    let langInCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_IN_LANGS_ID);
-    let langOutCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_OUT_LANGS_ID);
-    let numberOfWords =
-        BigInt(_COMBO_BOX_UTILS.GET_SELECTED_ITEM.byComboBoxId(_CB_NUMBER_OF_WORDS_ID).value);
-
-    let authId = _GLOBAL_COOKIES.AUTH_ID.getValue();
-    let workoutTypeCode = _CURRENT_WORKOUT_TYPE.CODE;
-    let JSONResponse = await
-        _WORKOUT_SETTINGS_API.GET.findByCustomerIdAndWorkoutTypeCode(authId, workoutTypeCode);
-    if (JSONResponse.status === _HTTP_STATUSES.OK) {
-        // Если настройки уже существуют, изменяем
-        let workoutSetting = new WorkoutSettingResponseDTO(JSONResponse.json);
-        let requestDTO = new WorkoutSettingRequestDTO();
-        requestDTO.id = BigInt(workoutSetting.id);
-        requestDTO.numberOfWords = numberOfWords;
-        requestDTO.langInCode = langInCode;
-        requestDTO.langOutCode = langOutCode;
-
-        JSONResponse = await _WORKOUT_SETTINGS_API.PATCH.editInRandomWords(requestDTO);
-        if (JSONResponse.status !== _HTTP_STATUSES.OK) {
-            acceptOperation = false;
-            message = new CustomResponseMessage(JSONResponse.json).text;
-            ruleType = _RULE_TYPES.ERROR;
-        }
-    } else {
-        // Если настроек не существует, создаём новые
-        let requestDTO = new WorkoutSettingRequestDTO();
-        requestDTO.numberOfWords = numberOfWords;
-        requestDTO.langInCode = langInCode;
-        requestDTO.langOutCode = langOutCode
-
-        JSONResponse = await _WORKOUT_SETTINGS_API.POST.addInRandomWords(requestDTO);
-        if (JSONResponse.status !== _HTTP_STATUSES.OK) {
-            acceptOperation = false;
-            message = new CustomResponseMessage(JSONResponse.json).text;
-            ruleType = _RULE_TYPES.ERROR;
-        }
+    let JSONResponse = await _WORKOUTS_API.POST.add(workoutRequestDTO);
+    if (JSONResponse.status !== _HTTP_STATUSES.OK) {
+        isCorrect = false;
+        message = new CustomResponseMessage(JSONResponse.json).text;
+        ruleType = _RULE_TYPES.ERROR;
     }
 
-    if (acceptOperation === false) {
-        changeWorkoutStartInfoRule(acceptOperation, message, ruleType);
-    }
-
-    return acceptOperation;
+    changeWorkoutStartInfoRule(isCorrect, message, ruleType);
+    return isCorrect;
 }
 
 function changeWorkoutStartInfoRule(isCorrect, message, ruleType) {
@@ -383,5 +332,4 @@ function changeWorkoutStartInfoRule(isCorrect, message, ruleType) {
     } else {
         ruleElement.removeDiv();
     }
-    //---
 }

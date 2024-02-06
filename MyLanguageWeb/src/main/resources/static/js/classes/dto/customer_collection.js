@@ -185,10 +185,4 @@ export class CustomerCollectionRequestDTO {
     title;
     langCode;
     key;
-
-    constructor(title, langCode, key) {
-        this.title = title;
-        this.langCode = langCode;
-        this.key = key;
-    }
 }

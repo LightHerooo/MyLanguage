@@ -45,7 +45,7 @@ div.collection-words-instruments {
     height: 100px;
 
     display: grid;
-    grid: 1fr / 2fr 1fr 1fr 1fr 50px;
+    grid: 1fr / 2fr 1fr 1fr 50px;
     gap: 10px;
     margin-top: 50px;
 }

@@ -25,10 +25,6 @@ public class Word {
     private Customer author;
 
     @ManyToOne
-    @JoinColumn(name="part_of_speech_id")
-    private PartOfSpeech partOfSpeech;
-
-    @ManyToOne
     @JoinColumn(name="lang_id")
     private Lang lang;
 
@@ -58,14 +54,6 @@ public class Word {
 
     public void setLang(Lang lang) {
         this.lang = lang;
-    }
-
-    public PartOfSpeech getPartOfSpeech() {
-        return partOfSpeech;
-    }
-
-    public void setPartOfSpeech(PartOfSpeech partOfSpeech) {
-        this.partOfSpeech = partOfSpeech;
     }
 
     public LocalDateTime getDateOfCreate() {

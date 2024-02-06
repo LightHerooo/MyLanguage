@@ -27,26 +27,32 @@ public class DicResult {
         final StringUtils STRING_UTILS = new StringUtils();
 
         TranslatedWord foundWord = null;
-        for (TranslatedGroup group: translatedGroups) {
-            for (TranslatedWord word: group.getTranslatedWords()) {
-                if (STRING_UTILS.getClearString(word.getTitle())
-                        .equals(STRING_UTILS.getClearString(title))) {
-                    foundWord = word;
-                    break;
-                }
+        if (translatedGroups != null) {
+            for (TranslatedGroup group: translatedGroups) {
+                if (group.getTranslatedWords() != null) {
+                    for (TranslatedWord word: group.getTranslatedWords()) {
+                        if (STRING_UTILS.getClearString(word.getTitle())
+                                .equals(STRING_UTILS.getClearString(title))) {
+                            foundWord = word;
+                            break;
+                        }
 
-                for (TranslatedSynonym synonym: word.getSynonyms()) {
-                    if (STRING_UTILS.getClearString(synonym.getTitle())
-                            .equals(STRING_UTILS.getClearString(title))) {
-                        foundWord = word;
-                        break;
+                        if (word.getSynonyms() != null) {
+                            for (TranslatedSynonym synonym: word.getSynonyms()) {
+                                if (STRING_UTILS.getClearString(synonym.getTitle())
+                                        .equals(STRING_UTILS.getClearString(title))) {
+                                    foundWord = word;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (foundWord != null) break;
                     }
+
+                    if (foundWord != null) break;
                 }
-
-                if (foundWord != null) break;
             }
-
-            if (foundWord != null) break;
         }
 
         return foundWord;
@@ -55,12 +61,18 @@ public class DicResult {
     public List<String> getAllTranslates() {
         List<String> translates = new ArrayList<>();
 
-        for (TranslatedGroup group: translatedGroups) {
-            for (TranslatedWord word: group.getTranslatedWords()) {
-                translates.add(word.getTitle());
+        if (translatedGroups != null) {
+            for (TranslatedGroup group: translatedGroups) {
+                if (group.getTranslatedWords() != null) {
+                    for (TranslatedWord word: group.getTranslatedWords()) {
+                        translates.add(word.getTitle());
 
-                for (TranslatedSynonym synonym: word.getSynonyms()) {
-                    translates.add(synonym.getTitle());
+                        if (word.getSynonyms() != null) {
+                            for (TranslatedSynonym synonym: word.getSynonyms()) {
+                                translates.add(synonym.getTitle());
+                            }
+                        }
+                    }
                 }
             }
         }

@@ -5,11 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ru.herooo.mylanguageutils.StringUtils;
 import ru.herooo.mylanguageutils.yandexdictionary.dicresult.DicResult;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -27,36 +27,37 @@ public class YandexDictionaryUtils {
                 createHashMapWithParams(word, langInCode, langOutCode, properties.getAPIKey());
 
         // Создаём GET-запрос с параметрами из мапы
-        URI uri = createGETUriWithParams(properties.getAPIPath(), params);
-
-        HttpClient client = HttpClient.newHttpClient();
-        HttpResponse<String> response = null;
+        String responseStr = null;
+        HttpURLConnection con = null;
         try {
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(uri)
-                    .GET()
-                    .timeout(Duration.ofSeconds(15))
-                    .build();
+            URL url = createGETUrlWithParams(properties.getAPIPath(), params);
+            con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+            con.setConnectTimeout(15 * 1000);
+            con.setReadTimeout(15 * 1000);
+            con.connect();
 
-            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            if (con.getResponseCode() == 200) {
+                responseStr = readResponse(con.getInputStream());
+            }
         } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+        } finally {
+            if (con != null) {
+                con.disconnect();
+            }
         }
 
-        // WTF (почему-то не работает, возможны утечки)
-        /* client.close(); */
-
         DicResult responseDTO = null;
-        if (response != null && response.statusCode() == 200) {
+        StringUtils stringUtils = new StringUtils();
+        if (stringUtils.isNotStringVoid(responseStr)) {
             try {
                 ObjectMapper mapper = new ObjectMapper();
-                responseDTO = mapper.readValue(response.body(),
-                        DicResult.class);
+                responseDTO = mapper.readValue(responseStr, DicResult.class);
             } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
             }
+
         }
 
         return responseDTO;
@@ -110,7 +111,7 @@ public class YandexDictionaryUtils {
         return params;
     }
 
-    private URI createGETUriWithParams(String path, HashMap<String, String> params) {
+    private URL createGETUrlWithParams(String path, HashMap<String, String> params) throws MalformedURLException {
         final StringUtils STRING_UTILS = new StringUtils();
 
         if (params != null && params.size() > 0) {
@@ -129,6 +130,21 @@ public class YandexDictionaryUtils {
             }
         }
 
-        return URI.create(path);
+        return URI.create(path).toURL();
+    }
+
+    private String readResponse(InputStream urlInputStream) {
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(urlInputStream))) {
+            String inputLine;
+            StringBuilder content = new StringBuilder();
+            while ((inputLine = in.readLine()) != null) {
+                content.append(inputLine);
+            }
+
+            return content.toString();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return "";
+        }
     }
 }

@@ -19,13 +19,18 @@ import {
     WordsAPI
 } from "../../api/words_api.js";
 
+import {
+    GlobalCookies
+} from "../../global_cookies.js";
+
 const _WORDS_API = new WordsAPI();
 
 const _RULE_TYPES = new RuleTypes();
 const _HTTP_STATUSES = new HttpStatuses();
+const _GLOBAL_COOKIES = new GlobalCookies();
 
 export class WordUtils {
-    async checkCorrectValueInTbTitle(tbTitle, parentElement, langCode, partOfSpeechCode, customTimerObj) {
+    async checkCorrectValueInTbTitle(tbTitle, parentElement, langCode, customTimerObj) {
         let isCorrect = true;
         if (tbTitle && parentElement) {
             const TITLE_MAX_SIZE = 44;
@@ -53,8 +58,8 @@ export class WordUtils {
 
                 let wordRequestDTO = new WordRequestDTO();
                 wordRequestDTO.title = tbTitle.value;
+                wordRequestDTO.customerId = BigInt(_GLOBAL_COOKIES.AUTH_ID.getValue());
                 wordRequestDTO.langCode = langCode;
-                wordRequestDTO.partOfSpeechCode = partOfSpeechCode;
 
                 let JSONResponsePromise = new Promise(resolve => {
                     customTimerObj.handler = async function () {

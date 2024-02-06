@@ -1,4 +1,4 @@
-package ru.herooo.mylanguageweb.dto.workoutsetting;
+package ru.herooo.mylanguageweb.dto.workout;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import ru.herooo.mylanguageweb.controllers.json.LongDeserializer;
 import ru.herooo.mylanguageweb.controllers.json.LongSerializer;
 
-public class WorkoutSettingRequestDTO {
+public class WorkoutRequestDTO {
     @JsonSerialize(using = LongSerializer.class)
     @JsonDeserialize(using = LongDeserializer.class)
     private long id;
@@ -25,7 +25,7 @@ public class WorkoutSettingRequestDTO {
     @JsonProperty("lang_out_code")
     private String langOutCode;
 
-    @JsonProperty("customer_collection_key")
+    @JsonProperty("collection_key")
     private String collectionKey;
 
     @JsonProperty("auth_code")

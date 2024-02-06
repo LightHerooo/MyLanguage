@@ -33,10 +33,6 @@ import {
 } from "../../classes/utils/entity/lang_utils.js";
 
 import {
-    PartOfSpeechUtils
-} from "../../classes/utils/entity/part_of_speech_utils.js";
-
-import {
     WordStatusUtils
 } from "../../classes/utils/entity/word_status_utils.js";
 
@@ -76,7 +72,6 @@ const _CSS_MAIN = new CssMain();
 const _HTTP_STATUSES = new HttpStatuses();
 const _WORD_STATUSES = new WordStatuses();
 const _LANG_UTILS = new LangUtils();
-const _PART_OF_SPEECH_UTILS = new PartOfSpeechUtils();
 const _WORD_STATUS_UTILS = new WordStatusUtils();
 const _TABLE_UTILS = new TableUtils();
 const _A_BUTTONS = new AButtons();
@@ -85,7 +80,6 @@ const _CUSTOM_TIMER_UTILS = new CustomTimerUtils();
 
 const _TB_FINDER_ID = "tb_finder";
 const _CB_LANGS_ID = "cb_langs";
-const _CB_PARTS_OF_SPEECH_ID = "cb_parts_of_speech";
 const _CB_WORD_STATUSES = "cb_word_statuses";
 const _CHANGE_WORD_TABLE_HEAD_ID = "change_word_table_head";
 const _CHANGE_WORD_TABLE_BODY_ID = "change_word_table_body";
@@ -106,7 +100,6 @@ let _accessToFillTable = true;
 window.onload = async function() {
     prepareTableTimers();
 
-    await prepareCbPartsOfSpeech();
     await prepareCbLangs();
     await prepareCbWordStatuses();
     prepareTbFinder();
@@ -165,21 +158,6 @@ async function prepareCbLangs() {
         cbLangs.addEventListener("change", function () {
             startTimers();
         })
-    }
-}
-
-async function prepareCbPartsOfSpeech() {
-    let cbPartsOfSpeech = document.getElementById(_CB_PARTS_OF_SPEECH_ID);
-    if (cbPartsOfSpeech) {
-        let firstOption = document.createElement("option");
-        firstOption.textContent = "Все";
-
-        await _PART_OF_SPEECH_UTILS.fillComboBox(cbPartsOfSpeech, firstOption);
-
-        // Вешаем событие обновления списка при изменении элемента выпадающего списка
-        cbPartsOfSpeech.addEventListener("change", function () {
-            startTimers();
-        });
     }
 }
 
@@ -259,12 +237,11 @@ function prepareBtnRefresh() {
 
 async function sendPreparedRequest() {
     let title = document.getElementById(_TB_FINDER_ID).value;
-    let partOfSpeechCode =  _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_PARTS_OF_SPEECH_ID);
     let langCode =  _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_LANGS_ID);
     let wordStatusCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_WORD_STATUSES);
 
     return await _WORDS_API.GET.getAllFilteredPagination(_NUMBER_OF_WORDS, title,
-        wordStatusCode, partOfSpeechCode, langCode, _lastWordIdOnPreviousPage);
+        wordStatusCode, langCode, _lastWordIdOnPreviousPage);
 }
 
 async function tryToFillTable() {
@@ -378,12 +355,6 @@ async function createTableRow(wordResponseDTO) {
         row.appendChild(langColumn);
         //---
 
-        // Часть речи ---
-        let partOfSpeechColumn = document.createElement("td");
-        partOfSpeechColumn.appendChild(wordStatusHistory.word.partOfSpeech.createDiv());
-        row.appendChild(partOfSpeechColumn);
-        //---
-
         // Статус ---
         let cbWordStatuses = document.createElement("select");
         cbWordStatuses.id = CHANGE_ROW_TABLE_ROW_ITEM_ID_PATTERN + "_cb_word_statuses_" + _lastWordNumberInList;
@@ -408,9 +379,7 @@ async function createTableRow(wordResponseDTO) {
 
             let wordRequestDTO = new WordRequestDTO();
             wordRequestDTO.id = wordStatusHistory.word.id;
-            wordRequestDTO.title = wordStatusHistory.word.title;
-            wordRequestDTO.langCode = wordStatusHistory.word.lang.code;
-            wordRequestDTO.partOfSpeechCode = wordStatusHistory.word.partOfSpeech.code;
+            wordRequestDTO.customerId = wordStatusHistory.word.customer.id;
             wordRequestDTO.wordStatusCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbWordStatuses);
 
             let JSONResponse = await _WORDS_API.PATCH.edit(wordRequestDTO);

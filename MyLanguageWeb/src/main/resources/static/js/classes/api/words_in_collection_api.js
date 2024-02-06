@@ -24,16 +24,13 @@ export class WordsInCollectionAPI {
 }
 
 class WordsInCollectionGETRequests {
-    async getAllInCollectionFilteredPagination(collectionKey, numberOfWords, title, partOfSpeechCode,
+    async getAllInCollectionFilteredPagination(collectionKey, numberOfWords, title,
                                                langCode, lastWordInCollectionIdOnPreviousPage){
         let requestURL = new URL(URL_TO_API_WORDS_IN_COLLECTION + "/filtered_pagination");
         requestURL.searchParams.set("collection_key", collectionKey);
         requestURL.searchParams.set("number_of_words", numberOfWords);
         requestURL.searchParams.set("title", title);
 
-        if (partOfSpeechCode) {
-            requestURL.searchParams.set("part_of_speech_code", partOfSpeechCode);
-        }
         if (langCode) {
             requestURL.searchParams.set("lang_code", langCode);
         }

@@ -47,6 +47,10 @@ import {
     LoadingElement
 } from "../../classes/loading_element.js";
 
+import {
+    GlobalCookies
+} from "../../classes/global_cookies.js";
+
 class CustomerCollectionRowElements {
     divRow;
     tbTitleParent;
@@ -362,6 +366,7 @@ async function sendNewCollections() {
         customerCollectionRequestDTO.title = customerCollectionRowElements.tbTitle.value.trim();
         customerCollectionRequestDTO.langCode =
             _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(customerCollectionRowElements.cbLangs);
+
 
         let JSONResponse = await _CUSTOMER_COLLECTIONS_API.POST.add(customerCollectionRequestDTO);
         if (JSONResponse.status === _HTTP_STATUSES.OK) {

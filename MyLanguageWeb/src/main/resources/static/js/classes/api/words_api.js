@@ -28,17 +28,14 @@ export class WordsAPI {
 }
 
 class WordsGETRequests {
-    async getAllFilteredPagination(numberOfWords, title, wordStatusCode, partOfSpeechCode,
-                             langCode, lastWordIdOnPreviousPage) {
+    async getAllFilteredPagination(numberOfWords, title, wordStatusCode,
+                                   langCode, lastWordIdOnPreviousPage) {
         let requestURL = new URL(URL_TO_API_WORDS + "/filtered_pagination");
         requestURL.searchParams.set("number_of_words", numberOfWords);
         requestURL.searchParams.set("title", title);
 
         if (wordStatusCode) {
             requestURL.searchParams.set("word_status_code", wordStatusCode);
-        }
-        if (partOfSpeechCode) {
-            requestURL.searchParams.set("part_of_speech_code", partOfSpeechCode);
         }
         if (langCode) {
             requestURL.searchParams.set("lang_code", langCode);
@@ -51,8 +48,7 @@ class WordsGETRequests {
     }
 
     async getAllCustomerWordsFilteredPagination(numberOfWords, customerId, title, wordStatusCode,
-                                                partOfSpeechCode, langCode,
-                                                lastWordIdOnPreviousPage) {
+                                                langCode, lastWordIdOnPreviousPage) {
         let requestURL = new URL(URL_TO_API_WORDS + "/customer_filtered_pagination");
         requestURL.searchParams.set("number_of_words", numberOfWords);
         requestURL.searchParams.set("customer_id", customerId);
@@ -60,9 +56,6 @@ class WordsGETRequests {
 
         if (wordStatusCode) {
             requestURL.searchParams.set("word_status_code", wordStatusCode);
-        }
-        if (partOfSpeechCode) {
-            requestURL.searchParams.set("part_of_speech_code", partOfSpeechCode);
         }
         if (langCode) {
             requestURL.searchParams.set("lang_code", langCode);
@@ -105,8 +98,8 @@ class WordsPOSTRequests {
 
         let jsonStr = _JSON_UTILS.stringify({
             'title': wordRequestDTO.title,
-            'lang_code': wordRequestDTO.langCode,
-            'part_of_speech_code': wordRequestDTO.partOfSpeechCode,
+            'customer_id': wordRequestDTO.customerId,
+            'lang_code': wordRequestDTO.langCode
         });
 
         return await _XML_UTILS.getJSONResponseByPOSTXml(requestURL, jsonStr);
@@ -117,8 +110,8 @@ class WordsPOSTRequests {
         let jsonStr = _JSON_UTILS.stringify({
             'id': wordRequestDTO.id,
             'title': wordRequestDTO.title,
-            'lang_code': wordRequestDTO.langCode,
-            'part_of_speech_code': wordRequestDTO.partOfSpeechCode,
+            'customer_id': wordRequestDTO.customerId,
+            'lang_code': wordRequestDTO.langCode
         });
 
         return await _XML_UTILS.getJSONResponseByPOSTXml(requestURL, jsonStr);
@@ -130,9 +123,7 @@ class WordsPATCHRequests {
         let requestURL = new URL(URL_TO_API_WORDS);
         let jsonStr = _JSON_UTILS.stringify({
             'id': wordRequestDTO.id,
-            'title': wordRequestDTO.title,
-            'lang_code': wordRequestDTO.langCode,
-            'part_of_speech_code': wordRequestDTO.partOfSpeechCode,
+            'customer_id': wordRequestDTO.customerId,
             'word_status_code': wordRequestDTO.wordStatusCode
         });
 

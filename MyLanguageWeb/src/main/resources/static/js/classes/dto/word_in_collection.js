@@ -26,10 +26,4 @@ export class WordInCollectionRequestDTO {
     id;
     wordId;
     collectionKey;
-
-    constructor(id, wordId, collectionKey) {
-        this.id = id;
-        this.wordId = wordId;
-        this.collectionKey = collectionKey;
-    }
 }

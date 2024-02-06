@@ -21,6 +21,7 @@ import {
 } from "../../classes/end_of_the_word.js";
 
 import {
+    WordInCollectionRequestDTO,
     WordInCollectionResponseDTO
 } from "../../classes/dto/word_in_collection.js";
 
@@ -39,10 +40,6 @@ import {
 import {
     LangUtils
 } from "../../classes/utils/entity/lang_utils.js";
-
-import {
-    PartOfSpeechUtils
-} from "../../classes/utils/entity/part_of_speech_utils.js";
 
 import {
     CustomerCollectionUtils
@@ -99,7 +96,6 @@ const _WORDS_IN_COLLECTION_API = new WordsInCollectionAPI();
 const _HTTP_STATUSES = new HttpStatuses();
 const _GLOBAL_COOKIES = new GlobalCookies();
 const _LANG_UTILS = new LangUtils();
-const _PART_OF_SPEECH_UTILS = new PartOfSpeechUtils();
 const _CUSTOMER_COLLECTION_UTILS = new CustomerCollectionUtils();
 const _TABLE_UTILS = new TableUtils();
 const _A_BUTTONS = new AButtons();
@@ -111,7 +107,6 @@ const _FLAG_ELEMENTS = new FlagElements();
 const _TB_FINDER_ID = "tb_finder";
 const _CB_LANGS_ID = "cb_langs";
 const _CB_CUSTOMER_COLLECTIONS_ID = "cb_customer_collections";
-const _CB_PARTS_OF_SPEECH_ID = "cb_parts_of_speech";
 const _DIV_COLLECTION_INFO_ID = "div_collection_info";
 const _COLLECTION_WORD_TABLE_HEAD_ID = "collection_word_table_head";
 const _COLLECTION_WORD_TABLE_BODY_ID = "collection_word_table_body";
@@ -142,7 +137,6 @@ window.onload = async function () {
     prepareCollectionInfoTimers();
     prepareTableTimers();
 
-    await prepareCbPartsOfSpeech();
     await prepareCbLangs();
     await prepareCbCustomerCollections();
     prepareTbFinder();
@@ -238,21 +232,6 @@ async function prepareCbLangs() {
         await _LANG_UTILS.prepareComboBox(cbLangs, firstOption, divLangFlag);
 
         cbLangs.addEventListener("change", startTimers);
-    }
-}
-
-// Подготовка выпадающего списка "Части речи"
-async function prepareCbPartsOfSpeech() {
-    let cbPartsOfSpeech = document.getElementById(_CB_PARTS_OF_SPEECH_ID);
-    if (cbPartsOfSpeech) {
-        let firstOption = document.createElement("option");
-        firstOption.textContent = "Все";
-
-        await _PART_OF_SPEECH_UTILS.fillComboBox(cbPartsOfSpeech, firstOption);
-
-        cbPartsOfSpeech.addEventListener("change", function () {
-            startTimers();
-        })
     }
 }
 
@@ -461,11 +440,10 @@ async function tryToFillCollectionInfo() {
 async function sendPreparedRequest() {
     let collectionKey = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_CUSTOMER_COLLECTIONS_ID);
     let title = document.getElementById(_TB_FINDER_ID).value;
-    let partOfSpeechCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_PARTS_OF_SPEECH_ID);
     let langCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_LANGS_ID);
 
     return await _WORDS_IN_COLLECTION_API.GET.getAllInCollectionFilteredPagination(collectionKey,
-        _NUMBER_OF_WORDS, title, partOfSpeechCode, langCode, _lastWordInCollectionIdOnPreviousPage);
+        _NUMBER_OF_WORDS, title, langCode, _lastWordInCollectionIdOnPreviousPage);
 }
 
 async function tryToFillTable() {
@@ -569,15 +547,14 @@ async function createTableRow(wordInCollectionResponseDTO) {
     row.appendChild(langColumn);
     //---
 
-    // Часть речи ---
-    let partOfSpeechColumn = document.createElement("td");
-    partOfSpeechColumn.appendChild(wordInCollectionResponseDTO.word.partOfSpeech.createDiv());
-    row.appendChild(partOfSpeechColumn);
-    //---
-
     // Действия ---
     let actionColumn = document.createElement("td");
-    actionColumn.appendChild(await createBtnAction(wordInCollectionResponseDTO.id));
+    let wordInCollectionRequestDTO = new WordInCollectionRequestDTO();
+    wordInCollectionRequestDTO.id = wordInCollectionResponseDTO.id;
+    wordInCollectionRequestDTO.wordId = wordInCollectionResponseDTO.word.id;
+    wordInCollectionRequestDTO.collectionKey = wordInCollectionResponseDTO.customerCollection.key;
+
+    actionColumn.appendChild(await createBtnAction(wordInCollectionRequestDTO));
     row.appendChild(actionColumn);
     //---
 
@@ -600,9 +577,9 @@ function setMessageInsideTable(message) {
 }
 
 // Создание кнопки события
-async function createBtnAction(wordInCollectionId) {
+async function createBtnAction(wordInCollectionRequestDTO) {
     let aBtnAction = _A_BUTTONS.A_BUTTON_DENY.createA();
-    await _WORD_TABLE_UTILS.changeToRemoveAction(aBtnAction, wordInCollectionId);
+    await _WORD_TABLE_UTILS.changeToRemoveAction(aBtnAction, wordInCollectionRequestDTO);
 
     aBtnAction.addEventListener("click", function () {
         _CUSTOM_TIMER_UTILS.findAfterWait(_CUSTOM_TIMER_COLLECTION_INFO_WAITER, _CUSTOM_TIMER_COLLECTION_INFO_FINDER);

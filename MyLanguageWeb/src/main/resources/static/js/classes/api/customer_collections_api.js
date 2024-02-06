@@ -62,6 +62,7 @@ class CustomerCollectionsPOSTRequests {
         let requestURL = new URL(URL_TO_API_CUSTOMER_COLLECTIONS);
         let jsonStr = _JSON_UTILS.stringify({
             'title': customerCollectionRequestDTO.title,
+            'customer_id': customerCollectionRequestDTO.customerId,
             'lang_code': customerCollectionRequestDTO.langCode
         });
 
@@ -72,6 +73,7 @@ class CustomerCollectionsPOSTRequests {
         let requestURL = new URL(URL_TO_API_CUSTOMER_COLLECTIONS + "/copy_by_key");
         let jsonStr = _JSON_UTILS.stringify({
             'title': customerCollectionRequestDTO.title,
+            'customer_id': customerCollectionRequestDTO.customerId,
             'key': customerCollectionRequestDTO.key
         });
 
@@ -83,6 +85,7 @@ class CustomerCollectionsPOSTRequests {
         let jsonStr = _JSON_UTILS.stringify({
             'id': customerCollectionRequestDTO.id,
             'title': customerCollectionRequestDTO.title,
+            'customer_id': customerCollectionRequestDTO.customerId,
             'lang_code': customerCollectionRequestDTO.langCode,
             'key': customerCollectionRequestDTO.key
         });

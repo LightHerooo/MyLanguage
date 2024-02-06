@@ -57,20 +57,36 @@ public class CustomerCollectionMapping {
         return dto;
     }
 
-    public CustomerCollection mapToCustomerCollection(CustomerCollection oldCollection,
-                                                      CustomerCollectionRequestDTO dto) {
-        oldCollection.setTitle(dto.getTitle().trim());
+    // Маппинг для добавления (все вносимые поля не могут быть изменены)
+    public CustomerCollection mapToCustomerCollection(CustomerCollectionRequestDTO dto) {
+        CustomerCollection collection = new CustomerCollection();
 
-        Customer customer = CUSTOMER_CRUD_REPOSITORY.findByAuthCode(dto.getAuthCode());
-        oldCollection.setCustomer(customer);
+        String authCode = dto.getAuthCode();
+        if (STRING_UTILS.isNotStringVoid(authCode)) {
+            Customer customer = CUSTOMER_CRUD_REPOSITORY.findByAuthCode(authCode);
+            collection.setCustomer(customer);
+        }
 
-        Lang lang = LANG_CRUD_REPOSITORY.findByCode(dto.getLangCode());
-        oldCollection.setLang(lang);
+        String langCode = dto.getLangCode();
+        if (STRING_UTILS.isNotStringVoid(langCode)) {
+            Lang lang = LANG_CRUD_REPOSITORY.findByCode(langCode);
+            collection.setLang(lang);
+        }
 
-        return oldCollection;
+        return mapToCustomerCollection(collection, dto);
     }
 
-    public CustomerCollection mapToCustomerCollection(CustomerCollectionRequestDTO dto) {
-        return mapToCustomerCollection(new CustomerCollection(), dto);
+    // Маппинг для изменения (все вносимые поля могут быть изменены)
+    public CustomerCollection mapToCustomerCollection(CustomerCollection oldCollection,
+                                                      CustomerCollectionRequestDTO dto) {
+        String title = dto.getTitle();
+        if (STRING_UTILS.isNotStringVoid(title)) {
+            title = title.trim();
+            if (STRING_UTILS.isNotStringVoid(title)) {
+                oldCollection.setTitle(title);
+            }
+        }
+
+        return oldCollection;
     }
 }

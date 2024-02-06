@@ -48,10 +48,6 @@ import {
 } from "../../classes/utils/entity/lang_utils.js";
 
 import {
-    PartOfSpeechUtils
-} from "../../classes/utils/entity/part_of_speech_utils.js";
-
-import {
     WordStatusUtils
 } from "../../classes/utils/entity/word_status_utils.js";
 
@@ -95,7 +91,6 @@ const _CSS_MAIN = new CssMain();
 const _HTTP_STATUSES = new HttpStatuses();
 const _GLOBAL_COOKIES = new GlobalCookies();
 const _LANG_UTILS = new LangUtils();
-const _PART_OF_SPEECH_UTILS = new PartOfSpeechUtils();
 const _WORD_STATUS_UTILS = new WordStatusUtils();
 const _TABLE_UTILS = new TableUtils();
 const _A_BUTTONS = new AButtons();
@@ -105,7 +100,6 @@ const _CUSTOM_TIMER_UTILS = new CustomTimerUtils();
 const _MY_WORDS_HISTORY_STATISTICS_CONTAINER_ID = "my_words_history_statistics_container";
 const _TB_FINDER_ID = "tb_finder";
 const _CB_LANGS_ID = "cb_langs";
-const _CB_PARTS_OF_SPEECH_ID = "cb_parts_of_speech";
 const _CB_WORD_STATUSES = "cb_word_statuses";
 const _MY_WORD_HISTORY_TABLE_COLGROUP_ID = "my_word_history_table_colgroup";
 const _MY_WORD_HISTORY_TABLE_HEAD_ID = "my_word_history_table_head";
@@ -146,7 +140,6 @@ window.onload = async function() {
     prepareStatisticTimers();
     prepareTableTimers();
 
-    await prepareCbPartsOfSpeech();
     await prepareCbLangs();
     await prepareCbWordStatuses();
     prepareTbFinder();
@@ -218,21 +211,6 @@ async function prepareCbLangs() {
         cbLangs.addEventListener("change", function () {
             startTimers();
         })
-    }
-}
-
-async function prepareCbPartsOfSpeech() {
-    let cbPartsOfSpeech = document.getElementById(_CB_PARTS_OF_SPEECH_ID);
-    if (cbPartsOfSpeech) {
-        let firstOption = document.createElement("option");
-        firstOption.textContent = "Все";
-
-        await _PART_OF_SPEECH_UTILS.fillComboBox(cbPartsOfSpeech, firstOption);
-
-        // Вешаем событие обновления списка при изменении элемента выпадающего списка
-        cbPartsOfSpeech.addEventListener("change", function () {
-            startTimers();
-        });
     }
 }
 
@@ -340,11 +318,10 @@ async function sendPreparedRequest() {
     let customerId = _GLOBAL_COOKIES.AUTH_ID.getValue();
     let title = document.getElementById(_TB_FINDER_ID).value;
     let wordStatusCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_WORD_STATUSES);
-    let partOfSpeechCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_PARTS_OF_SPEECH_ID);
     let langCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_LANGS_ID);
 
     return await _WORDS_API.GET.getAllCustomerWordsFilteredPagination(_NUMBER_OF_WORDS, customerId,
-        title, wordStatusCode, partOfSpeechCode, langCode, _lastWordIdOnPreviousPage);
+        title, wordStatusCode, langCode, _lastWordIdOnPreviousPage);
 }
 
 async function tryToFillTable() {
@@ -518,12 +495,6 @@ function createTableRowWithoutActionColumn(wordStatusHistoryObj, numberInTable) 
     let langColumn = document.createElement("td");
     langColumn.appendChild(wordStatusHistoryObj.word.lang.createDiv());
     row.appendChild(langColumn);
-    //---
-
-    // Часть речи ---
-    let partOfSpeechColumn = document.createElement("td");
-    partOfSpeechColumn.appendChild(wordStatusHistoryObj.word.partOfSpeech.createDiv());
-    row.appendChild(partOfSpeechColumn);
     //---
 
     // Статус ---

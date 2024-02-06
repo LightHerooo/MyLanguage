@@ -3,7 +3,6 @@ package ru.herooo.mylanguageweb.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.herooo.mylanguagedb.entities.Lang;
-import ru.herooo.mylanguagedb.entities.PartOfSpeech;
 import ru.herooo.mylanguagedb.entities.Word;
 import ru.herooo.mylanguagedb.repositories.word.WordCrudRepository;
 import ru.herooo.mylanguageutils.StringUtils;
@@ -34,29 +33,33 @@ public class WordService {
         this.STRING_UTILS = stringUtils;
     }
 
-    public long getNumberOfWordsByWordStatusCode(String wordStatusCode) {
-        return WORD_CRUD_REPOSITORY.countByWordStatusCode(wordStatusCode);
+    public List<Word> findRandomByLangCodeAndCount(String langCode, Long count) {
+        return WORD_CRUD_REPOSITORY.findRandomByLangCodeAndCount(langCode, count);
     }
 
     // Получение слов после сортировки
-    public List<Word> findAfterFilter(String title, String wordStatusCode, String partOfSpeechCode, String langCode) {
-        return WORD_CRUD_REPOSITORY.findAfterFilter(title, wordStatusCode, partOfSpeechCode, langCode);
+    public List<Word> findAfterFilter(String title, String wordStatusCode, String langCode) {
+        return WORD_CRUD_REPOSITORY.findAfterFilter(title, wordStatusCode, langCode);
     }
 
     // Получение слов после сортировки с пагинацией
-    public List<Word> findAfterFilterWithPagination(String title, String wordStatusCode, String partOfSpeechCode,
+    public List<Word> findAfterFilterWithPagination(String title, String wordStatusCode,
                                                     String langCode, Long numberOfWordsOnPage,
                                                     Long lastWordIdOnPreviousPage) {
-        return WORD_CRUD_REPOSITORY.findAfterFilterWithPagination(title, wordStatusCode, partOfSpeechCode,
+        return WORD_CRUD_REPOSITORY.findAfterFilterWithPagination(title, wordStatusCode,
                 langCode, numberOfWordsOnPage, lastWordIdOnPreviousPage);
     }
 
     public List<Word> findCustomerWordsAfterFilterWithPagination(String title, String wordStatusCode,
-                                                                 String partOfSpeechCode, String langCode,
-                                                                 Long customerId, Long numberOfWordsOnPage,
+                                                                 String langCode, Long customerId,
+                                                                 Long numberOfWordsOnPage,
                                                                  Long lastWordIdOnPreviousPage) {
-        return WORD_CRUD_REPOSITORY.findCustomerWordsAfterFilterWithPagination(title, wordStatusCode, partOfSpeechCode,
+        return WORD_CRUD_REPOSITORY.findCustomerWordsAfterFilterWithPagination(title, wordStatusCode,
                 langCode, customerId, numberOfWordsOnPage, lastWordIdOnPreviousPage);
+    }
+
+    public long getNumberOfWordsByWordStatusCode(String wordStatusCode) {
+        return WORD_CRUD_REPOSITORY.countByWordStatusCode(wordStatusCode);
     }
 
     public long getNumberOfWords() {
@@ -71,8 +74,8 @@ public class WordService {
         return WORD_CRUD_REPOSITORY.countByDateOfCreate(date);
     }
 
-    public Word findFirstByTitleIgnoreCaseAndLangAndPartOfSpeech(String title, Lang lang, PartOfSpeech partOfSpeech) {
-        return WORD_CRUD_REPOSITORY.findFirstByTitleIgnoreCaseAndLangAndPartOfSpeech(title, lang, partOfSpeech);
+    public Word findFirstByTitleIgnoreCaseAndLang(String title, Lang lang) {
+        return WORD_CRUD_REPOSITORY.findFirstByTitleIgnoreCaseAndLang(title, lang);
     }
 
     public Word add(WordRequestDTO dto) {
@@ -89,7 +92,8 @@ public class WordService {
     }
 
     public Word edit(Word oldWord, WordRequestDTO dto) {
-        return WORD_MAPPING.mapToWord(oldWord, dto);
+        Word word = WORD_MAPPING.mapToWord(oldWord, dto);
+        return WORD_CRUD_REPOSITORY.save(word);
     }
 
     public void deleteAllUnclaimedWords() {

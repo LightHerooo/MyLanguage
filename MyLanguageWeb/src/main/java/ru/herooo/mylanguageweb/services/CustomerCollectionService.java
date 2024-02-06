@@ -48,6 +48,10 @@ public class CustomerCollectionService {
         return findAllByCustomerOrderById(customer);
     }
 
+    public CustomerCollection findById(long id) {
+        return CUSTOMER_COLLECTION_CRUD_REPOSITORY.findById(id);
+    }
+
     public CustomerCollection findByKey(String key) {
         return CUSTOMER_COLLECTION_CRUD_REPOSITORY.findByKey(key);
     }
@@ -88,7 +92,7 @@ public class CustomerCollectionService {
 
             // Копируем все слова в коллекции
             List<WordInCollection> wordsInCollection =
-                    WORD_IN_COLLECTION_CRUD_REPOSITORY.findWordsInCollectionAfterFilter(null,
+                    WORD_IN_COLLECTION_CRUD_REPOSITORY.findWordsInCollectionAfterFilter(
                             null, null, dto.getKey());
             for (WordInCollection wordInCollection: wordsInCollection) {
                 WORD_IN_COLLECTION_CRUD_REPOSITORY.detach(wordInCollection);

@@ -24,10 +24,6 @@ import {
 } from "../../classes/utils/entity/lang_utils.js";
 
 import {
-    PartOfSpeechUtils
-} from "../../classes/utils/entity/part_of_speech_utils.js";
-
-import {
     WordUtils
 } from "../../classes/utils/entity/word_utils.js";
 
@@ -51,6 +47,10 @@ import {
     LoadingElement
 } from "../../classes/loading_element.js";
 
+import {
+    GlobalCookies
+} from "../../classes/global_cookies.js";
+
 const _WORDS_API = new WordsAPI();
 
 const _CSS_MAIN = new CssMain();
@@ -59,10 +59,10 @@ const _CSS_ELEMENT_WITH_FLAG = new CssElementWithFlag();
 const _HTTP_STATUSES = new HttpStatuses();
 const _RULE_TYPES = new RuleTypes();
 const _LANG_UTILS = new LangUtils();
-const _PART_OF_SPEECH_UTILS = new PartOfSpeechUtils();
 const _WORD_UTILS = new WordUtils();
 const _A_BUTTONS = new AButtons();
 const _COMBO_BOX_UTILS = new ComboBoxUtils();
+const _GLOBAL_COOKIES = new GlobalCookies();
 
 const _NEW_WORD_DATA_ITEM_STYLE_ID = "new-word-data-item";
 const _NEW_WORD_DATA_STYLE_ID = "new-word-data";
@@ -89,17 +89,13 @@ class WordRowElements {
     tbTitle;
     cbLangsParent;
     cbLangs;
-    cbPartsOfSpeechParent
-    cbPartsOfSpeech;
 
     constructor(divRow, tbTitleParent, tbTitle,
-                cbLangsParent, cbLangs, cbPartsOfSpeechParent, cbPartsOfSpeech) {
+                cbLangsParent, cbLangs) {
         this.tbTitleParent = tbTitleParent
         this.tbTitle = tbTitle;
         this.cbLangsParent = cbLangsParent;
         this.cbLangs = cbLangs;
-        this.cbPartsOfSpeechParent = cbPartsOfSpeechParent;
-        this.cbPartsOfSpeech = cbPartsOfSpeech;
     }
 }
 
@@ -198,26 +194,6 @@ async function createNewWordElement() {
     divTitle.appendChild(tbTitle);
     //---
 
-    // Создаём выпадающий список "Часть речи" ---
-    let lbPartOfSpeech = document.createElement("label");
-    lbPartOfSpeech.classList.add(_CSS_MAIN.LABEL_STANDARD_STYLE_ID);
-    lbPartOfSpeech.textContent = "Часть речи:";
-
-    let cbPartsOfSpeech = document.createElement("select");
-    cbPartsOfSpeech.id = "cb_parts_of_speech" + "_" + _indexOfNewWord;
-    cbPartsOfSpeech.classList.add(_CSS_MAIN.SELECT_STANDARD_STYLE_ID);
-
-    let firstOption = document.createElement("option");
-    firstOption.textContent = "Выберите часть речи";
-    await _PART_OF_SPEECH_UTILS.fillComboBox(cbPartsOfSpeech, firstOption);
-
-    let divPartOfSpeech = document.createElement("div");
-    divPartOfSpeech.id = "div_part_of_speech" + "_" + _indexOfNewWord;
-    divPartOfSpeech.classList.add(_NEW_WORD_DATA_ITEM_STYLE_ID);
-    divPartOfSpeech.appendChild(lbPartOfSpeech);
-    divPartOfSpeech.appendChild(cbPartsOfSpeech);
-    //---
-
     // Создаём выпадающий список "Язык" с флагом ---
     let divLangFlag = document.createElement("div");
     let divFlagContainer = document.createElement("div");
@@ -228,7 +204,7 @@ async function createNewWordElement() {
     cbLangs.id = "cb_langs" + "_" + _indexOfNewWord;
     cbLangs.classList.add(_CSS_MAIN.SELECT_STANDARD_STYLE_ID);
 
-    firstOption = document.createElement("option");
+    let firstOption = document.createElement("option");
     firstOption.textContent = "Выберите язык";
     await _LANG_UTILS.prepareComboBox(cbLangs, firstOption, divLangFlag);
 
@@ -253,19 +229,13 @@ async function createNewWordElement() {
     // Вешаем обработчики на каждый созданный объект ---
     tbTitle.addEventListener("input", async function () {
         changeSendNewWordsInfoRule(true, null, null);
-        await checkCorrectTitle(this, cbLangs, cbPartsOfSpeech, divTitle);
+        await checkCorrectTitle(this, cbLangs, divTitle);
     })
 
     cbLangs.addEventListener("change", async function() {
         changeSendNewWordsInfoRule(true, null, null);
         await checkCorrectLang(this, divLang);
-        await checkCorrectTitle(tbTitle, this, cbPartsOfSpeech, divTitle);
-    });
-
-    cbPartsOfSpeech.addEventListener("change", async function() {
-        changeSendNewWordsInfoRule(true, null, null);
-        await checkCorrectPartOfSpeech(this, divPartOfSpeech);
-        await checkCorrectTitle(tbTitle, cbLangs, this, divTitle);
+        await checkCorrectTitle(tbTitle, this, divTitle);
     });
     //---
 
@@ -275,7 +245,6 @@ async function createNewWordElement() {
     divNewWordData.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
     divNewWordData.appendChild(divTitle);
     divNewWordData.appendChild(divLang);
-    divNewWordData.appendChild(divPartOfSpeech);
     //---
 
     // Создаём элемент "Новое слово" ---
@@ -302,10 +271,8 @@ async function createNewWordElement() {
                 let wordRowElements = _newWordsMap.get(key);
                 let itemTbTitle = wordRowElements.tbTitle;
                 let itemCbLangs = wordRowElements.cbLangs;
-                let itemCbPartsOfSpeech = wordRowElements.cbPartsOfSpeech;
                 if (tbTitle.id === itemTbTitle.id
-                    && cbLangs.id === itemCbLangs.id
-                    && cbPartsOfSpeech.id === itemCbPartsOfSpeech.id) {
+                    && cbLangs.id === itemCbLangs.id) {
                     _newWordsMap.delete(key);
                     break;
                 }
@@ -330,26 +297,18 @@ async function createNewWordElement() {
 
     // Добавляем элементы ввода в Map
     let newWordRowElements =
-        new WordRowElements(divNewWord, divTitle, tbTitle, divLang, cbLangs, divPartOfSpeech, cbPartsOfSpeech);
+        new WordRowElements(divNewWord, divTitle, tbTitle, divLang, cbLangs);
     _newWordsMap.set(_indexOfNewWord++, newWordRowElements);
     //---
 }
 
-async function checkCorrectTitle(tbTitle, tbLangs, cbPartsOfSpeech, parentElement) {
+async function checkCorrectTitle(tbTitle, tbLangs, parentElement) {
     let langCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(tbLangs);
-    let partOfSpeechCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbPartsOfSpeech);
-
-    return await _WORD_UTILS.checkCorrectValueInTbTitle(tbTitle, parentElement, langCode,
-        partOfSpeechCode, _CUSTOM_TIMER_CHECKER);
+    return await _WORD_UTILS.checkCorrectValueInTbTitle(tbTitle, parentElement, langCode, _CUSTOM_TIMER_CHECKER);
 }
 
 async function checkCorrectLang(cbLangs, parentElement) {
     return await _LANG_UTILS.checkCorrectValueInComboBox(cbLangs, parentElement, false);
-}
-
-async function checkCorrectPartOfSpeech(cbPartsOfSpeech, parentElement) {
-    return await _PART_OF_SPEECH_UTILS
-        .checkCorrectValueInComboBox(cbPartsOfSpeech, parentElement, false);
 }
 
 function checkAllTitles() {
@@ -359,7 +318,6 @@ function checkAllTitles() {
 
         let iTitleValue = iWordRowElements.tbTitle.value.toLowerCase().trim();
         let iLangCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(iWordRowElements.cbLangs);
-        let iPartOfSpeechCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(iWordRowElements.cbPartsOfSpeech);
 
         let isCorrectOne = true;
         let message;
@@ -370,13 +328,11 @@ function checkAllTitles() {
 
             let jTitleValue = jWordRowElements.tbTitle.value.toLowerCase().trim();
             let jLangCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(jWordRowElements.cbLangs);
-            let jPartOfSpeechCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(jWordRowElements.cbPartsOfSpeech);
             if (iTitleValue === jTitleValue
-                && iLangCode === jLangCode
-                && iPartOfSpeechCode === jPartOfSpeechCode) {
+                && iLangCode === jLangCode) {
                 isCorrectAll = false;
                 isCorrectOne = false;
-                message = "Язык и часть речи в словах с одинаковым названием не должны повторяться.";
+                message = "Языки в словах с одинаковым названием не должны повторяться.";
                 ruleType = _RULE_TYPES.ERROR;
                 break;
             }
@@ -401,14 +357,11 @@ async function checkBeforeSend() {
         let wordRowElements = _newWordsMap.get(key);
 
         let titleIsCorrect =
-            await checkCorrectTitle(wordRowElements.tbTitle, wordRowElements.cbLangs, wordRowElements.cbPartsOfSpeech,
-                wordRowElements.tbTitleParent);
+            await checkCorrectTitle(wordRowElements.tbTitle, wordRowElements.cbLangs, wordRowElements.tbTitleParent);
         let langIsCorrect = await checkCorrectLang(wordRowElements.cbLangs, wordRowElements.cbLangsParent);
-        let partOfSpeechIsCorrect =
-            await checkCorrectPartOfSpeech(wordRowElements.cbPartsOfSpeech, wordRowElements.cbPartsOfSpeechParent);
 
         if (isCorrect === true) {
-            isCorrect = (titleIsCorrect && langIsCorrect && partOfSpeechIsCorrect);
+            isCorrect = (titleIsCorrect && langIsCorrect);
         }
     }
 
@@ -426,8 +379,8 @@ async function sendNewWords() {
 
         let dto = new WordRequestDTO();
         dto.title = wordRowElements.tbTitle.value.trim();
+        dto.customerId = BigInt(_GLOBAL_COOKIES.AUTH_ID.getValue());
         dto.langCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(wordRowElements.cbLangs);
-        dto.partOfSpeechCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(wordRowElements.cbPartsOfSpeech);
 
         let JSONResponse = await _WORDS_API.POST.add(dto);
         if (JSONResponse.status === _HTTP_STATUSES.OK) {

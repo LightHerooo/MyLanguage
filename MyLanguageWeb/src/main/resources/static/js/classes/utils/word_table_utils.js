@@ -21,15 +21,9 @@ const _HTTP_STATUSES = new HttpStatuses();
 const _A_BUTTONS = new AButtons();
 
 export class WordTableUtils {
-    async changeToAddAction(aBtnActionElement, collectionKey, wordId) {
+    async changeToAddAction(aBtnActionElement, wordInCollectionRequestDTO) {
         _A_BUTTONS.A_BUTTON_DISABLED.setStyles(aBtnActionElement);
         aBtnActionElement.onclick = null;
-
-        // Формируем DTO для добавления слова ---
-        let wordInCollectionRequestDTO = new WordInCollectionRequestDTO();
-        wordInCollectionRequestDTO.wordId = wordId;
-        wordInCollectionRequestDTO.collectionKey = collectionKey;
-        //---
 
         _A_BUTTONS.A_BUTTON_ACCEPT.setStyles(aBtnActionElement, true);
         aBtnActionElement.title = "Добавить слово в коллекцию";
@@ -38,9 +32,12 @@ export class WordTableUtils {
             let JSONResponse = await _WORDS_IN_COLLECTION_API.POST.add(wordInCollectionRequestDTO);
             if (JSONResponse.status === _HTTP_STATUSES.OK) {
                 let wordInCollection = new WordInCollectionResponseDTO(JSONResponse.json);
+                wordInCollectionRequestDTO.id = wordInCollection.id;
+                wordInCollectionRequestDTO.wordId = wordInCollection.word.id;
+                wordInCollectionRequestDTO.collectionKey = wordInCollection.customerCollection.key;
 
                 let wordTableUtils = new WordTableUtils();
-                await wordTableUtils.changeToRemoveAction(aBtnActionElement, wordInCollection.id);
+                await wordTableUtils.changeToRemoveAction(aBtnActionElement, wordInCollectionRequestDTO);
             } else {
                 _A_BUTTONS.A_BUTTON_DISABLED.setStyles(aBtnActionElement);
                 aBtnActionElement.onclick = null;
@@ -48,14 +45,9 @@ export class WordTableUtils {
         }
     }
 
-    async changeToRemoveAction(aBtnActionElement, wordInCollectionId) {
+    async changeToRemoveAction(aBtnActionElement, wordInCollectionRequestDTO) {
         _A_BUTTONS.A_BUTTON_DISABLED.setStyles(aBtnActionElement);
         aBtnActionElement.onclick = null;
-
-        // Формируем DTO для удаления слова ---
-        let wordInCollectionRequestDTO = new WordInCollectionRequestDTO();
-        wordInCollectionRequestDTO.id = wordInCollectionId;
-        //---
 
         _A_BUTTONS.A_BUTTON_DENY.setStyles(aBtnActionElement, true);
         aBtnActionElement.title = "Удалить слово из коллекции";
@@ -63,11 +55,8 @@ export class WordTableUtils {
         aBtnActionElement.onclick = async function() {
             let JSONResponse = await _WORDS_IN_COLLECTION_API.DELETE.delete(wordInCollectionRequestDTO);
             if (JSONResponse.status === _HTTP_STATUSES.OK) {
-                let wordInCollection = new WordInCollectionResponseDTO(JSONResponse.json);
-
                 let wordTableUtils = new WordTableUtils();
-                await wordTableUtils.changeToAddAction(aBtnActionElement,
-                    wordInCollection.customerCollection.key, wordInCollection.word.id);
+                await wordTableUtils.changeToAddAction(aBtnActionElement, wordInCollectionRequestDTO);
             } else {
                 _A_BUTTONS.A_BUTTON_DISABLED.setStyles(aBtnActionElement);
                 aBtnActionElement.onclick = null;
