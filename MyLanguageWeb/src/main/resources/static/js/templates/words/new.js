@@ -1,6 +1,6 @@
 import {
     CustomTimer
-} from "../../classes/custom_timer.js";
+} from "../../classes/custom_timer/custom_timer.js";
 
 import {
     HttpStatuses
@@ -12,12 +12,15 @@ import {
 
 import {
     WordRequestDTO
-} from "../../classes/dto/word.js";
+} from "../../classes/dto/entity/word.js";
 
 import {
-    RuleElement,
+    RuleElement
+} from "../../classes/rule/rule_element.js";
+
+import {
     RuleTypes
-} from "../../classes/rule_element.js";
+} from "../../classes/rule/rule_types.js";
 
 import {
     LangUtils
@@ -41,7 +44,7 @@ import {
 
 import {
     CssElementWithFlag
-} from "../../classes/css/css_element_with_flag.js";
+} from "../../classes/css/other/css_element_with_flag.js";
 
 import {
     LoadingElement
@@ -164,16 +167,20 @@ function changeBtnNewWordStatus() {
 
 function changeSendNewWordsInfoRule(isCorrect, message, ruleType) {
     let divSendNewWordsInfo = document.getElementById(_DIV_SEND_NEW_WORDS_INFO_ID);
-    divSendNewWordsInfo.replaceChildren();
+    if (divSendNewWordsInfo) {
+        divSendNewWordsInfo.replaceChildren();
 
-    // Отображаем предупреждение (правило), если это необходимо ---
-    let ruleElement = new RuleElement(_DIV_SEND_NEW_WORDS_INFO_ID);
-    if (isCorrect === false) {
-        ruleElement.createOrChangeDiv(message, ruleType);
-    } else {
-        ruleElement.removeDiv();
+        // Отображаем предупреждение (правило), если это необходимо ---
+        let ruleElement = new RuleElement(divSendNewWordsInfo, divSendNewWordsInfo);
+        ruleElement.message = message;
+        ruleElement.ruleType = ruleType;
+        if (isCorrect === false) {
+            ruleElement.showRule();
+        } else {
+            ruleElement.removeRule();
+        }
+        //---
     }
-    //---
 }
 
 async function createNewWordElement() {
@@ -308,20 +315,21 @@ async function checkCorrectTitle(tbTitle, tbLangs, parentElement) {
 }
 
 async function checkCorrectLang(cbLangs, parentElement) {
-    return await _LANG_UTILS.checkCorrectValueInComboBox(cbLangs, parentElement, false);
+    return await _LANG_UTILS.checkCorrectValueInComboBox(cbLangs, parentElement);
 }
 
 function checkAllTitles() {
     let isCorrectAll = true;
     for (let iKey of _newWordsMap.keys()) {
-        let iWordRowElements = _newWordsMap.get(iKey);
+        let row = _newWordsMap.get(iKey);
 
-        let iTitleValue = iWordRowElements.tbTitle.value.toLowerCase().trim();
-        let iLangCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(iWordRowElements.cbLangs);
+        let iTbTitle = row.tbTitle;
+        let iTitleValue = iTbTitle.value.toLowerCase().trim();
+        let iLangCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(row.cbLangs);
 
         let isCorrectOne = true;
-        let message;
-        let ruleType;
+        let ruleElement = new RuleElement(iTbTitle, iTbTitle.parentElement);
+
         for (let jKey of _newWordsMap.keys()) {
             if (iKey === jKey) continue;
             let jWordRowElements = _newWordsMap.get(jKey);
@@ -332,18 +340,18 @@ function checkAllTitles() {
                 && iLangCode === jLangCode) {
                 isCorrectAll = false;
                 isCorrectOne = false;
-                message = "Языки в словах с одинаковым названием не должны повторяться.";
-                ruleType = _RULE_TYPES.ERROR;
+
+                ruleElement.message = "Языки в словах с одинаковым названием не должны повторяться.";
+                ruleElement.ruleType = _RULE_TYPES.ERROR;
                 break;
             }
         }
 
         // Отображаем предупреждение (правило), если это необходимо ---
-        let ruleElement = new RuleElement(iWordRowElements.tbTitle.parentNode.id);
         if (isCorrectOne === false) {
-            ruleElement.createOrChangeDiv(message, ruleType);
+            ruleElement.showRule();
         } else {
-            ruleElement.removeDiv();
+            ruleElement.removeRule();
         }
         //---
     }
@@ -354,11 +362,11 @@ function checkAllTitles() {
 async function checkBeforeSend() {
     let isCorrect = true;
     for (let key of _newWordsMap.keys()) {
-        let wordRowElements = _newWordsMap.get(key);
+        let row = _newWordsMap.get(key);
 
         let titleIsCorrect =
-            await checkCorrectTitle(wordRowElements.tbTitle, wordRowElements.cbLangs, wordRowElements.tbTitleParent);
-        let langIsCorrect = await checkCorrectLang(wordRowElements.cbLangs, wordRowElements.cbLangsParent);
+            await checkCorrectTitle(row.tbTitle, row.cbLangs, row.tbTitleParent);
+        let langIsCorrect = await checkCorrectLang(row.cbLangs, row.cbLangsParent);
 
         if (isCorrect === true) {
             isCorrect = (titleIsCorrect && langIsCorrect);

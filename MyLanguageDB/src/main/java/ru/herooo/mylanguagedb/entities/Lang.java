@@ -18,6 +18,12 @@ public class Lang {
     @Column(name="code")
     private String code;
 
+    @Column(name="code_for_translate")
+    private String codeForTranslate;
+
+    @Column(name="is_active")
+    private boolean isActive;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -52,5 +58,19 @@ public class Lang {
         this.code = code;
     }
 
+    public String getCodeForTranslate() {
+        return codeForTranslate;
+    }
 
+    public void setCodeForTranslate(String codeForTranslate) {
+        this.codeForTranslate = codeForTranslate;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
 }

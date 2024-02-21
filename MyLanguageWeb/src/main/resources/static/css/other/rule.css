@@ -14,13 +14,13 @@ img.img-rule {
 }
 
 span.rule-accept-text {
-    color: darkgreen;
+    color: var(--accept-second-color);
 }
 
 span.rule-warning-text {
-    color: darkgoldenrod;
+    color: var(--warning-second-color);
 }
 
 span.rule-error-text {
-    color: darkred;
+    color: var(--deny-second-color);
 }

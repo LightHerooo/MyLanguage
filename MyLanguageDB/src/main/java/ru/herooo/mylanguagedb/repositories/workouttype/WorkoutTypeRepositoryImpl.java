@@ -10,7 +10,7 @@ public class WorkoutTypeRepositoryImpl implements WorkoutTypeRepository<WorkoutT
     private EntityManager em;
 
     @Override
-    public WorkoutType findById(WorkoutTypes workoutTypes) {
+    public WorkoutType find(WorkoutTypes workoutTypes) {
         return em.createQuery("FROM WorkoutType wt " +
                                  "WHERE wt.id = :workoutTypeId", WorkoutType.class)
                 .setParameter("workoutTypeId", workoutTypes.ID)

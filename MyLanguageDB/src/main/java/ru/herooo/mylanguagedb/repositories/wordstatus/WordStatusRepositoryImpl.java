@@ -10,7 +10,7 @@ public class WordStatusRepositoryImpl implements WordStatusRepository<WordStatus
     private EntityManager em;
 
     @Override
-    public WordStatus findById(WordStatuses wordStatuses) {
+    public WordStatus find(WordStatuses wordStatuses) {
         return em.createQuery("from WordStatus ws where ws.id = :wordStatusId", WordStatus.class)
                 .setParameter("wordStatusId", wordStatuses.ID).
                 getResultStream().findAny().orElse(null);

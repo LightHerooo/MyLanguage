@@ -1,6 +1,6 @@
 import {
     CustomTimer
-} from "../../classes/custom_timer.js";
+} from "../../classes/custom_timer/custom_timer.js";
 
 import {
     HttpStatuses
@@ -13,7 +13,7 @@ import {
 import {
     compareLangWithCount,
     LangWithCount
-} from "../../classes/utils/js_entity/lang_with_count.js";
+} from "../../classes/dto/types/TODO/lang_with_count.js";
 
 import {
     changeEndOfTheWordByNumberOfItems,
@@ -23,11 +23,11 @@ import {
 import {
     WordInCollectionRequestDTO,
     WordInCollectionResponseDTO
-} from "../../classes/dto/word_in_collection.js";
+} from "../../classes/dto/entity/word_in_collection.js";
 
 import {
     LangResponseDTO
-} from "../../classes/dto/lang.js";
+} from "../../classes/dto/entity/lang.js";
 
 import {
     LongResponse
@@ -36,10 +36,6 @@ import {
 import {
     CustomResponseMessage
 } from "../../classes/dto/other/custom_response_message.js";
-
-import {
-    LangUtils
-} from "../../classes/utils/entity/lang_utils.js";
 
 import {
     CustomerCollectionUtils
@@ -75,19 +71,11 @@ import {
 
 import {
     WordTableUtils
-} from "../../classes/utils/word_table_utils.js";
+} from "../../classes/utils/for_templates/word_table_utils.js";
 
 import {
     CustomTimerUtils
 } from "../../classes/utils/custom_timer_utils.js";
-
-import {
-    CustomerCollectionResponseDTO
-} from "../../classes/dto/customer_collection.js";
-
-import {
-    FlagElements
-} from "../../classes/flag_elements.js";
 
 const _LANGS_API = new LangsAPI();
 const _CUSTOMER_COLLECTIONS_API = new CustomerCollectionsAPI();
@@ -95,24 +83,20 @@ const _WORDS_IN_COLLECTION_API = new WordsInCollectionAPI();
 
 const _HTTP_STATUSES = new HttpStatuses();
 const _GLOBAL_COOKIES = new GlobalCookies();
-const _LANG_UTILS = new LangUtils();
 const _CUSTOMER_COLLECTION_UTILS = new CustomerCollectionUtils();
 const _TABLE_UTILS = new TableUtils();
 const _A_BUTTONS = new AButtons();
 const _COMBO_BOX_UTILS = new ComboBoxUtils();
 const _WORD_TABLE_UTILS = new WordTableUtils();
 const _CUSTOM_TIMER_UTILS = new CustomTimerUtils();
-const _FLAG_ELEMENTS = new FlagElements();
 
 const _TB_FINDER_ID = "tb_finder";
-const _CB_LANGS_ID = "cb_langs";
 const _CB_CUSTOMER_COLLECTIONS_ID = "cb_customer_collections";
 const _DIV_COLLECTION_INFO_ID = "div_collection_info";
 const _COLLECTION_WORD_TABLE_HEAD_ID = "collection_word_table_head";
 const _COLLECTION_WORD_TABLE_BODY_ID = "collection_word_table_body";
 const _DIV_COLLECTIONS_STATISTICS_CONTAINER_ID = "collections_statistics_container";
 const _BTN_REFRESH_ID = "btn_refresh";
-const _DIV_LANG_FLAG_ID = "lang_flag";
 const _DIV_COLLECTION_FLAG_ID = "collection_flag";
 
 const _MAX_NUMBER_OF_COLLECTIONS_FOR_STATISTICS = 5;
@@ -137,7 +121,6 @@ window.onload = async function () {
     prepareCollectionInfoTimers();
     prepareTableTimers();
 
-    await prepareCbLangs();
     await prepareCbCustomerCollections();
     prepareTbFinder();
     prepareBtnRefresh();
@@ -188,13 +171,6 @@ function prepareTableTimers() {
         tableBody.replaceChildren();
         tableBody.appendChild(trMessage);
         //---
-/*
-        // Отображаем загрузку в блоке с информацией о коллекции ---
-        let divCollectionInfo = document.getElementById(_DIV_COLLECTION_INFO_ID);
-        divCollectionInfo.style.minHeight = _MIN_HEIGHT_COLLECTION_INFO;
-        divCollectionInfo.replaceChildren();
-        divCollectionInfo.appendChild(new LoadingElement().createDiv());
-        //---*/
     }
 
     _CUSTOM_TIMER_TABLE_FINDER.handler = async function() {
@@ -220,21 +196,6 @@ function prepareTbFinder() {
     }
 }
 
-// Подготовка выпадающего списка "Языки"
-async function prepareCbLangs() {
-    let cbLangs = document.getElementById(_CB_LANGS_ID);
-    if (cbLangs) {
-        let firstOption = document.createElement("option");
-        firstOption.textContent = "Все";
-
-        let divLangFlag = document.getElementById(_DIV_LANG_FLAG_ID);
-        _FLAG_ELEMENTS.DIV.setStyles(divLangFlag, null, true);
-        await _LANG_UTILS.prepareComboBox(cbLangs, firstOption, divLangFlag);
-
-        cbLangs.addEventListener("change", startTimers);
-    }
-}
-
 // Подготовка выпадающего списка "Коллекции пользователя"
 async function prepareCbCustomerCollections() {
     let cbCustomerCollections = document.getElementById(_CB_CUSTOMER_COLLECTIONS_ID);
@@ -242,34 +203,12 @@ async function prepareCbCustomerCollections() {
         let divCollectionFlag = document.getElementById(_DIV_COLLECTION_FLAG_ID);
         await _CUSTOMER_COLLECTION_UTILS.prepareComboBox(cbCustomerCollections, null, divCollectionFlag);
 
-        // Создаём таймер, чтобы сменить язык в списке языков на основе языка коллекции
-        // Это нужно, чтобы избежать возможных задержек при обращении к API ---
-        let customTimerLangFlagChanger = new CustomTimer();
-        customTimerLangFlagChanger.timeout = 1;
-        customTimerLangFlagChanger.handler = async function() {
-            // Ищем по ключу коллекцию и получаем из неё язык ---
-            let langCode;
-            let collectionKey = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbCustomerCollections);
-            let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.findByKey(collectionKey);
-            if (JSONResponse.status === _HTTP_STATUSES.OK) {
-                let customerCollection = new CustomerCollectionResponseDTO(JSONResponse.json);
-                langCode = customerCollection.lang.code;
-            }
-            //---
-
-            // Меняем язык в списке языков + его флаг ---
-            let cbLangs = document.getElementById(_CB_LANGS_ID);
-            cbLangs.removeEventListener("change", startTimers);
-            _LANG_UTILS.changeCbLangsItemByLangCode(cbLangs, langCode, true);
-            cbLangs.addEventListener("change", startTimers);
-            //---
-        }
-        //---
-
         cbCustomerCollections.addEventListener("change", async function () {
-            customTimerLangFlagChanger.start();
             startTimers();
         })
+
+        _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemIndex(
+            cbCustomerCollections, 0, true);
     }
 }
 
@@ -304,29 +243,7 @@ async function createStatisticItems() {
         let langsWithCount = [];
         let numberOfCollectionsSum = 0n;
 
-        // Ищем коллекции пользователя без языка ---
-        if (_accessToFillStatistic === true) {
-            let langWithoutCode = new LangResponseDTO(null);
-            let authId = _GLOBAL_COOKIES.AUTH_ID.getValue();
-            let JSONResponse =
-                await _CUSTOMER_COLLECTIONS_API.GET.getCountByCustomerIdAndLangCode(BigInt(authId), langWithoutCode.code);
-            if (JSONResponse.status === _HTTP_STATUSES.OK) {
-                let longResponse = new LongResponse(JSONResponse.json);
-                let numberOfCollections = longResponse.value;
-                if (numberOfCollections > 0) {
-                    numberOfCollectionsSum += numberOfCollections;
-
-                    let langWithCount =
-                        new LangWithCount(langWithoutCode, longResponse.value);
-                    if (_accessToFillStatistic === true) {
-                        langsWithCount.push(langWithCount);
-                    }
-                }
-            }
-            //---
-        }
-
-        // Ищем остальные коллекции пользователя по всем языкам ---
+        // Ищем все коллекции пользователя по всем языкам ---
         let authId = _GLOBAL_COOKIES.AUTH_ID.getValue();
         let json = JSONResponseLangs.json;
         for (let i = 0; i < json.length; i++) {
@@ -426,7 +343,7 @@ async function createStatisticItems() {
 async function tryToFillCollectionInfo() {
     let collectionKey = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_CUSTOMER_COLLECTIONS_ID);
     let divCollectionInfo =
-        await _CUSTOMER_COLLECTION_UTILS.createDivCollectionInfoAfterCheckAuthId(collectionKey);
+        await _CUSTOMER_COLLECTION_UTILS.createDivCollectionInfoAfterValidate(collectionKey);
 
     let divCollectionInfoContainer = document.getElementById(_DIV_COLLECTION_INFO_ID);
     if (_accessToFillCollectionInfo === true) {
@@ -440,10 +357,9 @@ async function tryToFillCollectionInfo() {
 async function sendPreparedRequest() {
     let collectionKey = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_CUSTOMER_COLLECTIONS_ID);
     let title = document.getElementById(_TB_FINDER_ID).value;
-    let langCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_LANGS_ID);
 
     return await _WORDS_IN_COLLECTION_API.GET.getAllInCollectionFilteredPagination(collectionKey,
-        _NUMBER_OF_WORDS, title, langCode, _lastWordInCollectionIdOnPreviousPage);
+        _NUMBER_OF_WORDS, title, _lastWordInCollectionIdOnPreviousPage);
 }
 
 async function tryToFillTable() {

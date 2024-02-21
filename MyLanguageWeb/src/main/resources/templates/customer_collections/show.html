@@ -8,10 +8,10 @@
     <link rel="stylesheet" type="text/css" href="/css/root.css">
     <link rel="stylesheet" type="text/css" href="/css/main.css">
     <link rel="stylesheet" type="text/css" href="/css/info_blocks/info_block_with_img_and_header.css">
-    <link rel="stylesheet" type="text/css" href="/css/info_blocks/collection_info.css">
+    <link rel="stylesheet" type="text/css" href="/css/info_blocks/entity/collection_info.css">
     <link rel="stylesheet" type="text/css" href="/css/other/loading.css">
     <link rel="stylesheet" type="text/css" href="/css/other/element_with_flag.css">
-    <link rel="stylesheet" type="text/css" href="/css/customer_collections/show.css">
+    <link rel="stylesheet" type="text/css" href="/css/templates/customer_collections/show.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
 
     <script type="module" src="/js/templates/customer_collections/show.js"></script>
@@ -45,24 +45,11 @@
                 <img class="customer-collections-actions-img" src="/images/customer_collections/new_collection.png" alt="new_collection.png"/>
                 <p class="customer-collections-actions-text">Создать новые коллекции</p>
             </a>
-            <a class="customer-collections-actions-item a-button-standard" href="/customer_collections/new_by_key">
-                <img class="customer-collections-actions-img" src="/images/customer_collections/new_collection_by_key.png" alt="new_collection_by_key.png"/>
-                <p class="customer-collections-actions-text">Создать коллекцию по ключу</p>
-            </a>
         </div>
         <div class="collection-words-instruments">
             <div class="collection-words-instruments-item">
                 <label class="label-for-input-standard" for="tb_finder">Поиск:</label>
                 <input id="tb_finder" class="text-standard" type="text">
-            </div>
-            <div class="collection-words-instruments-item">
-                <label class="label-for-input-standard" for="cb_langs">Язык:</label>
-                <div class="element-with-flag-container">
-                    <select id="cb_langs" class="select-standard"></select>
-                    <div class="flag-container">
-                        <div id="lang_flag"></div>
-                    </div>
-                </div>
             </div>
             <div class="collection-words-instruments-item">
                 <label class="label-for-input-standard" for="cb_customer_collections">Коллекция:</label>

@@ -1,6 +1,6 @@
 import {
     CustomTimer
-} from "../../classes/custom_timer.js";
+} from "../../classes/custom_timer/custom_timer.js";
 
 import {
     HttpStatuses
@@ -17,12 +17,12 @@ import {
 import {
     WordStatusHistoryRequestDTO,
     WordStatusHistoryResponseDTO
-} from "../../classes/dto/word_status_history.js";
+} from "../../classes/dto/entity/word_status_history.js";
 
 import {
     WordRequestDTO,
     WordResponseDTO
-} from "../../classes/dto/word.js";
+} from "../../classes/dto/entity/word.js";
 
 import {
     CustomResponseMessage

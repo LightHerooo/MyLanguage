@@ -1,6 +1,6 @@
 import {
     CssElementWithFlag
-} from "./css/css_element_with_flag.js";
+} from "./css/other/css_element_with_flag.js";
 
 const _CSS_ELEMENT_WITH_LANG_FLAG = new CssElementWithFlag();
 

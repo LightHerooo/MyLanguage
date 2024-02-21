@@ -1,6 +1,5 @@
 package ru.herooo.mylanguageutils;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Random;
@@ -9,7 +8,7 @@ public class StringUtils {
 
     private final Random random = new Random();
 
-    public String getRandomStrEnNum(int length) {
+    public String getRandomStrEn(int length) {
         StringBuilder strBuilder = new StringBuilder(length);
         int anLen = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".length();
         synchronized(random) {
@@ -83,13 +82,8 @@ public class StringUtils {
         if (str != null) {
             str = str.trim();
             str = str.toLowerCase();
-            StringBuilder builder = new StringBuilder();
-            builder.append(Character.toString(str.charAt(0)).toUpperCase());
-            if (str.length() > 1) {
-                builder.append(str, 1, str.length());
-            }
 
-            return builder.toString();
+            return str;
         }
 
         return null;

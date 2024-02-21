@@ -1,5 +1,5 @@
 package ru.herooo.mylanguagedb.repositories.workouttype;
 
 public interface WorkoutTypeRepository<T> {
-    T findById(WorkoutTypes workoutTypes);
+    T find(WorkoutTypes workoutTypes);
 }

@@ -10,7 +10,7 @@ public class CustomerRoleRepositoryImpl implements CustomerRoleRepository<Custom
     private EntityManager em;
 
     @Override
-    public CustomerRole findById(CustomerRoles customerRoles) {
+    public CustomerRole find(CustomerRoles customerRoles) {
         return em.createQuery("from CustomerRole cr where cr.id = :customerRoleId", CustomerRole.class)
                 .setParameter("customerRoleId", customerRoles.getId()).
                 getResultStream().findAny().orElse(null);

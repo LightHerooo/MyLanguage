@@ -25,15 +25,12 @@ export class WordsInCollectionAPI {
 
 class WordsInCollectionGETRequests {
     async getAllInCollectionFilteredPagination(collectionKey, numberOfWords, title,
-                                               langCode, lastWordInCollectionIdOnPreviousPage){
+                                               lastWordInCollectionIdOnPreviousPage){
         let requestURL = new URL(URL_TO_API_WORDS_IN_COLLECTION + "/filtered_pagination");
         requestURL.searchParams.set("collection_key", collectionKey);
         requestURL.searchParams.set("number_of_words", numberOfWords);
         requestURL.searchParams.set("title", title);
 
-        if (langCode) {
-            requestURL.searchParams.set("lang_code", langCode);
-        }
         if (lastWordInCollectionIdOnPreviousPage) {
             requestURL.searchParams
                 .set("last_word_in_collection_id_on_previous_page", lastWordInCollectionIdOnPreviousPage);

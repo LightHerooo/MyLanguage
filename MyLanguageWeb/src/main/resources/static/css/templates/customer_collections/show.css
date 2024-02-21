@@ -1,0 +1,64 @@
+main {
+    min-height: 1500px;
+}
+
+div.words-statistics-container {
+    min-height: 100px;
+
+    display: grid;
+    align-items: center;
+}
+
+div.customer-collections-actions {
+    display: grid;
+    grid: 1fr / 1fr;
+    gap: 10px;
+}
+
+a.customer-collections-actions-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    padding: 20px;
+
+    font-weight: bold;
+}
+
+img.customer-collections-actions-img {
+    width: 128px;
+    height: 128px;
+}
+
+p.customer-collections-actions-text {
+    font-size: var(--third-font-size);
+}
+
+div.collection-words-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+div.collection-words-instruments {
+    height: 100px;
+
+    display: grid;
+    grid: 1fr / 2fr 1fr 50px;
+    gap: 10px;
+    margin-top: 50px;
+}
+
+div.collection-words-instruments-item {
+    display: grid;
+    grid: 50px 1fr / 1fr;
+    gap: 5px;
+}
+
+div.collection-info {
+    height: 250px;
+
+    display: grid;
+    align-items: center;
+}

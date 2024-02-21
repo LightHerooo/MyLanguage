@@ -18,14 +18,14 @@ public class WorkoutTypeService {
     }
 
     public List<WorkoutType> findAll() {
-        return WORKOUT_TYPE_CRUD_REPOSITORY.findAllByOrderByIdAscIsActive();
+        return WORKOUT_TYPE_CRUD_REPOSITORY.findAll();
     }
 
-    public WorkoutType findById(WorkoutTypes workoutTypes) {
-        return WORKOUT_TYPE_CRUD_REPOSITORY.findById(workoutTypes);
+    public WorkoutType find(WorkoutTypes workoutTypes) {
+        return WORKOUT_TYPE_CRUD_REPOSITORY.find(workoutTypes);
     }
 
-    public WorkoutType findByCode(String code) {
+    public WorkoutType find(String code) {
         return WORKOUT_TYPE_CRUD_REPOSITORY.findByCode(code);
     }
 }

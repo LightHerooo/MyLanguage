@@ -19,19 +19,22 @@ public class LangService {
 
     // Получение всех языков
     public List<Lang> findAll() {
-        return LANG_CRUD_REPOSITORY.findAllByOrderById();
+        return LANG_CRUD_REPOSITORY.findAll();
     }
 
-    // Поиск по коду
-    public Lang findByCode(String code) {
+    public List<Lang> findAll(Boolean isActive) {
+        return LANG_CRUD_REPOSITORY.findAll(isActive);
+    }
+
+    public Lang find(String code) {
         return LANG_CRUD_REPOSITORY.findByCode(code);
     }
 
-    public long getNumberOfLangs() {
-        return LANG_CRUD_REPOSITORY.count();
+    public Lang find(Langs langs) {
+        return LANG_CRUD_REPOSITORY.find(langs);
     }
 
-    public Lang findById(Langs langs) {
-        return LANG_CRUD_REPOSITORY.findById(langs);
+    public long count() {
+        return LANG_CRUD_REPOSITORY.count();
     }
 }

@@ -1,7 +1,10 @@
 import {
-    RuleElement,
+    RuleElement
+} from "../../rule/rule_element.js";
+
+import {
     RuleTypes
-} from "../../rule_element.js";
+} from "../../rule/rule_types.js";
 
 import {
     CustomResponseMessage
@@ -13,7 +16,7 @@ import {
 
 import {
     WordRequestDTO
-} from "../../dto/word.js";
+} from "../../dto/entity/word.js";
 
 import {
     WordsAPI
@@ -36,25 +39,24 @@ export class WordUtils {
             const TITLE_MAX_SIZE = 44;
             const TITLE_REGEXP = /^[^ ]+$/;
 
-            let ruleElement = new RuleElement(tbTitle.parentNode.id);
-            let message;
-            let ruleType;
+            let ruleElement = new RuleElement(tbTitle, parentElement);
 
+            customTimerObj.stop();
             let inputText = tbTitle.value.trim();
             if (!inputText) {
                 isCorrect = false;
-                message = "Слово не может быть пустым.";
-                ruleType = _RULE_TYPES.ERROR;
+                ruleElement.message = "Слово не может быть пустым.";
+                ruleElement.ruleType = _RULE_TYPES.ERROR;
             } else if (!TITLE_REGEXP.test(inputText)) {
                 isCorrect = false;
-                message = "Слово не должно содержать пробелов.";
-                ruleType = _RULE_TYPES.ERROR;
+                ruleElement.message = "Слово не должно содержать пробелов.";
+                ruleElement.ruleType = _RULE_TYPES.ERROR;
             } else if (inputText.length > TITLE_MAX_SIZE) {
                 isCorrect = false;
-                message = `Слово должно быть не более ${TITLE_MAX_SIZE} символов.`;
-                ruleType = _RULE_TYPES.ERROR;
+                ruleElement.message = `Слово должно быть не более ${TITLE_MAX_SIZE} символов.`;
+                ruleElement.ruleType = _RULE_TYPES.ERROR;
             } else {
-                ruleElement.removeDiv();
+                ruleElement.removeRule();
 
                 let wordRequestDTO = new WordRequestDTO();
                 wordRequestDTO.title = tbTitle.value;
@@ -73,16 +75,16 @@ export class WordUtils {
                 let JSONResponse = await JSONResponsePromise;
                 if (JSONResponse.status !== _HTTP_STATUSES.OK) {
                     isCorrect = false;
-                    message = new CustomResponseMessage(JSONResponse.json).text;
-                    ruleType = _RULE_TYPES.ERROR;
+                    ruleElement.message = new CustomResponseMessage(JSONResponse.json).text;
+                    ruleElement.ruleType = _RULE_TYPES.ERROR;
                 }
             }
 
             // Отображаем предупреждение (правило), если это необходимо ---
             if (isCorrect === false) {
-                ruleElement.createOrChangeDiv(message, ruleType);
+                ruleElement.showRule();
             } else {
-                ruleElement.removeDiv();
+                ruleElement.removeRule();
             }
             //---
         } else {

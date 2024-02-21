@@ -6,12 +6,7 @@ import {
     LoadingElement
 } from "../loading_element.js";
 
-import {
-    CustomTimerUtils
-} from "./custom_timer_utils.js";
-
 const _CSS_MAIN = new CssMain();
-const _CUSTOM_TIMER_UTILS = new CustomTimerUtils();
 
 class GeneralFunctions {
     createTrWithElementInside(numberOfColumns, differentElement) {
@@ -80,10 +75,9 @@ export class TableUtils {
         trShowMore.style.background = "transparent";
         //---
 
-        // Мы должны убрать отступы слева и справа ---
+        // Мы должны убрать отступы ---
         let tdInsideTr = trShowMore.children.item(0);
-        tdInsideTr.style.paddingLeft = "0px";
-        tdInsideTr.style.paddingRight = "0px";
+        tdInsideTr.style.padding = "0px";
         //---
 
         // Вешаем событие на кнопку ---

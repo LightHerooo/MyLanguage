@@ -1,13 +1,16 @@
 import {
-    RuleElement,
+    RuleElement
+} from "../../classes/rule/rule_element.js";
+
+import {
     RuleTypes
-} from "../../classes/rule_element.js";
+} from "../../classes/rule/rule_types.js";
 
 import {
     LoadingElement
 } from "../../classes/loading_element.js";
 
-const  _RULE_TYPES = new RuleTypes();
+const _RULE_TYPES = new RuleTypes();
 
 const _TB_LOGIN_ID = "tb_login";
 const _PB_PASSWORD_ID = "pb_password";
@@ -89,38 +92,29 @@ function prepareSubmit() {
             submitEntry.submit();
         } else {
             form.removeChild(divLoading);
+            btnEntry.disabled = false;
         }
-
-        btnEntry.disabled = false;
     });
 }
 
 function checkCorrectLogin() {
-    const LOGIN_REGEXP = /^[A-Za-z0-9_]+$/;
-
     let tbLogin = document.getElementById(_TB_LOGIN_ID);
 
     let isCorrect = true;
-    let message;
-    let ruleType;
+    let ruleElement = new RuleElement(tbLogin, tbLogin.parentElement);
 
     let inputText = tbLogin.value.trim();
     if (!inputText) {
         isCorrect = false;
-        message = "Логин не может быть пустым.";
-        ruleType = _RULE_TYPES.ERROR;
-    } else if (!LOGIN_REGEXP.test(inputText)) {
-        isCorrect = false;
-        message = "Логин должен содержать только английские буквы, цифры и знаки подчеркивания [_].";
-        ruleType = _RULE_TYPES.ERROR;
+        ruleElement.message = "Логин не может быть пустым.";
+        ruleElement.ruleType = _RULE_TYPES.ERROR;
     }
 
     // Отображаем предупреждение (правило), если это необходимо ---
-    let ruleElement = new RuleElement(tbLogin.parentElement.id);
     if (isCorrect === false) {
-        ruleElement.createOrChangeDiv(message, ruleType);
+        ruleElement.showRule();
     } else {
-        ruleElement.removeDiv();
+        ruleElement.removeRule();
     }
     //---
 
@@ -131,22 +125,20 @@ function checkCorrectPassword() {
     let pbPassword = document.getElementById(_PB_PASSWORD_ID);
 
     let isCorrect = true;
-    let message;
-    let ruleType;
+    let ruleElement = new RuleElement(pbPassword, pbPassword.parentElement);
 
     let inputText = pbPassword.value;
     if (!inputText) {
         isCorrect = false;
-        message = "Пароль не может быть пустым.";
-        ruleType = _RULE_TYPES.ERROR;
+        ruleElement.message = "Пароль не может быть пустым.";
+        ruleElement.ruleType = _RULE_TYPES.ERROR;
     }
 
     // Отображаем предупреждение (правило), если это необходимо ---
-    let ruleElement = new RuleElement(pbPassword.parentElement.id);
     if (isCorrect === false) {
-        ruleElement.createOrChangeDiv(message, ruleType);
+        ruleElement.showRule();
     } else {
-        ruleElement.removeDiv();
+        ruleElement.removeRule();
     }
     //---
 

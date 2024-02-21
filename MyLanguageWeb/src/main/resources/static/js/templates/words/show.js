@@ -4,7 +4,7 @@ import {
 
 import {
     CustomTimer
-} from "../../classes/custom_timer.js";
+} from "../../classes/custom_timer/custom_timer.js";
 
 import {
     HttpStatuses
@@ -21,7 +21,7 @@ import {
 import {
     WordStatusWithCount,
     compareWordStatusWithCount
-} from "../../classes/utils/js_entity/word_status_with_count.js";
+} from "../../classes/dto/types/TODO/word_status_with_count.js";
 
 import {
     CustomResponseMessage
@@ -29,16 +29,16 @@ import {
 
 import {
     WordResponseDTO
-} from "../../classes/dto/word.js";
+} from "../../classes/dto/entity/word.js";
 
 import {
     WordInCollectionRequestDTO,
     WordInCollectionResponseDTO
-} from "../../classes/dto/word_in_collection.js";
+} from "../../classes/dto/entity/word_in_collection.js";
 
 import {
     WordStatusResponseDTO
-} from "../../classes/dto/word_status.js";
+} from "../../classes/dto/entity/word_status.js";
 
 import {
     LongResponse
@@ -86,7 +86,7 @@ import {
 
 import {
     WordTableUtils
-} from "../../classes/utils/word_table_utils.js";
+} from "../../classes/utils/for_templates/word_table_utils.js";
 
 import {
     CustomTimerUtils
@@ -94,7 +94,7 @@ import {
 
 import {
     CustomerCollectionResponseDTO
-} from "../../classes/dto/customer_collection.js";
+} from "../../classes/dto/entity/customer_collection.js";
 
 import {
     FlagElements
@@ -263,7 +263,12 @@ async function prepareCbCustomerCollections() {
             let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.findByKey(collectionKey);
             if (JSONResponse.status === _HTTP_STATUSES.OK) {
                 let customerCollection = new CustomerCollectionResponseDTO(JSONResponse.json);
-                langCode = customerCollection.lang.code;
+
+                // Берём код, только если язык активный
+                JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.validateIsLangActiveInCollectionByKey(collectionKey);
+                if (JSONResponse.status === _HTTP_STATUSES.OK) {
+                    langCode = customerCollection.lang.code;
+                }
             }
             //---
 
@@ -280,6 +285,9 @@ async function prepareCbCustomerCollections() {
             customTimerLangFlagChanger.start();
             startTimers();
         });
+
+        _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemIndex(
+            cbCustomerCollections, 0, true);
     }
 }
 
@@ -393,7 +401,7 @@ async function createStatisticItems() {
 async function tryToFillCollectionInfo() {
     let collectionKey = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_CUSTOMER_COLLECTIONS_ID);
     let divCollectionInfo =
-        await _CUSTOMER_COLLECTION_UTILS.createDivCollectionInfoAfterCheckAuthId(collectionKey);
+        await _CUSTOMER_COLLECTION_UTILS.createDivCollectionInfoAfterValidate(collectionKey);
 
     let divCollectionInfoContainer = document.getElementById(_DIV_COLLECTION_INFO_ID);
     if (_accessToFillCollectionInfo === true) {
@@ -408,18 +416,20 @@ async function tryToFillTable() {
     let readyToFill = true;
 
     let authId = _GLOBAL_COOKIES.AUTH_ID.getValue();
-    let collectionKey = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_CUSTOMER_COLLECTIONS_ID);
-    let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.findByCustomerIdAndKey(authId, collectionKey);
-    if (JSONResponse.status !== _HTTP_STATUSES.OK) {
-        readyToFill = false;
-        setMessageInsideTable(new CustomResponseMessage(JSONResponse.json).text);
+    if (authId) {
+        let collectionKey = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_CUSTOMER_COLLECTIONS_ID);
+        let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.findByCustomerIdAndKey(authId, collectionKey);
+        if (JSONResponse.status !== _HTTP_STATUSES.OK) {
+            readyToFill = false;
+            setMessageInsideTable(new CustomResponseMessage(JSONResponse.json).text);
+        }
     }
 
     if (readyToFill === true) {
         _lastWordNumberInList = 0;
         _lastWordIdOnPreviousPage = 0n;
 
-        JSONResponse = await sendPreparedRequest();
+        let JSONResponse = await sendPreparedRequest();
         if (JSONResponse.status === _HTTP_STATUSES.OK) {
             let tableRows = await createTableRows(JSONResponse.json);
 

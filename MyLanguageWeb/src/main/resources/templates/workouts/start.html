@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title th:text="${WEB_APP_NAME} + ' - Тренировка '"></title>
+        <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
+        <link rel="stylesheet" type="text/css" href="/css/root.css">
+        <link rel="stylesheet" type="text/css" href="/css/main.css">
+        <link rel="stylesheet" type="text/css" href="/css/other/loading.css">
+        <link rel="stylesheet" type="text/css" href="/css/other/rule.css">
+        <link rel="stylesheet" type="text/css" href="/css/info_blocks/entity/workout_info.css">
+        <link rel="stylesheet" type="text/css" href="/css/types/workout_round_statistic.css">
+        <link rel="stylesheet" type="text/css" href="/css/templates/workouts/start.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
+
+        <script type="module" src="/js/templates/workouts/start.js"></script>
+    </head>
+    <body>
+        <header>
+            <div th:insert="~{layouts/header}"></div>
+        </header>
+        <main class="start-workout">
+            <div class="start-workout-container">
+                <div class="start-workout-info-container">
+                    <div id="div_workout_info" class="info-block-standard start-workout-info"></div>
+                    <div class="start-workout-info-item-with-header-container">
+                        <div class="info-block-standard start-workout-info-item-header-container">
+                            <img class="img-workout-info-item-header"
+                                 src="/images/other/clock.png"
+                                 alt="clock.png"/>
+                            <span>Время</span>
+                        </div>
+                        <div id="div_timer_info" class="info-block-standard start-workout-info-timer">NaN</div>
+                    </div>
+                    <div id="div_round_info" class="info-block-standard content-center-standard"></div>
+                </div>
+                <div class="start-workout-interaction-container">
+                    <div id="div_interaction_container" class="info-block-standard content-center-standard"></div>
+                    <div id="div_answers_history" class="info-block-standard content-center-standard"></div>
+                </div>
+            </div>
+        </main>
+    </body>
+</html>

@@ -1,6 +1,6 @@
 import {
     CustomTimer
-} from "../../classes/custom_timer.js";
+} from "../../classes/custom_timer/custom_timer.js";
 
 import {
     CustomerUtils
@@ -106,9 +106,8 @@ function prepareSubmit() {
             submitRegister.submit();
         } else {
             form.removeChild(divLoading);
+            btnRegister.disabled = false;
         }
-
-        btnRegister.disabled = false;
     });
 }
 

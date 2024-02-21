@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.herooo.mylanguagedb.entities.WordStatus;
-import ru.herooo.mylanguageweb.dto.CustomResponseMessage;
-import ru.herooo.mylanguageweb.dto.wordstatus.WordStatusMapping;
-import ru.herooo.mylanguageweb.dto.wordstatus.WordStatusResponseDTO;
+import ru.herooo.mylanguageweb.dto.other.CustomResponseMessage;
+import ru.herooo.mylanguageweb.dto.entity.wordstatus.WordStatusMapping;
+import ru.herooo.mylanguageweb.dto.entity.wordstatus.WordStatusResponseDTO;
 import ru.herooo.mylanguageweb.services.WordStatusService;
 
 import java.util.List;
@@ -41,8 +41,8 @@ public class WordStatusesRestController {
     }
 
     @GetMapping("/find/by_code")
-    public ResponseEntity<?> findByCode(@RequestParam("code") String code) {
-        WordStatus wordStatus = WORD_STATUS_SERVICE.findByCode(code);
+    public ResponseEntity<?> find(@RequestParam("code") String code) {
+        WordStatus wordStatus = WORD_STATUS_SERVICE.find(code);
         if (wordStatus != null) {
             WordStatusResponseDTO dto = WORD_STATUS_MAPPING.mapToResponseDTO(wordStatus);
             return ResponseEntity.ok(dto);

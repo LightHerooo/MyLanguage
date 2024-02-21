@@ -4,7 +4,7 @@ import {
 
 import {
     WorkoutTypeResponseDTO
-} from "../../classes/dto/workout_type.js";
+} from "../../classes/dto/entity/workout_type.js";
 
 import {
     CssMain
@@ -12,7 +12,7 @@ import {
 
 import {
     CssInfoBlockWithImgAndHeader
-} from "../../classes/css/css_info_block_with_img_and_header.js";
+} from "../../classes/css/info_blocks/css_info_block_with_img_and_header.js";
 
 import {
     WorkoutTypesAPI

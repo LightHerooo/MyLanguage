@@ -11,7 +11,7 @@ public class LangRepositoryImpl implements LangRepository<Lang> {
 
 
     @Override
-    public Lang findById(Langs langs) {
+    public Lang find(Langs langs) {
         return em.createQuery("from Lang l where l.id = :lang_id", Lang.class)
                 .setParameter("lang_id", langs.getId())
                 .getResultStream().findAny().orElse(null);

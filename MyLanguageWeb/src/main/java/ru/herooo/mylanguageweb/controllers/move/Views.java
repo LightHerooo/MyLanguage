@@ -7,7 +7,8 @@ public enum Views {
     INDEX ("index"),
 
     WORKOUTS_SHOW("workouts/show"),
-    WORKOUTS_RANDOM_WORDS("workouts/random_words"),
+    WORKOUTS_START("workouts/start"),
+    WORKOUTS_RANDOM_WORDS("workouts/types/random_words"),
 
     WORDS_SHOW("words/show"),
     WORDS_NEW("words/new"),
@@ -19,7 +20,6 @@ public enum Views {
 
     CUSTOMER_COLLECTIONS_SHOW("customer_collections/show"),
     CUSTOMER_COLLECTIONS_NEW("customer_collections/new"),
-    CUSTOMER_COLLECTIONS_NEW_BY_KEY("customer_collections/new_by_key"),
 
     SPECIAL_ACTIONS_SHOW("special_actions/show"),
     SPECIAL_ACTIONS_CHANGE_CURRENT_STATUS_TO_WORDS("special_actions/change_current_status_to_words")

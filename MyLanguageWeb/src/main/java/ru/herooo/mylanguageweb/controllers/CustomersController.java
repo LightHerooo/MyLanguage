@@ -15,12 +15,12 @@ import ru.herooo.mylanguagedb.entities.Customer;
 import ru.herooo.mylanguageweb.controllers.move.Redirects;
 import ru.herooo.mylanguageweb.controllers.move.Views;
 import ru.herooo.mylanguageweb.controllers.rest.CustomersRestController;
-import ru.herooo.mylanguageweb.dto.CustomResponseMessage;
-import ru.herooo.mylanguageweb.dto.customer.CustomerEntryRequestDTO;
-import ru.herooo.mylanguageweb.dto.customer.CustomerRequestDTO;
-import ru.herooo.mylanguageweb.dto.customer.CustomerResponseDTO;
+import ru.herooo.mylanguageweb.dto.other.CustomResponseMessage;
+import ru.herooo.mylanguageweb.dto.entity.customer.CustomerEntryRequestDTO;
+import ru.herooo.mylanguageweb.dto.entity.customer.CustomerRequestDTO;
+import ru.herooo.mylanguageweb.dto.entity.customer.CustomerResponseDTO;
 import ru.herooo.mylanguageweb.global.GlobalCookies;
-import ru.herooo.mylanguageweb.global.GlobalCookiesUtils;
+import ru.herooo.mylanguageweb.global.GlobalCookieUtils;
 import ru.herooo.mylanguageweb.services.CustomerService;
 
 @Controller
@@ -34,19 +34,23 @@ public class CustomersController {
     private final CustomerService CUSTOMER_SERVICE;
     private final ControllerUtils CONTROLLER_UTILS;
 
+    private final GlobalCookieUtils GLOBAL_COOKIE_UTILS;
+
     @Autowired
     public CustomersController(CustomersRestController customersRestController,
                                CustomerService customerService,
-                               ControllerUtils controllerUtils) {
+                               ControllerUtils controllerUtils,
+                               GlobalCookieUtils globalCookieUtils) {
         this.CUSTOMERS_REST_CONTROLLER = customersRestController;
         this.CUSTOMER_SERVICE = customerService;
         this.CONTROLLER_UTILS = controllerUtils;
+        this.GLOBAL_COOKIE_UTILS = globalCookieUtils;
     }
 
     @GetMapping("/new")
     public String showNewPage(HttpServletRequest request,
                               @ModelAttribute(CUSTOMER_REQUEST_DTO_ATTRIBUTE_NAME) CustomerRequestDTO dto) {
-        Customer authCustomer = CUSTOMER_SERVICE.findAuth(request);
+        Customer authCustomer = CUSTOMER_SERVICE.find(request);
         if (authCustomer == null) {
             CONTROLLER_UTILS.setGeneralAttributes(request);
             CONTROLLER_UTILS.changeDateLastVisitToAuthCustomer(request);
@@ -68,18 +72,22 @@ public class CustomersController {
         }
 
         ResponseEntity<?> responseEntity = CUSTOMERS_REST_CONTROLLER.register(customerRequestDTO, bindingResult);
-        if (responseEntity.getStatusCode() == HttpStatus.OK) {
-            CustomerResponseDTO responseDTO = (CustomerResponseDTO) responseEntity.getBody();
-            Customer customer = CUSTOMER_SERVICE.findById(responseDTO.getId());
+        if (responseEntity.getStatusCode() == HttpStatus.OK
+                && responseEntity.getBody() instanceof CustomerResponseDTO responseDTO) {
+            Customer customer = CUSTOMER_SERVICE.find(responseDTO.getId());
 
             CustomerEntryRequestDTO requestDTO = new CustomerEntryRequestDTO();
             requestDTO.setLogin(customer.getLogin());
             requestDTO.setPassword(customer.getPassword());
 
             return entry(request, response, requestDTO, bindingResult);
-        } else {
-            CustomResponseMessage message = (CustomResponseMessage) responseEntity.getBody();
+        } else if (responseEntity.getBody() instanceof CustomResponseMessage message) {
             bindingResult.addError(new ObjectError("register_error", message.getText()));
+
+            CONTROLLER_UTILS.setGeneralAttributes(request);
+            return Views.CUSTOMERS_NEW.PATH_TO_FILE;
+        } else {
+            bindingResult.addError(new ObjectError("register_error", "Неизвестная ошибка."));
 
             CONTROLLER_UTILS.setGeneralAttributes(request);
             return Views.CUSTOMERS_NEW.PATH_TO_FILE;
@@ -89,15 +97,10 @@ public class CustomersController {
     @GetMapping("/entry")
     public String showEntryPage(HttpServletRequest request,
                                 @ModelAttribute(CUSTOMER_ENTRY_REQUEST_DTO_ATTRIBUTE_NAME) CustomerEntryRequestDTO dto) {
-        Customer authCustomer = CUSTOMER_SERVICE.findAuth(request);
-        if (authCustomer == null) {
-            CONTROLLER_UTILS.setGeneralAttributes(request);
+        Customer authCustomer = CUSTOMER_SERVICE.find(request);
 
-            return Views.CUSTOMERS_ENTRY.PATH_TO_FILE;
-        } else {
-            CONTROLLER_UTILS.setGeneralAttributes(request);
-            return Redirects.INDEX.REDIRECT_URL;
-        }
+        CONTROLLER_UTILS.setGeneralAttributes(request);
+        return authCustomer != null ? Redirects.INDEX.REDIRECT_URL : Views.CUSTOMERS_ENTRY.PATH_TO_FILE;
     }
 
     @PostMapping("/entry")
@@ -111,21 +114,26 @@ public class CustomersController {
         }
 
         ResponseEntity<?> responseEntity = CUSTOMERS_REST_CONTROLLER.entry(customerEntryRequestDTO, bindingResult);
-        if (responseEntity.getStatusCode() == HttpStatus.OK) {
-            CustomerResponseDTO dto = (CustomerResponseDTO) responseEntity.getBody();
-            Customer customer = CUSTOMER_SERVICE.findById(dto.getId());
+        if (responseEntity.getStatusCode() == HttpStatus.OK
+                && responseEntity.getBody() instanceof CustomerResponseDTO dto) {
+            Customer customer = CUSTOMER_SERVICE.find(dto.getId());
             if (customer != null) {
-                GlobalCookiesUtils.addCookieInHttpResponse
+                GLOBAL_COOKIE_UTILS.addCookieInHttpResponse
                         (response, GlobalCookies.AUTH_CODE, customer.getAuthCode());
-                GlobalCookiesUtils.addCookieInHttpResponse
+                GLOBAL_COOKIE_UTILS.addCookieInHttpResponse
                         (response, GlobalCookies.AUTH_ID, String.valueOf(customer.getId()));
             }
 
             return Redirects.INDEX.REDIRECT_URL;
-        } else {
-            CustomResponseMessage message = (CustomResponseMessage) responseEntity.getBody();
+        } else if (responseEntity.getBody() instanceof CustomResponseMessage message) {
             bindingResult.addError(new ObjectError("entry_error",
                     message.getText()));
+
+            CONTROLLER_UTILS.setGeneralAttributes(request);
+            return Views.CUSTOMERS_ENTRY.PATH_TO_FILE;
+        } else {
+            bindingResult.addError(new ObjectError("entry_error",
+                    "Неизвестная ошибка."));
 
             CONTROLLER_UTILS.setGeneralAttributes(request);
             return Views.CUSTOMERS_ENTRY.PATH_TO_FILE;
@@ -144,7 +152,7 @@ public class CustomersController {
         CONTROLLER_UTILS.setGeneralAttributes(request);
         CONTROLLER_UTILS.changeDateLastVisitToAuthCustomer(request);
 
-        Customer customer = CUSTOMER_SERVICE.findById(id);
+        Customer customer = CUSTOMER_SERVICE.find(id);
         if (customer != null) {
             request.setAttribute("showCustomer", customer);
             return Views.CUSTOMERS_SHOW_ONE.PATH_TO_FILE;

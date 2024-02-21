@@ -9,6 +9,7 @@ import ru.herooo.mylanguageutils.StringUtils;
 import ru.herooo.mylanguageutils.yandexdictionary.YandexDictionaryUtils;
 import ru.herooo.mylanguageutils.yandexdictionary.dicresult.DicResult;
 import ru.herooo.mylanguageutils.yandexdictionary.dicresult.classes.TranslatedWord;
+import ru.herooo.mylanguageweb.global.GlobalCookieUtils;
 
 @SpringBootApplication(scanBasePackages= {
         "ru.herooo.mylanguageweb",
@@ -23,6 +24,15 @@ public class MyLanguageApplication {
     @Bean
     public StringUtils stringUtils() {
         return new StringUtils();
+    }
+
+    @Bean
+    public GlobalCookieUtils globalCookieUtils() {
+        return new GlobalCookieUtils();
+    }
+
+    @Bean YandexDictionaryUtils yandexDictionaryUtils() {
+        return new YandexDictionaryUtils();
     }
 }
 

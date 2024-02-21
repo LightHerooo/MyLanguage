@@ -1,6 +1,6 @@
 import {
     CustomTimer
-} from "../../classes/custom_timer.js";
+} from "../../classes/custom_timer/custom_timer.js";
 
 import {
     HttpStatuses
@@ -12,12 +12,15 @@ import {
 
 import {
     CustomerCollectionRequestDTO
-} from "../../classes/dto/customer_collection.js";
+} from "../../classes/dto/entity/customer_collection.js";
 
 import {
-    RuleElement,
+    RuleElement
+} from "../../classes/rule/rule_element.js";
+
+import {
     RuleTypes
-} from "../../classes/rule_element.js";
+} from "../../classes/rule/rule_types.js";
 
 import {
     LangUtils
@@ -41,15 +44,11 @@ import {
 
 import {
     CssElementWithFlag
-} from "../../classes/css/css_element_with_flag.js";
+} from "../../classes/css/other/css_element_with_flag.js";
 
 import {
     LoadingElement
 } from "../../classes/loading_element.js";
-
-import {
-    GlobalCookies
-} from "../../classes/global_cookies.js";
 
 class CustomerCollectionRowElements {
     divRow;
@@ -187,13 +186,14 @@ async function createNewCollectionElement() {
     // Вешаем события на элементы ---
     tbTitle.addEventListener("input", async function () {
         changeSendNewCollectionInfoRule(true, null, null);
-        await checkCorrectTitle(this, divTitle);
+        await checkCorrectTitle(this, cbLangs, divTitle);
     })
 
 
     cbLangs.addEventListener("change", async function() {
         changeSendNewCollectionInfoRule(true, null, null)
         await checkCorrectLang(this, divLang);
+        await checkCorrectTitle(tbTitle, this, divTitle);
     });
     //---
 
@@ -260,25 +260,26 @@ async function createNewCollectionElement() {
     //---
 }
 
-async function checkCorrectTitle(tbTitle, parentElement) {
+async function checkCorrectTitle(tbTitle, cbLangs, parentElement) {
+    let langCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbLangs);
     return await _CUSTOMER_COLLECITON_UTILS
-        .checkCorrectValueInTbTitle(tbTitle, parentElement, _CUSTOM_TIMER_CHECKER);
+        .checkCorrectValueInTbTitle(tbTitle, parentElement, langCode, _CUSTOM_TIMER_CHECKER);
 }
 
 async function checkCorrectLang(cbLangs, parentElement) {
-    return await _LANG_UTILS.checkCorrectValueInComboBox(cbLangs, parentElement, true);
+    return await _LANG_UTILS.checkCorrectValueInComboBox(cbLangs, parentElement);
 }
 
 function checkAllTitles() {
     let isCorrectAll = true;
     for (let iKey of _newCollectionsMap.keys()) {
-        let iCustomerCollectionRowElements = _newCollectionsMap.get(iKey);
+        let row = _newCollectionsMap.get(iKey);
 
-        let iTitle = iCustomerCollectionRowElements.tbTitle.value.toLowerCase().trim();
+        let iTbTitle = row.tbTitle;
+        let iTitle = iTbTitle.value.toLowerCase().trim();
 
         let isCorrectOne = true;
-        let message;
-        let ruleType;
+        let ruleElement = new RuleElement(iTbTitle, iTbTitle.parentElement);
 
         for (let jKey of _newCollectionsMap.keys()) {
             if (iKey === jKey) continue;
@@ -289,18 +290,17 @@ function checkAllTitles() {
                 isCorrectAll = false;
                 isCorrectOne = false;
 
-                message = "Названия не могут повторяться.";
-                ruleType = _RULE_TYPES.ERROR;
+                ruleElement.message = "Названия не могут повторяться.";
+                ruleElement.ruleType = _RULE_TYPES.ERROR;
                 break;
             }
         }
 
         // Отображаем предупреждение (правило), если это необходимо ---
-        let ruleElement = new RuleElement(iCustomerCollectionRowElements.tbTitle.parentNode.id);
         if (isCorrectOne === false) {
-            ruleElement.createOrChangeDiv(message, ruleType);
+            ruleElement.showRule();
         } else {
-            ruleElement.removeDiv();
+            ruleElement.removeRule();
         }
         //---
     }
@@ -339,11 +339,11 @@ function changeBtnNewCollectionStatus() {
 async function checkBeforeSend() {
     let isCorrect = true;
     for (let key of _newCollectionsMap.keys()) {
-        let customerCollectionRowElements = _newCollectionsMap.get(key);
+        let row = _newCollectionsMap.get(key);
         let titleIsCorrect =
-            await checkCorrectTitle(customerCollectionRowElements.tbTitle, customerCollectionRowElements.tbTitleParent);
+            await checkCorrectTitle(row.tbTitle, row.cbLangs, row.tbTitleParent);
         let langIsCorrect =
-            await checkCorrectLang(customerCollectionRowElements.cbLangs, customerCollectionRowElements.cbLangsParent);
+            await checkCorrectLang(row.cbLangs, row.cbLangsParent);
 
         if (isCorrect === true) {
             isCorrect = (titleIsCorrect && langIsCorrect);
@@ -400,13 +400,17 @@ async function sendNewCollections() {
 
 function changeSendNewCollectionInfoRule(isCorrect, message, ruleType) {
     let divSendNewWordsInfo = document.getElementById(_DIV_SEND_NEW_COLLECTIONS_INFO_ID);
-    divSendNewWordsInfo.replaceChildren();
+    if (divSendNewWordsInfo) {
+        divSendNewWordsInfo.replaceChildren();
 
-    let ruleElement = new RuleElement(_DIV_SEND_NEW_COLLECTIONS_INFO_ID);
-    if (isCorrect === false) {
-        ruleElement.createOrChangeDiv(message, ruleType);
-    } else {
-        ruleElement.removeDiv();
+        let ruleElement = new RuleElement(divSendNewWordsInfo, divSendNewWordsInfo);
+        ruleElement.message = message;
+        ruleElement.ruleType = ruleType;
+        if (isCorrect === false) {
+            ruleElement.showRule();
+        } else {
+            ruleElement.removeRule();
+        }
     }
 }
 

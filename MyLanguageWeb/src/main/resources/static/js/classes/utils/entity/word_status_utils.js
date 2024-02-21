@@ -1,6 +1,6 @@
 import {
     WordStatusResponseDTO
-} from "../../dto/word_status.js";
+} from "../../dto/entity/word_status.js";
 
 import {
     HttpStatuses

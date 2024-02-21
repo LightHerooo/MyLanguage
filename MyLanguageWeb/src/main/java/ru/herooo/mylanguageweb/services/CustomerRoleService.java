@@ -14,11 +14,11 @@ public class CustomerRoleService {
         this.CUSTOMER_ROLE_CRUD_REPOSITORY = customerRoleCrudRepository;
     }
 
-    public CustomerRole findById(CustomerRoles role) {
-        return CUSTOMER_ROLE_CRUD_REPOSITORY.findById(role);
+    public CustomerRole find(CustomerRoles role) {
+        return CUSTOMER_ROLE_CRUD_REPOSITORY.find(role);
     }
 
-    public CustomerRole findByCode(String code) {
+    public CustomerRole find(String code) {
         return CUSTOMER_ROLE_CRUD_REPOSITORY.findByCode(code);
     }
 }

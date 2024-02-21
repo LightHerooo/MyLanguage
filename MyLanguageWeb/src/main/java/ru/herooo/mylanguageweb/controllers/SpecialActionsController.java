@@ -32,9 +32,9 @@ public class SpecialActionsController {
 
     @GetMapping
     public String showSpecialActionsPage(HttpServletRequest request) {
-        Customer authCustomer = CUSTOMER_SERVICE.findAuth(request);
+        Customer authCustomer = CUSTOMER_SERVICE.find(request);
         if (authCustomer != null) {
-            if (CUSTOMER_SERVICE.isCustomerSuperUser(authCustomer)) {
+            if (CUSTOMER_SERVICE.isSuperUser(authCustomer)) {
                 CONTROLLER_UTILS.setGeneralAttributes(request);
                 CONTROLLER_UTILS.changeDateLastVisitToAuthCustomer(request);
 
@@ -49,9 +49,9 @@ public class SpecialActionsController {
 
     @GetMapping("/change_current_status_to_words")
     public String showChangeWordsPage(HttpServletRequest request) {
-        Customer authCustomer = CUSTOMER_SERVICE.findAuth(request);
+        Customer authCustomer = CUSTOMER_SERVICE.find(request);
         if (authCustomer != null) {
-            if (CUSTOMER_SERVICE.isCustomerSuperUser(authCustomer)) {
+            if (CUSTOMER_SERVICE.isSuperUser(authCustomer)) {
                 CONTROLLER_UTILS.setGeneralAttributes(request);
                 CONTROLLER_UTILS.changeDateLastVisitToAuthCustomer(request);
                 request.setAttribute(WORD_STATUSES_ATTRIBUTE_NAME, WORD_STATUS_SERVICE.findAll());

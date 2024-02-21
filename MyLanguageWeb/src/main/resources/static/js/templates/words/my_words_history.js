@@ -1,6 +1,6 @@
 import {
     CustomTimer
-} from "../../classes/custom_timer.js";
+} from "../../classes/custom_timer/custom_timer.js";
 
 import {
     GlobalCookies
@@ -21,15 +21,15 @@ import {
 import {
     WordStatusWithCount,
     compareWordStatusWithCount
-} from "../../classes/utils/js_entity/word_status_with_count.js";
+} from "../../classes/dto/types/TODO/word_status_with_count.js";
 
 import {
     WordStatusHistoryResponseDTO
-} from "../../classes/dto/word_status_history.js";
+} from "../../classes/dto/entity/word_status_history.js";
 
 import {
     WordResponseDTO
-} from "../../classes/dto/word.js";
+} from "../../classes/dto/entity/word.js";
 
 import {
     CustomResponseMessage
@@ -37,7 +37,7 @@ import {
 
 import {
     WordStatusResponseDTO
-} from "../../classes/dto/word_status.js";
+} from "../../classes/dto/entity/word_status.js";
 
 import {
     LongResponse
@@ -595,7 +595,7 @@ async function createDivWithWordStatusHistoryTable(wordId) {
     let divDelimiterContainer = document.createElement("div");
     divDelimiterContainer.style.display = "grid";
     divDelimiterContainer.style.alignItems = "center";
-    divDelimiterContainer.style.height = "15px";
+    divDelimiterContainer.style.height = "30px";
     divDelimiterContainer.appendChild(divDelimiter);
     //---
 

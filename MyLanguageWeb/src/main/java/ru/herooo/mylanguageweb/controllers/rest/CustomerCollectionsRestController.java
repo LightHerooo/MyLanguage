@@ -10,12 +10,11 @@ import org.springframework.web.bind.annotation.*;
 import ru.herooo.mylanguagedb.entities.Customer;
 import ru.herooo.mylanguagedb.entities.CustomerCollection;
 import ru.herooo.mylanguagedb.entities.Lang;
-import ru.herooo.mylanguageutils.StringUtils;
-import ru.herooo.mylanguageweb.dto.CustomResponseMessage;
-import ru.herooo.mylanguageweb.dto.LongResponse;
-import ru.herooo.mylanguageweb.dto.customercollection.CustomerCollectionMapping;
-import ru.herooo.mylanguageweb.dto.customercollection.CustomerCollectionRequestDTO;
-import ru.herooo.mylanguageweb.dto.customercollection.CustomerCollectionResponseDTO;
+import ru.herooo.mylanguageweb.dto.other.CustomResponseMessage;
+import ru.herooo.mylanguageweb.dto.other.LongResponse;
+import ru.herooo.mylanguageweb.dto.entity.customercollection.CustomerCollectionMapping;
+import ru.herooo.mylanguageweb.dto.entity.customercollection.CustomerCollectionRequestDTO;
+import ru.herooo.mylanguageweb.dto.entity.customercollection.CustomerCollectionResponseDTO;
 import ru.herooo.mylanguageweb.services.CustomerCollectionService;
 import ru.herooo.mylanguageweb.services.CustomerService;
 import ru.herooo.mylanguageweb.services.LangService;
@@ -37,8 +36,6 @@ public class CustomerCollectionsRestController {
 
     private final CustomerCollectionMapping CUSTOMER_COLLECTION_MAPPING;
 
-    private final StringUtils STRING_UTILS;
-
     @Autowired
     public CustomerCollectionsRestController(CustomersRestController customersRestController,
                                              LangsRestController langsRestController,
@@ -46,8 +43,7 @@ public class CustomerCollectionsRestController {
                                              CustomerService customerService,
                                              WordInCollectionService wordInCollectionService,
                                              LangService langService,
-                                             CustomerCollectionMapping customerCollectionMapping,
-                                             StringUtils stringUtils) {
+                                             CustomerCollectionMapping customerCollectionMapping) {
         this.CUSTOMERS_REST_CONTROLLER = customersRestController;
         this.LANGS_REST_CONTROLLER = langsRestController;
 
@@ -57,13 +53,12 @@ public class CustomerCollectionsRestController {
         this.LANG_SERVICE = langService;
 
         this.CUSTOMER_COLLECTION_MAPPING = customerCollectionMapping;
-        this.STRING_UTILS = stringUtils;
     }
 
     @GetMapping("/by_customer_id")
-    public ResponseEntity<?> findAllByCustomerId(
-            @RequestParam("id") Long id) {
-        List<CustomerCollection> collections = CUSTOMER_COLLECTION_SERVICE.findAllByCustomerOrderById(id);
+    public ResponseEntity<?> getAll(
+            @RequestParam("customer_id") Long customerId) {
+        List<CustomerCollection> collections = CUSTOMER_COLLECTION_SERVICE.findAll(customerId);
         if (collections != null && collections.size() > 0) {
             List<CustomerCollectionResponseDTO> collectionsDTO =
                     collections.stream().map(CUSTOMER_COLLECTION_MAPPING::mapToResponseDTO).toList();
@@ -75,39 +70,37 @@ public class CustomerCollectionsRestController {
     }
 
     @GetMapping("/count_by_customer_id_and_lang_code")
-    public ResponseEntity<?> countByCustomerIdAndLangCode(@RequestParam("customer_id") Long customerId,
-                                                          @RequestParam(required = false,
+    public ResponseEntity<?> getCount(@RequestParam("customer_id") Long customerId,
+                                      @RequestParam(required = false,
                                                                   value = "lang_code") String langCode) {
-        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.findById(customerId);
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.find(customerId);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
 
-        if (STRING_UTILS.isNotStringVoid(langCode)) {
-            response = LANGS_REST_CONTROLLER.findByCode(langCode);
-            if (response.getStatusCode() != HttpStatus.OK) {
-                return response;
-            }
+        response = LANGS_REST_CONTROLLER.find(langCode);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
         }
 
-        Customer customer = CUSTOMER_SERVICE.findById(customerId);
-        Lang lang = LANG_SERVICE.findByCode(langCode);
+        Customer customer = CUSTOMER_SERVICE.find(customerId);
+        Lang lang = LANG_SERVICE.find(langCode);
 
-        long countOfCollections = CUSTOMER_COLLECTION_SERVICE.countByCustomerAndLang(customer, lang);
+        long countOfCollections = CUSTOMER_COLLECTION_SERVICE.count(customer, lang);
         LongResponse longResponse = new LongResponse(countOfCollections);
         return ResponseEntity.ok(longResponse);
     }
 
     @GetMapping("/count_by_customer_id")
-    public ResponseEntity<?> countByCustomerId(@RequestParam("customer_id") Long customerId) {
-        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.findById(customerId);
+    public ResponseEntity<?> getCount(@RequestParam("customer_id") Long customerId) {
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.find(customerId);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
 
-        Customer customer = CUSTOMER_SERVICE.findById(customerId);
+        Customer customer = CUSTOMER_SERVICE.find(customerId);
 
-        long numberOfCollections = CUSTOMER_COLLECTION_SERVICE.countByCustomer(customer);
+        long numberOfCollections = CUSTOMER_COLLECTION_SERVICE.count(customer);
         LongResponse longResponse = new LongResponse(numberOfCollections);
         return ResponseEntity.ok(longResponse);
     }
@@ -121,19 +114,26 @@ public class CustomerCollectionsRestController {
             return response;
         }
 
-        response = findByKey(dto.getKey());
+        response = find(dto.getKey());
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        response = validateIsLangActiveInCollection(dto.getKey());
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
 
         // Проверяем количество слов в коллекции, которую хотим скопировать
-        long numberOfWords = WORD_IN_COLLECTION_SERVICE.countByCustomerCollectionKey(dto.getKey());
+        CustomerCollection collection = CUSTOMER_COLLECTION_SERVICE.find(dto.getKey());
+        long numberOfWords = WORD_IN_COLLECTION_SERVICE.count(collection.getKey());
         if (numberOfWords == 0) {
             CustomResponseMessage message = new CustomResponseMessage(1, "В указанной коллекции нет слов.");
             return ResponseEntity.badRequest().body(message);
         }
 
-        CustomerCollection collection = CUSTOMER_COLLECTION_SERVICE.cloneByKey(dto);
+        Customer authCustomer = CUSTOMER_SERVICE.findByAuthCode(dto.getAuthCode());
+        collection = CUSTOMER_COLLECTION_SERVICE.copy(collection, dto.getTitle(), authCustomer);
         if (collection != null) {
             CustomerCollectionResponseDTO responseDTO = CUSTOMER_COLLECTION_MAPPING.mapToResponseDTO(collection);
             return ResponseEntity.ok(responseDTO);
@@ -154,12 +154,9 @@ public class CustomerCollectionsRestController {
         }
 
         // Проверяем язык
-        String langCode = dto.getLangCode();
-        if (STRING_UTILS.isNotStringVoid(langCode)) {
-            response = LANGS_REST_CONTROLLER.findByCode(langCode);
-            if (response.getStatusCode() != HttpStatus.OK) {
-                return response;
-            }
+        response = LANGS_REST_CONTROLLER.find(dto.getLangCode());
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
         }
 
         CustomerCollection collection = CUSTOMER_COLLECTION_SERVICE.add(dto);
@@ -174,8 +171,8 @@ public class CustomerCollectionsRestController {
     }
 
     @GetMapping("/find/by_id")
-    public ResponseEntity<?> findById(@RequestParam("id") Long id) {
-        CustomerCollection collection = CUSTOMER_COLLECTION_SERVICE.findById(id);
+    public ResponseEntity<?> find(@RequestParam("id") Long id) {
+        CustomerCollection collection = CUSTOMER_COLLECTION_SERVICE.find(id);
         if (collection != null) {
             CustomerCollectionResponseDTO dto = CUSTOMER_COLLECTION_MAPPING.mapToResponseDTO(collection);
             return ResponseEntity.ok(dto);
@@ -187,9 +184,10 @@ public class CustomerCollectionsRestController {
     }
 
     @GetMapping("/find/by_key")
-    public ResponseEntity<?> findByKey(
+    public ResponseEntity<?> find(
             @RequestParam("key") String key) {
-        CustomerCollection collection = CUSTOMER_COLLECTION_SERVICE.findByKey(key);
+        CustomerCollection collection = CUSTOMER_COLLECTION_SERVICE.find(key);
+
         if (collection != null) {
             CustomerCollectionResponseDTO collectionDTO =
                     CUSTOMER_COLLECTION_MAPPING.mapToResponseDTO(collection);
@@ -202,19 +200,19 @@ public class CustomerCollectionsRestController {
     }
 
     @GetMapping("/find/by_customer_id_and_key")
-    public ResponseEntity<?> findByCustomerIdAndKey(@RequestParam("customer_id") Long customerId,
-                                                    @RequestParam("key") String key) {
-        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.findById(customerId);
+    public ResponseEntity<?> find(@RequestParam("customer_id") Long customerId,
+                                  @RequestParam("key") String key) {
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.find(customerId);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
 
-        response = findByKey(key);
+        response = find(key);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
 
-        Customer customer = CUSTOMER_SERVICE.findById(customerId);
+        Customer customer = CUSTOMER_SERVICE.find(customerId);
         CustomerCollection collection = CUSTOMER_COLLECTION_SERVICE.findByCustomerAndKey(customer, key);
         if (collection != null) {
             CustomerCollectionResponseDTO dto = CUSTOMER_COLLECTION_MAPPING.mapToResponseDTO(collection);
@@ -251,10 +249,30 @@ public class CustomerCollectionsRestController {
             return ResponseEntity.badRequest().body(message);
         }
 
+        if (dto.getId() == 0) {
+            // Проверяем язык
+            response = LANGS_REST_CONTROLLER.find(dto.getLangCode());
+            if (response.getStatusCode() != HttpStatus.OK) {
+                return response;
+            }
+
+            // Проверяем язык на активность
+            response = LANGS_REST_CONTROLLER.validateIsActive(dto.getLangCode());
+            if (response.getStatusCode() != HttpStatus.OK) {
+                return response;
+            }
+        } else {
+            CustomerCollection collection = CUSTOMER_COLLECTION_SERVICE.find(dto.getId());
+            response = validateIsLangActiveInCollection(collection.getKey());
+            if (response.getStatusCode() != HttpStatus.OK) {
+                return response;
+            }
+        }
+
         // Проверяем наличие коллекции с таким же названием у создающего
         Customer authCustomer = CUSTOMER_SERVICE.findByAuthCode(dto.getAuthCode());
         CustomerCollection collection =
-                CUSTOMER_COLLECTION_SERVICE.findByCustomerAndTitleIgnoreCase(authCustomer, dto.getTitle());
+                CUSTOMER_COLLECTION_SERVICE.findByCustomerAndTitle(authCustomer, dto.getTitle());
         if (collection != null && (dto.getId() == 0 || dto.getId() != collection.getId())) {
             CustomResponseMessage message = new CustomResponseMessage(2,
                     "У вас уже есть коллекция с таким названием.");
@@ -262,5 +280,24 @@ public class CustomerCollectionsRestController {
         }
 
         return ResponseEntity.ok(dto);
+    }
+
+    @GetMapping("/validate/is_lang_active_in_collection_by_key")
+    public ResponseEntity<?> validateIsLangActiveInCollection(@RequestParam("key") String key) {
+        ResponseEntity<?> response = find(key);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        CustomerCollection collection = CUSTOMER_COLLECTION_SERVICE.find(key);
+        response = LANGS_REST_CONTROLLER.validateIsActive(collection.getLang().getCode());
+        if (response.getStatusCode() != HttpStatus.OK) {
+            CustomResponseMessage message = new CustomResponseMessage(1,
+                    "Коллекция недоступна, так как её язык в данный момент неактивен.");
+            return ResponseEntity.badRequest().body(message);
+        } else {
+            CustomResponseMessage message = new CustomResponseMessage(1, "Язык коллекции активен.");
+            return ResponseEntity.ok(message);
+        }
     }
 }

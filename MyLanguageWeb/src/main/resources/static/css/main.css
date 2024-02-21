@@ -55,7 +55,10 @@ div.vertical-delimiter-margin {
     margin: 25px 5px 25px 5px;
 }
 
-a.a-button-standard, a.a-button-accept-standard, a.a-button-deny-standard, a.a-button-disabled-standard {
+a.a-button-standard,
+a.a-button-accept-standard,
+a.a-button-deny-standard,
+a.a-button-disabled-standard {
     -webkit-appearance: button;
     -moz-appearance: button;
     cursor: pointer;
@@ -78,12 +81,12 @@ a.a-button-accept-standard {
     justify-content: center;
     align-items: center;
 
-    border: 5px solid rgb(67, 145, 60);
-    background: rgba(87, 181, 72, var(--opacity-standard));
+    border: 5px solid var(--accept-second-color);
+    background: rgba(var(--accept-first-color-rgb), var(--opacity-standard));
 }
 
 a.a-button-accept-standard:hover {
-    background: rgba(67, 145, 60, var(--opacity-standard));
+    background: rgba(var(--accept-second-color-rgb), var(--opacity-standard));
 }
 
 a.a-button-deny-standard {
@@ -91,12 +94,12 @@ a.a-button-deny-standard {
     justify-content: center;
     align-items: center;
 
-    border: 5px solid rgb(145, 60, 60);
-    background: rgba(181, 72, 72, var(--opacity-standard));
+    border: 5px solid var(--deny-second-color);
+    background: rgba(var(--deny-first-color-rgb), var(--opacity-standard));
 }
 
 a.a-button-deny-standard:hover {
-    background: rgba(145, 60, 60, var(--opacity-standard));
+    background: rgba(var(--deny-second-color-rgb), var(--opacity-standard));
 }
 
 a.a-button-disabled-standard {
@@ -113,7 +116,7 @@ a.a-button-disabled-standard {
 table.table-standard {
     border-spacing: 5px 5px;
     table-layout: fixed;
-    margin: 0 -5px;
+    margin: -10px -5px;
     width: calc(100% + 10px);
 
     overflow: hidden;
@@ -263,5 +266,31 @@ a.a-checkbox-standard {
 
 input.checkbox-standard {
     cursor: pointer;
+}
+
+div.content-center-standard {
+    display: grid;
+    justify-content: center;
+    align-items: center;
+}
+
+div.overflow-y-standard {
+    overflow-y: scroll;
+}
+
+div.overflow-y-standard::-webkit-scrollbar-track
+{
+    background-color: var(--first-color);
+}
+
+div.overflow-y-standard::-webkit-scrollbar
+{
+    width: 15px;
+    background-color: var(--first-color);;
+}
+
+div.overflow-y-standard::-webkit-scrollbar-thumb
+{
+    background-color: var(--second-color);
 }
 

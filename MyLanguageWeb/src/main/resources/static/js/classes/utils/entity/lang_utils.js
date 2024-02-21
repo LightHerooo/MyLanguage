@@ -1,6 +1,6 @@
 import {
     LangResponseDTO
-} from "../../dto/lang.js";
+} from "../../dto/entity/lang.js";
 
 import {
     HttpStatuses
@@ -11,9 +11,12 @@ import {
 } from "../../dto/other/custom_response_message.js";
 
 import {
-    RuleElement,
+    RuleElement
+} from "../../rule/rule_element.js";
+
+import {
     RuleTypes
-} from "../../rule_element.js";
+} from "../../rule/rule_types.js";
 
 import {
     LangsAPI
@@ -29,7 +32,7 @@ import {
 
 import {
     CustomTimer
-} from "../../custom_timer.js";
+} from "../../custom_timer/custom_timer.js";
 
 const _LANGS_API = new LangsAPI();
 
@@ -44,9 +47,9 @@ export class LangUtils {
             cbLangs.appendChild(firstOptional);
         }
 
-        let jsonResponse = await _LANGS_API.GET.getAll();
-        if (jsonResponse.status === _HTTP_STATUSES.OK) {
-            let json = jsonResponse.json;
+        let JSONResponse = await _LANGS_API.GET.getAllActives();
+        if (JSONResponse.status === _HTTP_STATUSES.OK) {
+            let json = JSONResponse.json;
             for (let i = 0; i < json.length; i++) {
                 let lang = new LangResponseDTO(json[i]);
 
@@ -79,35 +82,42 @@ export class LangUtils {
         }
     }
 
-    async checkCorrectValueInComboBox(cbLangs, parentElement, isNullLangCodePossible) {
+    async checkCorrectValueInComboBox(cbLangs, parentElement) {
         let isCorrect = true;
 
         if (cbLangs && parentElement) {
-            let message;
-            let ruleType;
+            let ruleElement = new RuleElement(cbLangs, parentElement);
 
             let langCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbLangs);
             if (langCode) {
+                // Ищем язык с указанным кодом ---
                 let JSONResponse = await _LANGS_API.GET.findByCode(langCode);
                 if (JSONResponse.status !== _HTTP_STATUSES.OK) {
                     isCorrect = false;
-                    message = new CustomResponseMessage(JSONResponse.json).text;
-                    ruleType = _RULE_TYPES.ERROR;
+                    ruleElement.message = new CustomResponseMessage(JSONResponse.json).text;
+                    ruleElement.ruleType = _RULE_TYPES.ERROR;
+                } else {
+                    // Проверяем, доступен ли язык с таким кодом ---
+                    JSONResponse = await _LANGS_API.GET.validateIsActiveByCode(langCode);
+                    if (JSONResponse.status !== _HTTP_STATUSES.OK) {
+                        isCorrect = false;
+                        ruleElement.message = new CustomResponseMessage(JSONResponse.json).text;
+                        ruleElement.ruleType = _RULE_TYPES.ERROR;
+                    }
+                    //---
                 }
+                //---
             } else {
-                if (isNullLangCodePossible === false) {
-                    isCorrect = false;
-                    message = "Выберите язык.";
-                    ruleType = _RULE_TYPES.ERROR;
-                }
+                isCorrect = false;
+                ruleElement.message = "Выберите язык.";
+                ruleElement.ruleType = _RULE_TYPES.ERROR;
             }
 
             // Отображаем предупреждение (правило), если это необходимо ---
-            let ruleElement = new RuleElement(parentElement.id);
             if (isCorrect === false) {
-                ruleElement.createOrChangeDiv(message, ruleType);
+                ruleElement.showRule();
             } else {
-                ruleElement.removeDiv();
+                ruleElement.removeRule();
             }
             //---
         } else {
@@ -121,11 +131,9 @@ export class LangUtils {
         if (langCode) {
             _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemId(
                 cbLangs, langCode, doNeedToCallChangeEvent);
-            cbLangs.disabled = true;
         } else {
             _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemIndex(
                 cbLangs, 0, doNeedToCallChangeEvent);
-            cbLangs.disabled = false;
         }
     }
 }

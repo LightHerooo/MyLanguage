@@ -41,7 +41,7 @@ public class IndexController {
         CONTROLLER_UTILS.changeDateLastVisitToAuthCustomer(request);
 
         // Генерируем строку количества слов (с правильным окончанием слова)
-        long numberOfWords = WORD_SERVICE.getNumberOfWordsByWordStatusCode(WordStatuses.ACTIVE.CODE);
+        long numberOfWords = WORD_SERVICE.count(WordStatuses.ACTIVE.CODE);
         String wordText = STRING_UTILS.
                 changeEndOfTheWordByNumberOfItems("слово", numberOfWords,
                         new EndOfTheWord("", 1),
@@ -52,7 +52,7 @@ public class IndexController {
                 String.format("%d %s", numberOfWords, wordText));
 
         // Генерируем строку количества языков (с правильным окончанием слова)
-        long numberOfLangs = LANG_SERVICE.getNumberOfLangs();
+        long numberOfLangs = LANG_SERVICE.count();
         String numberOfLangsText = STRING_UTILS.changeEndOfTheWordByNumberOfItems(
                 Long.toString(numberOfLangs), numberOfLangs,
                 new EndOfTheWord("-ти", 0),
@@ -61,7 +61,7 @@ public class IndexController {
                 null);
         String langText = STRING_UTILS.
                 changeEndOfTheWordByNumberOfItems("язык", numberOfLangs,
-                        new EndOfTheWord("ов", 0),
+                        new EndOfTheWord("ах", 0),
                         new EndOfTheWord("ах", 0),
                         new EndOfTheWord("е", 0),
                         new EndOfTheWord("ов", 0));

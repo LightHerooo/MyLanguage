@@ -9,12 +9,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.herooo.mylanguagedb.entities.*;
 import ru.herooo.mylanguagedb.repositories.wordstatus.WordStatuses;
-import ru.herooo.mylanguageweb.dto.CustomResponseMessage;
-import ru.herooo.mylanguageweb.dto.LongResponse;
-import ru.herooo.mylanguageweb.dto.word.WordRequestDTO;
-import ru.herooo.mylanguageweb.dto.word.WordResponseDTO;
-import ru.herooo.mylanguageweb.dto.word.WordMapping;
-import ru.herooo.mylanguageweb.dto.wordstatushistory.WordStatusHistoryRequestDTO;
+import ru.herooo.mylanguageweb.dto.other.CustomResponseMessage;
+import ru.herooo.mylanguageweb.dto.other.LongResponse;
+import ru.herooo.mylanguageweb.dto.entity.word.WordRequestDTO;
+import ru.herooo.mylanguageweb.dto.entity.word.WordResponseDTO;
+import ru.herooo.mylanguageweb.dto.entity.word.WordMapping;
+import ru.herooo.mylanguageweb.dto.entity.wordstatushistory.WordStatusHistoryRequestDTO;
 import ru.herooo.mylanguageweb.services.*;
 
 import java.time.LocalDate;
@@ -62,7 +62,7 @@ public class WordsRestController {
     }
 
     @GetMapping("/filtered")
-    public ResponseEntity<?> getFiltered(
+    public ResponseEntity<?> getAll(
             @RequestParam(value = "title", required = false) String title,
             @RequestParam(value = "word_status_code", required = false) String wordStatusCode,
             @RequestParam(value = "lang_code", required = false) String langCode) {
@@ -71,7 +71,7 @@ public class WordsRestController {
             return response;
         }
 
-        List<Word> wordsAfterFilter = WORD_SERVICE.findAfterFilter(title, wordStatusCode, langCode);
+        List<Word> wordsAfterFilter = WORD_SERVICE.findAll(title, wordStatusCode, langCode);
         if (wordsAfterFilter != null && wordsAfterFilter.size() > 0) {
             List<WordResponseDTO> wordsDTO = wordsAfterFilter.stream().map(WORD_MAPPING::mapToResponseDTO).toList();
             return ResponseEntity.ok().body(wordsDTO);
@@ -83,20 +83,20 @@ public class WordsRestController {
     }
 
     @GetMapping("/filtered_pagination")
-    public ResponseEntity<?> getFilteredPagination(
+    public ResponseEntity<?> getAll(
             @RequestParam("number_of_words") Long numberOfWords,
             @RequestParam(value = "title", required = false) String title,
             @RequestParam(value = "word_status_code", required = false) String wordStatusCode,
             @RequestParam(value = "lang_code", required = false) String langCode,
             @RequestParam(value = "last_word_id_on_previous_page", required = false, defaultValue = "0")
             Long lastWordIdOnPreviousPage) {
-        ResponseEntity<?> response = validateBeforeFilterPagination(numberOfWords, wordStatusCode,
+        ResponseEntity<?> response = validateBeforeFilter(numberOfWords, wordStatusCode,
                 langCode, lastWordIdOnPreviousPage);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
 
-        List<Word> words = WORD_SERVICE.findAfterFilterWithPagination(title, wordStatusCode,
+        List<Word> words = WORD_SERVICE.findAll(title, wordStatusCode,
                 langCode, numberOfWords, lastWordIdOnPreviousPage);
         if (words != null && words.size() > 0) {
             List<WordResponseDTO> wordsDTOs = words.stream().map(WORD_MAPPING::mapToResponseDTO).toList();
@@ -108,7 +108,7 @@ public class WordsRestController {
     }
 
     @GetMapping("/customer_filtered_pagination")
-    public ResponseEntity<?> getCustomerWordsFilteredPagination(
+    public ResponseEntity<?> getAll(
             @RequestParam("number_of_words") Long numberOfWords,
             @RequestParam("customer_id") Long customerId,
             @RequestParam(value = "title", required = false) String title,
@@ -117,13 +117,13 @@ public class WordsRestController {
             @RequestParam(value = "last_word_id_on_previous_page", required = false, defaultValue = "0")
             Long lastWordIdOnPreviousPage
     ) {
-        ResponseEntity<?> response = validateBeforeFilterPagination(numberOfWords, wordStatusCode,
+        ResponseEntity<?> response = validateBeforeFilter(numberOfWords, wordStatusCode,
                 langCode, lastWordIdOnPreviousPage);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
 
-        List<Word> words = WORD_SERVICE.findCustomerWordsAfterFilterWithPagination(title, wordStatusCode, langCode,
+        List<Word> words = WORD_SERVICE.findAll(title, wordStatusCode, langCode,
                 customerId, numberOfWords, lastWordIdOnPreviousPage);
         if (words != null && words.size() > 0) {
             List<WordResponseDTO> wordDTOs = words.stream().map(WORD_MAPPING::mapToResponseDTO).toList();
@@ -136,7 +136,7 @@ public class WordsRestController {
 
     @GetMapping("/count_by_word_status_code")
     public ResponseEntity<?> getCountByWordStatusCode(@RequestParam("word_status_code") String wordStatusCode) {
-        long countOfWords = WORD_SERVICE.getNumberOfWordsByWordStatusCode(wordStatusCode);
+        long countOfWords = WORD_SERVICE.count(wordStatusCode);
         LongResponse longResponse = new LongResponse(countOfWords);
 
         return ResponseEntity.ok(longResponse);
@@ -153,26 +153,26 @@ public class WordsRestController {
             return ResponseEntity.badRequest().body(message);
         }
 
-        long countOfWords = WORD_SERVICE.getNumberOfWordsByDateOfCreate(date);
+        long countOfWords = WORD_SERVICE.count(date);
         LongResponse longResponse = new LongResponse(countOfWords);
         return ResponseEntity.ok(longResponse);
     }
 
     @GetMapping("/count_by_customer_id_and_word_status_code")
-    public ResponseEntity<?> getCountOfCustomerWordsByWordStatusCode(
+    public ResponseEntity<?> getCount(
             @RequestParam("customer_id") Long customerId,
             @RequestParam("word_status_code") String wordStatusCode) {
-        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.findById(customerId);
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.find(customerId);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
 
-        response = WORD_STATUSES_REST_CONTROLLER.findByCode(wordStatusCode);
+        response = WORD_STATUSES_REST_CONTROLLER.find(wordStatusCode);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
 
-        long countOfWords = WORD_SERVICE.getNumberOfWordsByCustomerIdAndWordStatusCode(customerId, wordStatusCode);
+        long countOfWords = WORD_SERVICE.count(customerId, wordStatusCode);
         LongResponse longResponse = new LongResponse(countOfWords);
         return ResponseEntity.ok(longResponse);
     }
@@ -213,22 +213,19 @@ public class WordsRestController {
         }
 
         // Проверяем код статуса слова
-        response = WORD_STATUSES_REST_CONTROLLER.findByCode(dto.getWordStatusCode());
+        response = WORD_STATUSES_REST_CONTROLLER.find(dto.getWordStatusCode());
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
 
         Word word = WORD_SERVICE.findById(dto.getId());
+        word = WORD_SERVICE.edit(word, dto);
         if (word != null) {
-            word = WORD_SERVICE.edit(word, dto);
-
-            if (word != null) {
-                // Устанавливаем новый статус слова (если предыдущее != новому)
-                WordStatusHistory oldWordStatusHistory = WORD_STATUS_HISTORY_SERVICE.getCurrentWordStatusHistoryToWord(word);
-                WordStatus newWordStatus = WORD_STATUS_SERVICE.findByCode(dto.getWordStatusCode());
-                if (!newWordStatus.equals(oldWordStatusHistory.getWordStatus())) {
-                    WORD_STATUS_HISTORY_SERVICE.addWordStatusToWord(word, newWordStatus);
-                }
+            // Устанавливаем новый статус слова (если предыдущее != новому)
+            WordStatusHistory oldWordStatusHistory = WORD_STATUS_HISTORY_SERVICE.getCurrentWordStatusHistoryToWord(word);
+            WordStatus newWordStatus = WORD_STATUS_SERVICE.find(dto.getWordStatusCode());
+            if (!newWordStatus.equals(oldWordStatusHistory.getWordStatus())) {
+                WORD_STATUS_HISTORY_SERVICE.addWordStatusToWord(word.getId(), newWordStatus.getCode());
             }
 
             return ResponseEntity.ok(word);
@@ -249,7 +246,7 @@ public class WordsRestController {
         }
 
         Customer customer = CUSTOMER_SERVICE.findByAuthCode(validateAuthCode);
-        if (CUSTOMER_SERVICE.isCustomerSuperUser(customer)) {
+        if (CUSTOMER_SERVICE.isSuperUser(customer)) {
             WORD_SERVICE.deleteAllUnclaimedWords();
             CustomResponseMessage message = new CustomResponseMessage(1,
                     "Все невостребованные слова успешно удалены.");
@@ -261,7 +258,7 @@ public class WordsRestController {
     }
 
     @GetMapping("/find/by_id")
-    public ResponseEntity<?> findById(@RequestParam("id") Long id) {
+    public ResponseEntity<?> find(@RequestParam("id") Long id) {
         Word word = WORD_SERVICE.findById(id);
         if (word != null) {
             WordResponseDTO wordResponseDTO = WORD_MAPPING.mapToResponseDTO(word);
@@ -278,14 +275,19 @@ public class WordsRestController {
             @RequestParam(value = "word_status_code", required = false) String wordStatusCode,
             @RequestParam(value = "lang_code", required = false) String langCode) {
         if (wordStatusCode != null) {
-            ResponseEntity<?> response = WORD_STATUSES_REST_CONTROLLER.findByCode(wordStatusCode);
+            ResponseEntity<?> response = WORD_STATUSES_REST_CONTROLLER.find(wordStatusCode);
             if (response.getStatusCode() != HttpStatus.OK) {
                 return response;
             }
         }
 
         if (langCode != null) {
-            ResponseEntity<?> response = LANGS_REST_CONTROLLER.findByCode(langCode);
+            ResponseEntity<?> response = LANGS_REST_CONTROLLER.find(langCode);
+            if (response.getStatusCode() != HttpStatus.OK) {
+                return response;
+            }
+
+            response = LANGS_REST_CONTROLLER.validateIsActive(langCode);
             if (response.getStatusCode() != HttpStatus.OK) {
                 return response;
             }
@@ -296,7 +298,7 @@ public class WordsRestController {
     }
 
     @GetMapping("/validate/before_filter_pagination")
-    public ResponseEntity<?> validateBeforeFilterPagination(
+    public ResponseEntity<?> validateBeforeFilter(
             @RequestParam("number_of_words") Long numberOfWords,
             @RequestParam(value = "word_status_code", required = false) String wordStatusCode,
             @RequestParam(value = "lang_code", required = false) String langCode,
@@ -357,14 +359,14 @@ public class WordsRestController {
         // Слово может изменять только супер-юзер
         if (dto.getId() != 0) {
             Customer customer = CUSTOMER_SERVICE.findByAuthCode(dto.getAuthCode());
-            if (!CUSTOMER_SERVICE.isCustomerSuperUser(customer)) {
+            if (!CUSTOMER_SERVICE.isSuperUser(customer)) {
                 CustomResponseMessage message = new CustomResponseMessage(1, "У вас недостаточно прав.");
                 return ResponseEntity.badRequest().body(message);
             }
         }
 
         // Проверяем автора слова
-        response = CUSTOMERS_REST_CONTROLLER.findById(dto.getCustomerId());
+        response = CUSTOMERS_REST_CONTROLLER.find(dto.getCustomerId());
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
@@ -372,21 +374,21 @@ public class WordsRestController {
         // Ищем запрещённые слова с пришедшим названием
         if (dto.getId() != 0) {
             // Проверяем существование слова
-            response = findById(dto.getId());
+            response = find(dto.getId());
             if (response.getStatusCode() != HttpStatus.OK) {
                 return response;
             }
 
             // Проверяем статус слова, который будем присваивать
             String wordStatusCode = dto.getWordStatusCode();
-            response = WORD_STATUSES_REST_CONTROLLER.findByCode(wordStatusCode);
+            response = WORD_STATUSES_REST_CONTROLLER.find(wordStatusCode);
             if (response.getStatusCode() != HttpStatus.OK) {
                 return response;
             }
 
             // Ищем запрещеённые слова с названием, как у текущего слова
             Word word = WORD_SERVICE.findById(dto.getId());
-            List<Word> blockedWords = WORD_SERVICE.findWordsWithCurrentStatusByTitleAndWordStatusCode(word.getTitle(),
+            List<Word> blockedWords = WORD_SERVICE.findAll(word.getTitle(),
                     WordStatuses.BLOCKED.CODE);
 
             // Удаляем из полученного списка запрещённых слов текущее
@@ -396,9 +398,9 @@ public class WordsRestController {
                     .toList();
 
             // Если список запрещённых слов не пуст, то мы можем изменить статус слова только на "Невостребованный"
-            WordStatus wordStatus = WORD_STATUS_SERVICE.findByCode(wordStatusCode);
+            WordStatus wordStatus = WORD_STATUS_SERVICE.find(wordStatusCode);
             if (blockedWords.size() > 0 && wordStatus.getId() != WordStatuses.UNCLAIMED.ID) {
-                WordStatus unclaimedWordStatus = WORD_STATUS_SERVICE.findById(WordStatuses.UNCLAIMED);
+                WordStatus unclaimedWordStatus = WORD_STATUS_SERVICE.find(WordStatuses.UNCLAIMED);
                 CustomResponseMessage message = new CustomResponseMessage(3,
                         String.format("Это слово уже запрещено. Установите этому слову статус '%s'.",
                                 unclaimedWordStatus.getTitle()));
@@ -406,7 +408,7 @@ public class WordsRestController {
             }
         } else {
             // Если слово новое, ищем запрещённые слова по пришедшему названию
-            List<Word> blockedWords = WORD_SERVICE.findWordsWithCurrentStatusByTitleAndWordStatusCode(dto.getTitle(),
+            List<Word> blockedWords = WORD_SERVICE.findAll(dto.getTitle(),
                     WordStatuses.BLOCKED.CODE);
             if (blockedWords.size() > 0) {
                 CustomResponseMessage message = new CustomResponseMessage(4, "Это слово запрещено.");
@@ -416,12 +418,19 @@ public class WordsRestController {
 
         // Ищем похожее слово в БД (если оно новое)
         if (dto.getId() == 0) {
-            response = LANGS_REST_CONTROLLER.findByCode(dto.getLangCode());
+            // Проверяем язык
+            response = LANGS_REST_CONTROLLER.find(dto.getLangCode());
             if (response.getStatusCode() != HttpStatus.OK) {
                 return response;
             }
 
-            Lang lang = LANG_SERVICE.findByCode(dto.getLangCode());
+            // Проверяем язык на активность
+            response = LANGS_REST_CONTROLLER.validateIsActive(dto.getLangCode());
+            if (response.getStatusCode() != HttpStatus.OK) {
+                return response;
+            }
+
+            Lang lang = LANG_SERVICE.find(dto.getLangCode());
             Word word = WORD_SERVICE
                     .findFirstByTitleIgnoreCaseAndLang(dto.getTitle(), lang);
             if (word != null) {

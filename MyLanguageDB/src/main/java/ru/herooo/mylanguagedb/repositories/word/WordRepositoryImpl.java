@@ -12,7 +12,7 @@ public class WordRepositoryImpl implements WordRepository<Word> {
     private EntityManager em;
 
     @Override
-    public long countByDateOfCreate(LocalDate localDate) {
+    public long count(LocalDate localDate) {
         return em.createQuery("SELECT COUNT(*) " +
                                  "FROM Word w " +
                                  "WHERE CAST(w.dateOfCreate AS DATE) = :local_date",

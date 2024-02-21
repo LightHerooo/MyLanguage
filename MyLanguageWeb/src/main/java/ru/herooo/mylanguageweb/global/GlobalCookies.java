@@ -9,7 +9,8 @@ import java.util.Arrays;
 public enum GlobalCookies {
 
     AUTH_CODE ("auth_code", 7 * 24 * 60 * 60, false, true),
-    AUTH_ID("auth_id", 7 * 24 * 60 * 60, false, false)
+    AUTH_ID("auth_id", 7 * 24 * 60 * 60, false, false),
+    WORKOUT_SECURITY_KEY ("workout_security_key", 24 * 60 * 60, false, true)
     ;
 
     public final String NAME;

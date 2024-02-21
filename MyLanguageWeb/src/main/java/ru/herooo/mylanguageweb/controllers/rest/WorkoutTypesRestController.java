@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.herooo.mylanguagedb.entities.WorkoutType;
-import ru.herooo.mylanguageweb.dto.CustomResponseMessage;
-import ru.herooo.mylanguageweb.dto.workouttype.WorkoutTypeMapping;
-import ru.herooo.mylanguageweb.dto.workouttype.WorkoutTypeResponseDTO;
+import ru.herooo.mylanguageweb.dto.other.CustomResponseMessage;
+import ru.herooo.mylanguageweb.dto.entity.workouttype.WorkoutTypeMapping;
+import ru.herooo.mylanguageweb.dto.entity.workouttype.WorkoutTypeResponseDTO;
 import ru.herooo.mylanguageweb.services.WorkoutTypeService;
 
 import java.util.List;
@@ -46,8 +46,8 @@ public class WorkoutTypesRestController {
     }
 
     @GetMapping("/find/by_code")
-    public ResponseEntity<?> findByCode(@RequestParam("code") String code) {
-        WorkoutType workoutType = WORKOUT_TYPE_SERVICE.findByCode(code);
+    public ResponseEntity<?> find(@RequestParam("code") String code) {
+        WorkoutType workoutType = WORKOUT_TYPE_SERVICE.find(code);
         if (workoutType != null) {
             WorkoutTypeResponseDTO dto = WORKOUT_TYPE_MAPPING.mapToResponseDTO(workoutType);
             return ResponseEntity.ok(dto);

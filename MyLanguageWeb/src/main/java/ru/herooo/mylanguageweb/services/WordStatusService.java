@@ -19,15 +19,15 @@ public class WordStatusService {
 
     // Получение всех статусов слов
     public List<WordStatus> findAll() {
-        return WORD_STATUS_CRUD_REPOSITORY.findAllByOrderById();
+        return WORD_STATUS_CRUD_REPOSITORY.findAll();
     }
 
     // Поиск по коду
-    public WordStatus findByCode(String code) {
+    public WordStatus find(String code) {
         return WORD_STATUS_CRUD_REPOSITORY.findByCode(code);
     }
 
-    public WordStatus findById(WordStatuses wordStatuses) {
-        return WORD_STATUS_CRUD_REPOSITORY.findById(wordStatuses);
+    public WordStatus find(WordStatuses wordStatuses) {
+        return WORD_STATUS_CRUD_REPOSITORY.find(wordStatuses);
     }
 }

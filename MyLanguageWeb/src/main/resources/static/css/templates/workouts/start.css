@@ -1,0 +1,73 @@
+main.start-workout {
+    display: grid;
+    padding: 20px;
+}
+
+div.start-workout-container {
+    display: grid;
+    grid: 250px 1fr / 1fr;
+    gap: 10px;
+}
+
+div.start-workout-info-container {
+    display: grid;
+    grid: 1fr / 1fr 250px 1fr;
+    gap: 10px;
+}
+
+div.start-workout-info-item-with-header-container {
+    display: grid;
+    grid: 90px 1fr / 1fr;
+    gap: 10px;
+}
+
+div.start-workout-info-item-header-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+
+    font-size: var(--second-font-size);
+    font-weight: bold;
+    text-align: center;
+}
+
+img.img-workout-info-item-header {
+    width: 64px;
+    height: 64px;
+}
+
+div.start-workout-info {
+    display: grid;
+    justify-content: left;
+    align-items: center;
+}
+
+div.start-workout-info-timer {
+    display: grid;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+
+    font-weight: bold;
+    font-size: var(--second-font-size);
+}
+
+div.start-workout-interaction-container {
+    display: grid;
+    grid: 600px / 3fr 1fr;
+    gap: 10px;
+}
+
+div.start-workout-interaction-with-answer-area {
+    display: grid;
+    grid: 1fr 70px / 1fr;
+    gap: 10px;
+}
+
+div.answer-container {
+    display: grid;
+    grid: 1fr / 1fr 180px;
+    gap: 10px;
+}

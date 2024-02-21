@@ -1,7 +1,7 @@
 import {
     CustomerCollectionRequestDTO,
     CustomerCollectionResponseDTO
-} from "../../dto/customer_collection.js";
+} from "../../dto/entity/customer_collection.js";
 
 import {
     GlobalCookies
@@ -12,9 +12,12 @@ import {
 } from "../../http_statuses.js";
 
 import {
-    RuleElement,
+    RuleElement
+} from "../../rule/rule_element.js";
+
+import {
     RuleTypes
-} from "../../rule_element.js";
+} from "../../rule/rule_types.js";
 
 import {
     CustomResponseMessage
@@ -26,7 +29,7 @@ import {
 
 import {
     CssCollectionInfo
-} from "../../css/css_collection_info.js";
+} from "../../css/types/css_collection_info.js";
 
 import {
     ComboBoxUtils
@@ -38,7 +41,7 @@ import {
 
 import {
     CustomTimer
-} from "../../custom_timer.js";
+} from "../../custom_timer/custom_timer.js";
 
 const _CUSTOMER_COLLECTIONS_API = new CustomerCollectionsAPI();
 
@@ -122,30 +125,30 @@ export class CustomerCollectionUtils {
         tbCustomerCollection.dispatchEvent(event);
     }
 
-    async checkCorrectValueInTbTitle(tbTitle, parentElement, customTimerObj) {
+    async checkCorrectValueInTbTitle(tbTitle, parentElement, langCode, customTimerObj) {
         let isCorrect = true;
         if (tbTitle && parentElement) {
             const TITLE_MIN_SIZE = 3;
             const TITLE_MAX_SIZE = 30;
 
-            let ruleElement = new RuleElement(parentElement.id);
-            let message;
-            let ruleType;
+            let ruleElement = new RuleElement(tbTitle, parentElement);
 
+            customTimerObj.stop();
             let inputText = tbTitle.value.trim();
             if (!inputText) {
                 isCorrect = false;
-                message = "Название не может быть пустым.";
-                ruleType = _RULE_TYPES.ERROR;
+                ruleElement.message = "Название не может быть пустым.";
+                ruleElement.ruleType = _RULE_TYPES.ERROR;
             } else if (inputText.length < TITLE_MIN_SIZE || inputText.length > TITLE_MAX_SIZE) {
                 isCorrect = false;
-                message = `Название должно быть быть от ${TITLE_MIN_SIZE} до ${TITLE_MAX_SIZE} символов.`;
-                ruleType = _RULE_TYPES.ERROR;
+                ruleElement.message = `Название должно быть быть от ${TITLE_MIN_SIZE} до ${TITLE_MAX_SIZE} символов.`;
+                ruleElement.ruleType = _RULE_TYPES.ERROR;
             } else {
-                ruleElement.removeDiv();
+                ruleElement.removeRule();
 
                 let customerCollectionRequestDTO = new CustomerCollectionRequestDTO();
                 customerCollectionRequestDTO.title = inputText;
+                customerCollectionRequestDTO.langCode = langCode;
 
                 let JSONResponsePromise = new Promise(resolve => {
                     customTimerObj.handler = async function () {
@@ -159,16 +162,16 @@ export class CustomerCollectionUtils {
                 let JSONResponse = await JSONResponsePromise;
                 if (JSONResponse.status !== _HTTP_STATUSES.OK) {
                     isCorrect = false;
-                    message = new CustomResponseMessage(JSONResponse.json).text;
-                    ruleType = _RULE_TYPES.ERROR;
+                    ruleElement.message = new CustomResponseMessage(JSONResponse.json).text;
+                    ruleElement.ruleType = _RULE_TYPES.ERROR;
                 }
             }
 
             // Отображаем предупреждение (правило), если это необходимо ---
             if (isCorrect === false) {
-                ruleElement.createOrChangeDiv(message, ruleType);
+                ruleElement.showRule();
             } else {
-                ruleElement.removeDiv();
+                ruleElement.removeRule();
             }
             //---
         } else {
@@ -182,17 +185,16 @@ export class CustomerCollectionUtils {
         let isCorrect = true;
 
         if (tbKey && parentElement) {
-            let ruleElement = new RuleElement(parentElement.id);
-            let message;
-            let ruleType;
+            let ruleElement = new RuleElement(tbKey, parentElement);
 
+            customTimerObj.stop();
             let inputText = tbKey.value.trim();
             if (!inputText) {
                 isCorrect = false;
-                message = "Ключ не может быть пустым.";
-                ruleType = _RULE_TYPES.ERROR;
+                ruleElement.message = "Ключ не может быть пустым.";
+                ruleElement.ruleType = _RULE_TYPES.ERROR;
             } else {
-                ruleElement.removeDiv();
+                ruleElement.removeRule();
 
                 let JSONResponsePromise = new Promise(resolve => {
                     customTimerObj.handler = async function () {
@@ -206,16 +208,16 @@ export class CustomerCollectionUtils {
                 let JSONResponse = await JSONResponsePromise;
                 if (JSONResponse.status !== _HTTP_STATUSES.OK) {
                     isCorrect = false;
-                    message = "Коллекции с таким ключом не существует.";
-                    ruleType = _RULE_TYPES.ERROR;
+                    ruleElement.message = "Коллекции с таким ключом не существует.";
+                    ruleElement.ruleType = _RULE_TYPES.ERROR;
                 }
             }
 
             // Отображаем предупреждение (правило), если это необходимо ---
             if (isCorrect === false) {
-                ruleElement.createOrChangeDiv(message, ruleType);
+                ruleElement.showRule();
             } else {
-                ruleElement.removeDiv();
+                ruleElement.removeRule();
             }
             //---
         } else {
@@ -225,17 +227,31 @@ export class CustomerCollectionUtils {
         return isCorrect;
     }
 
-    async createDivCollectionInfoAfterCheckAuthId(collectionKey) {
+    async createDivCollectionInfoAfterValidate(collectionKey) {
+        let customerCollection;
+        let message;
+
         let authId = _GLOBAL_COOKIES.AUTH_ID.getValue();
         let JSONResponse = await
             _CUSTOMER_COLLECTIONS_API.GET.findByCustomerIdAndKey(authId, collectionKey);
         if (JSONResponse.status === _HTTP_STATUSES.OK) {
-            let customerCollection = new CustomerCollectionResponseDTO(JSONResponse.json);
+            customerCollection = new CustomerCollectionResponseDTO(JSONResponse.json);
+
+            JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.validateIsLangActiveInCollectionByKey(collectionKey);
+            if (JSONResponse.status !== _HTTP_STATUSES.OK) {
+                customerCollection = null;
+                message = new CustomResponseMessage(JSONResponse.json).text;
+            }
+        } else {
+            message = new CustomResponseMessage(JSONResponse.json).text;
+        }
+
+        if (customerCollection) {
             return await customerCollection.createDivInfo();
         } else {
             let divMessage = document.createElement("div");
             divMessage.classList.add(_CSS_COLLECTION_INFO.DIV_COLLECTION_INFO_ERROR_CONTAINER_STYLE_ID);
-            divMessage.textContent = new CustomResponseMessage(JSONResponse.json).text;
+            divMessage.textContent = message;
 
             return divMessage;
         }

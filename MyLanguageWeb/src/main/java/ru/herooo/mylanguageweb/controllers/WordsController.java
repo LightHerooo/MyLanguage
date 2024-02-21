@@ -8,15 +8,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import ru.herooo.mylanguagedb.entities.Customer;
 import ru.herooo.mylanguagedb.entities.WordStatus;
 import ru.herooo.mylanguagedb.repositories.wordstatus.WordStatuses;
-import ru.herooo.mylanguageutils.StringUtils;
 import ru.herooo.mylanguageweb.controllers.move.Redirects;
 import ru.herooo.mylanguageweb.controllers.move.Views;
 import ru.herooo.mylanguageweb.services.CustomerService;
-import ru.herooo.mylanguageweb.services.WordService;
 import ru.herooo.mylanguageweb.services.WordStatusService;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Controller
 @RequestMapping("/words")
@@ -44,13 +39,13 @@ public class WordsController {
     public String showWordsPage(HttpServletRequest request) {
         CONTROLLER_UTILS.setGeneralAttributes(request);
         CONTROLLER_UTILS.changeDateLastVisitToAuthCustomer(request);
-        request.setAttribute(ACTIVE_WORD_STATUS_ATTRIBUTE_NAME, WORD_STATUS_SERVICE.findById(WordStatuses.ACTIVE));
+        request.setAttribute(ACTIVE_WORD_STATUS_ATTRIBUTE_NAME, WORD_STATUS_SERVICE.find(WordStatuses.ACTIVE));
         return Views.WORDS_SHOW.PATH_TO_FILE;
     }
 
     @GetMapping("/new")
     public String showNewWordsPage(HttpServletRequest request) {
-        Customer authCustomer = CUSTOMER_SERVICE.findAuth(request);
+        Customer authCustomer = CUSTOMER_SERVICE.find(request);
         if (authCustomer != null) {
             CONTROLLER_UTILS.setGeneralAttributes(request);
             CONTROLLER_UTILS.changeDateLastVisitToAuthCustomer(request);
@@ -63,12 +58,12 @@ public class WordsController {
 
     @GetMapping("/my_words_history")
     public String showNewWordsHistoryPage(HttpServletRequest request) {
-        Customer authCustomer = CUSTOMER_SERVICE.findAuth(request);
+        Customer authCustomer = CUSTOMER_SERVICE.find(request);
         if (authCustomer != null) {
             CONTROLLER_UTILS.setGeneralAttributes(request);
             CONTROLLER_UTILS.changeDateLastVisitToAuthCustomer(request);
 
-            WordStatus unclaimedWordsStatus = WORD_STATUS_SERVICE.findById(WordStatuses.UNCLAIMED);
+            WordStatus unclaimedWordsStatus = WORD_STATUS_SERVICE.find(WordStatuses.UNCLAIMED);
             request.setAttribute(UNCLAIMED_WORD_STATUS_ATTRIBUTE_NAME, unclaimedWordsStatus);
 
             return Views.WORDS_MY_WORDS_HISTORY.PATH_TO_FILE;

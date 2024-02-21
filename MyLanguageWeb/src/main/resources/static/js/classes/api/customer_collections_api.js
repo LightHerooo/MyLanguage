@@ -25,7 +25,7 @@ export class CustomerCollectionsAPI {
 class CustomerCollectionsGETRequests {
     async getAllByCustomerId(customerId) {
         let requestURL = new URL(URL_TO_API_CUSTOMER_COLLECTIONS + "/by_customer_id");
-        requestURL.searchParams.set("id", customerId);
+        requestURL.searchParams.set("customer_id", customerId);
 
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
     }
@@ -51,6 +51,14 @@ class CustomerCollectionsGETRequests {
     async findByCustomerIdAndKey(customerId, key) {
         let requestURL = new URL(URL_TO_API_CUSTOMER_COLLECTIONS_FIND + "/by_customer_id_and_key");
         requestURL.searchParams.set("customer_id", customerId);
+        requestURL.searchParams.set("key", key);
+
+        return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
+    }
+
+    async validateIsLangActiveInCollectionByKey(key) {
+        let requestURL = new URL(
+            URL_TO_API_CUSTOMER_COLLECTIONS_VALIDATE + "/is_lang_active_in_collection_by_key");
         requestURL.searchParams.set("key", key);
 
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);

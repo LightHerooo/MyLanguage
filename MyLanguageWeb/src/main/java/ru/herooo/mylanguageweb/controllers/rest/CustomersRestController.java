@@ -8,13 +8,13 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import ru.herooo.mylanguagedb.entities.Customer;
+import ru.herooo.mylanguagedb.entities.CustomerCollection;
 import ru.herooo.mylanguagedb.repositories.lang.Langs;
-import ru.herooo.mylanguageweb.dto.CustomResponseMessage;
-import ru.herooo.mylanguageweb.dto.customer.CustomerEntryRequestDTO;
-import ru.herooo.mylanguageweb.dto.customer.CustomerMapping;
-import ru.herooo.mylanguageweb.dto.customer.CustomerRequestDTO;
-import ru.herooo.mylanguageweb.dto.customer.CustomerResponseDTO;
-import ru.herooo.mylanguageweb.dto.customercollection.CustomerCollectionRequestDTO;
+import ru.herooo.mylanguageweb.dto.other.CustomResponseMessage;
+import ru.herooo.mylanguageweb.dto.entity.customer.CustomerEntryRequestDTO;
+import ru.herooo.mylanguageweb.dto.entity.customer.CustomerMapping;
+import ru.herooo.mylanguageweb.dto.entity.customer.CustomerRequestDTO;
+import ru.herooo.mylanguageweb.dto.entity.customer.CustomerResponseDTO;
 import ru.herooo.mylanguageweb.services.CustomerCollectionService;
 import ru.herooo.mylanguageweb.services.CustomerService;
 import ru.herooo.mylanguageweb.services.LangService;
@@ -82,27 +82,22 @@ public class CustomersRestController {
 
         Customer customer = CUSTOMER_SERVICE.register(customerRequestDTO);
         if (customer != null) {
-            CustomerCollectionRequestDTO collectionDTO = new CustomerCollectionRequestDTO();
-            collectionDTO.setAuthCode(customer.getAuthCode());
-            collectionDTO.setTitle("Общая");
-            CUSTOMER_COLLECTION_SERVICE.add(collectionDTO);
+            CustomerCollection collection = new CustomerCollection();
+            collection.setTitle("Английские слова");
+            collection.setCustomer(customer);
+            collection.setLang(LANG_SERVICE.find(Langs.EN));
+            CUSTOMER_COLLECTION_SERVICE.add(collection);
 
-            collectionDTO = new CustomerCollectionRequestDTO();
-            collectionDTO.setAuthCode(customer.getAuthCode());
-            collectionDTO.setTitle("Английские слова");
-            collectionDTO.setLangCode(LANG_SERVICE.findById(Langs.EN).getCode());
-            CUSTOMER_COLLECTION_SERVICE.add(collectionDTO);
-
-            collectionDTO = new CustomerCollectionRequestDTO();
-            collectionDTO.setAuthCode(customer.getAuthCode());
-            collectionDTO.setTitle("Русские слова");
-            collectionDTO.setLangCode(LANG_SERVICE.findById(Langs.RU).getCode());
-            CUSTOMER_COLLECTION_SERVICE.add(collectionDTO);
+            collection = new CustomerCollection();
+            collection.setTitle("Русские слова");
+            collection.setCustomer(customer);
+            collection.setLang(LANG_SERVICE.find(Langs.RU));
+            CUSTOMER_COLLECTION_SERVICE.add(collection);
 
             CustomerResponseDTO dto = CUSTOMER_MAPPING.mapToResponseDTO(customer);
             return ResponseEntity.ok(dto);
         } else {
-            CustomResponseMessage message = new CustomResponseMessage(2,
+            CustomResponseMessage message = new CustomResponseMessage(1,
                     "Произошла ошибка регистрации пользователя.");
             return ResponseEntity.badRequest().body(message);
         }
@@ -133,8 +128,8 @@ public class CustomersRestController {
     }
 
     @GetMapping("/find/by_id")
-    public ResponseEntity<?> findById(@RequestParam("id") Long id) {
-        Customer customer = CUSTOMER_SERVICE.findById(id);
+    public ResponseEntity<?> find(@RequestParam("id") Long id) {
+        Customer customer = CUSTOMER_SERVICE.find(id);
         if (customer != null) {
             CustomerResponseDTO dto = CUSTOMER_MAPPING.mapToResponseDTO(customer);
             return ResponseEntity.ok(dto);

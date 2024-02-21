@@ -12,20 +12,26 @@ import java.util.List;
 
 @Repository
 public interface WordStatusHistoryCrudRepository extends CrudRepository<WordStatusHistory, Long> {
-    @Query("FROM WordStatusHistory wsh " +
-            "WHERE wsh.word = :word " +
-            "AND wsh.dateOfEnd IS NULL")
-    WordStatusHistory findCurrentByWord(Word word);
 
     @Procedure("add_word_status_to_word")
     void addWordStatusToWord(Long wordId, String wordStatusCode);
 
-    @Query(nativeQuery = true,
-            value = "SELECT * FROM get_current_word_status_history_to_word(:word_id)")
-    WordStatusHistory getCurrentWordStatusHistoryToWord(@Param("word_id") Long wordId);
-
     @Procedure("add_word_status_to_words_without_status")
     void addWordStatusToWordsWithoutStatus(String wordStatusCode);
 
-    List<WordStatusHistory> findByWordOrderByDateOfStartDesc(Word word);
+    @Query(value =
+            "FROM WordStatusHistory wsh " +
+            "WHERE wsh.word.id = :word_id " +
+            "ORDER BY wsh.dateOfStart DESC")
+    List<WordStatusHistory> findList(@Param("word_id") Long wordId);
+
+    @Query(value =
+            "FROM WordStatusHistory wsh " +
+            "WHERE wsh.word.id = :word_id " +
+            "AND wsh.dateOfEnd IS NULL")
+    WordStatusHistory findCurrent(@Param("word_id") Long wordId);
+
+    @Query(nativeQuery = true,
+            value = "SELECT * FROM get_current_word_status_history_to_word(:word_id)")
+    WordStatusHistory getCurrentWordStatusHistoryToWord(@Param("word_id") Long wordId);
 }

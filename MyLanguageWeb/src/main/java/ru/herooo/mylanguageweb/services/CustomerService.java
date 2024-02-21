@@ -11,10 +11,10 @@ import ru.herooo.mylanguagedb.repositories.CustomerCrudRepository;
 import ru.herooo.mylanguagedb.repositories.customerrole.CustomerRoleCrudRepository;
 import ru.herooo.mylanguagedb.repositories.customerrole.CustomerRoles;
 import ru.herooo.mylanguageutils.StringUtils;
-import ru.herooo.mylanguageweb.dto.customer.CustomerEntryRequestDTO;
-import ru.herooo.mylanguageweb.dto.customer.CustomerMapping;
-import ru.herooo.mylanguageweb.dto.customer.CustomerRequestDTO;
-import ru.herooo.mylanguageweb.global.GlobalCookiesUtils;
+import ru.herooo.mylanguageweb.dto.entity.customer.CustomerEntryRequestDTO;
+import ru.herooo.mylanguageweb.dto.entity.customer.CustomerMapping;
+import ru.herooo.mylanguageweb.dto.entity.customer.CustomerRequestDTO;
+import ru.herooo.mylanguageweb.global.GlobalCookieUtils;
 import ru.herooo.mylanguageweb.global.GlobalCookies;
 
 import java.time.LocalDateTime;
@@ -26,39 +26,39 @@ public class CustomerService {
 
     private final CustomerMapping CUSTOMER_MAPPING;
     private final StringUtils STRING_UTILS;
+    private final GlobalCookieUtils GLOBAL_COOKIE_UTILS;
 
     @Autowired
     public CustomerService(CustomerCrudRepository customerCrudRepository,
                            CustomerRoleCrudRepository customerRoleCrudRepository,
                            CustomerMapping customerMapping,
-                           StringUtils stringUtils) {
+                           StringUtils stringUtils,
+                           GlobalCookieUtils globalCookieUtils) {
         this.CUSTOMER_CRUD_REPOSITORY = customerCrudRepository;
         this.CUSTOMER_ROLE_CRUD_REPOSITORY = customerRoleCrudRepository;
 
         this.CUSTOMER_MAPPING = customerMapping;
         this.STRING_UTILS = stringUtils;
+        this.GLOBAL_COOKIE_UTILS = globalCookieUtils;
     }
 
     // Регистрация пользователя
     public Customer register(CustomerRequestDTO customerRequestDTO) {
-        // Парсим из VALID класса значения
         Customer newCustomer = CUSTOMER_MAPPING.mapToCustomer(customerRequestDTO);
 
-        // Добавляем дополнительную информацию
-        CustomerRole cr = CUSTOMER_ROLE_CRUD_REPOSITORY.findById(CustomerRoles.CUSTOMER);
+        CustomerRole cr = CUSTOMER_ROLE_CRUD_REPOSITORY.find(CustomerRoles.CUSTOMER);
         newCustomer.setRole(cr);
 
-        newCustomer.setAuthCode(STRING_UTILS.getRandomStrEnNum(30));
+        newCustomer.setAuthCode(STRING_UTILS.getRandomStrEn(30));
         newCustomer.setDateOfCreate(LocalDateTime.now());
         newCustomer.setDateOfLastVisit(LocalDateTime.now());
 
-        // Сохраняем
         return CUSTOMER_CRUD_REPOSITORY.save(newCustomer);
     }
 
     // Поиск авторизированного пользователя
-    public Customer findAuth(HttpServletRequest request) {
-        Cookie authCookie = GlobalCookiesUtils.getCookieInHttpRequest(request, GlobalCookies.AUTH_CODE);
+    public Customer find(HttpServletRequest request) {
+        Cookie authCookie = GLOBAL_COOKIE_UTILS.getCookieInHttpRequest(request, GlobalCookies.AUTH_CODE);
         Customer customer = null;
         if (authCookie != null) {
             customer = CUSTOMER_CRUD_REPOSITORY.findByAuthCode(authCookie.getValue());
@@ -79,12 +79,12 @@ public class CustomerService {
 
     // Выход пользователя
     public void exit(HttpServletResponse response) {
-        GlobalCookiesUtils.deleteCookieInHttpResponse(response, GlobalCookies.AUTH_CODE);
-        GlobalCookiesUtils.deleteCookieInHttpResponse(response, GlobalCookies.AUTH_ID);
+        GLOBAL_COOKIE_UTILS.deleteCookieInHttpResponse(response, GlobalCookies.AUTH_CODE);
+        GLOBAL_COOKIE_UTILS.deleteCookieInHttpResponse(response, GlobalCookies.AUTH_ID);
     }
 
     // Поиск по Id
-    public Customer findById(long id) {
+    public Customer find(long id) {
         return CUSTOMER_CRUD_REPOSITORY.findById(id);
     }
 
@@ -112,17 +112,23 @@ public class CustomerService {
         try {
             if (STRING_UTILS.isStringVoid(authCode)) {
                 // Проверяем авторизацию пользователя через куки
-                authCode = GlobalCookiesUtils.getCookieInHttpRequest(request, GlobalCookies.AUTH_CODE).getValue();
+                authCode = GLOBAL_COOKIE_UTILS.getCookieInHttpRequest(request, GlobalCookies.AUTH_CODE).getValue();
             }
         } catch (Throwable e) { }
 
         return authCode;
     }
 
-    public boolean isCustomerSuperUser(Customer customer) {
-        return customer != null &&
-                (customer.getRole().getId() == CustomerRoles.ADMIN.getId()
-                || customer.getRole().getId() == CustomerRoles.MODERATOR.getId());
+    public boolean isAdmin(Customer customer) {
+        return customer != null && (customer.getRole().getId() == CustomerRoles.ADMIN.getId());
+    }
+
+    public boolean isModerator(Customer customer) {
+        return customer != null && (customer.getRole().getId() == CustomerRoles.MODERATOR.getId());
+    }
+
+    public boolean isSuperUser(Customer customer) {
+        return customer != null && (isAdmin(customer) || isModerator(customer));
     }
 
     public void save(Customer customer) {

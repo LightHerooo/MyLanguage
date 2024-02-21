@@ -12,17 +12,17 @@ public class WorkoutItem {
     @SequenceGenerator(name = "workout_item_id_seq", sequenceName = "workout_item_id_seq", allocationSize = 1)
     private long id;
 
-    @Column(name = "word_title_request")
-    private String wordTitleRequest;
+    @Column(name = "word_title_question")
+    private String wordTitleQuestion;
 
-    @Column(name = "word_title_response")
-    private String wordTitleResponse;
+    @Column(name = "word_title_answer")
+    private String wordTitleAnswer;
 
     @Column(name = "is_correct")
     private boolean isCorrect;
 
-    @Column(name = "date_of_set_response")
-    private LocalDateTime dateOfSetResponse;
+    @Column(name = "date_of_set_answer")
+    private LocalDateTime dateOfSetAnswer;
 
     @Column(name = "round_number")
     private int roundNumber;
@@ -35,36 +35,12 @@ public class WorkoutItem {
         return id;
     }
 
-    public String getWordTitleRequest() {
-        return wordTitleRequest;
-    }
-
-    public void setWordTitleRequest(String wordTitleRequest) {
-        this.wordTitleRequest = wordTitleRequest;
-    }
-
-    public String getWordTitleResponse() {
-        return wordTitleResponse;
-    }
-
-    public void setWordTitleResponse(String wordTitleResponse) {
-        this.wordTitleResponse = wordTitleResponse;
-    }
-
     public boolean isCorrect() {
         return isCorrect;
     }
 
     public void setCorrect(boolean correct) {
         isCorrect = correct;
-    }
-
-    public LocalDateTime getDateOfSetResponse() {
-        return dateOfSetResponse;
-    }
-
-    public void setDateOfSetResponse(LocalDateTime dateOfSetResponse) {
-        this.dateOfSetResponse = dateOfSetResponse;
     }
 
     public Workout getWorkout() {
@@ -81,5 +57,29 @@ public class WorkoutItem {
 
     public void setRoundNumber(int roundNumber) {
         this.roundNumber = roundNumber;
+    }
+
+    public String getWordTitleQuestion() {
+        return wordTitleQuestion;
+    }
+
+    public void setWordTitleQuestion(String wordTitleQuestion) {
+        this.wordTitleQuestion = wordTitleQuestion;
+    }
+
+    public String getWordTitleAnswer() {
+        return wordTitleAnswer;
+    }
+
+    public void setWordTitleAnswer(String wordTitleAnswer) {
+        this.wordTitleAnswer = wordTitleAnswer;
+    }
+
+    public LocalDateTime getDateOfSetAnswer() {
+        return dateOfSetAnswer;
+    }
+
+    public void setDateOfSetAnswer(LocalDateTime dateOfSetAnswer) {
+        this.dateOfSetAnswer = dateOfSetAnswer;
     }
 }

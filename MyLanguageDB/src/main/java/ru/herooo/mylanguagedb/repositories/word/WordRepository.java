@@ -4,5 +4,5 @@ import java.time.LocalDate;
 
 public interface WordRepository<T> {
 
-    long countByDateOfCreate(LocalDate localDate);
+    long count(LocalDate localDate);
 }

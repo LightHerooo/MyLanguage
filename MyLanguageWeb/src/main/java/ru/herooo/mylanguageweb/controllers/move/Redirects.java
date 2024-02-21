@@ -4,10 +4,10 @@ package ru.herooo.mylanguageweb.controllers.move;
 public enum Redirects {
 
     INDEX ("/"),
+    ENTRY ("/customers/entry"),
+    WORKOUTS("/workouts")
 
-    CUSTOMERS_NEW ("/customers/new"),
-
-    ENTRY ("/customers/entry");
+    ;
 
     public final String URL;
     public final String REDIRECT_URL;

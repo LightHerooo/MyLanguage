@@ -6,11 +6,13 @@ export class CssMain {
     A_SHOW_MORE_STANDARD_STYLE_ID = "a-show-more-standard";
 
     DIV_INFO_BLOCK_STANDARD_STYLE_ID = "info-block-standard";
-    DIV_TEXT_ERROR_MESSAGE_STANDARD_STYLE_ID = "text-error-standard";
     DIV_HORIZONTAL_DELIMITER_STYLE_ID = "horizontal-delimiter";
+    DIV_CONTENT_CENTER_STANDARD_STYLE_ID = "content-center-standard";
+    DIV_OVERFLOW_Y_STANDARD_STYLE_ID = "overflow-y-standard";
 
     LABEL_STANDARD_STYLE_ID = "label-standard";
     INPUT_TEXT_STANDARD_STYLE_ID = "text-standard";
     SELECT_STANDARD_STYLE_ID = "select-standard";
     TABLE_STANDARD_STYLE_ID = "table-standard";
+    BUTTON_STANDARD_STYLE_ID = "button-standard";
 }

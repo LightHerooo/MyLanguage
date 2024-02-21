@@ -8,8 +8,8 @@ import ru.herooo.mylanguagedb.entities.WordStatusHistory;
 import ru.herooo.mylanguagedb.repositories.WordStatusHistoryCrudRepository;
 import ru.herooo.mylanguagedb.repositories.wordstatus.WordStatusCrudRepository;
 import ru.herooo.mylanguagedb.repositories.wordstatus.WordStatuses;
-import ru.herooo.mylanguageweb.dto.wordstatushistory.WordStatusHistoryMapping;
-import ru.herooo.mylanguageweb.dto.wordstatushistory.WordStatusHistoryRequestDTO;
+import ru.herooo.mylanguageweb.dto.entity.wordstatushistory.WordStatusHistoryMapping;
+import ru.herooo.mylanguageweb.dto.entity.wordstatushistory.WordStatusHistoryRequestDTO;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,22 +32,26 @@ public class WordStatusHistoryService {
         this.WORD_STATUS_HISTORY_MAPPING = wordStatusHistoryMapping;
     }
 
-    public WordStatusHistory findCurrentByWord(Word word) {
-        return WORD_STATUS_HISTORY_CRUD_REPOSITORY.findCurrentByWord(word);
+    public List<WordStatusHistory> findList(Long wordId) {
+        return WORD_STATUS_HISTORY_CRUD_REPOSITORY.findList(wordId);
+    }
+
+    public WordStatusHistory findCurrent(Long wordId) {
+        return WORD_STATUS_HISTORY_CRUD_REPOSITORY.findCurrent(wordId);
     }
 
     public WordStatusHistory add(WordStatusHistoryRequestDTO dto) {
         WordStatusHistory status = WORD_STATUS_HISTORY_MAPPING.mapToWordStatusHistory(dto);
         status.setDateOfStart(LocalDateTime.now());
 
-        WordStatus wordStatus = WORD_STATUS_CRUD_REPOSITORY.findById(WordStatuses.NEW);
+        WordStatus wordStatus = WORD_STATUS_CRUD_REPOSITORY.find(WordStatuses.NEW);
         status.setWordStatus(wordStatus);
 
         return WORD_STATUS_HISTORY_CRUD_REPOSITORY.save(status);
     }
 
-    public void addWordStatusToWord(Word word, WordStatus wordStatus) {
-        WORD_STATUS_HISTORY_CRUD_REPOSITORY.addWordStatusToWord(word.getId(), wordStatus.getCode());
+    public void addWordStatusToWord(Long wordId, String wordStatusCode) {
+        WORD_STATUS_HISTORY_CRUD_REPOSITORY.addWordStatusToWord(wordId, wordStatusCode);
     }
 
     public WordStatusHistory getCurrentWordStatusHistoryToWord(Word word) {
@@ -56,9 +60,5 @@ public class WordStatusHistoryService {
 
     public void addWordStatusToWordsWithoutStatus(String wordStatusCode) {
         WORD_STATUS_HISTORY_CRUD_REPOSITORY.addWordStatusToWordsWithoutStatus(wordStatusCode);
-    }
-
-    public List<WordStatusHistory> findByWordOrderByDateOfStartDesc(Word word) {
-        return WORD_STATUS_HISTORY_CRUD_REPOSITORY.findByWordOrderByDateOfStartDesc(word);
     }
 }

@@ -24,6 +24,15 @@ public class Workout {
     @Column(name = "is_active")
     private boolean isActive;
 
+    @Column(name = "date_of_change_activity")
+    private LocalDateTime dateOfChangeActivity;
+
+    @Column(name = "current_milliseconds")
+    private long currentMilliseconds;
+
+    @Column(name = "security_key")
+    private String securityKey;
+
     @ManyToOne
     @JoinColumn(name = "customer_id")
     private Customer customer;
@@ -122,5 +131,29 @@ public class Workout {
 
     public void setActive(boolean active) {
         isActive = active;
+    }
+
+    public LocalDateTime getDateOfChangeActivity() {
+        return dateOfChangeActivity;
+    }
+
+    public void setDateOfChangeActivity(LocalDateTime dateOfChangeActivity) {
+        this.dateOfChangeActivity = dateOfChangeActivity;
+    }
+
+    public long getCurrentMilliseconds() {
+        return currentMilliseconds;
+    }
+
+    public void setCurrentMilliseconds(long startMilliseconds) {
+        this.currentMilliseconds = startMilliseconds;
+    }
+
+    public String getSecurityKey() {
+        return securityKey;
+    }
+
+    public void setSecurityKey(String securityKey) {
+        this.securityKey = securityKey;
     }
 }

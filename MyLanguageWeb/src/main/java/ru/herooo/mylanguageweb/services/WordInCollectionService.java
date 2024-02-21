@@ -6,8 +6,8 @@ import ru.herooo.mylanguagedb.entities.CustomerCollection;
 import ru.herooo.mylanguagedb.entities.Word;
 import ru.herooo.mylanguagedb.entities.WordInCollection;
 import ru.herooo.mylanguagedb.repositories.wordincollection.WordInCollectionCrudRepository;
-import ru.herooo.mylanguageweb.dto.wordincollection.WordInCollectionMapping;
-import ru.herooo.mylanguageweb.dto.wordincollection.WordInCollectionRequestDTO;
+import ru.herooo.mylanguageweb.dto.entity.wordincollection.WordInCollectionMapping;
+import ru.herooo.mylanguageweb.dto.entity.wordincollection.WordInCollectionRequestDTO;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,18 +25,16 @@ public class WordInCollectionService {
         this.WORD_IN_COLLECTION_MAPPING = wordInCollectionMapping;
     }
 
-    public List<WordInCollection> findWordsInCollectionAfterFilter(String title, String langCode,
-           String customerCollectionKey) {
-        return WORD_IN_COLLECTION_CRUD_REPOSITORY.findWordsInCollectionAfterFilter(title, langCode, customerCollectionKey);
+    public List<WordInCollection> findAll(String title, String customerCollectionKey) {
+        return WORD_IN_COLLECTION_CRUD_REPOSITORY.findAll(title, customerCollectionKey);
     }
 
-    public List<WordInCollection> findWordsInCollectionAfterFilterWithPagination(String title,
-                                                                                 String langCode,
-                                                                                 String customerCollectionKey,
-                                                                                 Long numberOfWords,
-         Long lastWordInCollectionIdOnPreviousPage) {
-        return WORD_IN_COLLECTION_CRUD_REPOSITORY.findWordsInCollectionAfterFilterWithPagination(
-                title, langCode, customerCollectionKey, numberOfWords, lastWordInCollectionIdOnPreviousPage);
+    public List<WordInCollection> findAll(String title,
+                                          String customerCollectionKey,
+                                          Long numberOfWords,
+                                          Long lastWordInCollectionIdOnPreviousPage) {
+        return WORD_IN_COLLECTION_CRUD_REPOSITORY.findAll(
+                title, customerCollectionKey, numberOfWords, lastWordInCollectionIdOnPreviousPage);
     }
 
     public WordInCollection add(WordInCollectionRequestDTO dto) {
@@ -46,11 +44,11 @@ public class WordInCollectionService {
         return WORD_IN_COLLECTION_CRUD_REPOSITORY.save(wordInCollection);
     }
 
-    public WordInCollection findByWordAndCustomerCollection(Word word, CustomerCollection customerCollection) {
+    public WordInCollection find(Word word, CustomerCollection customerCollection) {
         return WORD_IN_COLLECTION_CRUD_REPOSITORY.findByWordAndCustomerCollection(word, customerCollection);
     }
 
-    public WordInCollection findById(long id) {
+    public WordInCollection find(long id) {
         return WORD_IN_COLLECTION_CRUD_REPOSITORY.findById(id);
     }
 
@@ -62,7 +60,7 @@ public class WordInCollectionService {
         WORD_IN_COLLECTION_CRUD_REPOSITORY.deleteInactiveWordsInCollections();
     }
 
-    public long countByCustomerCollectionKey(String collectionKey) {
-        return WORD_IN_COLLECTION_CRUD_REPOSITORY.countByCustomerCollectionKey(collectionKey);
+    public long count(String collectionKey) {
+        return WORD_IN_COLLECTION_CRUD_REPOSITORY.count(collectionKey);
     }
 }

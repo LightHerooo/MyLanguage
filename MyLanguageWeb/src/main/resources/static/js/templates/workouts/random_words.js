@@ -11,9 +11,12 @@ import {
 } from "../../classes/api/workout_types/workout_types.js";
 
 import {
-    RuleTypes,
     RuleElement
-} from "../../classes/rule_element.js";
+} from "../../classes/rule/rule_element.js";
+
+import {
+    RuleTypes
+} from "../../classes/rule/rule_types.js";
 
 import {
     LangUtils
@@ -34,15 +37,17 @@ import {
 import {
     WorkoutRequestDTO,
     WorkoutResponseDTO
-} from "../../classes/dto/workout.js";
+} from "../../classes/dto/entity/workout.js";
+
+import {
+    NotOverWorkoutsTableHelper
+} from "../../classes/utils/for_templates/not_over_workouts_table_helper.js";
 
 import {
     CustomResponseMessage
 } from "../../classes/dto/other/custom_response_message.js";
 
 const _WORKOUTS_API = new WorkoutsAPI();
-
-const _CURRENT_WORKOUT_TYPE = new WorkoutTypes().RANDOM_WORDS;
 
 const _HTTP_STATUSES = new HttpStatuses();
 const _GLOBAL_COOKIES = new GlobalCookies();
@@ -63,16 +68,66 @@ const _SUBMIT_SEND_ID = "submit_send";
 const _SUBMIT_BTN_ID = "submit_btn";
 const _DIV_WORKOUT_START_INFO_CONTAINER_ID = "workout_start_info_container";
 
-const _NUMBER_OF_WORDS_POSSIBLE_ARR = [10, 20, 30, 40, 50]
+const _BTN_REFRESH_ID = "btn_refresh";
+const _DIV_NOT_OVER_WORKOUTS_CONTAINER_ID = "not_over_workouts_container";
+
+const _CURRENT_WORKOUT_TYPE = new WorkoutTypes().RANDOM_WORDS;
+const _NUMBER_OF_WORDS_POSSIBLE_ARR = [10, 20, 30, 40, 50];
+
+let _notOverWorkoutsTableHelper;
 
 window.onload = async function() {
+    changeDisableStatusInImportantElements(true);
+
+    // Подготавливаем helper таблицы незавершённых тренировок ---
+    _notOverWorkoutsTableHelper = new NotOverWorkoutsTableHelper(
+        _DIV_NOT_OVER_WORKOUTS_CONTAINER_ID, _CURRENT_WORKOUT_TYPE.CODE, changeDisableStatusInImportantElements);
+    _notOverWorkoutsTableHelper.startToBuildTable();
+    //---
+
     await prepareCbInLangs();
     await prepareCbOutLangs();
-
     prepareCbNumberOfWords();
     prepareSubmitSend();
-
+    prepareBtnRefresh();
     await tryToSetLastWorkoutSettings();
+
+    changeDisableStatusInImportantElements(false);
+}
+
+function changeDisableStatusInImportantElements(isDisable) {
+    let cbInLangs = document.getElementById(_CB_IN_LANGS_ID);
+    if (cbInLangs) {
+        cbInLangs.disabled = isDisable;
+    }
+
+    let cbOutLangs = document.getElementById(_CB_OUT_LANGS_ID);
+    if (cbOutLangs) {
+        cbOutLangs.disabled = isDisable;
+    }
+
+    let cbNumberOfWords = document.getElementById(_CB_NUMBER_OF_WORDS_ID);
+    if (cbNumberOfWords) {
+        cbNumberOfWords.disabled = isDisable;
+    }
+
+    let btnSend = document.getElementById(_SUBMIT_BTN_ID);
+    if (btnSend) {
+        btnSend.disabled = isDisable;
+    }
+
+    let btnRefresh = document.getElementById(_BTN_REFRESH_ID);
+    if (btnRefresh) {
+        btnRefresh.disabled = isDisable;
+    }
+}
+
+function clearWorkoutStartInfoContainer() {
+    let divWorkoutStartInfoContainer =
+        document.getElementById(_DIV_WORKOUT_START_INFO_CONTAINER_ID);
+    if (divWorkoutStartInfoContainer) {
+        divWorkoutStartInfoContainer.replaceChildren();
+    }
 }
 
 async function prepareCbInLangs() {
@@ -87,9 +142,8 @@ async function prepareCbInLangs() {
         //---
 
         cbInLangs.addEventListener("change", async function () {
-            changeWorkoutStartInfoRule(true, null, null);
-
-            await checkCorrectLang(this.id, _DIV_IN_LANG_CONTAINER_ID);
+            clearWorkoutStartInfoContainer();
+            await checkCorrectLangIn();
         })
     }
 }
@@ -106,9 +160,9 @@ async function prepareCbOutLangs() {
         //---
 
         cbOutLangs.addEventListener("change", async function () {
-            changeWorkoutStartInfoRule(true, null, null);
+            clearWorkoutStartInfoContainer();
 
-            await checkCorrectLang(this.id, _DIV_OUT_LANG_CONTAINER_ID);
+            await checkCorrectLangOut();
         })
     }
 }
@@ -118,14 +172,14 @@ function prepareCbNumberOfWords() {
     if (cbNumberOfWords) {
         for (let i = 0; i < _NUMBER_OF_WORDS_POSSIBLE_ARR.length; i++) {
             let optionNumberOfWords = document.createElement("option");
-           /* optionNumberOfWords.value = _NUMBER_OF_WORDS_POSSIBLE_ARR[i];*/
-            optionNumberOfWords.textContent = _NUMBER_OF_WORDS_POSSIBLE_ARR[i];
+            optionNumberOfWords.textContent = `${_NUMBER_OF_WORDS_POSSIBLE_ARR[i]}`;
 
             cbNumberOfWords.appendChild(optionNumberOfWords);
         }
 
         cbNumberOfWords.addEventListener("change", function () {
-            changeWorkoutStartInfoRule(true, null, null);
+            clearWorkoutStartInfoContainer();
+
             checkCorrectNumberOfWords();
         })
     }
@@ -133,29 +187,40 @@ function prepareCbNumberOfWords() {
 
 function prepareSubmitSend() {
     let submitSend = document.getElementById(_SUBMIT_SEND_ID);
-    let submitBtn = document.getElementById(_SUBMIT_BTN_ID);
     submitSend.addEventListener("submit", async function(event) {
-        submitBtn.disabled = true;
-        event.preventDefault();
+        // Блокируем элементы и отображаем загрузки ---
+        changeDisableStatusInImportantElements(true);
+        _notOverWorkoutsTableHelper.showLoading();
 
-        // Показываем анимацию загрузки (предварительно очистив информацию в контейнере) ---
-        let divWorkoutStartInfo = document.getElementById(_DIV_WORKOUT_START_INFO_CONTAINER_ID);
-        divWorkoutStartInfo.replaceChildren();
-
-        let divLoading = new LoadingElement().createDiv();
-        divWorkoutStartInfo.appendChild(divLoading);
+        clearWorkoutStartInfoContainer();
+        let divWorkoutStartInfoContainer = document.getElementById(_DIV_WORKOUT_START_INFO_CONTAINER_ID);
+        if (divWorkoutStartInfoContainer) {
+            divWorkoutStartInfoContainer.appendChild(new LoadingElement().createDiv());
+        }
         //---
 
-        if (await checkBeforeWorkoutStart() === true) {
-            if (await createWorkout() === true) {
-                submitSend.submit();
-            }
-        } else {
-            divWorkoutStartInfo.removeChild(divLoading);
-        }
+        event.preventDefault();
 
-        submitBtn.disabled = false;
+        if (await checkBeforeWorkoutStart() === true
+            && await createWorkout() === true) {
+                submitSend.submit();
+        } else {
+            clearWorkoutStartInfoContainer();
+            changeDisableStatusInImportantElements(false);
+            _notOverWorkoutsTableHelper.startToBuildTable();
+        }
     })
+}
+
+function prepareBtnRefresh() {
+    let btnRefresh = document.getElementById(_BTN_REFRESH_ID);
+    if (btnRefresh) {
+        btnRefresh.addEventListener("click", function () {
+            if (_notOverWorkoutsTableHelper) {
+                _notOverWorkoutsTableHelper.startToBuildTable();
+            }
+        })
+    }
 }
 
 async function tryToSetLastWorkoutSettings() {
@@ -195,25 +260,35 @@ async function tryToSetLastWorkoutSettings() {
     }
 }
 
-async function checkCorrectLang(cbLangsId, parentElementId) {
-    let cbLangs = document.getElementById(cbLangsId);
-    let parentElement = document.getElementById(parentElementId);
-    return await _LANG_UTILS.checkCorrectValueInComboBox(cbLangs, parentElement, false);
+async function checkCorrectLangIn() {
+    let cbInLangs = document.getElementById(_CB_IN_LANGS_ID);
+    let divInLangContainer = document.getElementById(_DIV_IN_LANG_CONTAINER_ID);
+    if (cbInLangs && divInLangContainer) {
+        return await _LANG_UTILS.checkCorrectValueInComboBox(cbInLangs, divInLangContainer);
+    }
+}
+
+async function checkCorrectLangOut() {
+    let cbOutLangs = document.getElementById(_CB_OUT_LANGS_ID);
+    let divOutLangContainer = document.getElementById(_DIV_OUT_LANG_CONTAINER_ID);
+    if (cbOutLangs && divOutLangContainer) {
+        return await _LANG_UTILS.checkCorrectValueInComboBox(cbOutLangs, divOutLangContainer);
+    }
 }
 
 function checkCorrectNumberOfWords() {
     const NUMBER_OF_WORDS_REGEXP = /^[0-9]+$/;
 
     let isCorrect = true;
-    let message;
-    let ruleType;
-
     let cbNumberOfWords = document.getElementById(_CB_NUMBER_OF_WORDS_ID);
+    let ruleElement = new RuleElement(cbNumberOfWords.parentElement,
+        "number_of_words_correct");
+
     let numberOfWords = _COMBO_BOX_UTILS.GET_SELECTED_ITEM.byComboBox(cbNumberOfWords).value;
     if (!NUMBER_OF_WORDS_REGEXP.test(numberOfWords)) {
         isCorrect = false;
-        message = "Количество слов должно быть числом.";
-        ruleType = _RULE_TYPES.ERROR;
+        ruleElement.message = "Количество слов должно быть числом.";
+        ruleElement.ruleType = _RULE_TYPES.ERROR;
     } else {
         let numberOfWordsArePossible = false;
         for (let i = 0; i < _NUMBER_OF_WORDS_POSSIBLE_ARR.length; i++) {
@@ -225,17 +300,16 @@ function checkCorrectNumberOfWords() {
 
         if (numberOfWordsArePossible === false) {
             isCorrect = false;
-            message = "Нельзя тренировать такое количество.";
-            ruleType = _RULE_TYPES.ERROR;
+            ruleElement.message = "Нельзя тренировать такое количество.";
+            ruleElement.ruleType = _RULE_TYPES.ERROR;
         }
     }
 
     // Отображаем предупреждение (правило), если это необходимо ---
-    let ruleElement = new RuleElement(cbNumberOfWords.parentElement.id);
     if (isCorrect === false) {
-        ruleElement.createOrChangeDiv(message, ruleType);
+        ruleElement.showRule();
     } else {
-        ruleElement.removeDiv();
+        ruleElement.removeRule();
     }
     //---
 
@@ -262,20 +336,26 @@ function checkAllLangs() {
         //---
 
         // Отображаем предупреждение (правило), если это необходимо ---
-        let ruleElement = new RuleElement(_DIV_IN_LANG_CONTAINER_ID);
+        let parentElement = document.getElementById(_DIV_IN_LANG_CONTAINER_ID);
+        let ruleElement = new RuleElement(cbInLangs, parentElement);
+        ruleElement.message = message;
+        ruleElement.ruleType = ruleType;
         if (isCorrect === false) {
-            ruleElement.createOrChangeDiv(message, ruleType);
+            ruleElement.showRule();
         } else {
-            ruleElement.removeDiv();
+            ruleElement.removeRule();
         }
         //---
 
         // Отображаем предупреждение (правило), если это необходимо ---
-        ruleElement = new RuleElement(_DIV_OUT_LANG_CONTAINER_ID);
+        parentElement = document.getElementById(_DIV_OUT_LANG_CONTAINER_ID);
+        ruleElement = new RuleElement(cbOutLangs, parentElement);
+        ruleElement.message = message;
+        ruleElement.ruleType = ruleType;
         if (isCorrect === false) {
-            ruleElement.createOrChangeDiv(message, ruleType);
+            ruleElement.showRule();
         } else {
-            ruleElement.removeDiv();
+            ruleElement.removeRule();
         }
         //---
     } else {
@@ -286,8 +366,8 @@ function checkAllLangs() {
 }
 
 async function checkBeforeWorkoutStart() {
-    let isLangInCorrect = await checkCorrectLang(_CB_IN_LANGS_ID, _DIV_IN_LANG_CONTAINER_ID);
-    let isLangOutCorrect = await checkCorrectLang(_CB_OUT_LANGS_ID, _DIV_OUT_LANG_CONTAINER_ID);
+    let isLangInCorrect = await checkCorrectLangIn();
+    let isLangOutCorrect = await checkCorrectLangOut();
     let isNumberOfWordsCorrect = checkCorrectNumberOfWords();
 
     let isCorrect = (isLangInCorrect && isLangOutCorrect && isNumberOfWordsCorrect);
@@ -308,28 +388,23 @@ async function createWorkout() {
         BigInt(_COMBO_BOX_UTILS.GET_SELECTED_ITEM.byComboBoxId(_CB_NUMBER_OF_WORDS_ID).value);
 
     let isCorrect = true;
-    let message;
-    let ruleType;
-
     let JSONResponse = await _WORKOUTS_API.POST.add(workoutRequestDTO);
     if (JSONResponse.status !== _HTTP_STATUSES.OK) {
         isCorrect = false;
-        message = new CustomResponseMessage(JSONResponse.json).text;
-        ruleType = _RULE_TYPES.ERROR;
+
+        // Отображаем ошибку в контейнере информации ---
+        clearWorkoutStartInfoContainer();
+        let divWorkoutStartInfoContainer = document.getElementById(_DIV_WORKOUT_START_INFO_CONTAINER_ID);
+        if (divWorkoutStartInfoContainer) {
+            let ruleElement = new RuleElement(divWorkoutStartInfoContainer, divWorkoutStartInfoContainer);
+            ruleElement.message = new CustomResponseMessage(JSONResponse.json).text;
+            ruleElement.ruleType = _RULE_TYPES.ERROR;
+            ruleElement.showRule();
+        }
+        //---
+
+        _notOverWorkoutsTableHelper.startToBuildTable();
     }
 
-    changeWorkoutStartInfoRule(isCorrect, message, ruleType);
     return isCorrect;
-}
-
-function changeWorkoutStartInfoRule(isCorrect, message, ruleType) {
-    let divWorkoutStartInfo = document.getElementById(_DIV_WORKOUT_START_INFO_CONTAINER_ID);
-    divWorkoutStartInfo.replaceChildren();
-
-    let ruleElement = new RuleElement(_DIV_WORKOUT_START_INFO_CONTAINER_ID);
-    if (isCorrect === false) {
-        ruleElement.createOrChangeDiv(message, ruleType);
-    } else {
-        ruleElement.removeDiv();
-    }
 }

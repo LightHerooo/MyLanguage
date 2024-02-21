@@ -18,5 +18,5 @@
 
 Правила @Service
     - Могут содержать @Repository.
-    - Могут содержать @Service (только Mapping сервисы).
+    - Могут содержать только Mapping @Service.
 -----

@@ -1,6 +1,6 @@
 import {
     CssLoading
-} from "./css/css_loading.js";
+} from "./css/other/css_loading.js";
 
 const _CSS_LOADING = new CssLoading();
 export class LoadingElement {

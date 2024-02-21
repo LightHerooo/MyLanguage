@@ -7,6 +7,5 @@ import java.util.List;
 
 public interface CustomerRoleCrudRepository extends CrudRepository<CustomerRole, Long>, CustomerRoleRepository<CustomerRole> {
     CustomerRole findById(long id);
-
     CustomerRole findByCode(String code);
 }
