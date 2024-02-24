@@ -6,8 +6,8 @@ export class CustomTimerTicker {
 
     constructor(customTimer, startMilliseconds) {
         this.#customTimer = customTimer;
-        this.#tick = BigInt(customTimer.timeout);
-        this.#tickFunction = customTimer.handler;
+        this.#tick = BigInt(customTimer.getTimeout());
+        this.#tickFunction = customTimer.getHandler();
 
         this.#milliseconds = BigInt(startMilliseconds);
     }
@@ -24,10 +24,10 @@ export class CustomTimerTicker {
         this.stop();
 
         let thisTicker = this;
-        this.#customTimer.handler = function () {
+        this.#customTimer.setHandler(function () {
             thisTicker.addMilliseconds(thisTicker.#tick);
             thisTicker.#tickFunction();
-        }
+        });
 
         this.#customTimer.startInterval();
     }

@@ -54,11 +54,11 @@ export class CustomerUtils {
 
                 // Запускаем таймер и обращаемся в API (чтобы избежать спама от пользователей)
                 let JSONResponsePromise = new Promise(resolve => {
-                    customTimerObj.handler = async function () {
+                    customTimerObj.setHandler(async function () {
                         resolve(await _CUSTOMERS_API.GET.findExistsByLogin(inputText));
-                    }
+                    });
 
-                    customTimerObj.timeout = 250;
+                    customTimerObj.setTimeout(250);
                     customTimerObj.start();
                 });
 
@@ -108,11 +108,11 @@ export class CustomerUtils {
 
                 // Запускаем таймер и обращаемся в API (чтобы избежать спама от пользователей)
                 let JSONResponsePromise = new Promise(resolve => {
-                    customTimerObj.handler = async function () {
+                    customTimerObj.setHandler(async function () {
                         resolve(await _CUSTOMERS_API.GET.findExistsByEmail(inputText));
-                    }
+                    });
 
-                    customTimerObj.timeout = 250;
+                    customTimerObj.setTimeout(250);
                     customTimerObj.start();
                 });
 
@@ -167,11 +167,11 @@ export class CustomerUtils {
 
                 // Запускаем таймер и обращаемся в API (чтобы избежать спама от пользователей)
                 let JSONResponsePromise = new Promise(resolve => {
-                    customTimerObj.handler = async function () {
+                    customTimerObj.setHandler(async function () {
                         resolve(await _CUSTOMERS_API.GET.findExistsByNickname(inputText));
-                    };
+                    });
 
-                    customTimerObj.timeout = 250;
+                    customTimerObj.setTimeout(250);
                     customTimerObj.start();
                 });
 

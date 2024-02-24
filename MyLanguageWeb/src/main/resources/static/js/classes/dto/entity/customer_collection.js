@@ -24,7 +24,7 @@ import {
 
 import {
     CssCollectionInfo
-} from "../../css/types/css_collection_info.js";
+} from "../../css/entity/css_collection_info.js";
 
 import {
     FlagElements

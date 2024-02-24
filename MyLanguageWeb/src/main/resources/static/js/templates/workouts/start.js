@@ -151,51 +151,6 @@ window.onbeforeunload = async function() {
     }
 }
 
-function showLoadingInRoundInfo() {
-    let loadingElement = new LoadingElement();
-
-    let divRoundInfo = document.getElementById(_DIV_ROUND_INFO_ID);
-    if (divRoundInfo) {
-        divRoundInfo.replaceChildren();
-        divRoundInfo.className = "";
-        divRoundInfo.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
-        divRoundInfo.classList.add(_CSS_MAIN.DIV_CONTENT_CENTER_STANDARD_STYLE_ID);
-        divRoundInfo.appendChild(loadingElement.createDiv());
-    }
-}
-
-function showLoadingInAnswersHistory() {
-    let loadingElement = new LoadingElement();
-
-    let divAnswersHistory = document.getElementById(_DIV_ANSWERS_HISTORY);
-    if (divAnswersHistory) {
-        divAnswersHistory.replaceChildren();
-        divAnswersHistory.className = "";
-        divAnswersHistory.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
-        divAnswersHistory.classList.add(_CSS_MAIN.DIV_CONTENT_CENTER_STANDARD_STYLE_ID);
-        divAnswersHistory.appendChild(loadingElement.createDiv());
-    }
-}
-
-function showLoadingInInteractionContainer() {
-    // Останавливаем таймер ---
-    if (_customTimerTickerWorkoutTimer) {
-        _customTimerTickerWorkoutTimer.stop();
-    }
-    //---
-
-    let loadingElement = new LoadingElement();
-
-    let divInteractionContainer = document.getElementById(_DIV_INTERACTION_CONTAINER_ID);
-    if (divInteractionContainer) {
-        divInteractionContainer.replaceChildren();
-        divInteractionContainer.className = "";
-        divInteractionContainer.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
-        divInteractionContainer.classList.add(_CSS_MAIN.DIV_CONTENT_CENTER_STANDARD_STYLE_ID);
-        divInteractionContainer.appendChild(loadingElement.createDiv());
-    }
-}
-
 function showLoadingInWorkoutDynamicContainers() {
     showLoadingInRoundInfo();
     showLoadingInAnswersHistory();
@@ -221,76 +176,6 @@ function showLoadingInAllContainers() {
     }
 
     showLoadingInWorkoutDynamicContainers();
-}
-
-function showErrorInRoundInfo(message) {
-    let divRoundInfo = document.getElementById(_DIV_ROUND_INFO_ID);
-    if (divRoundInfo) {
-        divRoundInfo.replaceChildren();
-
-        let ruleElement = new RuleElement(divRoundInfo, divRoundInfo);
-        ruleElement.message = message;
-        ruleElement.ruleType = _RULE_TYPES.ERROR;
-        ruleElement.showRule();
-    }
-}
-
-function showErrorInAnswersHistory(message) {
-    let divAnswersHistory = document.getElementById(_DIV_ANSWERS_HISTORY);
-    if (divAnswersHistory) {
-        divAnswersHistory.replaceChildren();
-
-        let ruleElement = new RuleElement(divAnswersHistory, divAnswersHistory);
-        ruleElement.message = message;
-        ruleElement.ruleType = _RULE_TYPES.ERROR;
-        ruleElement.showRule();
-    }
-}
-
-function showErrorInInteractionContainer(message) {
-    // Останавливаем таймер ---
-    if (_customTimerTickerWorkoutTimer) {
-        _customTimerTickerWorkoutTimer.stop();
-    }
-    //---
-
-    let divInteractionContainer = document.getElementById(_DIV_INTERACTION_CONTAINER_ID);
-    if (divInteractionContainer) {
-        divInteractionContainer.replaceChildren();
-        divInteractionContainer.className = "";
-        divInteractionContainer.classList.add(_DIV_START_WORKOUT_INTERACTION_WITH_ANSWER_AREA_STYLE_ID);
-
-        // Блок с ошибкой ---
-        let divErrorMessage = document.createElement("div");
-        divErrorMessage.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
-        divErrorMessage.classList.add(_CSS_MAIN.DIV_CONTENT_CENTER_STANDARD_STYLE_ID);
-        divErrorMessage.id = "div_interaction_container_error";
-
-        let ruleElement = new RuleElement(divErrorMessage, divErrorMessage);
-        ruleElement.message = message;
-        ruleElement.ruleType = _RULE_TYPES.ERROR;
-        ruleElement.showRule();
-
-        divInteractionContainer.appendChild(divErrorMessage);
-        //---
-
-        // Кнопка возвращения на страницу тренировок ---
-        let btnRedirect = document.createElement("button");
-        btnRedirect.classList.add(_CSS_MAIN.BUTTON_STANDARD_STYLE_ID);
-        btnRedirect.textContent = "Вернуться на страницу тренировок";
-        btnRedirect.addEventListener("click", function () {
-            window.location.replace(_RESOURCE_URLS.WORKOUTS);
-        })
-
-        _BUTTON_UTILS.addHotkey(btnRedirect, _HOTKEYS.ENTER, function () {
-            let event = new Event("click");
-            btnRedirect.dispatchEvent(event);
-        }, true);
-
-        divInteractionContainer.appendChild(btnRedirect);
-        btnRedirect.focus();
-        //---
-    }
 }
 
 function showErrorInWorkoutDynamicContainers(message) {
@@ -322,6 +207,7 @@ function showErrorInAllContainers(message) {
     showErrorInWorkoutDynamicContainers(message);
 }
 
+// Работа с важными объектами для тренировки ---
 async function tryToFindCurrentWorkout() {
     let currentWorkout;
 
@@ -385,8 +271,8 @@ async function tryToCreateCustomTimerTicker() {
 
         // Создаём таймер, который будет менять время в контейнере, помещаем его в тикер ---
         let workoutTimer = new CustomTimer();
-        workoutTimer.timeout = 1000;
-        workoutTimer.handler = changeTimeFunction;
+        workoutTimer.setTimeout(100);
+        workoutTimer.setHandler(changeTimeFunction);
         //---
 
         // Создаём тикер ---
@@ -415,63 +301,31 @@ function checkCorrectValuesInImportantVariables() {
 
     return isCorrect;
 }
+//---
 
-async function prepareWorkoutRound() {
-    if (_currentWorkout) {
-        // Отображаем загрузки в некоторых контейнерах ---
-        showLoadingInWorkoutDynamicContainers();
-        //---
+// Информация о раунде ---
+function showLoadingInRoundInfo() {
+    let loadingElement = new LoadingElement();
 
-        // Ищем текущий раунд
-        // Если вернётся 0, значит раундов не осталось
-        // Если вернётся badRequest, то _currentRound = -1n, что будет означать ошибку ---
-        _currentRound = -1n;
-        if (_currentWorkout) {
-            let JSONResponse = await _WORKOUTS_API.GET
-                .findCurrentRoundNumberByWorkoutId(_currentWorkout.id);
-            if (JSONResponse.status === _HTTP_STATUSES.OK) {
-                _currentRound = new LongResponse(JSONResponse.json).value;
-            } else {
-                let message = new CustomResponseMessage(JSONResponse.json);
-                if (message.id === 999) {
-                    _currentRound = 0n;
-                }
-            }
-        }
-        //---
+    let divRoundInfo = document.getElementById(_DIV_ROUND_INFO_ID);
+    if (divRoundInfo) {
+        divRoundInfo.replaceChildren();
+        divRoundInfo.className = "";
+        divRoundInfo.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
+        divRoundInfo.classList.add(_CSS_MAIN.DIV_CONTENT_CENTER_STANDARD_STYLE_ID);
+        divRoundInfo.appendChild(loadingElement.createDiv());
+    }
+}
 
-        // Проверяем текущий раунд ---
-        let isCorrect = true;
-        if (_currentRound < 0n) {
-            isCorrect = checkCorrectValuesInImportantVariables();
-        } else if (_currentRound === 0n) {
-            let dto = new WorkoutRequestDTO();
-            dto.id = _currentWorkout.id;
+function showErrorInRoundInfo(message) {
+    let divRoundInfo = document.getElementById(_DIV_ROUND_INFO_ID);
+    if (divRoundInfo) {
+        divRoundInfo.replaceChildren();
 
-            let JSONResponse = await _WORKOUTS_API.PATCH.close(dto);
-            if (JSONResponse.status === _HTTP_STATUSES.OK) {
-                window.onbeforeunload = null;
-                window.location.replace(_RESOURCE_URLS.WORKOUTS);
-            } else {
-                let message = new CustomResponseMessage(JSONResponse.json).text;
-                showErrorInInteractionContainer(message);
-            }
-
-            isCorrect = false;
-        }
-        //---
-
-        if (isCorrect === true) {
-            // Сбрасываем порядковый номер в списке истории ответов ---
-            _lastAnswerNumberInAnswersHistory = 1;
-            //---
-
-            // Подготавливаем контейнер взаимодействия с пользователем для начала раунда ---
-            await prepareInteractionContainerForStartRound();
-            //---
-        }
-    } else {
-        showErrorInAllContainers("Произошла ошибка при поиске тренировки. Попробуйте ещё раз позже.");
+        let ruleElement = new RuleElement(divRoundInfo, divRoundInfo);
+        ruleElement.message = message;
+        ruleElement.ruleType = _RULE_TYPES.ERROR;
+        ruleElement.showRule();
     }
 }
 
@@ -529,19 +383,31 @@ async function showCurrentRoundInfo() {
 
     return isCorrect;
 }
+//---
 
-function addWorkoutItemInCurrentRoundHistory(divCurrentRoundHistory, workoutItemObj) {
-    if (divCurrentRoundHistory) {
-        // Чистим контейнер, если это первый элемент истории ---
-        if (_lastAnswerNumberInAnswersHistory === 1) {
-            divCurrentRoundHistory.replaceChildren();
-        }
-        //---
+// История ответов в раунде ---
+function showLoadingInAnswersHistory() {
+    let loadingElement = new LoadingElement();
 
-        let workoutItemTable = workoutItemObj.createTableWithoutAnswer(_lastAnswerNumberInAnswersHistory++);
-        divCurrentRoundHistory.appendChild(workoutItemTable);
+    let divAnswersHistory = document.getElementById(_DIV_ANSWERS_HISTORY);
+    if (divAnswersHistory) {
+        divAnswersHistory.replaceChildren();
+        divAnswersHistory.className = "";
+        divAnswersHistory.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
+        divAnswersHistory.classList.add(_CSS_MAIN.DIV_CONTENT_CENTER_STANDARD_STYLE_ID);
+        divAnswersHistory.appendChild(loadingElement.createDiv());
+    }
+}
 
-        divCurrentRoundHistory.scrollTop = divCurrentRoundHistory.scrollHeight;
+function showErrorInAnswersHistory(message) {
+    let divAnswersHistory = document.getElementById(_DIV_ANSWERS_HISTORY);
+    if (divAnswersHistory) {
+        divAnswersHistory.replaceChildren();
+
+        let ruleElement = new RuleElement(divAnswersHistory, divAnswersHistory);
+        ruleElement.message = message;
+        ruleElement.ruleType = _RULE_TYPES.ERROR;
+        ruleElement.showRule();
     }
 }
 
@@ -617,6 +483,107 @@ async function showCurrentRoundAnswersHistory() {
     }
 
     return isCorrect;
+}
+
+function addWorkoutItemInCurrentRoundHistory(divCurrentRoundHistory, workoutItemObj) {
+    if (divCurrentRoundHistory) {
+        // Чистим контейнер, если это первый элемент истории ---
+        if (_lastAnswerNumberInAnswersHistory === 1) {
+            divCurrentRoundHistory.replaceChildren();
+        }
+        //---
+
+        let workoutItemTable = workoutItemObj.createTableWithoutAnswer(_lastAnswerNumberInAnswersHistory++);
+        divCurrentRoundHistory.appendChild(workoutItemTable);
+
+        divCurrentRoundHistory.scrollTop = divCurrentRoundHistory.scrollHeight;
+    }
+}
+//---
+
+// Контейнер взаимодействия (начало раунда, вопрос + ввод ответа, выход при системной ошибке) ---
+function showLoadingInInteractionContainer() {
+    // Останавливаем таймер ---
+    if (_customTimerTickerWorkoutTimer) {
+        _customTimerTickerWorkoutTimer.stop();
+    }
+    //---
+
+    let loadingElement = new LoadingElement();
+
+    let divInteractionContainer = document.getElementById(_DIV_INTERACTION_CONTAINER_ID);
+    if (divInteractionContainer) {
+        divInteractionContainer.replaceChildren();
+        divInteractionContainer.className = "";
+        divInteractionContainer.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
+        divInteractionContainer.classList.add(_CSS_MAIN.DIV_CONTENT_CENTER_STANDARD_STYLE_ID);
+        divInteractionContainer.appendChild(loadingElement.createDiv());
+    }
+}
+
+function showErrorInInteractionContainer(message) {
+    // Останавливаем таймер ---
+    if (_customTimerTickerWorkoutTimer) {
+        _customTimerTickerWorkoutTimer.stop();
+    }
+    //---
+
+    let divInteractionContainer = document.getElementById(_DIV_INTERACTION_CONTAINER_ID);
+    if (divInteractionContainer) {
+        divInteractionContainer.replaceChildren();
+        divInteractionContainer.className = "";
+        divInteractionContainer.classList.add(_DIV_START_WORKOUT_INTERACTION_WITH_ANSWER_AREA_STYLE_ID);
+
+        // Блок с ошибкой ---
+        let divErrorMessage = document.createElement("div");
+        divErrorMessage.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
+        divErrorMessage.classList.add(_CSS_MAIN.DIV_CONTENT_CENTER_STANDARD_STYLE_ID);
+        divErrorMessage.id = "div_interaction_container_error";
+
+        let ruleElement = new RuleElement(divErrorMessage, divErrorMessage);
+        ruleElement.message = message;
+        ruleElement.ruleType = _RULE_TYPES.ERROR;
+        ruleElement.showRule();
+
+        divInteractionContainer.appendChild(divErrorMessage);
+        //---
+
+        // Кнопка возвращения на страницу тренировок ---
+        let btnRedirect = document.createElement("button");
+        btnRedirect.classList.add(_CSS_MAIN.BUTTON_STANDARD_STYLE_ID);
+        btnRedirect.textContent = "Вернуться на страницу тренировок";
+        btnRedirect.addEventListener("click", function () {
+            window.location.replace(_RESOURCE_URLS.WORKOUTS);
+        })
+
+        _BUTTON_UTILS.addHotkey(btnRedirect, _HOTKEYS.ENTER, function () {
+            let event = new Event("click");
+            btnRedirect.dispatchEvent(event);
+        }, true);
+
+        divInteractionContainer.appendChild(btnRedirect);
+        btnRedirect.focus();
+        //---
+    }
+}
+
+async function prepareNextQuestion() {
+    showLoadingInInteractionContainer();
+
+    let JSONResponse = await _WORKOUT_ITEMS_API.GET
+        .getRandomWithoutAnswerByWorkoutIdAndRoundNumber(_currentWorkout.id, _currentRound);
+    if (JSONResponse.status === _HTTP_STATUSES.OK) {
+        let workoutItem = new WorkoutItemResponseDTO(JSONResponse.json);
+
+        await prepareInteractionContainerForSendAnswer(workoutItem);
+    } else {
+        let message = new CustomResponseMessage(JSONResponse.json);
+        if (message.id === 999) {
+            await prepareWorkoutRound();
+        } else {
+            showErrorInInteractionContainer(message.text);
+        }
+    }
 }
 
 async function prepareInteractionContainerForStartRound() {
@@ -724,25 +691,6 @@ async function prepareInteractionContainerForStartRound() {
     }
 
     return isCorrect;
-}
-
-async function prepareNextQuestion() {
-    showLoadingInInteractionContainer();
-
-    let JSONResponse = await _WORKOUT_ITEMS_API.GET
-        .getRandomWithoutAnswerByWorkoutIdAndRoundNumber(_currentWorkout.id, _currentRound);
-    if (JSONResponse.status === _HTTP_STATUSES.OK) {
-        let workoutItem = new WorkoutItemResponseDTO(JSONResponse.json);
-
-        await prepareInteractionContainerForSendAnswer(workoutItem);
-    } else {
-        let message = new CustomResponseMessage(JSONResponse.json);
-        if (message.id === 999) {
-            await prepareWorkoutRound();
-        } else {
-            showErrorInInteractionContainer(message.text);
-        }
-    }
 }
 
 async function prepareInteractionContainerForSendAnswer(workoutItem) {
@@ -968,3 +916,65 @@ async function prepareInteractionContainerForShowResult(workoutItemId, answer) {
         showErrorInInteractionContainer(message.text);
     }
 }
+//---
+
+// Подготовка раунда ---
+async function prepareWorkoutRound() {
+    if (_currentWorkout) {
+        // Отображаем загрузки в некоторых контейнерах ---
+        showLoadingInWorkoutDynamicContainers();
+        //---
+
+        // Ищем текущий раунд
+        // Если вернётся 0, значит раундов не осталось
+        // Если вернётся badRequest, то _currentRound = -1n, что будет означать ошибку ---
+        _currentRound = -1n;
+        if (_currentWorkout) {
+            let JSONResponse = await _WORKOUTS_API.GET
+                .findCurrentRoundNumberByWorkoutId(_currentWorkout.id);
+            if (JSONResponse.status === _HTTP_STATUSES.OK) {
+                _currentRound = new LongResponse(JSONResponse.json).value;
+            } else {
+                let message = new CustomResponseMessage(JSONResponse.json);
+                if (message.id === 999) {
+                    _currentRound = 0n;
+                }
+            }
+        }
+        //---
+
+        // Проверяем текущий раунд ---
+        let isCorrect = true;
+        if (_currentRound < 0n) {
+            isCorrect = checkCorrectValuesInImportantVariables();
+        } else if (_currentRound === 0n) {
+            let dto = new WorkoutRequestDTO();
+            dto.id = _currentWorkout.id;
+
+            let JSONResponse = await _WORKOUTS_API.PATCH.close(dto);
+            if (JSONResponse.status === _HTTP_STATUSES.OK) {
+                window.onbeforeunload = null;
+                window.location.replace(_RESOURCE_URLS.WORKOUTS);
+            } else {
+                let message = new CustomResponseMessage(JSONResponse.json).text;
+                showErrorInInteractionContainer(message);
+            }
+
+            isCorrect = false;
+        }
+        //---
+
+        if (isCorrect === true) {
+            // Сбрасываем порядковый номер в списке истории ответов ---
+            _lastAnswerNumberInAnswersHistory = 1;
+            //---
+
+            // Подготавливаем контейнер взаимодействия с пользователем для начала раунда ---
+            await prepareInteractionContainerForStartRound();
+            //---
+        }
+    } else {
+        showErrorInAllContainers("Произошла ошибка при поиске тренировки. Попробуйте ещё раз позже.");
+    }
+}
+//---

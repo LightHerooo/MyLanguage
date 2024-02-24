@@ -30,10 +30,6 @@ import {
     FlagElements
 } from "../../flag_elements.js";
 
-import {
-    CustomTimer
-} from "../../custom_timer/custom_timer.js";
-
 const _LANGS_API = new LangsAPI();
 
 const _HTTP_STATUSES = new HttpStatuses();
@@ -60,9 +56,7 @@ export class LangUtils {
                 cbLangs.appendChild(option);
             }
 
-            let customTimerLangFlagChanger = new CustomTimer();
-            customTimerLangFlagChanger.timeout = 1;
-            customTimerLangFlagChanger.handler = async function() {
+            cbLangs.addEventListener("change", async function () {
                 let langCode;
                 let optionId = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbLangs);
                 let JSONResponse = await _LANGS_API.GET.findByCode(optionId);
@@ -71,10 +65,6 @@ export class LangUtils {
                 }
 
                 _FLAG_ELEMENTS.DIV.setStyles(divLangFlag, langCode, true);
-            }
-
-            cbLangs.addEventListener("change", function () {
-                customTimerLangFlagChanger.start();
             })
 
             _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemIndex(

@@ -94,9 +94,9 @@ export class NotOverWorkoutsTableHelper {
         let thisClass = this;
 
         let customTimer = new CustomTimer();
-        customTimer.timeout = 1000;
-        customTimer.handler = async function() {
-            let div = document.getElementById(thisClass.#containerId);
+        customTimer.setTimeout(1000);
+        customTimer.setHandler(async function() {
+            let currentFinder = thisClass.getCustomTimerFinder();
 
             // Пытаемся сгенерировать таблицу активных тренировок ---
             let notOverWorkoutsTable =
@@ -104,31 +104,39 @@ export class NotOverWorkoutsTableHelper {
             //---
 
             // Добавляем в контейнер таблицу / отображаем сообщение (информацию) ---
-            if (notOverWorkoutsTable && div) {
+            let div = document.getElementById(thisClass.#containerId);
+            if (notOverWorkoutsTable && div && currentFinder.getActive() === true) {
                 div.replaceChildren();
                 div.className = "";
-                div.appendChild(notOverWorkoutsTable);
+
+                if (currentFinder.getActive() === true) {
+                    div.appendChild(notOverWorkoutsTable);
+                }
             } else {
                 thisClass.#showError("Произошла ошибка поиска незавершённых тренировок.");
             }
             //---
-        }
+        });
 
         return customTimer;
     }
 
     #showError(errorMessage) {
+        let currentFinder = this.getCustomTimerFinder();
+
         let div = document.getElementById(this.#containerId);
-        if (div) {
+        if (div && currentFinder.getActive() === true) {
             div.replaceChildren();
             div.className = "";
             div.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
             div.classList.add(_CSS_MAIN.DIV_CONTENT_CENTER_STANDARD_STYLE_ID);
 
-            let ruleElement = new RuleElement(div, div);
-            ruleElement.message = errorMessage;
-            ruleElement.ruleType = _RULE_TYPES.ERROR;
-            ruleElement.showRule();
+            if (currentFinder.getActive === true) {
+                let ruleElement = new RuleElement(div, div);
+                ruleElement.message = errorMessage;
+                ruleElement.ruleType = _RULE_TYPES.ERROR;
+                ruleElement.showRule();
+            }
         }
     }
 
@@ -364,6 +372,10 @@ export class NotOverWorkoutsTableHelper {
         return notOverWorkoutsTable;
     }
 
+    getCustomTimerFinder() {
+        return this.#customerTimerFinder;
+    }
+
     showLoading() {
         let div = document.getElementById(this.#containerId);
         if (div) {
@@ -378,7 +390,15 @@ export class NotOverWorkoutsTableHelper {
     }
 
     startToBuildTable() {
+        let currentFinder = this.getCustomTimerFinder();
+        if (currentFinder) {
+            currentFinder.stop();
+        }
+
         this.showLoading();
-        this.#customerTimerFinder.start();
+
+        if (currentFinder) {
+            currentFinder.start();
+        }
     }
 }

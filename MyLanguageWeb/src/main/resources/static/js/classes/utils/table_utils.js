@@ -100,6 +100,31 @@ export class TableUtils {
 
         return trShowMore;
     }
+
+    createElementBetweenTwoHorizontalDelimiters(differentElement) {
+        let div = document.createElement("div");
+        div.style.display = "grid";
+        div.style.grid = "30px 1fr 30px / 1fr";
+        div.style.marginBottom = "-15px";
+
+        // Создаём разделитель ---
+        let divDelimiter = document.createElement("div");
+        divDelimiter.classList.add(_CSS_MAIN.DIV_HORIZONTAL_DELIMITER_STYLE_ID);
+        //---
+
+        // Создаём контейнер для разделителя (чтобы разместить его по центру) ---
+        let divDelimiterContainer = document.createElement("div");
+        divDelimiterContainer.style.display = "grid";
+        divDelimiterContainer.style.alignItems = "center";
+        divDelimiterContainer.appendChild(divDelimiter);
+        //---
+
+        div.appendChild(divDelimiterContainer.cloneNode(true));
+        div.appendChild(differentElement);
+        div.appendChild(divDelimiterContainer.cloneNode(true));
+
+        return div;
+    }
 }
 
 class MessagesInsideTable {

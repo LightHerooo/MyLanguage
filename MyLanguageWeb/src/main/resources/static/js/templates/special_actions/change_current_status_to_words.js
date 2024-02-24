@@ -61,8 +61,8 @@ import {
 } from "../../classes/utils/combo_box_utils.js";
 
 import {
-    CustomTimerUtils
-} from "../../classes/utils/custom_timer_utils.js";
+    TextBoxUtils
+} from "../../classes/utils/text_box_utils.js";
 
 const _WORDS_API = new WordsAPI();
 const _WORDS_IN_COLLECTION_API = new WordsInCollectionAPI();
@@ -76,7 +76,7 @@ const _WORD_STATUS_UTILS = new WordStatusUtils();
 const _TABLE_UTILS = new TableUtils();
 const _A_BUTTONS = new AButtons();
 const _COMBO_BOX_UTILS = new ComboBoxUtils();
-const _CUSTOM_TIMER_UTILS = new CustomTimerUtils();
+const _TEXT_BOX_UTILS = new TextBoxUtils();
 
 const _TB_FINDER_ID = "tb_finder";
 const _CB_LANGS_ID = "cb_langs";
@@ -93,12 +93,14 @@ const _NUMBER_OF_WORDS = 10;
 let _lastWordNumberInList = 0;
 let _lastWordIdOnPreviousPage = 0n;
 
-const _CUSTOM_TIMER_TABLE_WAITER = new CustomTimer();
-const _CUSTOM_TIMER_TABLE_FINDER = new CustomTimer();
-let _accessToFillTable = true;
+const _CUSTOM_TIMER_WORDS_FINDER = new CustomTimer();
+const _CUSTOM_TIMER_TB_FINDER = new CustomTimer();
+const _TIMEOUT_FOR_FINDERS = 1000;
 
 window.onload = async function() {
-    prepareTableTimers();
+    // Подготавливаем таймеры ---
+    prepareWordsFinder();
+    //---
 
     await prepareCbLangs();
     await prepareCbWordStatuses();
@@ -108,74 +110,7 @@ window.onload = async function() {
     prepareBtnAddWordStatusToWordsWithoutStatus();
     prepareBtnRefresh();
 
-    startTimers();
-}
-
-function prepareTableTimers() {
-    _CUSTOM_TIMER_TABLE_WAITER.handler = function () {
-        _accessToFillTable = false;
-
-        let tableHead = document.getElementById(_CHANGE_WORD_TABLE_HEAD_ID);
-        let numberOfColumns = _TABLE_UTILS.getNumberOfColumnsByTableHead(tableHead);
-        let trMessage = _TABLE_UTILS.MESSAGES_INSIDE_TABLE.createTrLoading(numberOfColumns);
-
-        let tableBody = document.getElementById(_CHANGE_WORD_TABLE_BODY_ID);
-        tableBody.replaceChildren();
-        tableBody.appendChild(trMessage);
-    }
-
-    _CUSTOM_TIMER_TABLE_FINDER.handler = async function() {
-        _accessToFillTable = true;
-        await tryToFillTable();
-    }
-}
-
-function startTimers() {
-    _CUSTOM_TIMER_UTILS.findAfterWait(_CUSTOM_TIMER_TABLE_WAITER, _CUSTOM_TIMER_TABLE_FINDER);
-}
-
-function prepareTbFinder() {
-    let tbFinder = document.getElementById(_TB_FINDER_ID);
-
-    if (tbFinder) {
-        // Вешаем событие обновления списка при изменении текста
-        tbFinder.addEventListener("input", async function () {
-            startTimers();
-        });
-    }
-}
-
-async function prepareCbLangs() {
-    let cbLangs = document.getElementById(_CB_LANGS_ID);
-    if (cbLangs) {
-        let firstOption = document.createElement("option");
-        firstOption.textContent = "Все";
-
-        let divLangFlag = document.getElementById(_DIV_LANG_FLAG_ID);
-        await _LANG_UTILS.prepareComboBox(cbLangs, firstOption, divLangFlag);
-
-        // Вешаем событие обновления списка при изменении элемента выпадающего списка
-        cbLangs.addEventListener("change", function () {
-            startTimers();
-        })
-    }
-}
-
-async function prepareCbWordStatuses() {
-    let cbWordStatuses = document.getElementById(_CB_WORD_STATUSES);
-    if (cbWordStatuses) {
-        let firstOption = document.createElement("option");
-        firstOption.textContent = "Все";
-        await _WORD_STATUS_UTILS.fillComboBox(cbWordStatuses, firstOption);
-
-        _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemId(
-            cbWordStatuses, _WORD_STATUSES.NEW.CODE, true);
-
-        // Вешаем событие обновления списка при изменении элемента выпадающего списка
-        cbWordStatuses.addEventListener("change", function () {
-            startTimers();
-        });
-    }
+    startAllFinders();
 }
 
 function prepareBtnDeleteInactiveWordsInCollections() {
@@ -187,7 +122,7 @@ function prepareBtnDeleteInactiveWordsInCollections() {
             let JSONResponse = await _WORDS_IN_COLLECTION_API.DELETE.deleteInactiveWordsInCollections();
             if (JSONResponse.status === _HTTP_STATUSES.OK) {
                 _A_BUTTONS.A_BUTTON_DENY.setStyles(this, false);
-                startTimers();
+                startAllFinders();
             }
         })
     }
@@ -202,7 +137,7 @@ function prepareBtnDeleteAllUnclaimedWords() {
             let JSONResponse = await _WORDS_API.DELETE.deleteAllUnclaimedWords();
             if (JSONResponse.status === _HTTP_STATUSES.OK) {
                 _A_BUTTONS.A_BUTTON_DENY.setStyles(this, false);
-                startTimers();
+                startAllFinders();
             }
         })
     }
@@ -220,9 +155,50 @@ function prepareBtnAddWordStatusToWordsWithoutStatus() {
             let JSONResponse = await _WORD_STATUS_HISTORIES_API.POST.addWordStatusToWordsWithoutStatus(requestDTO);
             if (JSONResponse.status === _HTTP_STATUSES.OK) {
                 _A_BUTTONS.A_BUTTON_ACCEPT.setStyles(this, false);
-                startTimers();
+                startAllFinders();
             }
         })
+    }
+}
+
+function prepareTbFinder() {
+    let tbFinder = document.getElementById(_TB_FINDER_ID);
+
+    if (tbFinder) {
+        _TEXT_BOX_UTILS.prepareTbFinder(tbFinder, startAllFinders, _CUSTOM_TIMER_TB_FINDER);
+    }
+}
+
+async function prepareCbLangs() {
+    let cbLangs = document.getElementById(_CB_LANGS_ID);
+    if (cbLangs) {
+        let firstOption = document.createElement("option");
+        firstOption.textContent = "Все";
+
+        let divLangFlag = document.getElementById(_DIV_LANG_FLAG_ID);
+        await _LANG_UTILS.prepareComboBox(cbLangs, firstOption, divLangFlag);
+
+        // Вешаем событие обновления списка при изменении элемента выпадающего списка
+        cbLangs.addEventListener("change", function () {
+            startAllFinders();
+        })
+    }
+}
+
+async function prepareCbWordStatuses() {
+    let cbWordStatuses = document.getElementById(_CB_WORD_STATUSES);
+    if (cbWordStatuses) {
+        let firstOption = document.createElement("option");
+        firstOption.textContent = "Все";
+        await _WORD_STATUS_UTILS.fillComboBox(cbWordStatuses, firstOption);
+
+        _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemId(
+            cbWordStatuses, _WORD_STATUSES.NEW.CODE, true);
+
+        // Вешаем событие обновления списка при изменении элемента выпадающего списка
+        cbWordStatuses.addEventListener("change", function () {
+            startAllFinders();
+        });
     }
 }
 
@@ -230,89 +206,114 @@ function prepareBtnRefresh() {
     let btnRefresh = document.getElementById(_BTN_REFRESH_ID);
     if (btnRefresh) {
         btnRefresh.addEventListener("click", async function() {
-            startTimers();
+            startAllFinders();
         })
     }
 }
 
-async function sendPreparedRequest() {
+// Слова ---
+function prepareWordsFinder() {
+    _CUSTOM_TIMER_WORDS_FINDER.setTimeout(_TIMEOUT_FOR_FINDERS);
+    _CUSTOM_TIMER_WORDS_FINDER.setHandler(async function() {
+        _lastWordNumberInList = 0;
+        _lastWordIdOnPreviousPage = 0n;
+
+        await tryToFillTableRows(true, true);
+    });
+}
+
+function startToFindWords() {
+    if (_CUSTOM_TIMER_WORDS_FINDER) {
+        _CUSTOM_TIMER_WORDS_FINDER.stop();
+    }
+
+    let tableHead = document.getElementById(_CHANGE_WORD_TABLE_HEAD_ID);
+    let tableBody = document.getElementById(_CHANGE_WORD_TABLE_BODY_ID);
+    if (tableHead && tableBody) {
+        let numberOfColumns = _TABLE_UTILS.getNumberOfColumnsByTableHead(tableHead);
+        let trMessage = _TABLE_UTILS.MESSAGES_INSIDE_TABLE.createTrLoading(numberOfColumns);
+
+        tableBody.replaceChildren();
+        tableBody.appendChild(trMessage);
+    }
+
+    if (_CUSTOM_TIMER_WORDS_FINDER) {
+        _CUSTOM_TIMER_WORDS_FINDER.start();
+    }
+}
+
+function startAllFinders() {
+    startToFindWords();
+}
+
+async function tryToFillTableRows(doNeedToClearTable, doNeedToShowTableMessage) {
+    let currentFinder = _CUSTOM_TIMER_WORDS_FINDER;
+
     let title = document.getElementById(_TB_FINDER_ID).value;
     let langCode =  _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_LANGS_ID);
     let wordStatusCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_WORD_STATUSES);
 
-    return await _WORDS_API.GET.getAllFilteredPagination(_NUMBER_OF_WORDS, title,
+    let JSONResponse = await _WORDS_API.GET.getAllFilteredPagination(_NUMBER_OF_WORDS, title,
         wordStatusCode, langCode, _lastWordIdOnPreviousPage);
-}
-
-async function tryToFillTable() {
-    _lastWordNumberInList = 0;
-    _lastWordIdOnPreviousPage = 0n;
-
-    let tableBody = document.getElementById(_CHANGE_WORD_TABLE_BODY_ID);
-    let JSONResponse = await sendPreparedRequest();
     if (JSONResponse.status === _HTTP_STATUSES.OK) {
         let tableRows = await createTableRows(JSONResponse.json);
-        if (_accessToFillTable === true) {
-            tableBody.replaceChildren();
+
+        let tableBody = document.getElementById(_CHANGE_WORD_TABLE_BODY_ID);
+        if (tableBody && tableRows && currentFinder.getActive() === true) {
+            if (doNeedToClearTable === true) {
+                tableBody.replaceChildren();
+            }
             for (let i = 0; i < tableRows.length; i++) {
-                if (_accessToFillTable === true) {
-                    tableBody.appendChild(tableRows[i]);
-                }
+                if (currentFinder.getActive() !== true) break;
+                tableBody.appendChild(tableRows[i]);
             }
         }
-    } else {
+    } else if (doNeedToShowTableMessage === true) {
         let tableHead = document.getElementById(_CHANGE_WORD_TABLE_HEAD_ID);
-        let numberOfColumns = _TABLE_UTILS.getNumberOfColumnsByTableHead(tableHead);
-        let trMessage = _TABLE_UTILS.MESSAGES_INSIDE_TABLE
-            .createTrCommon(numberOfColumns, new CustomResponseMessage(JSONResponse.json).text);
+        let tableBody = document.getElementById(_CHANGE_WORD_TABLE_BODY_ID);
+        if (tableHead && tableBody) {
+            let numberOfColumns = _TABLE_UTILS.getNumberOfColumnsByTableHead(tableHead);
+            let trMessage = _TABLE_UTILS.MESSAGES_INSIDE_TABLE
+                .createTrCommon(numberOfColumns, new CustomResponseMessage(JSONResponse.json).text);
 
-        if (_accessToFillTable === true) {
-            tableBody.replaceChildren();
-            if (_accessToFillTable === true) {
-                tableBody.appendChild(trMessage);
+            if (currentFinder.getActive() === true) {
+                tableBody.replaceChildren();
+                if (currentFinder.getActive() === true) {
+                    tableBody.appendChild(trMessage);
+                }
             }
         }
     }
 }
 
 async function createTableRows(wordsFilteredPaginationJson){
+    let currentFinder = _CUSTOM_TIMER_WORDS_FINDER;
     let tableRows = [];
 
     for (let i = 0; i < wordsFilteredPaginationJson.length; i++) {
-        if (_accessToFillTable === true) {
-            let word = new WordResponseDTO(wordsFilteredPaginationJson[i]);
+        if (currentFinder.getActive() !== true) break;
+        let word = new WordResponseDTO(wordsFilteredPaginationJson[i]);
 
-            let row = await createTableRow(word);
-            if (row) {
-                tableRows.push(row);
-            }
+        let row = await createTableRow(word);
+        if (row) {
+            tableRows.push(row);
+        }
 
-            // Получаем id последнего элемента JSON-коллекции
-            if (i === wordsFilteredPaginationJson.length - 1) {
-                _lastWordIdOnPreviousPage = word.id;
-            }
+        // Получаем id последнего элемента JSON-коллекции
+        if (i === wordsFilteredPaginationJson.length - 1) {
+            _lastWordIdOnPreviousPage = word.id;
         }
     }
 
     // Создаем кнопку, только если запрос вернул максимальное количество на страницу
-    if (_accessToFillTable === true && wordsFilteredPaginationJson.length === _NUMBER_OF_WORDS) {
+    if (currentFinder.getActive() === true
+        && wordsFilteredPaginationJson.length === _NUMBER_OF_WORDS) {
         let tableHead = document.getElementById(_CHANGE_WORD_TABLE_HEAD_ID);
         let numberOfColumns = _TABLE_UTILS.getNumberOfColumnsByTableHead(tableHead);
 
         let trShowMore = _TABLE_UTILS.createTrShowMore(numberOfColumns,
             _NUMBER_OF_WORDS, async function () {
-                let JSONResponse = await sendPreparedRequest();
-                if (JSONResponse.status === _HTTP_STATUSES.OK) {
-                    let tableRows = await createTableRows(JSONResponse.json);
-                    if (_accessToFillTable === true) {
-                        let tableBody = document.getElementById(_CHANGE_WORD_TABLE_BODY_ID);
-                        for (let i = 0; i < tableRows.length; i++) {
-                            if (_accessToFillTable === true) {
-                                tableBody.appendChild(tableRows[i]);
-                            }
-                        }
-                    }
-                }
+                await tryToFillTableRows(false, false);
             });
 
         tableRows.push(trShowMore);
@@ -392,4 +393,4 @@ async function createTableRow(wordResponseDTO) {
         //---
     }
 }
-
+//---

@@ -64,11 +64,11 @@ export class WordUtils {
                 wordRequestDTO.langCode = langCode;
 
                 let JSONResponsePromise = new Promise(resolve => {
-                    customTimerObj.handler = async function () {
+                    customTimerObj.setHandler(async function () {
                         resolve(await _WORDS_API.POST.validateBeforeCrud(wordRequestDTO));
-                    };
+                    });
 
-                    customTimerObj.timeout = 250;
+                    customTimerObj.setTimeout(250);
                     customTimerObj.start();
                 });
 

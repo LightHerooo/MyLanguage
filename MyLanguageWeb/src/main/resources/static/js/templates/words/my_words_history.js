@@ -80,8 +80,8 @@ import {
 } from "../../classes/loading_element.js";
 
 import {
-    CustomTimerUtils
-} from "../../classes/utils/custom_timer_utils.js";
+    TextBoxUtils
+} from "../../classes/utils/text_box_utils.js";
 
 const _WORD_STATUSES_API = new WordStatusesAPI();
 const _WORDS_API = new WordsAPI();
@@ -95,7 +95,7 @@ const _WORD_STATUS_UTILS = new WordStatusUtils();
 const _TABLE_UTILS = new TableUtils();
 const _A_BUTTONS = new AButtons();
 const _COMBO_BOX_UTILS = new ComboBoxUtils();
-const _CUSTOM_TIMER_UTILS = new CustomTimerUtils();
+const _TEXT_BOX_UTILS = new TextBoxUtils();
 
 const _MY_WORDS_HISTORY_STATISTICS_CONTAINER_ID = "my_words_history_statistics_container";
 const _TB_FINDER_ID = "tb_finder";
@@ -111,90 +111,44 @@ const _NUMBER_OF_WORDS = 20;
 let _lastWordNumberInList = 0;
 let _lastWordIdOnPreviousPage = 0n;
 
-const _CUSTOM_TIMER_STATISTIC_WAITER = new CustomTimer();
 const _CUSTOM_TIMER_STATISTIC_FINDER = new CustomTimer();
-let _accessToFillStatistic = true;
+const _CUSTOM_TIMER_WORDS_FINDER = new CustomTimer();
+const _CUSTOM_TIMER_TB_FINDER = new CustomTimer();
+const _TIMEOUT_FOR_FINDERS = 1000;
 
-const _CUSTOM_TIMER_TABLE_WAITER = new CustomTimer();
-const _CUSTOM_TIMER_TABLE_FINDER = new CustomTimer();
-let _accessToFillTable = true;
+let _wordStatusHistoryItemsForFindMap = new Map();
 
-let _timersForWordHistoriesMap = new Map();
-
-class TimersForWordHistory {
-    customTimerWaiter;
+class WordStatusHistoryItemsForFind {
+    tableHistory;
+    colgroupHistory;
+    tBodyHistory;
     customTimerFinder;
 
-    constructor(customTimerWaiter, customTimerFinder) {
-        this.customTimerWaiter = customTimerWaiter;
+    constructor(tableHistory, colgroupHistory, tBodyHistory, customTimerFinder) {
+        this.tableHistory = tableHistory;
+        this.colgroupHistory = colgroupHistory;
+        this.tBodyHistory = tBodyHistory;
         this.customTimerFinder = customTimerFinder;
-    }
-
-    stopTimers() {
-        this.customTimerWaiter.stop();
-        this.customTimerFinder.stop();
     }
 }
 
 window.onload = async function() {
-    prepareStatisticTimers();
-    prepareTableTimers();
+    prepareStatisticFinder();
+    prepareWordsFinder();
 
     await prepareCbLangs();
     await prepareCbWordStatuses();
     prepareTbFinder();
     prepareBtnRefresh();
 
-    startTimers();
-}
-
-function prepareStatisticTimers() {
-    _CUSTOM_TIMER_STATISTIC_WAITER.handler = function() {
-        _accessToFillStatistic = false;
-
-        let divStatistic = document.getElementById(_MY_WORDS_HISTORY_STATISTICS_CONTAINER_ID);
-        divStatistic.replaceChildren();
-        divStatistic.appendChild(new LoadingElement().createDiv());
-    }
-
-    _CUSTOM_TIMER_STATISTIC_FINDER.handler = async function() {
-        _accessToFillStatistic = true;
-        await tryToFillStatistics();
-    }
-}
-
-function prepareTableTimers() {
-    _CUSTOM_TIMER_TABLE_WAITER.handler = function () {
-        _accessToFillTable = false;
-
-        let tableHead = document.getElementById(_MY_WORD_HISTORY_TABLE_HEAD_ID);
-        let numberOfColumns = _TABLE_UTILS.getNumberOfColumnsByTableHead(tableHead);
-        let trMessage = _TABLE_UTILS.MESSAGES_INSIDE_TABLE.createTrLoading(numberOfColumns);
-
-        let tableBody = document.getElementById(_MY_WORD_HISTORY_TABLE_BODY_ID);
-        tableBody.replaceChildren();
-        tableBody.appendChild(trMessage);
-    }
-
-    _CUSTOM_TIMER_TABLE_FINDER.handler = async function() {
-        _accessToFillTable = true;
-        await tryToFillTable();
-    }
-}
-
-function startTimers() {
-    _CUSTOM_TIMER_UTILS.findAfterWait(_CUSTOM_TIMER_STATISTIC_WAITER, _CUSTOM_TIMER_STATISTIC_FINDER);
-    _CUSTOM_TIMER_UTILS.findAfterWait(_CUSTOM_TIMER_TABLE_WAITER, _CUSTOM_TIMER_TABLE_FINDER);
+    startAllFinders();
 }
 
 function prepareTbFinder() {
     let tbFinder = document.getElementById(_TB_FINDER_ID);
 
     if (tbFinder) {
-        // Вешаем событие обновления списка при изменении текста
-        tbFinder.addEventListener("input", async function () {
-            startTimers();
-        });
+        _TEXT_BOX_UTILS.prepareTbFinder(tbFinder, startAllFinders, _CUSTOM_TIMER_TB_FINDER);
     }
 }
 
@@ -209,7 +163,7 @@ async function prepareCbLangs() {
 
         // Вешаем событие обновления списка при изменении элемента выпадающего списка
         cbLangs.addEventListener("change", function () {
-            startTimers();
+            startAllFinders();
         })
     }
 }
@@ -223,7 +177,7 @@ async function prepareCbWordStatuses() {
         await _WORD_STATUS_UTILS.fillComboBox(cbWordStatuses, firstOption);
 
         cbWordStatuses.addEventListener("change", function () {
-            startTimers();
+            startAllFinders();
         });
     }
 }
@@ -232,21 +186,50 @@ function prepareBtnRefresh() {
     let btnRefresh = document.getElementById(_BTN_REFRESH_ID);
     if (btnRefresh) {
         btnRefresh.addEventListener("click", async function() {
-            startTimers();
+            startAllFinders();
         })
     }
 }
 
-async function tryToFillStatistics() {
+function startAllFinders() {
+    startToFindStatistic();
+    startToFindWords();
+}
+
+// Статистика ---
+function prepareStatisticFinder() {
+    _CUSTOM_TIMER_STATISTIC_FINDER.setTimeout(_TIMEOUT_FOR_FINDERS);
+    _CUSTOM_TIMER_STATISTIC_FINDER.setHandler(async function() {
+        await tryToFillStatistic();
+    });
+}
+
+function startToFindStatistic() {
+    if (_CUSTOM_TIMER_STATISTIC_FINDER) {
+        _CUSTOM_TIMER_STATISTIC_FINDER.stop();
+    }
+
+    let divStatistic = document.getElementById(_MY_WORDS_HISTORY_STATISTICS_CONTAINER_ID);
+    if (divStatistic) {
+        divStatistic.replaceChildren();
+        divStatistic.appendChild(new LoadingElement().createDiv());
+    }
+
+    if (_CUSTOM_TIMER_STATISTIC_FINDER) {
+        _CUSTOM_TIMER_STATISTIC_FINDER.start();
+    }
+}
+
+async function tryToFillStatistic() {
+    let currentFinder = _CUSTOM_TIMER_STATISTIC_FINDER;
     let statisticItems = await createStatisticItems();
 
-    if (_accessToFillStatistic === true) {
-        let divStatistics = document.getElementById(_MY_WORDS_HISTORY_STATISTICS_CONTAINER_ID);
+    let divStatistics = document.getElementById(_MY_WORDS_HISTORY_STATISTICS_CONTAINER_ID);
+    if (divStatistics && currentFinder.getActive() === true) {
         divStatistics.replaceChildren();
         for (let i = 0; i < statisticItems.length; i++) {
-            if (_accessToFillStatistic === true) {
-                divStatistics.appendChild(statisticItems[i]);
-            }
+            if (currentFinder.getActive() !== true) break;
+            divStatistics.appendChild(statisticItems[i]);
         }
     }
 }
@@ -267,17 +250,15 @@ async function createStatisticItems() {
         let wordStatusesJson = JSONResponseWordStatuses.json;
         let numberOfWordsSum = 0n;
         for (let i = 0; i < wordStatusesJson.length; i++) {
-            if (_accessToFillStatistic === true) {
-                let wordStatus = new WordStatusResponseDTO(wordStatusesJson[i]);
-                let JSONResponseNumberOfWords =
-                    await _WORDS_API.GET.getCountByCustomerIdAndWordStatusCode(customerId, wordStatus.code);
-                if (JSONResponseNumberOfWords.status === _HTTP_STATUSES.OK) {
-                    let longResponse = new LongResponse(JSONResponseNumberOfWords.json);
-                    numberOfWordsSum += longResponse.value;
+            let wordStatus = new WordStatusResponseDTO(wordStatusesJson[i]);
+            let JSONResponseNumberOfWords =
+                await _WORDS_API.GET.getCountByCustomerIdAndWordStatusCode(customerId, wordStatus.code);
+            if (JSONResponseNumberOfWords.status === _HTTP_STATUSES.OK) {
+                let longResponse = new LongResponse(JSONResponseNumberOfWords.json);
+                numberOfWordsSum += longResponse.value;
 
-                    let wordStatusWithCount = new WordStatusWithCount(wordStatus, longResponse.value);
-                    wordStatusesWithCount.push(wordStatusWithCount);
-                }
+                let wordStatusWithCount = new WordStatusWithCount(wordStatus, longResponse.value);
+                wordStatusesWithCount.push(wordStatusWithCount);
             }
         }
 
@@ -313,57 +294,96 @@ async function createStatisticItems() {
 
     return statisticItems;
 }
+//---
 
-async function sendPreparedRequest() {
+// Слова с текущим статусом слова ---
+function prepareWordsFinder() {
+    _CUSTOM_TIMER_WORDS_FINDER.setTimeout(_TIMEOUT_FOR_FINDERS);
+    _CUSTOM_TIMER_WORDS_FINDER.setHandler(async function() {
+        _lastWordNumberInList = 0;
+        _lastWordIdOnPreviousPage = 0n;
+
+        // Очищаем мапу таймеров историй статусов слов ---
+        for (let key of _wordStatusHistoryItemsForFindMap.keys()) {
+            let wordHistoryItem = _wordStatusHistoryItemsForFindMap.get(key);
+            if (wordHistoryItem.customTimerFinder) {
+                wordHistoryItem.customTimerFinder.stop();
+            }
+        }
+
+        _wordStatusHistoryItemsForFindMap.clear();
+        //---
+
+        await tryToFillTableRows(true, true);
+    });
+}
+
+function startToFindWords() {
+    if (_CUSTOM_TIMER_WORDS_FINDER) {
+        _CUSTOM_TIMER_WORDS_FINDER.stop();
+    }
+
+    let tableHead = document.getElementById(_MY_WORD_HISTORY_TABLE_HEAD_ID);
+    let tableBody = document.getElementById(_MY_WORD_HISTORY_TABLE_BODY_ID);
+    if (tableHead && tableBody) {
+        let numberOfColumns = _TABLE_UTILS.getNumberOfColumnsByTableHead(tableHead);
+        let trMessage = _TABLE_UTILS.MESSAGES_INSIDE_TABLE.createTrLoading(numberOfColumns);
+
+        tableBody.replaceChildren();
+        tableBody.appendChild(trMessage);
+    }
+
+    if (_CUSTOM_TIMER_WORDS_FINDER) {
+        _CUSTOM_TIMER_WORDS_FINDER.start();
+    }
+}
+
+async function tryToFillTableRows(doNeedToClearTable, doNeedToShowTableMessage) {
+    let currentFinder = _CUSTOM_TIMER_WORDS_FINDER;
+
     let customerId = _GLOBAL_COOKIES.AUTH_ID.getValue();
     let title = document.getElementById(_TB_FINDER_ID).value;
     let wordStatusCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_WORD_STATUSES);
     let langCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_LANGS_ID);
 
-    return await _WORDS_API.GET.getAllCustomerWordsFilteredPagination(_NUMBER_OF_WORDS, customerId,
+    let JSONResponse = await _WORDS_API.GET.getAllCustomerWordsFilteredPagination(_NUMBER_OF_WORDS, customerId,
         title, wordStatusCode, langCode, _lastWordIdOnPreviousPage);
-}
-
-async function tryToFillTable() {
-    _lastWordNumberInList = 0;
-    _lastWordIdOnPreviousPage = 0n;
-    _timersForWordHistoriesMap.clear();
-
-    // Получаем JSON для заполнения таблицы ---
-    let JSONResponse = await sendPreparedRequest();
     if (JSONResponse.status === _HTTP_STATUSES.OK) {
         let tableRows = await createTableRows(JSONResponse.json);
-        if (_accessToFillTable === true) {
-            let tableBody = document.getElementById(_MY_WORD_HISTORY_TABLE_BODY_ID);
-            tableBody.replaceChildren();
-            for (let i = 0; i < tableRows.length; i++) {
-                if (_accessToFillTable === true) {
+        let tableBody = document.getElementById(_MY_WORD_HISTORY_TABLE_BODY_ID);
+        if (tableRows && tableBody && currentFinder.getActive() === true) {
+            if (doNeedToClearTable === true) {
+                tableBody.replaceChildren();
+                for (let i = 0; i < tableRows.length; i++) {
+                    if (currentFinder.getActive() !== true) break;
                     tableBody.appendChild(tableRows[i]);
                 }
             }
         }
-    } else {
-        // Выводим сообщение об ошибке
+    } else if (doNeedToShowTableMessage === true) {
         let tableHead = document.getElementById(_MY_WORD_HISTORY_TABLE_HEAD_ID);
-        let numberOfColumns = _TABLE_UTILS.getNumberOfColumnsByTableHead(tableHead);
-        let trMessage = _TABLE_UTILS.MESSAGES_INSIDE_TABLE.createTrCommon(
-            numberOfColumns, new CustomResponseMessage(JSONResponse.json).text);
+        let tableBody = document.getElementById(_MY_WORD_HISTORY_TABLE_BODY_ID);
+        if (tableHead && tableBody) {
+            let numberOfColumns = _TABLE_UTILS.getNumberOfColumnsByTableHead(tableHead);
+            let trMessage = _TABLE_UTILS.MESSAGES_INSIDE_TABLE.createTrCommon(
+                numberOfColumns, new CustomResponseMessage(JSONResponse.json).text);
 
-        if (_accessToFillTable === true) {
-            let tableBody = document.getElementById(_MY_WORD_HISTORY_TABLE_BODY_ID);
-            tableBody.replaceChildren();
-            if (_accessToFillTable === true) {
-                tableBody.appendChild(trMessage);
+            if (currentFinder.getActive() === true) {
+                tableBody.replaceChildren();
+                if (currentFinder.getActive() === true) {
+                    tableBody.appendChild(trMessage);
+                }
             }
         }
     }
-    //---
 }
 
 async function createTableRows(customerWordsFilteredPaginationJson){
+    let currentFinder = _CUSTOM_TIMER_WORDS_FINDER;
     let tableRows = [];
 
     for (let i = 0; i < customerWordsFilteredPaginationJson.length; i++) {
+        if (currentFinder.getActive() !== true) break;
         let word = new WordResponseDTO(customerWordsFilteredPaginationJson[i]);
 
         let row = await createTableRow(word, i);
@@ -378,22 +398,14 @@ async function createTableRows(customerWordsFilteredPaginationJson){
     }
 
     // Создаем кнопку, только если запрос вернул максимальное количество на страницу
-    if (_accessToFillTable === true && customerWordsFilteredPaginationJson.length === _NUMBER_OF_WORDS) {
+    if (currentFinder.getActive() === true &&
+        customerWordsFilteredPaginationJson.length === _NUMBER_OF_WORDS) {
         let tableHead = document.getElementById(_MY_WORD_HISTORY_TABLE_HEAD_ID);
         let numberOfColumns = _TABLE_UTILS.getNumberOfColumnsByTableHead(tableHead);
 
         let trShowMore = _TABLE_UTILS.createTrShowMore(numberOfColumns,
             _NUMBER_OF_WORDS, async function () {
-                let JSONResponse = await sendPreparedRequest();
-                if (JSONResponse.status === _HTTP_STATUSES.OK) {
-                    let tableBody = document.getElementById(_MY_WORD_HISTORY_TABLE_BODY_ID);
-                    let tableRows = await createTableRows(JSONResponse.json);
-                    for (let i = 0; i < tableRows.length; i++) {
-                        if (_accessToFillTable === true) {
-                            tableBody.appendChild(tableRows[i]);
-                        }
-                    }
-                }
+                await tryToFillTableRows(false, false);
             });
 
         tableRows.push(trShowMore);
@@ -419,7 +431,7 @@ async function createTableRow(wordResponseDTO, index) {
         //---
 
         // Создаём кнопку, которая будет показывать/скрывать информацию об изменения статуса слова ---
-        let aBtnHistoryAction = createABtnShowHistoryAction(wordStatusHistory, divWordContainer);
+        let aBtnHistoryAction = createABtnHistoryAction(wordStatusHistory, divWordContainer);
         let actionColumn = document.createElement("td");
         actionColumn.appendChild(aBtnHistoryAction);
 
@@ -442,7 +454,6 @@ async function createTableRow(wordResponseDTO, index) {
         // Создаём таблицу с информацией о слове пользователя с его текущим статусом, помещаем её в контейнер ---
         let tableWordWithCurrentStatus = document.createElement("table");
         tableWordWithCurrentStatus.classList.add(_CSS_MAIN.TABLE_STANDARD_STYLE_ID);
-        tableWordWithCurrentStatus.style.borderSpacing = "5px 0px";
 
         let colgroupParent = document.getElementById(_MY_WORD_HISTORY_TABLE_COLGROUP_ID);
         colgroupParent = colgroupParent.cloneNode(true);
@@ -454,7 +465,8 @@ async function createTableRow(wordResponseDTO, index) {
 
         // Создаем td элемент на все колонки таблицы, добавляем в него контейнер ---
         let tdWord = document.createElement("td");
-        tdWord.style.padding = "0px";
+        tdWord.style.padding = "0";
+        tdWord.style.paddingTop = "5px";
         tdWord.colSpan = colgroupParent.childElementCount;
         tdWord.appendChild(divWordContainer);
         //---
@@ -470,7 +482,6 @@ async function createTableRow(wordResponseDTO, index) {
     //---
 }
 
-// Создание строки слова со статусом (без колонки действий)
 function createTableRowWithoutActionColumn(wordStatusHistoryObj, numberInTable) {
     // Создаём строку для новой таблицы ---
     let row = document.createElement("tr");
@@ -531,8 +542,7 @@ function createTableRowWithoutActionColumn(wordStatusHistoryObj, numberInTable) 
     return row;
 }
 
-// Создание кнопки "Показать/скрыть историю изменения слова"
-function createABtnShowHistoryAction(wordStatusHistoryObj, parentContainer) {
+function createABtnHistoryAction(wordStatusHistoryObj, parentContainer) {
     let aBtnHistoryAction = document.createElement("a");
     if (wordStatusHistoryObj) {
         changeToShowHistoryAction(aBtnHistoryAction, parentContainer, wordStatusHistoryObj.word.id);
@@ -551,129 +561,154 @@ function createABtnShowHistoryAction(wordStatusHistoryObj, parentContainer) {
     return divContainer;
 }
 
-// Действие показа истории изменения слова
 function changeToShowHistoryAction(aBtnShowHistoryAction, parentElement, wordId) {
     _A_BUTTONS.A_BUTTON_ARROW_DOWN.setStyles(aBtnShowHistoryAction);
     aBtnShowHistoryAction.title = "Показать историю изменения статуса слова";
     aBtnShowHistoryAction.onclick = null;
 
-    // Останавливаем таймеры, если они не успели прогрузиться до сокрытия истории ---
-    let timersForWordHistory = _timersForWordHistoriesMap.get(wordId);
-    if (timersForWordHistory) {
-        timersForWordHistory.stopTimers();
-    }
-    //---
-
     aBtnShowHistoryAction.onclick = async function() {
-        let divWithWordStatusHistory =
-            await createDivWithWordStatusHistoryTable(wordId);
-        divWithWordStatusHistory.style.marginTop = "5px";
-        parentElement.appendChild(divWithWordStatusHistory);
+        // Ищем объект для поиска / создаём новый ---
+        let wordStatusHistoryItemsForFind = _wordStatusHistoryItemsForFindMap.get(wordId);
+        if (!wordStatusHistoryItemsForFind) {
+            // Создаём таблицу ---
+            let tableHistory = document.createElement("table");
+            tableHistory.classList.add(_CSS_MAIN.TABLE_STANDARD_STYLE_ID);
 
-        changeToHideHistoryAction(aBtnShowHistoryAction, parentElement, wordId, divWithWordStatusHistory);
+            let colgroupParent = document.getElementById(_MY_WORD_HISTORY_TABLE_COLGROUP_ID);
+            colgroupParent = colgroupParent.cloneNode(true);
+            tableHistory.appendChild(colgroupParent);
+
+            let tBodyHistory = document.createElement("tbody");
+            tBodyHistory.appendChild(_TABLE_UTILS.MESSAGES_INSIDE_TABLE.createTrLoading())
+            tableHistory.appendChild(tBodyHistory);
+            //---
+
+            // Подготавливаем таймер ---
+            let customTimerHistoryFinder = new CustomTimer();
+            customTimerHistoryFinder.setTimeout(_TIMEOUT_FOR_FINDERS);
+            customTimerHistoryFinder.setHandler(async function() {
+                await tryToFillWordStatusHistoryCurrentWordTable(wordId);
+            });
+            //---
+
+            wordStatusHistoryItemsForFind = new WordStatusHistoryItemsForFind(
+                tableHistory, colgroupParent, tBodyHistory, customTimerHistoryFinder);
+            _wordStatusHistoryItemsForFindMap.set(wordId, wordStatusHistoryItemsForFind);
+        }
+        //---
+
+        // Добавляем контейнер с историей к родителю ---
+        let divHistoryContainer =
+            _TABLE_UTILS.createElementBetweenTwoHorizontalDelimiters(wordStatusHistoryItemsForFind.tableHistory);
+        parentElement.appendChild(divHistoryContainer);
+        //---
+
+        startToFindWordStatusHistoryByCurrentWord(wordStatusHistoryItemsForFind);
+        changeToHideHistoryAction(aBtnShowHistoryAction, parentElement, wordId);
     }
 }
 
-// Действие сокрытия истории изменения слова
-function changeToHideHistoryAction(aBtnShowHistoryAction, parentElement, wordId, tableWordStatusHistory) {
+function changeToHideHistoryAction(aBtnShowHistoryAction, parentElement, wordId) {
     _A_BUTTONS.A_BUTTON_ARROW_UP.setStyles(aBtnShowHistoryAction);
     aBtnShowHistoryAction.title = "Скрыть историю изменения статуса слова";
     aBtnShowHistoryAction.onclick = null;
 
     aBtnShowHistoryAction.onclick = async function() {
-        parentElement.removeChild(tableWordStatusHistory);
+        // Завершаем поиск, удаляем контейнер с историей из родителя ---
+        let wordStatusHistoryItemsForFind = _wordStatusHistoryItemsForFindMap.get(wordId);
+        if (wordStatusHistoryItemsForFind) {
+            wordStatusHistoryItemsForFind.customTimerFinder.stop();
+            parentElement.removeChild(wordStatusHistoryItemsForFind.tableHistory.parentElement);
+        }
+        //---
+
         changeToShowHistoryAction(aBtnShowHistoryAction, parentElement, wordId);
     }
 }
+//---
 
-// Создание контейнера с таблицей история слова
-async function createDivWithWordStatusHistoryTable(wordId) {
-    // Создаём разделитель ---
-    let divDelimiter = document.createElement("div");
-    divDelimiter.classList.add(_CSS_MAIN.DIV_HORIZONTAL_DELIMITER_STYLE_ID);
-
-    let divDelimiterContainer = document.createElement("div");
-    divDelimiterContainer.style.display = "grid";
-    divDelimiterContainer.style.alignItems = "center";
-    divDelimiterContainer.style.height = "30px";
-    divDelimiterContainer.appendChild(divDelimiter);
-    //---
-
-    // Создаём таблицу, в которой будем отбражать историю слова
-    let tableWordStatusHistories = document.createElement("table");
-    tableWordStatusHistories.classList.add(_CSS_MAIN.TABLE_STANDARD_STYLE_ID);
-
-    // Добавляем все элементы в контейнер
-    let divWithWordStatusHistoryTable = document.createElement("div");
-    divWithWordStatusHistoryTable.style.display = "grid";
-    divWithWordStatusHistoryTable.appendChild(divDelimiterContainer);
-    divWithWordStatusHistoryTable.appendChild(tableWordStatusHistories);
-    divWithWordStatusHistoryTable.appendChild(divDelimiterContainer.cloneNode(true));
-    //---
-
-    // Получаем colgroup главной таблицы (чтобы колонки были по размерам такие же) ---
-    let colgroupParent = document.getElementById(_MY_WORD_HISTORY_TABLE_COLGROUP_ID);
-    let numberOfColumns = _TABLE_UTILS.getNumberOfColumnsByColgroup(colgroupParent);
-    //---
-
-    // Создаём тело таблицы, помещаем в таблицу colgroup и body ---
-    let tBodyWordStatusHistories = document.createElement("tbody");
-    tableWordStatusHistories.appendChild(colgroupParent.cloneNode(true));
-    tableWordStatusHistories.appendChild(tBodyWordStatusHistories);
-    //---
-
-    // Подготавливаем таймеры (чтобы отобразить загрузку, если не будет прогружать) ---
-    let timersForWordHistory = _timersForWordHistoriesMap.get(wordId);
-    if (!timersForWordHistory) {
-        let customTimerWaiterForWordHistory = new CustomTimer();
-        let customTimerFinderForWordHistory = new CustomTimer();
-
-        timersForWordHistory =
-            new TimersForWordHistory(customTimerWaiterForWordHistory, customTimerFinderForWordHistory);
-        _timersForWordHistoriesMap.set(wordId, timersForWordHistory);
+// Генерация таблицы истории изменения статусов конкретного слова ---
+function startToFindWordStatusHistoryByCurrentWord(wordStatusHistoryItemsForFind) {
+    if (wordStatusHistoryItemsForFind) {
+        wordStatusHistoryItemsForFind.customTimerFinder.stop();
     }
 
-    timersForWordHistory.customTimerWaiter.handler = function () {
-        tBodyWordStatusHistories.replaceChildren();
+    let colgroupHistory = wordStatusHistoryItemsForFind.colgroupHistory;
+    let tBodyHistory = wordStatusHistoryItemsForFind.tBodyHistory;
+    if (tBodyHistory) {
+        let numberOfColumns = _TABLE_UTILS.getNumberOfColumnsByColgroup(colgroupHistory);
+        let trLoading = _TABLE_UTILS.MESSAGES_INSIDE_TABLE.createTrLoading(numberOfColumns);
+        for (let trChild of trLoading.childNodes) {
+            trChild.style.padding = "20px";
+        }
 
-        let trMessage = _TABLE_UTILS.MESSAGES_INSIDE_TABLE.createTrLoading(numberOfColumns);
-        tBodyWordStatusHistories.appendChild(trMessage);
+        tBodyHistory.replaceChildren();
+        tBodyHistory.appendChild(trLoading);
     }
-    timersForWordHistory.customTimerWaiter.timeout = 1;
 
-    timersForWordHistory.customTimerFinder.handler = async function() {
-        // Генерируем историю статуса слова или выводим сообщение ---
-        let JSONResponseWordStatusHistories = await _WORD_STATUS_HISTORIES.GET.getAllByWordId(wordId);
-        if (JSONResponseWordStatusHistories.status === _HTTP_STATUSES.OK) {
-            tBodyWordStatusHistories.replaceChildren();
-            let json = JSONResponseWordStatusHistories.json;
-            for (let i = 0; i < json.length; i++) {
-                let wordStatusHistory = new WordStatusHistoryResponseDTO(json[i]);
-                let row = createTableRowWithoutActionColumn(wordStatusHistory, null);
+    if (wordStatusHistoryItemsForFind) {
+        wordStatusHistoryItemsForFind.customTimerFinder.start();
+    }
+}
 
-                if (row) {
-                    let tdEmpty = document.createElement("td");
-                    row.appendChild(tdEmpty);
+async function tryToFillWordStatusHistoryCurrentWordTable(wordId) {
+    let wordStatusHistoryItemsForFind = _wordStatusHistoryItemsForFindMap.get(wordId);
+    if (wordStatusHistoryItemsForFind) {
+        let currentFinder = wordStatusHistoryItemsForFind.customTimerFinder;
 
-                    for (let i = 0; i < row.childElementCount; i++) {
-                        row.children.item(i).style.padding = "20px";
-                    }
-
-                    tBodyWordStatusHistories.appendChild(row);
+        let JSONResponse = await _WORD_STATUS_HISTORIES.GET.getAllByWordId(wordId);
+        if (JSONResponse.status === _HTTP_STATUSES.OK) {
+            let tableRows = createWordStatusHistoryCurrentWordTableRows(JSONResponse.json);
+            let tableBody = wordStatusHistoryItemsForFind.tBodyHistory;
+            if (tableRows && tableBody && currentFinder.getActive() === true) {
+                tableBody.replaceChildren();
+                for (let i = 0; i < tableRows.length; i++) {
+                    if (currentFinder.getActive() !== true) break;
+                    tableBody.appendChild(tableRows[i]);
                 }
             }
         } else {
-            tBodyWordStatusHistories.replaceChildren();
-            let trMessage = _TABLE_UTILS.MESSAGES_INSIDE_TABLE.createTrCommon(numberOfColumns,
-                new CustomResponseMessage(JSONResponseWordStatusHistories.json).text);
-            tBodyWordStatusHistories.appendChild(trMessage);
+            let colgroup = wordStatusHistoryItemsForFind.colgroupHistory;
+            let tableBody = wordStatusHistoryItemsForFind.tBodyHistory;
+            if (colgroup && tableBody) {
+                let numberOfColumns = _TABLE_UTILS.getNumberOfColumnsByColgroup(colgroup);
+                let trMessage = _TABLE_UTILS.MESSAGES_INSIDE_TABLE.createTrCommon(
+                    numberOfColumns, new CustomResponseMessage(JSONResponse.json).text);
+
+                if (currentFinder.getActive() === true) {
+                    tableBody.replaceChildren();
+                    if (currentFinder.getActive() === true) {
+                        tableBody.appendChild(trMessage);
+                    }
+                }
+            }
         }
-        //---
     }
-
-    _CUSTOM_TIMER_UTILS.findAfterWait(timersForWordHistory.customTimerWaiter, timersForWordHistory.customTimerFinder);
-    //---
-
-    return divWithWordStatusHistoryTable;
 }
 
+function createWordStatusHistoryCurrentWordTableRows(wordStatusHistoriesJson) {
+    let tableRows;
+
+    if (wordStatusHistoriesJson) {
+        tableRows = [];
+        for (let i = 0; i < wordStatusHistoriesJson.length; i++) {
+            let wordStatusHistory =
+                new WordStatusHistoryResponseDTO(wordStatusHistoriesJson[i]);
+            let row = createTableRowWithoutActionColumn(wordStatusHistory, null);
+
+            if (row) {
+                let tdEmpty = document.createElement("td");
+                row.appendChild(tdEmpty);
+
+                for (let i = 0; i < row.childElementCount; i++) {
+                    row.children.item(i).style.padding = "20px";
+                }
+
+                tableRows.push(row);
+            }
+        }
+    }
+
+    return tableRows;
+}
+//---

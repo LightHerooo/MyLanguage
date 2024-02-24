@@ -89,16 +89,16 @@ import {
 } from "../../classes/utils/for_templates/word_table_utils.js";
 
 import {
-    CustomTimerUtils
-} from "../../classes/utils/custom_timer_utils.js";
-
-import {
     CustomerCollectionResponseDTO
 } from "../../classes/dto/entity/customer_collection.js";
 
 import {
     FlagElements
 } from "../../classes/flag_elements.js";
+
+import {
+    TextBoxUtils
+} from "../../classes/utils/text_box_utils.js";
 
 const _WORD_STATUSES_API = new WordStatusesAPI();
 const _CUSTOMER_COLLECTIONS_API = new CustomerCollectionsAPI();
@@ -114,8 +114,8 @@ const _TABLE_UTILS = new TableUtils();
 const _A_BUTTONS = new AButtons();
 const _COMBO_BOX_UTILS = new ComboBoxUtils();
 const _WORD_TABLE_UTILS = new WordTableUtils();
-const _CUSTOM_TIMER_UTILS = new CustomTimerUtils();
 const _FLAG_ELEMENTS = new FlagElements();
+const _TEXT_BOX_UTILS = new TextBoxUtils();
 
 const _CB_CUSTOMER_COLLECTIONS_ID = "cb_customer_collections";
 const _TB_FINDER_ID = "tb_finder";
@@ -132,104 +132,34 @@ const _NUMBER_OF_WORDS = 20;
 let _lastWordNumberInList = 0;
 let _lastWordIdOnPreviousPage = 0n;
 
-const _CUSTOM_TIMER_STATISTIC_WAITER = new CustomTimer();
 const _CUSTOM_TIMER_STATISTIC_FINDER = new CustomTimer();
-let _accessToFillStatistic = true;
-
-const _CUSTOM_TIMER_COLLECTION_INFO_WAITER = new CustomTimer();
 const _CUSTOM_TIMER_COLLECTION_INFO_FINDER = new CustomTimer();
-let _accessToFillCollectionInfo = true;
-
-const _CUSTOM_TIMER_TABLE_WAITER = new CustomTimer();
-const _CUSTOM_TIMER_TABLE_FINDER = new CustomTimer();
-let _accessToFillTable = true;
+const _CUSTOM_TIMER_WORDS_FINDER = new CustomTimer();
+const _CUSTOM_TIMER_TB_FINDER = new CustomTimer();
+const _TIMEOUT_FOR_FINDERS = 1000;
 
 window.onload = async function () {
-    prepareStatisticTimers();
-    prepareCollectionInfoTimers();
-    prepareTableTimers();
+    // Подготавливаем таймеры ---
+    prepareStatisticFinder();
+    prepareCollectionInfoFinder();
+    prepareWordsFinder();
+    //---
 
     await prepareCbCustomerCollections();
     await prepareCbLangs();
     prepareTbFinder();
     prepareBtnRefresh();
 
-    startTimers();
+    startAllFinders();
 }
 
-function prepareStatisticTimers() {
-    _CUSTOM_TIMER_STATISTIC_WAITER.handler = function () {
-        _accessToFillStatistic = false;
-
-        let wordsStatisticContainer = document.getElementById(_DIV_WORDS_STATISTICS_CONTAINER_ID);
-        wordsStatisticContainer.replaceChildren();
-        wordsStatisticContainer.appendChild(new LoadingElement().createDiv());
-    }
-
-    _CUSTOM_TIMER_STATISTIC_FINDER.handler = async function () {
-        _accessToFillStatistic = true;
-        await tryToFillStatistic();
-    }
-}
-
-function prepareCollectionInfoTimers() {
-    _CUSTOM_TIMER_COLLECTION_INFO_WAITER.handler = function() {
-        _accessToFillCollectionInfo = false;
-
-        let divCollectionInfo = document.getElementById(_DIV_COLLECTION_INFO_ID);
-        divCollectionInfo.replaceChildren();
-        divCollectionInfo.appendChild(new LoadingElement().createDiv());
-    }
-
-    _CUSTOM_TIMER_COLLECTION_INFO_FINDER.handler = async function() {
-        _accessToFillCollectionInfo = true;
-        await tryToFillCollectionInfo();
-    }
-}
-
-function prepareTableTimers() {
-    _CUSTOM_TIMER_TABLE_WAITER.handler = function () {
-        _accessToFillTable = false;
-
-        // Отображаем загрузку в таблице ---
-        let tableHead = document.getElementById(_WORDS_TABLE_HEAD_ID);
-        let numberOfColumns = _TABLE_UTILS.getNumberOfColumnsByTableHead(tableHead);
-        let trMessage = _TABLE_UTILS.MESSAGES_INSIDE_TABLE.createTrLoading(numberOfColumns);
-
-        let tableBody = document.getElementById(_WORDS_TABLE_BODY_ID);
-        tableBody.replaceChildren();
-        tableBody.appendChild(trMessage);
-        //---
-    }
-
-    _CUSTOM_TIMER_TABLE_FINDER.handler = async function () {
-        _accessToFillTable = true;
-        await tryToFillTable();
-    }
-}
-
-function startTimers() {
-    _CUSTOM_TIMER_UTILS.findAfterWait(_CUSTOM_TIMER_STATISTIC_WAITER, _CUSTOM_TIMER_STATISTIC_FINDER);
-
-    let authId = _GLOBAL_COOKIES.AUTH_ID.getValue();
-    if (authId) {
-        _CUSTOM_TIMER_UTILS.findAfterWait(_CUSTOM_TIMER_COLLECTION_INFO_WAITER, _CUSTOM_TIMER_COLLECTION_INFO_FINDER);
-    }
-
-    _CUSTOM_TIMER_UTILS.findAfterWait(_CUSTOM_TIMER_TABLE_WAITER, _CUSTOM_TIMER_TABLE_FINDER);
-}
-
-// Подготовка поля "Поиск"
 function prepareTbFinder() {
     let tbFinder = document.getElementById(_TB_FINDER_ID);
     if (tbFinder) {
-        tbFinder.addEventListener("input", async function () {
-            startTimers();
-        });
+        _TEXT_BOX_UTILS.prepareTbFinder(tbFinder, startAllFinders, _CUSTOM_TIMER_TB_FINDER);
     }
 }
 
-// Подготовка выпадающего списка "Языки"
 async function prepareCbLangs() {
     let cbLangs = document.getElementById(_CB_LANGS_ID);
     if (cbLangs) {
@@ -241,23 +171,19 @@ async function prepareCbLangs() {
         await _LANG_UTILS.prepareComboBox(cbLangs, firstOption, divLangFlag);
 
         // Вешаем событие обновления списка при изменении элемента выпадающего списка
-        cbLangs.addEventListener("change", startTimers);
+        cbLangs.addEventListener("change", startAllFinders);
     }
 }
 
-// Подготовка выпадающего списка "Коллекция пользователя по умолчанию"
 async function prepareCbCustomerCollections() {
     let cbCustomerCollections = document.getElementById(_CB_CUSTOMER_COLLECTIONS_ID);
     if (cbCustomerCollections) {
         let divCollectionFlag = document.getElementById(_DIV_COLLECTION_FLAG_ID);
         await _CUSTOMER_COLLECTION_UTILS.prepareComboBox(cbCustomerCollections, null, divCollectionFlag);
 
-        // Создаём таймер, чтобы сменить язык в списке языков на основе языка коллекции
-        // Это нужно, чтобы избежать возможных задержек при обращении к API ---
-        let customTimerLangFlagChanger = new CustomTimer();
-        customTimerLangFlagChanger.timeout = 1;
-        customTimerLangFlagChanger.handler = async function() {
-            // Ищем по ключу коллекцию и получаем из неё язык ---
+        cbCustomerCollections.addEventListener("change", async function () {
+            startAllFinders();
+
             let langCode;
             let collectionKey = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbCustomerCollections);
             let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.findByKey(collectionKey);
@@ -274,16 +200,10 @@ async function prepareCbCustomerCollections() {
 
             // Меняем язык в списке языков + его флаг ---
             let cbLangs = document.getElementById(_CB_LANGS_ID);
-            cbLangs.removeEventListener("change", startTimers);
+            cbLangs.removeEventListener("change", startAllFinders);
             _LANG_UTILS.changeCbLangsItemByLangCode(cbLangs, langCode, true);
-            cbLangs.addEventListener("change", startTimers);
+            cbLangs.addEventListener("change", startAllFinders);
             //---
-        }
-        //---
-
-        cbCustomerCollections.addEventListener("change", function () {
-            customTimerLangFlagChanger.start();
-            startTimers();
         });
 
         _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemIndex(
@@ -295,28 +215,56 @@ function prepareBtnRefresh() {
     let btnRefresh = document.getElementById(_BTN_REFRESH_ID);
     if (btnRefresh) {
         btnRefresh.addEventListener("click", async function() {
-            startTimers();
+            startAllFinders();
         })
     }
 }
 
-async function sendPreparedRequest() {
-    let title = document.getElementById(_TB_FINDER_ID).value;
-    let langCode =  _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_LANGS_ID);
+function startAllFinders() {
+    startToFindStatistic();
 
-    return await _WORDS_API.GET.getAllFilteredPagination(_NUMBER_OF_WORDS, title,
-        _WORD_STATUSES.ACTIVE.CODE, langCode, _lastWordIdOnPreviousPage);
+    let authId = _GLOBAL_COOKIES.AUTH_ID.getValue();
+    if (authId) {
+        startToFindCollectionInfo();
+    }
+
+    startToFindWords();
+}
+
+// Статистика ---
+function prepareStatisticFinder() {
+    _CUSTOM_TIMER_STATISTIC_FINDER.setTimeout(_TIMEOUT_FOR_FINDERS);
+    _CUSTOM_TIMER_STATISTIC_FINDER.setHandler(async function () {
+        await tryToFillStatistic();
+    });
+}
+
+function startToFindStatistic() {
+    if (_CUSTOM_TIMER_STATISTIC_FINDER) {
+        _CUSTOM_TIMER_STATISTIC_FINDER.stop();
+    }
+
+    let wordsStatisticContainer = document.getElementById(_DIV_WORDS_STATISTICS_CONTAINER_ID);
+    if (wordsStatisticContainer) {
+        wordsStatisticContainer.replaceChildren();
+        wordsStatisticContainer.appendChild(new LoadingElement().createDiv());
+    }
+
+    if (_CUSTOM_TIMER_STATISTIC_FINDER) {
+        _CUSTOM_TIMER_STATISTIC_FINDER.start();
+    }
 }
 
 async function tryToFillStatistic() {
+    let currentFinder = _CUSTOM_TIMER_STATISTIC_FINDER;
+
     let statisticItems = await createStatisticItems();
-    if (_accessToFillStatistic) {
-        let wordsStatisticContainer = document.getElementById(_DIV_WORDS_STATISTICS_CONTAINER_ID);
+    let wordsStatisticContainer = document.getElementById(_DIV_WORDS_STATISTICS_CONTAINER_ID);
+    if (wordsStatisticContainer && currentFinder.getActive() === true) {
         wordsStatisticContainer.replaceChildren();
         for (let i = 0; i < statisticItems.length; i++) {
-            if (_accessToFillStatistic === true) {
-                wordsStatisticContainer.appendChild(statisticItems[i]);
-            }
+            if (currentFinder.getActive() !== true) break;
+            wordsStatisticContainer.appendChild(statisticItems[i]);
         }
     }
 }
@@ -397,91 +345,150 @@ async function createStatisticItems() {
     statisticItems.push(document.createElement("br"));
     return statisticItems;
 }
+//---
+
+// Информация о коллекции ---
+function prepareCollectionInfoFinder() {
+    _CUSTOM_TIMER_COLLECTION_INFO_FINDER.setTimeout(_TIMEOUT_FOR_FINDERS);
+    _CUSTOM_TIMER_COLLECTION_INFO_FINDER.setHandler(async function() {
+        await tryToFillCollectionInfo();
+    });
+}
+
+function startToFindCollectionInfo() {
+    if (_CUSTOM_TIMER_COLLECTION_INFO_FINDER) {
+        _CUSTOM_TIMER_COLLECTION_INFO_FINDER.stop();
+    }
+
+    let divCollectionInfo = document.getElementById(_DIV_COLLECTION_INFO_ID);
+    if (divCollectionInfo) {
+        divCollectionInfo.replaceChildren();
+        divCollectionInfo.appendChild(new LoadingElement().createDiv());
+    }
+
+    if (_CUSTOM_TIMER_COLLECTION_INFO_FINDER) {
+        _CUSTOM_TIMER_COLLECTION_INFO_FINDER.start();
+    }
+}
 
 async function tryToFillCollectionInfo() {
+    let currentFinder = _CUSTOM_TIMER_COLLECTION_INFO_FINDER;
+
     let collectionKey = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_CUSTOMER_COLLECTIONS_ID);
     let divCollectionInfo =
         await _CUSTOMER_COLLECTION_UTILS.createDivCollectionInfoAfterValidate(collectionKey);
 
     let divCollectionInfoContainer = document.getElementById(_DIV_COLLECTION_INFO_ID);
-    if (_accessToFillCollectionInfo === true) {
+    if (divCollectionInfoContainer && currentFinder.getActive() === true) {
         divCollectionInfoContainer.replaceChildren();
-        if (_accessToFillCollectionInfo === true) {
+        if (currentFinder.getActive() === true) {
             divCollectionInfoContainer.appendChild(divCollectionInfo);
         }
     }
 }
+//---
 
-async function tryToFillTable() {
-    let readyToFill = true;
+// Поиск слов ---
+function prepareWordsFinder() {
+    _CUSTOM_TIMER_WORDS_FINDER.setTimeout(_TIMEOUT_FOR_FINDERS);
+    _CUSTOM_TIMER_WORDS_FINDER.setHandler(async function () {
+        let readyToFill = true;
 
-    let authId = _GLOBAL_COOKIES.AUTH_ID.getValue();
-    if (authId) {
-        let collectionKey = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_CUSTOMER_COLLECTIONS_ID);
-        let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.findByCustomerIdAndKey(authId, collectionKey);
-        if (JSONResponse.status !== _HTTP_STATUSES.OK) {
-            readyToFill = false;
-            setMessageInsideTable(new CustomResponseMessage(JSONResponse.json).text);
+        // Коллекция должна принадлежать пользователю (проверка только при авторизации) ---
+        let authId = _GLOBAL_COOKIES.AUTH_ID.getValue();
+        if (authId) {
+            let collectionKey = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_CUSTOMER_COLLECTIONS_ID);
+            let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.findByCustomerIdAndKey(authId, collectionKey);
+            if (JSONResponse.status !== _HTTP_STATUSES.OK) {
+                readyToFill = false;
+                setMessageInsideTable(new CustomResponseMessage(JSONResponse.json).text);
+            }
         }
+        //---
+
+        if (readyToFill === true) {
+            _lastWordNumberInList = 0;
+            _lastWordIdOnPreviousPage = 0n;
+
+            await tryToFillTable(true, true);
+        }
+    });
+}
+
+function startToFindWords() {
+    if (_CUSTOM_TIMER_WORDS_FINDER) {
+        _CUSTOM_TIMER_WORDS_FINDER.stop();
     }
 
-    if (readyToFill === true) {
-        _lastWordNumberInList = 0;
-        _lastWordIdOnPreviousPage = 0n;
+    // Отображаем загрузку в таблице ---
+    let tableHead = document.getElementById(_WORDS_TABLE_HEAD_ID);
+    let tableBody = document.getElementById(_WORDS_TABLE_BODY_ID);
+    if (tableHead && tableBody) {
+        let numberOfColumns = _TABLE_UTILS.getNumberOfColumnsByTableHead(tableHead);
+        let trMessage = _TABLE_UTILS.MESSAGES_INSIDE_TABLE.createTrLoading(numberOfColumns);
 
-        let JSONResponse = await sendPreparedRequest();
-        if (JSONResponse.status === _HTTP_STATUSES.OK) {
-            let tableRows = await createTableRows(JSONResponse.json);
+        tableBody.replaceChildren();
+        tableBody.appendChild(trMessage);
+    }
+    //---
 
-            if (_accessToFillTable === true) {
-                let tableBody = document.getElementById(_WORDS_TABLE_BODY_ID);
+    if (_CUSTOM_TIMER_WORDS_FINDER) {
+        _CUSTOM_TIMER_WORDS_FINDER.start();
+    }
+}
+
+async function tryToFillTable(doNeedToClearTable, doNeedToShowTableMessage) {
+    let currentFinder = _CUSTOM_TIMER_WORDS_FINDER;
+
+    let title = document.getElementById(_TB_FINDER_ID).value;
+    let langCode =  _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_LANGS_ID);
+
+    let JSONResponse = await _WORDS_API.GET.getAllFilteredPagination(_NUMBER_OF_WORDS, title,
+        _WORD_STATUSES.ACTIVE.CODE, langCode, _lastWordIdOnPreviousPage);
+    if (JSONResponse.status === _HTTP_STATUSES.OK) {
+        let tableRows = await createTableRows(JSONResponse.json);
+        let tableBody = document.getElementById(_WORDS_TABLE_BODY_ID);
+        if (tableRows && tableBody && currentFinder.getActive() === true) {
+            if (doNeedToClearTable === true) {
                 tableBody.replaceChildren();
-                for (let i = 0; i < tableRows.length; i++) {
-                    if (_accessToFillTable === true) {
-                        tableBody.appendChild(tableRows[i]);
-                    }
-                }
             }
-        } else {
-            setMessageInsideTable(new CustomResponseMessage(JSONResponse.json).text);
+
+            for (let i = 0; i < tableRows.length; i++) {
+                if (currentFinder.getActive() !== true) break;
+                tableBody.appendChild(tableRows[i]);
+            }
         }
+    } else if (doNeedToShowTableMessage === true) {
+        setMessageInsideTable(new CustomResponseMessage(JSONResponse.json).text);
     }
 }
 
 async function createTableRows(wordsFilteredPaginationJson) {
+    let currentFinder = _CUSTOM_TIMER_WORDS_FINDER;
     let tableRows = [];
 
     for (let i = 0; i < wordsFilteredPaginationJson.length; i++) {
-        if (_accessToFillTable === true) {
-            let word = new WordResponseDTO(wordsFilteredPaginationJson[i]);
+        if (currentFinder.getActive() !== true) break;
+        let word = new WordResponseDTO(wordsFilteredPaginationJson[i]);
 
-            let row = await createTableRow(word);
-            if (row) {
-                tableRows.push(row);
-            }
+        let row = await createTableRow(word);
+        if (row) {
+            tableRows.push(row);
+        }
 
-            if (i === wordsFilteredPaginationJson.length - 1) {
-                _lastWordIdOnPreviousPage = word.id;
-            }
+        if (i === wordsFilteredPaginationJson.length - 1) {
+            _lastWordIdOnPreviousPage = word.id;
         }
     }
 
-    if (_accessToFillTable === true && wordsFilteredPaginationJson.length === _NUMBER_OF_WORDS) {
+    if (currentFinder.getActive() === true &&
+        wordsFilteredPaginationJson.length === _NUMBER_OF_WORDS) {
         let tableHead = document.getElementById(_WORDS_TABLE_HEAD_ID);
         let numberOfColumns = _TABLE_UTILS.getNumberOfColumnsByTableHead(tableHead);
 
         let trShowMore = _TABLE_UTILS.createTrShowMore(numberOfColumns,
             _NUMBER_OF_WORDS, async function() {
-                let JSONResponse = await sendPreparedRequest();
-                if (JSONResponse.status === _HTTP_STATUSES.OK) {
-                    let tableBody = document.getElementById(_WORDS_TABLE_BODY_ID);
-                    let tableRows = await createTableRows(JSONResponse.json);
-                    for (let i = 0; i < tableRows.length; i++) {
-                        if (_accessToFillTable === true) {
-                            tableBody.appendChild(tableRows[i]);
-                        }
-                    }
-                }
+                await tryToFillTable(false, false);
             });
 
         tableRows.push(trShowMore);
@@ -530,15 +537,19 @@ async function createTableRow(wordResponseDTO) {
 }
 
 function setMessageInsideTable(message) {
-    let tableHead = document.getElementById(_WORDS_TABLE_HEAD_ID);
-    let numberOfColumns = _TABLE_UTILS.getNumberOfColumnsByTableHead(tableHead);
-    let trMessage = _TABLE_UTILS.MESSAGES_INSIDE_TABLE.createTrCommon(numberOfColumns, message);
+    let currentFinder = _CUSTOM_TIMER_WORDS_FINDER;
 
+    let tableHead = document.getElementById(_WORDS_TABLE_HEAD_ID);
     let tableBody = document.getElementById(_WORDS_TABLE_BODY_ID);
-    if (_accessToFillTable === true) {
-        tableBody.replaceChildren();
-        if (_accessToFillTable === true) {
-            tableBody.appendChild(trMessage);
+    if (tableHead && tableBody) {
+        let numberOfColumns = _TABLE_UTILS.getNumberOfColumnsByTableHead(tableHead);
+        let trMessage = _TABLE_UTILS.MESSAGES_INSIDE_TABLE.createTrCommon(numberOfColumns, message);
+
+        if (currentFinder.getActive() === true) {
+            tableBody.replaceChildren();
+            if (currentFinder.getActive() === true) {
+                tableBody.appendChild(trMessage);
+            }
         }
     }
 }
@@ -563,7 +574,7 @@ async function createBtnAction(wordInCollectionRequestDTO) {
         }
 
         aBtnAction.addEventListener("click", function () {
-            _CUSTOM_TIMER_UTILS.findAfterWait(_CUSTOM_TIMER_COLLECTION_INFO_WAITER, _CUSTOM_TIMER_COLLECTION_INFO_FINDER);
+            startToFindCollectionInfo();
         })
     } else {
         _A_BUTTONS.A_BUTTON_DISABLED.setStyles(aBtnAction);
@@ -582,3 +593,4 @@ async function createBtnAction(wordInCollectionRequestDTO) {
 
     return divContainer;
 }
+//---

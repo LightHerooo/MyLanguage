@@ -29,7 +29,7 @@ import {
 
 import {
     CssCollectionInfo
-} from "../../css/types/css_collection_info.js";
+} from "../../css/entity/css_collection_info.js";
 
 import {
     ComboBoxUtils
@@ -38,10 +38,6 @@ import {
 import {
     FlagElements
 } from "../../flag_elements.js";
-
-import {
-    CustomTimer
-} from "../../custom_timer/custom_timer.js";
 
 const _CUSTOMER_COLLECTIONS_API = new CustomerCollectionsAPI();
 
@@ -74,11 +70,7 @@ export class CustomerCollectionUtils {
             }
         }
 
-        // Создаём таймер для поиска языка в коллекции и смены флага
-        // Это нужно, чтобы избежать возможного скопления запросов к API ---
-        let customerTimerCollectionFlagChanger = new CustomTimer();
-        customerTimerCollectionFlagChanger.timeout = 1;
-        customerTimerCollectionFlagChanger.handler = async function() {
+        cbCustomerCollections.addEventListener("change", async function() {
             let langCode;
             let collectionKey = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbCustomerCollections);
             let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.findByKey(collectionKey);
@@ -88,41 +80,10 @@ export class CustomerCollectionUtils {
             }
 
             _FLAG_ELEMENTS.DIV.setStyles(divCollectionFlag, langCode, true);
-        }
-        //---
-
-        cbCustomerCollections.addEventListener("change", function() {
-            customerTimerCollectionFlagChanger.start();
         })
 
         _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemIndex(
             cbCustomerCollections, 0, true);
-    }
-
-    prepareTextBox(tbCustomerCollection, divCollectionFlag){
-        // Создаём таймер для поиска языка в коллекции и смены флага
-        // Это нужно, чтобы избежать возможного скопления запросов к API ---
-        let customerTimerCollectionFlagChanger = new CustomTimer();
-        customerTimerCollectionFlagChanger.timeout = 250;
-        customerTimerCollectionFlagChanger.handler = async function() {
-            let langCode;
-            let collectionKey = tbCustomerCollection.value;
-            let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.findByKey(collectionKey);
-            if (JSONResponse.status === _HTTP_STATUSES.OK) {
-                let collection = new CustomerCollectionResponseDTO(JSONResponse.json);
-                langCode = collection.lang.code;
-            }
-
-            _FLAG_ELEMENTS.DIV.setStyles(divCollectionFlag, langCode, true);
-        }
-        //---
-
-        tbCustomerCollection.addEventListener("input", function () {
-            customerTimerCollectionFlagChanger.start();
-        });
-
-        let event = new Event('input');
-        tbCustomerCollection.dispatchEvent(event);
     }
 
     async checkCorrectValueInTbTitle(tbTitle, parentElement, langCode, customTimerObj) {
@@ -151,11 +112,11 @@ export class CustomerCollectionUtils {
                 customerCollectionRequestDTO.langCode = langCode;
 
                 let JSONResponsePromise = new Promise(resolve => {
-                    customTimerObj.handler = async function () {
+                    customTimerObj.setHandler(async function () {
                         resolve(await _CUSTOMER_COLLECTIONS_API.POST.validateBeforeCrud(customerCollectionRequestDTO));
-                    }
+                    });
 
-                    customTimerObj.timeout = 250;
+                    customTimerObj.setTimeout(250);
                     customTimerObj.start();
                 });
 
@@ -163,52 +124,6 @@ export class CustomerCollectionUtils {
                 if (JSONResponse.status !== _HTTP_STATUSES.OK) {
                     isCorrect = false;
                     ruleElement.message = new CustomResponseMessage(JSONResponse.json).text;
-                    ruleElement.ruleType = _RULE_TYPES.ERROR;
-                }
-            }
-
-            // Отображаем предупреждение (правило), если это необходимо ---
-            if (isCorrect === false) {
-                ruleElement.showRule();
-            } else {
-                ruleElement.removeRule();
-            }
-            //---
-        } else {
-            isCorrect = false;
-        }
-
-        return isCorrect;
-    }
-
-    async checkCorrectValueInTbKey(tbKey, parentElement, customTimerObj) {
-        let isCorrect = true;
-
-        if (tbKey && parentElement) {
-            let ruleElement = new RuleElement(tbKey, parentElement);
-
-            customTimerObj.stop();
-            let inputText = tbKey.value.trim();
-            if (!inputText) {
-                isCorrect = false;
-                ruleElement.message = "Ключ не может быть пустым.";
-                ruleElement.ruleType = _RULE_TYPES.ERROR;
-            } else {
-                ruleElement.removeRule();
-
-                let JSONResponsePromise = new Promise(resolve => {
-                    customTimerObj.handler = async function () {
-                        resolve(await _CUSTOMER_COLLECTIONS_API.GET.findByKey(inputText));
-                    }
-
-                    customTimerObj.timeout = 250;
-                    customTimerObj.start();
-                });
-
-                let JSONResponse = await JSONResponsePromise;
-                if (JSONResponse.status !== _HTTP_STATUSES.OK) {
-                    isCorrect = false;
-                    ruleElement.message = "Коллекции с таким ключом не существует.";
                     ruleElement.ruleType = _RULE_TYPES.ERROR;
                 }
             }

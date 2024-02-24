@@ -16,7 +16,7 @@ import {
 
 import {
     CssWorkoutInfo
-} from "../../css/types/css_workout_info.js";
+} from "../../css/entity/css_workout_info.js";
 
 import {
     DateParts
