@@ -23,6 +23,7 @@ import java.util.List;
 @RequestMapping("/api/workouts")
 public class WorkoutsRestController {
     private final long MAX_NUMBER_OF_NOT_OVER_WORKOUTS = 3;
+    private final long MIN_NUMBER_OF_WORDS = 10;
 
     private final CustomersRestController CUSTOMERS_REST_CONTROLLER;
     private final WorkoutTypesRestController WORKOUT_TYPES_REST_CONTROLLER;
@@ -33,6 +34,7 @@ public class WorkoutsRestController {
     private final WorkoutService WORKOUT_SERVICE;
     private final WordService WORD_SERVICE;
     private final WorkoutItemService WORKOUT_ITEM_SERVICE;
+    private final LangService LANG_SERVICE;
 
 
     private final WorkoutMapping WORKOUT_MAPPING;
@@ -47,6 +49,7 @@ public class WorkoutsRestController {
                                   WorkoutService workoutService,
                                   WordService wordService,
                                   WorkoutItemService workoutItemService,
+                                  LangService langService,
 
                                   WorkoutMapping workoutMapping) {
         this.WORKOUT_TYPES_REST_CONTROLLER = workoutTypesRestController;
@@ -58,6 +61,7 @@ public class WorkoutsRestController {
         this.WORKOUT_SERVICE = workoutService;
         this.WORD_SERVICE = wordService;
         this.WORKOUT_ITEM_SERVICE = workoutItemService;
+        this.LANG_SERVICE = langService;
 
         this.WORKOUT_MAPPING = workoutMapping;
     }
@@ -102,7 +106,7 @@ public class WorkoutsRestController {
         // Проверяем, что у пользователя нет более 3-х незавершённых тренировок
         Customer customer = CUSTOMER_SERVICE.findByAuthCode(dto.getAuthCode());
         long countNotOver = WORKOUT_SERVICE.countNotOver(customer.getId(), dto.getWorkoutTypeCode(), true);
-        if (countNotOver > MAX_NUMBER_OF_NOT_OVER_WORKOUTS) {
+        if (countNotOver >= MAX_NUMBER_OF_NOT_OVER_WORKOUTS) {
             CustomResponseMessage message = new CustomResponseMessage(1,
                     String.format("Достигнуто максимальное количество незавершённых тренировок (%d).",
                             MAX_NUMBER_OF_NOT_OVER_WORKOUTS));
@@ -395,9 +399,9 @@ public class WorkoutsRestController {
 
             // Проверяем количество слов
             long numberOfWords = dto.getNumberOfWords();
-            if (numberOfWords <= 0) {
+            if (numberOfWords < MIN_NUMBER_OF_WORDS) {
                 CustomResponseMessage message = new CustomResponseMessage(1,
-                        "Количество слов должно быть больше 0.");
+                        String.format("Количество слов должно быть не менее %d.", MIN_NUMBER_OF_WORDS));
                 return ResponseEntity.badRequest().body(message);
             }
 
@@ -525,6 +529,17 @@ public class WorkoutsRestController {
                 CustomResponseMessage message = new CustomResponseMessage(2,
                         String.format("В режиме '%s' разрешено количество из следующих значений: %s.",
                                 workoutType.getTitle(), possibleValuesStrBuilder));
+                return ResponseEntity.badRequest().body(message);
+            }
+
+            // Количество слов должно быть больше или равно тому, какое вообще существует под конкретным языком
+            long count = WORD_SERVICE.countByLangCode(dto.getLangInCode());
+            if (count < MIN_NUMBER_OF_WORDS) {
+                Lang langIn = LANG_SERVICE.find(dto.getLangInCode());
+
+                CustomResponseMessage message = new CustomResponseMessage(3, String.format(
+                        "В языке '%s' недостаточно слов для генерации (в наличии: %d, разрешённый минимум: %d).",
+                        langIn.getTitle(), count, MIN_NUMBER_OF_WORDS));
                 return ResponseEntity.badRequest().body(message);
             }
 

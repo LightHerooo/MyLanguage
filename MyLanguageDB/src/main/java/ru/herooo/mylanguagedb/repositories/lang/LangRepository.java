@@ -1,5 +1,7 @@
 package ru.herooo.mylanguagedb.repositories.lang;
 
+import java.util.Optional;
+
 public interface LangRepository<T> {
-    T find(Langs langs);
+    Optional<T> find(Langs langs);
 }

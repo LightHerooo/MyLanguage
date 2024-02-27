@@ -68,7 +68,7 @@ public class WordMapping {
 
         String langCode = dto.getLangCode();
         if (STRING_UTILS.isNotStringVoid(langCode)) {
-            Lang lang = LANG_CRUD_REPOSITORY.findByCode(langCode);
+            Lang lang = LANG_CRUD_REPOSITORY.findByCode(langCode).orElse(null);
             word.setLang(lang);
         }
 
@@ -79,7 +79,7 @@ public class WordMapping {
     public Word mapToWord(Word oldWord, WordRequestDTO dto) {
         long customerId = dto.getCustomerId();
         if (customerId > 0) {
-            Customer customer = CUSTOMER_CRUD_REPOSITORY.findById(customerId);
+            Customer customer = CUSTOMER_CRUD_REPOSITORY.findById(customerId).orElse(null);
             if (customer != null) {
                 oldWord.setAuthor(customer);
             }

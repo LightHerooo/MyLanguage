@@ -9,12 +9,14 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.herooo.mylanguagedb.entities.*;
 import ru.herooo.mylanguagedb.repositories.wordstatus.WordStatuses;
+import ru.herooo.mylanguagedb.types.WordsWithStatusStatistic;
 import ru.herooo.mylanguageweb.dto.other.CustomResponseMessage;
 import ru.herooo.mylanguageweb.dto.other.LongResponse;
 import ru.herooo.mylanguageweb.dto.entity.word.WordRequestDTO;
 import ru.herooo.mylanguageweb.dto.entity.word.WordResponseDTO;
 import ru.herooo.mylanguageweb.dto.entity.word.WordMapping;
 import ru.herooo.mylanguageweb.dto.entity.wordstatushistory.WordStatusHistoryRequestDTO;
+import ru.herooo.mylanguageweb.dto.types.WordsWithStatusStatisticResponseDTO;
 import ru.herooo.mylanguageweb.services.*;
 
 import java.time.LocalDate;
@@ -134,12 +136,38 @@ public class WordsRestController {
         }
     }
 
-    @GetMapping("/count_by_word_status_code")
-    public ResponseEntity<?> getCountByWordStatusCode(@RequestParam("word_status_code") String wordStatusCode) {
-        long countOfWords = WORD_SERVICE.count(wordStatusCode);
-        LongResponse longResponse = new LongResponse(countOfWords);
+    @GetMapping("/words_with_status_statistics")
+    public ResponseEntity<?> getWordsWithStatusStatistics() {
+        List<WordsWithStatusStatistic> wordsWithStatusStatistics = WORD_SERVICE.findWordsWithStatusStatistics();
+        if (wordsWithStatusStatistics != null && wordsWithStatusStatistics.size() > 0) {
+            List<WordsWithStatusStatisticResponseDTO> responseDTOs = wordsWithStatusStatistics
+                    .stream()
+                    .map(WordsWithStatusStatisticResponseDTO::new)
+                    .toList();
+            return ResponseEntity.ok(responseDTOs);
+        } else {
+            CustomResponseMessage message = new CustomResponseMessage(1,
+                    "Не удалось получить статистику слов по статусам слов.");
+            return ResponseEntity.badRequest().body(message);
+        }
+    }
 
-        return ResponseEntity.ok(longResponse);
+    @GetMapping("/words_with_status_statistics_by_customer_id")
+    public ResponseEntity<?> getWordsWithStatusStatistics(@RequestParam("customer_id") Long customerId) {
+        List<WordsWithStatusStatistic> wordsWithStatusStatistics =
+                WORD_SERVICE.findWordsWithStatusStatistics(customerId);
+        if (wordsWithStatusStatistics != null && wordsWithStatusStatistics.size() > 0) {
+            List<WordsWithStatusStatisticResponseDTO> responseDTOs = wordsWithStatusStatistics
+                    .stream()
+                    .map(WordsWithStatusStatisticResponseDTO::new)
+                    .toList();
+            return ResponseEntity.ok(responseDTOs);
+        } else {
+            CustomResponseMessage message = new CustomResponseMessage(1,
+                    String.format("Не удалось получить статистику слов пользователя с id = '%d' по статусам слов.",
+                            customerId));
+            return ResponseEntity.badRequest().body(message);
+        }
     }
 
     @GetMapping("/count_by_date_of_create")
@@ -154,25 +182,6 @@ public class WordsRestController {
         }
 
         long countOfWords = WORD_SERVICE.count(date);
-        LongResponse longResponse = new LongResponse(countOfWords);
-        return ResponseEntity.ok(longResponse);
-    }
-
-    @GetMapping("/count_by_customer_id_and_word_status_code")
-    public ResponseEntity<?> getCount(
-            @RequestParam("customer_id") Long customerId,
-            @RequestParam("word_status_code") String wordStatusCode) {
-        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.find(customerId);
-        if (response.getStatusCode() != HttpStatus.OK) {
-            return response;
-        }
-
-        response = WORD_STATUSES_REST_CONTROLLER.find(wordStatusCode);
-        if (response.getStatusCode() != HttpStatus.OK) {
-            return response;
-        }
-
-        long countOfWords = WORD_SERVICE.count(customerId, wordStatusCode);
         LongResponse longResponse = new LongResponse(countOfWords);
         return ResponseEntity.ok(longResponse);
     }
@@ -389,7 +398,7 @@ public class WordsRestController {
             // Ищем запрещеённые слова с названием, как у текущего слова
             Word word = WORD_SERVICE.findById(dto.getId());
             List<Word> blockedWords = WORD_SERVICE.findAll(word.getTitle(),
-                    WordStatuses.BLOCKED.CODE);
+                    WordStatuses.BLOCKED.CODE, null);
 
             // Удаляем из полученного списка запрещённых слов текущее
             blockedWords = blockedWords
@@ -409,7 +418,7 @@ public class WordsRestController {
         } else {
             // Если слово новое, ищем запрещённые слова по пришедшему названию
             List<Word> blockedWords = WORD_SERVICE.findAll(dto.getTitle(),
-                    WordStatuses.BLOCKED.CODE);
+                    WordStatuses.BLOCKED.CODE, null);
             if (blockedWords.size() > 0) {
                 CustomResponseMessage message = new CustomResponseMessage(4, "Это слово запрещено.");
                 return ResponseEntity.badRequest().body(message);

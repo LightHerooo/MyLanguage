@@ -56,13 +56,15 @@ class CustomerCollectionRowElements {
     tbTitle;
     cbLangsParent;
     cbLangs;
+    aBtnDelete;
 
-    constructor(divRow, tbTitleParent, tbTitle, cbLangsParent, cbLangs) {
+    constructor(divRow, tbTitleParent, tbTitle, cbLangsParent, cbLangs, aBtnDelete) {
         this.divRow = divRow;
         this.tbTitleParent = tbTitleParent;
         this.tbTitle = tbTitle;
         this.cbLangsParent = cbLangsParent;
         this.cbLangs = cbLangs;
+        this.aBtnDelete = aBtnDelete;
     }
 }
 
@@ -78,17 +80,17 @@ const _CUSTOMER_COLLECITON_UTILS = new CustomerCollectionUtils();
 const _A_BUTTONS = new AButtons();
 const _COMBO_BOX_UTILS = new ComboBoxUtils();
 
+const _A_BTN_NEW_COLLECTION_STYLE_ID = "a-btn-new-collection";
+
 const NEW_COLLECTIONS_CONTAINER_ITEM_STYLE_ID = "new-collections-container-item";
 const NEW_COLLECTION_DATA_STYLE_ID = "new-collection-data";
 const NEW_COLLECTION_DATA_ITEM_STYLE_ID = "new-collection-data-item";
 
 const _NEW_COLLECTIONS_CONTAINER_ID = "new_collections_container";
-const _BTN_NEW_COLLECTION_ID = "btn_new_collection";
+const _A_BTN_NEW_COLLECTION_ID = "a_btn_new_collection";
 const _DIV_SEND_NEW_COLLECTIONS_INFO_ID = "send_new_collections_info";
 const _SUBMIT_SEND_ID = "submit_send";
-const _SUBMIT_BTN_ID = "submit_btn";
-
-const _BTN_NEW_COLLECTION_STYLE = "btn-new-collection";
+const _BTN_SEND_ID = "btn_send";
 
 const MIN_NUMBER_OF_NEW_COLLECTION_ITEMS = 1;
 const MAX_NUMBER_OF_NEW_COLLECTION_ITEMS = 5;
@@ -99,40 +101,64 @@ let _newCollectionsMap = new Map();
 const _CUSTOM_TIMER_CHECKER = new CustomTimer();
 
 window.onload = async function () {
-    changeBtnNewCollectionStatus();
-
+    await prepareABtnNewCollection();
     prepareSubmitSend();
+
     await createNewCollectionElement();
+}
+
+window.onbeforeunload = async function () {
+
+}
+
+function prepareABtnNewCollection() {
+    let btnNewCollection = document.getElementById(_A_BTN_NEW_COLLECTION_ID);
+    if (btnNewCollection) {
+        btnNewCollection.addEventListener("click", async function() {
+            if (_newCollectionsMap.size < MAX_NUMBER_OF_NEW_COLLECTION_ITEMS) {
+                clearNewCollectionsInfoContainer();
+                await createNewCollectionElement();
+            } else {
+                let message = `За раз можно создать не более ${MAX_NUMBER_OF_NEW_COLLECTION_ITEMS} коллекций.`;
+                let ruleType = _RULE_TYPES.WARNING;
+                showRuleInNewCollectionsInfoContainer(message, ruleType);
+            }
+        });
+    }
 }
 
 function prepareSubmitSend() {
     let submitSend = document.getElementById(_SUBMIT_SEND_ID);
-    let submitBtn = document.getElementById(_SUBMIT_BTN_ID);
     submitSend.addEventListener("submit", async function(event) {
-        submitBtn.disabled = true;
         event.preventDefault();
 
-        // Показываем анимацию загрузки (предварительно очистив информацию в контейнере) ---
-        let divSendNewCollectionsInfo = document.getElementById(_DIV_SEND_NEW_COLLECTIONS_INFO_ID);
-        divSendNewCollectionsInfo.replaceChildren();
+        // Блокируем элементы и показываем загрузку ---
+        changeDisableStatusInImportantElements(true);
 
-        let divLoading = new LoadingElement().createDiv();
-        divLoading.style.justifyContent = "left";
-        divSendNewCollectionsInfo.appendChild(divLoading);
+        clearNewCollectionsInfoContainer();
+        let divSendNewCollectionsInfo = document.getElementById(_DIV_SEND_NEW_COLLECTIONS_INFO_ID);
+        if (divSendNewCollectionsInfo) {
+            let divLoading = new LoadingElement().createDiv();
+            divLoading.style.justifyContent = "left";
+            divSendNewCollectionsInfo.appendChild(divLoading);
+        }
         //---
 
         if (await checkBeforeSend() === true) {
             if (await sendNewCollections() === true) {
+                window.onbeforeunload = null;
                 submitSend.submit();
+            } else {
+                changeDisableStatusInImportantElements(false);
             }
         } else {
-            divSendNewCollectionsInfo.removeChild(divLoading);
+            clearNewCollectionsInfoContainer();
+            changeDisableStatusInImportantElements(false);
         }
-
-        submitBtn.disabled = false;
     })
 }
 
+// Создание новых коллекций ---
 async function createNewCollectionElement() {
     // Создаём поле "Название" ---
     let lbTitle = document.createElement("label");
@@ -185,13 +211,13 @@ async function createNewCollectionElement() {
 
     // Вешаем события на элементы ---
     tbTitle.addEventListener("input", async function () {
-        changeSendNewCollectionInfoRule(true, null, null);
+        clearNewCollectionsInfoContainer();
         await checkCorrectTitle(this, cbLangs, divTitle);
     })
 
 
     cbLangs.addEventListener("change", async function() {
-        changeSendNewCollectionInfoRule(true, null, null)
+        clearNewCollectionsInfoContainer();
         await checkCorrectLang(this, divLang);
         await checkCorrectTitle(tbTitle, this, divTitle);
     });
@@ -210,8 +236,8 @@ async function createNewCollectionElement() {
     divNewCollection.classList.add(NEW_COLLECTIONS_CONTAINER_ITEM_STYLE_ID);
 
     // Внутри элемента создаём кнопку удаления
-    let aDeleteButton = _A_BUTTONS.A_BUTTON_DENY.createA();
-    aDeleteButton.addEventListener("click", function () {
+    let aBtnDelete = _A_BUTTONS.A_BUTTON_DENY.createA();
+    aBtnDelete.addEventListener("click", function () {
         let isCorrect = true;
         let message;
         let ruleType;
@@ -222,9 +248,9 @@ async function createNewCollectionElement() {
         }
 
         if (isCorrect === false) {
-            changeSendNewCollectionInfoRule(isCorrect, message, ruleType);
+            showRuleInNewCollectionsInfoContainer(message, ruleType);
         } else {
-            changeSendNewCollectionInfoRule(isCorrect, null, null);
+            clearNewCollectionsInfoContainer();
             for (let key of _newCollectionsMap.keys()) {
                 let customerCollectionRowElements = _newCollectionsMap.get(key);
                 let iTbTitle = customerCollectionRowElements.tbTitle;
@@ -238,12 +264,11 @@ async function createNewCollectionElement() {
 
             let divCollectionsContainer = document.getElementById(_NEW_COLLECTIONS_CONTAINER_ID);
             divCollectionsContainer.removeChild(divNewCollection);
-            changeBtnNewCollectionStatus();
         }
     });
 
     divNewCollection.appendChild(divNewCollectionData);
-    divNewCollection.appendChild(aDeleteButton);
+    divNewCollection.appendChild(aBtnDelete);
     //---
 
     // Добавляем собранный элемент в контейнер ---
@@ -255,7 +280,7 @@ async function createNewCollectionElement() {
 
     // Добавляем элементы ввода в Map ---
     let customerCollectionRowElements =
-        new CustomerCollectionRowElements(divNewCollection, divTitle, tbTitle, divLang, cbLangs);
+        new CustomerCollectionRowElements(divNewCollection, divTitle, tbTitle, divLang, cbLangs, aBtnDelete);
     _newCollectionsMap.set(_indexOfNewCollection++, customerCollectionRowElements);
     //---
 }
@@ -306,34 +331,6 @@ function checkAllTitles() {
     }
 
     return isCorrectAll;
-}
-
-function buildABtnNewCollection() {
-    let btnNewCollection = document.getElementById(_BTN_NEW_COLLECTION_ID);
-    btnNewCollection.classList.add(_BTN_NEW_COLLECTION_STYLE);
-}
-
-function changeBtnNewCollectionStatus() {
-    let aBtnNewCollection = document.getElementById(_BTN_NEW_COLLECTION_ID);
-    if (aBtnNewCollection != null) {
-        if (_newCollectionsMap.size < MAX_NUMBER_OF_NEW_COLLECTION_ITEMS) {
-            _A_BUTTONS.A_BUTTON_ACCEPT.setStyles(aBtnNewCollection, true);
-            buildABtnNewCollection();
-
-            aBtnNewCollection.title = "Добавить новую коллекцию.";
-            aBtnNewCollection.onclick = async function() {
-                changeSendNewCollectionInfoRule(true, null, null);
-                await createNewCollectionElement();
-                changeBtnNewCollectionStatus();
-            }
-        } else {
-            _A_BUTTONS.A_BUTTON_DISABLED.setStyles(aBtnNewCollection);
-            buildABtnNewCollection();
-
-            aBtnNewCollection.title = `За раз можно добавить не более ${MAX_NUMBER_OF_NEW_COLLECTION_ITEMS} коллекций.`;
-            aBtnNewCollection.onclick = null;
-        }
-    }
 }
 
 async function checkBeforeSend() {
@@ -392,25 +389,67 @@ async function sendNewCollections() {
     }
 
     if (isCorrect === false) {
-        changeSendNewCollectionInfoRule(isCorrect, message, ruleType);
+        showRuleInNewCollectionsInfoContainer(message, ruleType);
     }
 
     return isCorrect;
 }
 
-function changeSendNewCollectionInfoRule(isCorrect, message, ruleType) {
-    let divSendNewWordsInfo = document.getElementById(_DIV_SEND_NEW_COLLECTIONS_INFO_ID);
-    if (divSendNewWordsInfo) {
-        divSendNewWordsInfo.replaceChildren();
-
-        let ruleElement = new RuleElement(divSendNewWordsInfo, divSendNewWordsInfo);
-        ruleElement.message = message;
-        ruleElement.ruleType = ruleType;
-        if (isCorrect === false) {
-            ruleElement.showRule();
-        } else {
-            ruleElement.removeRule();
-        }
+function clearNewCollectionsInfoContainer() {
+    let divNewCollectionsInfo = document.getElementById(_DIV_SEND_NEW_COLLECTIONS_INFO_ID);
+    if (divNewCollectionsInfo) {
+        divNewCollectionsInfo.replaceChildren();
     }
 }
 
+function showRuleInNewCollectionsInfoContainer(message, ruleType) {
+    let divSendNewWordsInfo = document.getElementById(_DIV_SEND_NEW_COLLECTIONS_INFO_ID);
+    if (divSendNewWordsInfo) {
+        let ruleElement = new RuleElement(divSendNewWordsInfo, divSendNewWordsInfo);
+        ruleElement.message = message;
+        ruleElement.ruleType = ruleType;
+        ruleElement.showRule();
+    }
+}
+
+function changeDisableStatusInImportantElements(isDisable) {
+    let btnSend = document.getElementById(_BTN_SEND_ID);
+    if (btnSend) {
+        btnSend.disabled = isDisable;
+    }
+
+    // Кнопка "Добавить новое слово" ---
+    let aBtnNewWord = document.getElementById(_A_BTN_NEW_COLLECTION_ID);
+    if (aBtnNewWord) {
+        if (isDisable === true) {
+            aBtnNewWord.className = "";
+            _A_BUTTONS.A_BUTTON_DISABLED.setStyles(aBtnNewWord);
+            aBtnNewWord.classList.add(_A_BTN_NEW_COLLECTION_STYLE_ID);
+        } else {
+            aBtnNewWord.className = "";
+            aBtnNewWord.classList.add(_CSS_MAIN.A_BUTTON_ACCEPT_STANDARD_STYLE_ID);
+            aBtnNewWord.classList.add(_A_BTN_NEW_COLLECTION_STYLE_ID);
+        }
+    }
+    //---
+
+    // Элементы каждой новой коллекции ---
+    for (let key of _newCollectionsMap.keys()) {
+        let row = _newCollectionsMap.get(key);
+        if (row) {
+            row.tbTitle.disabled = isDisable;
+            row.cbLangs.disabled = isDisable;
+
+            let aBtnDelete = row.aBtnDelete;
+            if (aBtnDelete) {
+                if (isDisable === true) {
+                    _A_BUTTONS.A_BUTTON_DISABLED.setStyles(aBtnDelete);
+                } else {
+                    _A_BUTTONS.A_BUTTON_DENY.setStyles(aBtnDelete);
+                }
+            }
+        }
+    }
+    //---
+}
+//---

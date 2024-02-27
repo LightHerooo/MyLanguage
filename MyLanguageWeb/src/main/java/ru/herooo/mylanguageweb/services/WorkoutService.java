@@ -86,29 +86,28 @@ public class WorkoutService {
     }
 
     public long findCurrentRoundNumber(Long workoutId) {
-        Optional<Long> currentRoundNumber = WORKOUT_CRUD_REPOSITORY.findCurrentRoundNumber(workoutId);
-        return currentRoundNumber.isPresent() ? currentRoundNumber.get() : 0;
+        return WORKOUT_CRUD_REPOSITORY.findCurrentRoundNumber(workoutId).orElse(0L);
     }
 
     public long findMaxRoundNumber(Long workoutId) {
-        return WORKOUT_CRUD_REPOSITORY.findMaxRoundNumber(workoutId);
+        return WORKOUT_CRUD_REPOSITORY.findMaxRoundNumber(workoutId).orElse(0L);
     }
 
     public Workout find(long id) {
-        return WORKOUT_CRUD_REPOSITORY.findById(id);
+        return WORKOUT_CRUD_REPOSITORY.findById(id).orElse(null);
     }
 
     public Workout findLast(Long customerId, String workoutTypeCode) {
         return WORKOUT_CRUD_REPOSITORY.findLast(
-                customerId, workoutTypeCode);
+                customerId, workoutTypeCode).orElse(null);
     }
 
     public Workout findLastInactive(Long customerId) {
-        return WORKOUT_CRUD_REPOSITORY.findLastInactive(customerId);
+        return WORKOUT_CRUD_REPOSITORY.findLastInactive(customerId).orElse(null);
     }
 
     public WorkoutRoundStatistic findRoundStatistic(Long workoutId, Long roundNumber) {
-        return WORKOUT_CRUD_REPOSITORY.findRoundStatistic(workoutId, roundNumber);
+        return WORKOUT_CRUD_REPOSITORY.findRoundStatistic(workoutId, roundNumber).orElse(null);
     }
 
     public List<Workout> findListNotOver(Long customerId, String workoutTypeCode, Boolean isActive) {

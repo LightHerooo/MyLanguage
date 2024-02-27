@@ -67,9 +67,15 @@ class WordsGETRequests {
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
     }
 
-    async getCountByWordStatusCode(wordStatusCode) {
-        let requestURL = new URL(URL_TO_API_WORDS + "/count_by_word_status_code");
-        requestURL.searchParams.set("word_status_code", wordStatusCode);
+    async getWordsWithStatusStatistics() {
+        let requestURL = new URL(URL_TO_API_WORDS + "/words_with_status_statistics");
+
+        return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
+    }
+
+    async getWordsWithStatusStatisticsByCustomerId(customerId) {
+        let requestURL = new URL(URL_TO_API_WORDS + "/words_with_status_statistics_by_customer_id");
+        requestURL.searchParams.set("customer_id", customerId);
 
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
     }
@@ -79,14 +85,6 @@ class WordsGETRequests {
 
         let requestURL = new URL(URL_TO_API_WORDS + "/count_by_date_of_create");
         requestURL.searchParams.set("date_of_create", dateParts.getDatabaseDateStr());
-
-        return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
-    }
-
-    async getCountByCustomerIdAndWordStatusCode(customerId, wordStatusCode) {
-        let requestURL = new URL(URL_TO_API_WORDS + "/count_by_customer_id_and_word_status_code");
-        requestURL.searchParams.set("customer_id", customerId);
-        requestURL.searchParams.set("word_status_code", wordStatusCode);
 
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
     }

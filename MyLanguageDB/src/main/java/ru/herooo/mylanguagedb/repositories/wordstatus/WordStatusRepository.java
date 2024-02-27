@@ -1,5 +1,7 @@
 package ru.herooo.mylanguagedb.repositories.wordstatus;
 
+import java.util.Optional;
+
 public interface WordStatusRepository<T> {
-    T find(WordStatuses wordStatuses);
+    Optional<T> find(WordStatuses wordStatuses);
 }

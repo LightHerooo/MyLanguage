@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.herooo.mylanguagedb.entities.Lang;
 import ru.herooo.mylanguagedb.entities.Word;
 import ru.herooo.mylanguagedb.repositories.word.WordCrudRepository;
+import ru.herooo.mylanguagedb.types.WordsWithStatusStatistic;
 import ru.herooo.mylanguageutils.StringUtils;
 import ru.herooo.mylanguageweb.dto.entity.word.WordMapping;
 import ru.herooo.mylanguageweb.dto.entity.word.WordRequestDTO;
@@ -58,28 +59,32 @@ public class WordService {
                 langCode, customerId, numberOfWordsOnPage, lastWordIdOnPreviousPage);
     }
 
-    public List<Word> findAll(String title, String wordStatusCode) {
-        return WORD_CRUD_REPOSITORY.findAllWithCurrentStatus(title, wordStatusCode);
+    public List<WordsWithStatusStatistic> findWordsWithStatusStatistics() {
+        return WORD_CRUD_REPOSITORY.findWordsWithStatusStatistics();
     }
 
-    public long count(String wordStatusCode) {
-        return WORD_CRUD_REPOSITORY.count(wordStatusCode);
+    public List<WordsWithStatusStatistic> findWordsWithStatusStatistics(Long customerId) {
+        return WORD_CRUD_REPOSITORY.findWordsWithStatusStatistics(customerId);
+    }
+
+    public long countByWordStatusCode(String wordStatusCode) {
+        return WORD_CRUD_REPOSITORY.count(null, wordStatusCode, null).orElse(0L);
+    }
+
+    public long countByLangCode(String langCode) {
+        return WORD_CRUD_REPOSITORY.count(null, null, langCode).orElse(0L);
     }
 
     public long count(LocalDate date) {
-        return WORD_CRUD_REPOSITORY.count(date);
-    }
-
-    public long count(Long customerId, String wordStatusCode) {
-        return WORD_CRUD_REPOSITORY.count(customerId, wordStatusCode);
+        return WORD_CRUD_REPOSITORY.count(date).orElse(0L);
     }
 
     public Word findById(long id) {
-        return WORD_CRUD_REPOSITORY.findById(id);
+        return WORD_CRUD_REPOSITORY.findById(id).orElse(null);
     }
 
     public Word findFirstByTitleIgnoreCaseAndLang(String title, Lang lang) {
-        return WORD_CRUD_REPOSITORY.findFirstByTitleIgnoreCaseAndLang(title, lang);
+        return WORD_CRUD_REPOSITORY.findFirstByTitleIgnoreCaseAndLang(title, lang).orElse(null);
     }
 
     public Word add(WordRequestDTO dto) {

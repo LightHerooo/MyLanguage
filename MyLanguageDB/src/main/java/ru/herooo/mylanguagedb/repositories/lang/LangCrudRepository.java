@@ -6,18 +6,21 @@ import org.springframework.data.repository.query.Param;
 import ru.herooo.mylanguagedb.entities.Lang;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface LangCrudRepository extends CrudRepository<Lang, Long>, LangRepository<Lang> {
-    Lang findByCode(String code);
+    Optional<Lang> findByCode(String code);
 
     @Query(value =
             "FROM Lang l " +
             "ORDER BY l.title")
     List<Lang> findAll();
 
-    @Query(value =
-            "FROM Lang l " +
-            "WHERE l.isActive = :is_active " +
-            "ORDER BY l.title")
+    @Query(nativeQuery = true, value =
+            "SELECT * FROM get_langs(:is_active)")
     List<Lang> findAll(@Param("is_active") Boolean isActive);
+
+    @Query(nativeQuery = true, value =
+            "SELECT COUNT(*) FROM get_langs(:is_active)")
+    Optional<Long> count(@Param("is_active") Boolean isActive);
 }

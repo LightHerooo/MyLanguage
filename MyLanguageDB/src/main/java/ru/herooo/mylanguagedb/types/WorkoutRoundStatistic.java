@@ -1,8 +1,10 @@
 package ru.herooo.mylanguagedb.types;
 
+import java.util.Optional;
+
 public interface WorkoutRoundStatistic {
-    Long getNumberOfQuestions();
-    Long getNumberOfTrueAnswers();
-    Long getNumberOfFalseAnswers();
-    Long getNumberOfQuestionsWithoutAnswer();
+    Optional<Long> getNumberOfQuestions();
+    Optional<Long> getNumberOfTrueAnswers();
+    Optional<Long> getNumberOfFalseAnswers();
+    Optional<Long> getNumberOfQuestionsWithoutAnswer();
 }

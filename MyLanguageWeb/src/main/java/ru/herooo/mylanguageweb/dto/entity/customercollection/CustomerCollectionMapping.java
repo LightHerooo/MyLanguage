@@ -62,13 +62,13 @@ public class CustomerCollectionMapping {
 
         String authCode = dto.getAuthCode();
         if (STRING_UTILS.isNotStringVoid(authCode)) {
-            Customer customer = CUSTOMER_CRUD_REPOSITORY.findByAuthCode(authCode);
+            Customer customer = CUSTOMER_CRUD_REPOSITORY.findByAuthCode(authCode).orElse(null);
             collection.setCustomer(customer);
         }
 
         String langCode = dto.getLangCode();
         if (STRING_UTILS.isNotStringVoid(langCode)) {
-            Lang lang = LANG_CRUD_REPOSITORY.findByCode(langCode);
+            Lang lang = LANG_CRUD_REPOSITORY.findByCode(langCode).orElse(null);
             collection.setLang(lang);
         }
 

@@ -7,11 +7,10 @@ import org.springframework.stereotype.Repository;
 import ru.herooo.mylanguagedb.entities.WorkoutItem;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface WorkoutItemCrudRepository extends CrudRepository<WorkoutItem, Long> {
-    WorkoutItem findById(long id);
-
     @Query(nativeQuery = true, value =
             "SELECT * " +
             "FROM get_workout_items_with_answer(:workout_id)")
@@ -31,18 +30,18 @@ public interface WorkoutItemCrudRepository extends CrudRepository<WorkoutItem, L
     @Query(nativeQuery = true, value =
             "SELECT COUNT(*) " +
             "FROM get_workout_items_with_answer(:workout_id, :round_number)")
-    long countWithAnswer(@Param("workout_id") Long workoutId,
-                         @Param("round_number") Long roundNumber);
+    Optional<Long> countWithAnswer(@Param("workout_id") Long workoutId,
+                             @Param("round_number") Long roundNumber);
 
     @Query(nativeQuery = true, value =
             "SELECT * " +
             "FROM get_random_workout_item_without_answer(:workout_id, :round_number)")
-    WorkoutItem findRandomWithoutAnswer(@Param("workout_id") Long workoutId,
+    Optional<WorkoutItem> findRandomWithoutAnswer(@Param("workout_id") Long workoutId,
                                         @Param("round_number") Long roundNumber);
 
     @Query(nativeQuery = true, value =
             "SELECT * " +
             "FROM get_first_workout_item_without_answer(:workout_id, :round_number)")
-    WorkoutItem findFirstWithoutAnswerByWorkoutIdAndRoundNumber(@Param("workout_id") Long workoutId,
-                                                                @Param("round_number") Integer roundNumber);
+    Optional<WorkoutItem> findFirstWithoutAnswer(@Param("workout_id") Long workoutId,
+                                                 @Param("round_number") Integer roundNumber);
 }

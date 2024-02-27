@@ -6,25 +6,23 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import ru.herooo.mylanguagedb.entities.Lang;
 import ru.herooo.mylanguagedb.entities.Word;
+import ru.herooo.mylanguagedb.types.WordsWithStatusStatistic;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface WordCrudRepository extends CrudRepository<Word, Long>, WordRepository<Word> {
-    Word findById(long id);
-    Word findFirstByTitleIgnoreCaseAndLang(String title, Lang lang);
+    Optional<Word> findFirstByTitleIgnoreCaseAndLang(String title, Lang lang);
 
     @Procedure("delete_all_unclaimed_words")
     void deleteAllUnclaimedWords();
 
     @Query(nativeQuery = true,
-            value = "SELECT COUNT(*) FROM get_words_after_filter(NULL, :word_status_code, NULL)")
-    long count(@Param("word_status_code") String wordStatusCode);
-
-    @Query(nativeQuery = true,
-            value = "SELECT COUNT(*) FROM get_customer_words_after_filter" +
-                    "(NULL, :word_status_code, NULL, :customer_id)")
-    long count(@Param("customer_id") Long customerId,
-               @Param("word_status_code") String wordStatusCode);
+            value = "SELECT COUNT(*) FROM get_words_after_filter" +
+                    "(:title, :word_status_code, :language_code)")
+    Optional<Long> count(@Param("title") String title,
+               @Param("word_status_code") String wordStatusCode,
+               @Param("language_code") String languageCode);
 
     @Query(nativeQuery = true,
             value = "SELECT * FROM get_random_words" +
@@ -61,8 +59,14 @@ public interface WordCrudRepository extends CrudRepository<Word, Long>, WordRepo
                                                              @Param("last_word_id_on_previous_page") Long lastWordIdOnPreviousPage);
 
     @Query(nativeQuery = true,
-            value = "SELECT * FROM get_words_with_current_status" +
-                    "(:title, :word_status_code)")
-    List<Word> findAllWithCurrentStatus(@Param("title") String title,
-                                        @Param("word_status_code") String wordStatusCode);
+            value = "SELECT wwss.word_status_code AS wordStatusCode, " +
+                            "wwss.number_of_words AS numberOfWords " +
+                    "FROM get_words_with_status_statistics() wwss")
+    List<WordsWithStatusStatistic> findWordsWithStatusStatistics();
+
+    @Query(nativeQuery = true,
+            value = "SELECT wwss.word_status_code AS wordStatusCode, " +
+                    "wwss.number_of_words AS numberOfWords " +
+                    "FROM get_words_with_status_statistics(:customer_id) wwss")
+    List<WordsWithStatusStatistic> findWordsWithStatusStatistics(@Param("customer_id") Long customerId);
 }

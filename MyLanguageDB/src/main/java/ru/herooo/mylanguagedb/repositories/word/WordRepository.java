@@ -1,8 +1,9 @@
 package ru.herooo.mylanguagedb.repositories.word;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 public interface WordRepository<T> {
 
-    long count(LocalDate localDate);
+    Optional<Long> count(LocalDate localDate);
 }

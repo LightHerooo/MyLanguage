@@ -30,20 +30,23 @@
             <div class="info-block-with-img-and-header-right-container">
                 <h1 class="h1-info-block-with-img-and-header">Слова</h1>
                 <div class="info-block-with-img-and-header-text">
-                    На странице находятся все слова, содержащиеся в базе слов ресурса
-                    <span th:text="${WEB_APP_NAME}"/>.
-                    В таблице отображаются только слова со статусом
+                    На странице находятся все слова со статусом
                     <a class="word-status-standard"
                        th:style="'color: #' + ${ACTIVE_WORD_STATUS.colorHexCode}"
                        th:text="'&quot;' + ${ACTIVE_WORD_STATUS.title} + '&quot;'"
-                       th:title="${ACTIVE_WORD_STATUS.message}"/>.
+                       th:title="${ACTIVE_WORD_STATUS.message}"/>
+                    ресурса <span th:text="${WEB_APP_NAME}"/>.
+
                 </div>
                 <div class="info-block-with-img-and-header-text" th:if="${AUTH_CUSTOMER == null}">
                     <br>
-                    <span style="font-weight: bold">Авторизуйтесь</span>, чтобы получить дополнительные возможности:<br>
+                    <span style="font-weight: bold">
+                        <a href="/customers/entry">Авторизуйтесь</a>, чтобы получить дополнительные возможности:
+                    </span>
+                    <br>
                     - Предложение новых слов.<br>
-                    - Сохранение слов в коллекции.<br>
-                    - Просмотр изменения статуса предложенных слов модераторами.<br>
+                    - Добавление слов в коллекции.<br>
+                    - Просмотр истории ваших предложенных слов.<br>
                 </div>
                 <br>
                 <div class="info-block-with-img-and-header-text words-statistics-container"

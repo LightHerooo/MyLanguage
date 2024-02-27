@@ -13,8 +13,6 @@ import java.util.Optional;
 
 @Repository
 public interface WorkoutCrudRepository extends CrudRepository<Workout, Long> {
-    Workout findById(long id);
-
     @Query(nativeQuery = true, value =
             "SELECT * " +
             "FROM get_not_over_workouts(:customer_id, :workout_type_code, :is_active)")
@@ -36,12 +34,12 @@ public interface WorkoutCrudRepository extends CrudRepository<Workout, Long> {
     @Query(nativeQuery = true, value =
             "SELECT * " +
             "FROM get_last_workout(:customer_id, :workout_type_code)")
-    Workout findLast(@Param("customer_id") Long customerId,
+    Optional<Workout> findLast(@Param("customer_id") Long customerId,
                      @Param("workout_type_code") String workoutTypeCode);
 
     @Query(nativeQuery = true, value =
             "SELECT * FROM get_last_inactive_workout(:customer_id)")
-    Workout findLastInactive(@Param("customer_id") Long customerId);
+    Optional<Workout> findLastInactive(@Param("customer_id") Long customerId);
 
     @Query(value =
             "SELECT MIN(wi.roundNumber) " +
@@ -54,7 +52,7 @@ public interface WorkoutCrudRepository extends CrudRepository<Workout, Long> {
             "SELECT MAX(wi.roundNumber) " +
             "FROM WorkoutItem wi " +
             "WHERE wi.workout.id = :workout_id")
-    long findMaxRoundNumber(@Param("workout_id") Long workoutId);
+    Optional<Long> findMaxRoundNumber(@Param("workout_id") Long workoutId);
 
     @Query(nativeQuery = true, value =
             "SELECT wrs.number_of_questions AS numberOfQuestions, " +
@@ -62,6 +60,6 @@ public interface WorkoutCrudRepository extends CrudRepository<Workout, Long> {
                     "wrs.number_of_false_answers AS numberOfFalseAnswers, " +
                     "wrs.number_of_questions_without_answer AS numberOfQuestionsWithoutAnswer " +
             "FROM get_workout_round_statistic(:workout_id, :round_number) wrs")
-    WorkoutRoundStatistic findRoundStatistic(@Param("workout_id") Long workoutId,
+    Optional<WorkoutRoundStatistic> findRoundStatistic(@Param("workout_id") Long workoutId,
                                              @Param("round_number") Long roundNumber);
 }

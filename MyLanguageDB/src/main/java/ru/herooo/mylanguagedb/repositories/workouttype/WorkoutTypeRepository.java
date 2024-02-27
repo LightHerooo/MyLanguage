@@ -1,5 +1,7 @@
 package ru.herooo.mylanguagedb.repositories.workouttype;
 
+import java.util.Optional;
+
 public interface WorkoutTypeRepository<T> {
-    T find(WorkoutTypes workoutTypes);
+    Optional<T> find(WorkoutTypes workoutTypes);
 }

@@ -37,14 +37,14 @@ public class WordStatusHistoryService {
     }
 
     public WordStatusHistory findCurrent(Long wordId) {
-        return WORD_STATUS_HISTORY_CRUD_REPOSITORY.findCurrent(wordId);
+        return WORD_STATUS_HISTORY_CRUD_REPOSITORY.findCurrent(wordId).orElse(null);
     }
 
     public WordStatusHistory add(WordStatusHistoryRequestDTO dto) {
         WordStatusHistory status = WORD_STATUS_HISTORY_MAPPING.mapToWordStatusHistory(dto);
         status.setDateOfStart(LocalDateTime.now());
 
-        WordStatus wordStatus = WORD_STATUS_CRUD_REPOSITORY.find(WordStatuses.NEW);
+        WordStatus wordStatus = WORD_STATUS_CRUD_REPOSITORY.find(WordStatuses.NEW).orElse(null);
         status.setWordStatus(wordStatus);
 
         return WORD_STATUS_HISTORY_CRUD_REPOSITORY.save(status);
@@ -55,7 +55,7 @@ public class WordStatusHistoryService {
     }
 
     public WordStatusHistory getCurrentWordStatusHistoryToWord(Word word) {
-        return WORD_STATUS_HISTORY_CRUD_REPOSITORY.getCurrentWordStatusHistoryToWord(word.getId());
+        return WORD_STATUS_HISTORY_CRUD_REPOSITORY.getCurrentWordStatusHistoryToWord(word.getId()).orElse(null);
     }
 
     public void addWordStatusToWordsWithoutStatus(String wordStatusCode) {

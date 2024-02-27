@@ -1,6 +1,8 @@
 package ru.herooo.mylanguagedb.repositories.customerrole;
 
+import java.util.Optional;
+
 public interface CustomerRoleRepository<T> {
 
-    T find(CustomerRoles customerRoles);
+    Optional<T> find(CustomerRoles customerRoles);
 }

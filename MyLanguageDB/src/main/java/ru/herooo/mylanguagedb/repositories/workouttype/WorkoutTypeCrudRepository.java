@@ -6,11 +6,11 @@ import org.springframework.stereotype.Repository;
 import ru.herooo.mylanguagedb.entities.WorkoutType;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface WorkoutTypeCrudRepository extends CrudRepository<WorkoutType, Long>, WorkoutTypeRepository<WorkoutType> {
-
-    WorkoutType findByCode(String code);
+    Optional<WorkoutType> findByCode(String code);
 
     @Query(value =
             "FROM WorkoutType wt " +

@@ -29,10 +29,10 @@ public class WorkoutRoundStatisticResponseDTO {
     long numberOfQuestionsWithoutAnswer;
 
     public WorkoutRoundStatisticResponseDTO(WorkoutRoundStatistic workoutRoundStatistic) {
-        numberOfQuestions = workoutRoundStatistic.getNumberOfQuestions();
-        numberOfTrueAnswers = workoutRoundStatistic.getNumberOfTrueAnswers();
-        numberOfFalseAnswers = workoutRoundStatistic.getNumberOfFalseAnswers();
-        numberOfQuestionsWithoutAnswer = workoutRoundStatistic.getNumberOfQuestionsWithoutAnswer();
+        numberOfQuestions = workoutRoundStatistic.getNumberOfQuestions().orElse(0L);
+        numberOfTrueAnswers = workoutRoundStatistic.getNumberOfTrueAnswers().orElse(0L);
+        numberOfFalseAnswers = workoutRoundStatistic.getNumberOfFalseAnswers().orElse(0L);
+        numberOfQuestionsWithoutAnswer = workoutRoundStatistic.getNumberOfQuestionsWithoutAnswer().orElse(0L);
     }
 
     public long getNumberOfQuestions() {

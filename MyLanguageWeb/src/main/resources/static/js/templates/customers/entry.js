@@ -31,6 +31,7 @@ window.onload = function () {
 function prepareTbLogin() {
     let tbLogin = document.getElementById(_TB_LOGIN_ID);
     tbLogin.addEventListener("input", function () {
+        clearErrorsContainer();
         checkCorrectLogin();
     });
 }
@@ -38,6 +39,7 @@ function prepareTbLogin() {
 function preparePbPassword() {
     let tbPassword = document.getElementById(_PB_PASSWORD_ID);
     tbPassword.addEventListener("input", function () {
+        clearErrorsContainer();
         checkCorrectPassword();
     });
 }
@@ -45,11 +47,14 @@ function preparePbPassword() {
 function prepareShowPasswordContainer() {
     let checkShowPassword = document.getElementById(_CHECK_SHOW_PASSWORD_ID);
     checkShowPassword.addEventListener("click", function () {
+        clearErrorsContainer();
         showPassword();
     });
 
     let aCheckShowPassword = document.getElementById(_A_CHECK_SHOW_PASSWORD_ID);
     aCheckShowPassword.addEventListener("click", function () {
+        clearErrorsContainer();
+
         let checkShowPassword = document.getElementById(_CHECK_SHOW_PASSWORD_ID);
         checkShowPassword.checked = !checkShowPassword.checked;
         showPassword();
@@ -71,13 +76,14 @@ function showPassword() {
 }
 
 function prepareSubmit() {
-    let submitEntry = document.getElementById(_FORM_ENTRY_ID);
-    let btnEntry = document.getElementById(_BTN_ENTRY_ID);
-    submitEntry.addEventListener("submit", event => {
-        btnEntry.disabled = true;
+    let formEntry = document.getElementById(_FORM_ENTRY_ID);
+    formEntry.addEventListener("submit", event => {
         event.preventDefault();
 
-        // Показываем анимацию загрузки (предварительно удалив предыдущие ошибки) ---
+        // Блокируем элементы, отображаем загрузку ---
+        changeReadonlyStatusInImportantElements(true);
+
+        clearErrorsContainer();
         let divErrorsContainer = document.getElementById(_DIV_ERRORS_CONTAINER_ID);
         if (divErrorsContainer) {
             divErrorsContainer.replaceChildren();
@@ -89,14 +95,15 @@ function prepareSubmit() {
         //---
 
         if (checkCorrectBeforeEntry() === true) {
-            submitEntry.submit();
+            formEntry.submit();
         } else {
             form.removeChild(divLoading);
-            btnEntry.disabled = false;
+            changeReadonlyStatusInImportantElements(false);
         }
     });
 }
 
+// Вход пользователя ---
 function checkCorrectLogin() {
     let tbLogin = document.getElementById(_TB_LOGIN_ID);
 
@@ -151,3 +158,43 @@ function checkCorrectBeforeEntry() {
 
     return (isLoginCorrect && isPasswordCorrect);
 }
+
+function clearErrorsContainer() {
+    let divErrorsContainer = document.getElementById(_DIV_ERRORS_CONTAINER_ID);
+    if (divErrorsContainer) {
+        divErrorsContainer.replaceChildren();
+    }
+}
+
+function changeReadonlyStatusInImportantElements(isReadonly) {
+    let btnEntry = document.getElementById(_BTN_ENTRY_ID);
+    if (btnEntry) {
+        btnEntry.disabled = isReadonly;
+    }
+
+    let tbLogin = document.getElementById(_TB_LOGIN_ID);
+    if (tbLogin) {
+        tbLogin.readOnly = isReadonly;
+    }
+
+    let pbPassword = document.getElementById(_PB_PASSWORD_ID);
+    if (pbPassword) {
+        pbPassword.readOnly = isReadonly;
+    }
+
+    let checkShowPassword = document.getElementById(_CHECK_SHOW_PASSWORD_ID);
+    if (checkShowPassword) {
+        checkShowPassword.readOnly = isReadonly;
+    }
+
+    let aCheckShowPassword = document.getElementById(_A_CHECK_SHOW_PASSWORD_ID);
+    if (aCheckShowPassword) {
+        if (isReadonly === true) {
+            aCheckShowPassword.style.pointerEvents = "none";
+            aCheckShowPassword.style.cursor = "default";
+        } else {
+            aCheckShowPassword.style.cssText = "";
+        }
+    }
+}
+//---

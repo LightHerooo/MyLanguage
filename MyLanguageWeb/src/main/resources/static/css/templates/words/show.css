@@ -5,8 +5,8 @@ main {
 div.words-statistics-container {
     min-height: 200px;
 
-    display: grid;
-    align-items: center;
+    display: flex;
+    flex-direction: column;
 }
 
 div.words-actions {

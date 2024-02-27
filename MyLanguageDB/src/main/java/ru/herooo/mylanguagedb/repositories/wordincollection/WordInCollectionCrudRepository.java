@@ -10,11 +10,11 @@ import ru.herooo.mylanguagedb.entities.Word;
 import ru.herooo.mylanguagedb.entities.WordInCollection;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface WordInCollectionCrudRepository extends CrudRepository<WordInCollection, Long>, WordInCollectionRepository<WordInCollection> {
-    WordInCollection findById(long id);
-    WordInCollection findByWordAndCustomerCollection(Word word, CustomerCollection customerCollection);
+    Optional<WordInCollection> findByWordAndCustomerCollection(Word word, CustomerCollection customerCollection);
 
     @Procedure("delete_inactive_words_in_collections")
     void deleteInactiveWordsInCollections();
@@ -38,5 +38,5 @@ public interface WordInCollectionCrudRepository extends CrudRepository<WordInCol
 
     @Query(nativeQuery = true,
             value = "SELECT COUNT(*) FROM get_words_in_collection_after_filter(NULL, :collection_key)")
-    long count(@Param("collection_key") String collectionKey);
+    Optional<Long> count(@Param("collection_key") String collectionKey);
 }

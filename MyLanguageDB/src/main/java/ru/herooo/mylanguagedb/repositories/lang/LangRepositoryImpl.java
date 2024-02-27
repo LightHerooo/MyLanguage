@@ -4,6 +4,8 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import ru.herooo.mylanguagedb.entities.Lang;
 
+import java.util.Optional;
+
 public class LangRepositoryImpl implements LangRepository<Lang> {
 
     @PersistenceContext
@@ -11,9 +13,9 @@ public class LangRepositoryImpl implements LangRepository<Lang> {
 
 
     @Override
-    public Lang find(Langs langs) {
+    public Optional<Lang> find(Langs langs) {
         return em.createQuery("from Lang l where l.id = :lang_id", Lang.class)
                 .setParameter("lang_id", langs.getId())
-                .getResultStream().findAny().orElse(null);
+                .getResultStream().findAny();
     }
 }

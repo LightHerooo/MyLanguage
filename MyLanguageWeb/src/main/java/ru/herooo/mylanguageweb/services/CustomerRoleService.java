@@ -15,10 +15,10 @@ public class CustomerRoleService {
     }
 
     public CustomerRole find(CustomerRoles role) {
-        return CUSTOMER_ROLE_CRUD_REPOSITORY.find(role);
+        return CUSTOMER_ROLE_CRUD_REPOSITORY.find(role).orElse(null);
     }
 
     public CustomerRole find(String code) {
-        return CUSTOMER_ROLE_CRUD_REPOSITORY.findByCode(code);
+        return CUSTOMER_ROLE_CRUD_REPOSITORY.findByCode(code).orElse(null);
     }
 }

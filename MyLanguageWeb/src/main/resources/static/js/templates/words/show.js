@@ -19,11 +19,6 @@ import {
 } from "../../classes/date_parts.js";
 
 import {
-    WordStatusWithCount,
-    compareWordStatusWithCount
-} from "../../classes/dto/types/TODO/word_status_with_count.js";
-
-import {
     CustomResponseMessage
 } from "../../classes/dto/other/custom_response_message.js";
 
@@ -37,10 +32,6 @@ import {
 } from "../../classes/dto/entity/word_in_collection.js";
 
 import {
-    WordStatusResponseDTO
-} from "../../classes/dto/entity/word_status.js";
-
-import {
     LongResponse
 } from "../../classes/dto/other/long_response.js";
 
@@ -51,10 +42,6 @@ import {
 import {
     CustomerCollectionUtils
 } from "../../classes/utils/entity/customer_collection_utils.js";
-
-import {
-    WordStatusesAPI
-} from "../../classes/api/word_statuses/word_statuses_api.js";
 
 import {
     CustomerCollectionsAPI
@@ -100,7 +87,10 @@ import {
     TextBoxUtils
 } from "../../classes/utils/text_box_utils.js";
 
-const _WORD_STATUSES_API = new WordStatusesAPI();
+import {
+    WordsWithStatusStatisticResponseDTO
+} from "../../classes/dto/types/words_with_status_statistic.js";
+
 const _CUSTOMER_COLLECTIONS_API = new CustomerCollectionsAPI();
 const _WORDS_API = new WordsAPI();
 const _WORDS_IN_COLLECTION_API = new WordsInCollectionAPI();
@@ -244,10 +234,13 @@ function startToFindStatistic() {
         _CUSTOM_TIMER_STATISTIC_FINDER.stop();
     }
 
-    let wordsStatisticContainer = document.getElementById(_DIV_WORDS_STATISTICS_CONTAINER_ID);
-    if (wordsStatisticContainer) {
-        wordsStatisticContainer.replaceChildren();
-        wordsStatisticContainer.appendChild(new LoadingElement().createDiv());
+    let divStatistic = document.getElementById(_DIV_WORDS_STATISTICS_CONTAINER_ID);
+    if (divStatistic) {
+        divStatistic.replaceChildren();
+
+        divStatistic.style.display = "grid";
+        divStatistic.style.alignItems = "center";
+        divStatistic.appendChild(new LoadingElement().createDiv());
     }
 
     if (_CUSTOM_TIMER_STATISTIC_FINDER) {
@@ -259,12 +252,13 @@ async function tryToFillStatistic() {
     let currentFinder = _CUSTOM_TIMER_STATISTIC_FINDER;
 
     let statisticItems = await createStatisticItems();
-    let wordsStatisticContainer = document.getElementById(_DIV_WORDS_STATISTICS_CONTAINER_ID);
-    if (wordsStatisticContainer && currentFinder.getActive() === true) {
-        wordsStatisticContainer.replaceChildren();
+    let divStatistic = document.getElementById(_DIV_WORDS_STATISTICS_CONTAINER_ID);
+    if (statisticItems && divStatistic && currentFinder.getActive() === true) {
+        divStatistic.replaceChildren();
+        divStatistic.style.cssText = "";
         for (let i = 0; i < statisticItems.length; i++) {
             if (currentFinder.getActive() !== true) break;
-            wordsStatisticContainer.appendChild(statisticItems[i]);
+            divStatistic.appendChild(statisticItems[i]);
         }
     }
 }
@@ -272,63 +266,58 @@ async function tryToFillStatistic() {
 async function createStatisticItems() {
     let statisticItems = [];
 
-    // Генерируем статистику по всем статусам ---
-    let JSONResponseWordStatuses = await _WORD_STATUSES_API.GET.getAll();
-    if (JSONResponseWordStatuses.status === _HTTP_STATUSES.OK) {
-        let wordStatusesJson = JSONResponseWordStatuses.json;
-        let wordStatusesWithCount = [];
-        let numberOfWordsSum = 0n;
-        for (let i = 0; i < wordStatusesJson.length; i++) {
-            let wordStatus = new WordStatusResponseDTO(wordStatusesJson[i]);
-            let JSONResponseNumberOfWords =
-                await _WORDS_API.GET.getCountByWordStatusCode(wordStatus.code);
-            if (JSONResponseNumberOfWords.status === _HTTP_STATUSES.OK) {
-                let longResponse = new LongResponse(JSONResponseNumberOfWords.json);
-                numberOfWordsSum += longResponse.value;
+    // Генерируем статистику по всем статусам слов ---
+    let JSONResponse = await _WORDS_API.GET.getWordsWithStatusStatistics();
+    if (JSONResponse.status === _HTTP_STATUSES.OK) {
+        let divStatistics = [];
+        let sumOfWords = 0n;
 
-                let wordStatusWithCount = new WordStatusWithCount(wordStatus, longResponse.value);
-                wordStatusesWithCount.push(wordStatusWithCount);
+        let json = JSONResponse.json;
+        for (let i = 0; i < json.length; i++) {
+            let wordsWithStatusStatistic = new WordsWithStatusStatisticResponseDTO(json[i]);
+            let divStatistic = await wordsWithStatusStatistic.createDiv();
+            if (divStatistic) {
+                divStatistics.push(divStatistic);
+                sumOfWords += wordsWithStatusStatistic.numberOfWords;
             }
         }
 
         // Создаём контейнер с общим количеством слов ---
         let spanNumberOfWordsText = document.createElement("span");
         spanNumberOfWordsText.style.fontWeight = "bold";
-        spanNumberOfWordsText.textContent = "Общее количество слов в базе";
+        spanNumberOfWordsText.textContent = "Общее количество слов";
 
-        let spanNumberOfWordsSum = document.createElement("span");
-        spanNumberOfWordsSum.textContent = `: ${numberOfWordsSum}`;
+        let spanSumOfWords = document.createElement("span");
+        spanSumOfWords.textContent = `: ${sumOfWords}`;
 
-        let divNumberOfWordsSumContainer = document.createElement("div");
-        divNumberOfWordsSumContainer.appendChild(spanNumberOfWordsText);
-        divNumberOfWordsSumContainer.appendChild(spanNumberOfWordsSum);
+        let divSumOfWordsContainer = document.createElement("div");
+        divSumOfWordsContainer.appendChild(spanNumberOfWordsText);
+        divSumOfWordsContainer.appendChild(spanSumOfWords);
 
-        statisticItems.push(divNumberOfWordsSumContainer);
+        divStatistics.unshift(divSumOfWordsContainer);
         //---
 
-        // Создаём контейнер со статистикой по всем статусам слов ---
-        wordStatusesWithCount.sort(compareWordStatusWithCount);
-
-        let divStatisticWithWordStatuses = document.createElement("div");
-        for (let i = 0; i < wordStatusesWithCount.length; i++) {
-            divStatisticWithWordStatuses.appendChild(wordStatusesWithCount[i].createDiv());
+        // Генерируем общий div, добавляем его в items ---
+        let divStatisticResult = document.createElement("div");
+        for (let i = 0; i < divStatistics.length; i++) {
+            divStatisticResult.appendChild(divStatistics[i]);
         }
 
-        statisticItems.push(divStatisticWithWordStatuses);
+        statisticItems.push(divStatisticResult);
         //---
     }
     //---
 
     // Создаём контейнер с количеством слов за сегодняшний день ---
     let dateNow = new Date();
-    let JSONResponseWordsToday = await _WORDS_API.GET.getCountByDateOfCreate(dateNow);
-    if (JSONResponseWordsToday.status === _HTTP_STATUSES.OK) {
-        let numberOfWordsToday = new LongResponse(JSONResponseWordsToday.json);
+    JSONResponse = await _WORDS_API.GET.getCountByDateOfCreate(dateNow);
+    if (JSONResponse.status === _HTTP_STATUSES.OK) {
+        let numberOfWordsToday = new LongResponse(JSONResponse.json);
         let dateNowParts = new DateParts(dateNow);
 
         let spanNumberOfWordsTodayText = document.createElement("span");
         spanNumberOfWordsTodayText.style.fontWeight = "bold";
-        spanNumberOfWordsTodayText.textContent = `За сегодня (${dateNowParts.getDateStr()}) добавлено`;
+        spanNumberOfWordsTodayText.textContent = `За сегодня (${dateNowParts.getDateStr()}) предложено`;
 
         let spanNumberOfWordsTodaySum = document.createElement("span");
         spanNumberOfWordsTodaySum.textContent = `: ${numberOfWordsToday.value}`;
@@ -337,12 +326,14 @@ async function createStatisticItems() {
         divNumberOfWordsTodayContainer.appendChild(spanNumberOfWordsTodayText);
         divNumberOfWordsTodayContainer.appendChild(spanNumberOfWordsTodaySum);
 
-        statisticItems.push(document.createElement("br"));
+        if (statisticItems.length > 0) {
+            statisticItems.push(document.createElement("br"));
+        }
+
         statisticItems.push(divNumberOfWordsTodayContainer);
     }
     //---
 
-    statisticItems.push(document.createElement("br"));
     return statisticItems;
 }
 //---

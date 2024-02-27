@@ -20,7 +20,6 @@ import ru.herooo.mylanguageweb.dto.entity.workoutitem.WorkoutItemResponseDTO;
 import ru.herooo.mylanguageweb.dto.other.LongResponse;
 import ru.herooo.mylanguageweb.services.CustomerService;
 import ru.herooo.mylanguageweb.services.WorkoutItemService;
-import ru.herooo.mylanguageweb.services.WorkoutService;
 
 import java.util.List;
 
@@ -122,7 +121,7 @@ public class WorkoutItemsRestController {
         if (currentRoundNumber > 1) {
             int beforeRoundNumber = currentRoundNumber - 1;
             WorkoutItem workoutItemWithoutAnswer = WORKOUT_ITEM_SERVICE
-                    .findFirstWithoutAnswerByWorkoutIdAndRoundNumber(workoutItem.getWorkout().getId(), beforeRoundNumber);
+                    .findFirstWithoutAnswer(workoutItem.getWorkout().getId(), beforeRoundNumber);
             if (workoutItemWithoutAnswer != null) {
                 CustomResponseMessage message = new CustomResponseMessage(3,
                         "В предыдущем раунде ещё есть вопросы без ответа.");

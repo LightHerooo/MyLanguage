@@ -8,6 +8,7 @@ import ru.herooo.mylanguagedb.entities.Lang;
 import ru.herooo.mylanguagedb.entities.WordInCollection;
 import ru.herooo.mylanguagedb.repositories.CustomerCollectionCrudRepository;
 import ru.herooo.mylanguagedb.repositories.wordincollection.WordInCollectionCrudRepository;
+import ru.herooo.mylanguagedb.types.CustomerCollectionsWithLangStatistic;
 import ru.herooo.mylanguageutils.StringUtils;
 import ru.herooo.mylanguageweb.dto.entity.customercollection.CustomerCollectionMapping;
 import ru.herooo.mylanguageweb.dto.entity.customercollection.CustomerCollectionRequestDTO;
@@ -39,20 +40,24 @@ public class CustomerCollectionService {
         return CUSTOMER_COLLECTION_CRUD_REPOSITORY.findAll(customerId);
     }
 
+    public List<CustomerCollectionsWithLangStatistic> findCustomerCollectionsWithLangStatistics(Long customerId) {
+        return CUSTOMER_COLLECTION_CRUD_REPOSITORY.findCustomerCollectionsWithLangStatistics(customerId);
+    }
+
     public CustomerCollection find(long id) {
-        return CUSTOMER_COLLECTION_CRUD_REPOSITORY.findById(id);
+        return CUSTOMER_COLLECTION_CRUD_REPOSITORY.findById(id).orElse(null);
     }
 
     public CustomerCollection find(String key) {
-        return CUSTOMER_COLLECTION_CRUD_REPOSITORY.findByKey(key);
+        return CUSTOMER_COLLECTION_CRUD_REPOSITORY.findByKey(key).orElse(null);
     }
 
     public CustomerCollection findByCustomerAndTitle(Customer customer, String title) {
-        return CUSTOMER_COLLECTION_CRUD_REPOSITORY.findByCustomerAndTitleIgnoreCase(customer, title);
+        return CUSTOMER_COLLECTION_CRUD_REPOSITORY.findByCustomerAndTitleIgnoreCase(customer, title).orElse(null);
     }
 
     public CustomerCollection findByCustomerAndKey(Customer customer, String key) {
-        return CUSTOMER_COLLECTION_CRUD_REPOSITORY.findByCustomerAndKey(customer, key);
+        return CUSTOMER_COLLECTION_CRUD_REPOSITORY.findByCustomerAndKey(customer, key).orElse(null);
     }
 
     public CustomerCollection add(CustomerCollectionRequestDTO dto) {
@@ -94,13 +99,5 @@ public class CustomerCollectionService {
         }
 
         return newCollection;
-    }
-
-    public long count(Customer customer) {
-        return CUSTOMER_COLLECTION_CRUD_REPOSITORY.countByCustomer(customer);
-    }
-
-    public long count(Customer customer, Lang lang) {
-        return CUSTOMER_COLLECTION_CRUD_REPOSITORY.countByCustomerAndLang(customer, lang);
     }
 }

@@ -46,7 +46,7 @@ public class CustomerService {
     public Customer register(CustomerRequestDTO customerRequestDTO) {
         Customer newCustomer = CUSTOMER_MAPPING.mapToCustomer(customerRequestDTO);
 
-        CustomerRole cr = CUSTOMER_ROLE_CRUD_REPOSITORY.find(CustomerRoles.CUSTOMER);
+        CustomerRole cr = CUSTOMER_ROLE_CRUD_REPOSITORY.find(CustomerRoles.CUSTOMER).orElse(null);
         newCustomer.setRole(cr);
 
         newCustomer.setAuthCode(STRING_UTILS.getRandomStrEn(30));
@@ -61,7 +61,7 @@ public class CustomerService {
         Cookie authCookie = GLOBAL_COOKIE_UTILS.getCookieInHttpRequest(request, GlobalCookies.AUTH_CODE);
         Customer customer = null;
         if (authCookie != null) {
-            customer = CUSTOMER_CRUD_REPOSITORY.findByAuthCode(authCookie.getValue());
+            customer = CUSTOMER_CRUD_REPOSITORY.findByAuthCode(authCookie.getValue()).orElse(null);
             if (customer != null) {
                 customer.setDateOfLastVisit(LocalDateTime.now());
                 CUSTOMER_CRUD_REPOSITORY.save(customer);
@@ -74,7 +74,7 @@ public class CustomerService {
     // Вход пользователя
     public Customer entry(CustomerEntryRequestDTO dto) {
         return CUSTOMER_CRUD_REPOSITORY.findByLoginAndPassword(
-                dto.getLogin(), dto.getPassword());
+                dto.getLogin(), dto.getPassword()).orElse(null);
     }
 
     // Выход пользователя
@@ -85,27 +85,27 @@ public class CustomerService {
 
     // Поиск по Id
     public Customer find(long id) {
-        return CUSTOMER_CRUD_REPOSITORY.findById(id);
+        return CUSTOMER_CRUD_REPOSITORY.findById(id).orElse(null);
     }
 
     // Поиск по логину
     public Customer findByLogin(String login) {
-        return CUSTOMER_CRUD_REPOSITORY.findByLogin(login);
+        return CUSTOMER_CRUD_REPOSITORY.findByLogin(login).orElse(null);
     }
 
     // Поиск по электронной почте
     public Customer findByEmail(String email) {
-        return CUSTOMER_CRUD_REPOSITORY.findByEmail(email);
+        return CUSTOMER_CRUD_REPOSITORY.findByEmail(email).orElse(null);
     }
 
     // Поиск по никнейму
     public Customer findByNickname(String nickname) {
-        return CUSTOMER_CRUD_REPOSITORY.findByNickname(nickname);
+        return CUSTOMER_CRUD_REPOSITORY.findByNickname(nickname).orElse(null);
     }
 
     // Поиск по ключу авторизации
     public Customer findByAuthCode(String authCode) {
-        return CUSTOMER_CRUD_REPOSITORY.findByAuthCode(authCode);
+        return CUSTOMER_CRUD_REPOSITORY.findByAuthCode(authCode).orElse(null);
     }
 
     public String validateAuthCode(HttpServletRequest request, String authCode) {

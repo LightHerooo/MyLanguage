@@ -9,10 +9,10 @@ import ru.herooo.mylanguagedb.entities.Word;
 import ru.herooo.mylanguagedb.entities.WordStatusHistory;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface WordStatusHistoryCrudRepository extends CrudRepository<WordStatusHistory, Long> {
-
     @Procedure("add_word_status_to_word")
     void addWordStatusToWord(Long wordId, String wordStatusCode);
 
@@ -29,9 +29,9 @@ public interface WordStatusHistoryCrudRepository extends CrudRepository<WordStat
             "FROM WordStatusHistory wsh " +
             "WHERE wsh.word.id = :word_id " +
             "AND wsh.dateOfEnd IS NULL")
-    WordStatusHistory findCurrent(@Param("word_id") Long wordId);
+    Optional<WordStatusHistory> findCurrent(@Param("word_id") Long wordId);
 
     @Query(nativeQuery = true,
             value = "SELECT * FROM get_current_word_status_history_to_word(:word_id)")
-    WordStatusHistory getCurrentWordStatusHistoryToWord(@Param("word_id") Long wordId);
+    Optional<WordStatusHistory> getCurrentWordStatusHistoryToWord(@Param("word_id") Long wordId);
 }

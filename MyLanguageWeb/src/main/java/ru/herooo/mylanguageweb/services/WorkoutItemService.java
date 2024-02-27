@@ -53,19 +53,19 @@ public class WorkoutItemService {
     }
 
     public WorkoutItem find(long id) {
-        return WORKOUT_ITEM_CRUD_REPOSITORY.findById(id);
+        return WORKOUT_ITEM_CRUD_REPOSITORY.findById(id).orElse(null);
     }
 
     public WorkoutItem findRandomWithoutAnswer(Long workoutId, Long roundNumber) {
         return WORKOUT_ITEM_CRUD_REPOSITORY
-                .findRandomWithoutAnswer(workoutId, roundNumber);
+                .findRandomWithoutAnswer(workoutId, roundNumber).orElse(null);
     }
 
-    public WorkoutItem findFirstWithoutAnswerByWorkoutIdAndRoundNumber(Long workoutId, Integer roundNumber) {
-        return WORKOUT_ITEM_CRUD_REPOSITORY.findFirstWithoutAnswerByWorkoutIdAndRoundNumber(workoutId, roundNumber);
+    public WorkoutItem findFirstWithoutAnswer(Long workoutId, Integer roundNumber) {
+        return WORKOUT_ITEM_CRUD_REPOSITORY.findFirstWithoutAnswer(workoutId, roundNumber).orElse(null);
     }
 
     public long countWithAnswer(Long workoutId, Long roundNumber) {
-        return WORKOUT_ITEM_CRUD_REPOSITORY.countWithAnswer(workoutId, roundNumber);
+        return WORKOUT_ITEM_CRUD_REPOSITORY.countWithAnswer(workoutId, roundNumber).orElse(0L);
     }
 }

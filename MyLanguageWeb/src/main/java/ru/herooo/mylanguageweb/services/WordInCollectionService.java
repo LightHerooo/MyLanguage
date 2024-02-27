@@ -45,11 +45,12 @@ public class WordInCollectionService {
     }
 
     public WordInCollection find(Word word, CustomerCollection customerCollection) {
-        return WORD_IN_COLLECTION_CRUD_REPOSITORY.findByWordAndCustomerCollection(word, customerCollection);
+        return WORD_IN_COLLECTION_CRUD_REPOSITORY.findByWordAndCustomerCollection(word, customerCollection)
+                .orElse(null);
     }
 
     public WordInCollection find(long id) {
-        return WORD_IN_COLLECTION_CRUD_REPOSITORY.findById(id);
+        return WORD_IN_COLLECTION_CRUD_REPOSITORY.findById(id).orElse(null);
     }
 
     public void delete(WordInCollection wordInCollection) {
@@ -61,6 +62,6 @@ public class WordInCollectionService {
     }
 
     public long count(String collectionKey) {
-        return WORD_IN_COLLECTION_CRUD_REPOSITORY.count(collectionKey);
+        return WORD_IN_COLLECTION_CRUD_REPOSITORY.count(collectionKey).orElse(0L);
     }
 }

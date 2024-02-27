@@ -22,10 +22,10 @@ public class WorkoutTypeService {
     }
 
     public WorkoutType find(WorkoutTypes workoutTypes) {
-        return WORKOUT_TYPE_CRUD_REPOSITORY.find(workoutTypes);
+        return WORKOUT_TYPE_CRUD_REPOSITORY.find(workoutTypes).orElse(null);
     }
 
     public WorkoutType find(String code) {
-        return WORKOUT_TYPE_CRUD_REPOSITORY.findByCode(code);
+        return WORKOUT_TYPE_CRUD_REPOSITORY.findByCode(code).orElse(null);
     }
 }

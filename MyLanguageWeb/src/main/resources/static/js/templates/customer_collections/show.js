@@ -11,11 +11,6 @@ import {
 } from "../../classes/global_cookies.js";
 
 import {
-    compareLangWithCount,
-    LangWithCount
-} from "../../classes/dto/types/TODO/lang_with_count.js";
-
-import {
     changeEndOfTheWordByNumberOfItems,
     EndOfTheWord
 } from "../../classes/end_of_the_word.js";
@@ -24,14 +19,6 @@ import {
     WordInCollectionRequestDTO,
     WordInCollectionResponseDTO
 } from "../../classes/dto/entity/word_in_collection.js";
-
-import {
-    LangResponseDTO
-} from "../../classes/dto/entity/lang.js";
-
-import {
-    LongResponse
-} from "../../classes/dto/other/long_response.js";
 
 import {
     CustomResponseMessage
@@ -77,7 +64,10 @@ import {
     TextBoxUtils
 } from "../../classes/utils/text_box_utils.js";
 
-const _LANGS_API = new LangsAPI();
+import {
+    CustomerCollectionsWithLangStatisticResponseDTO
+} from "../../classes/dto/types/customer_collections_with_lang_statistic.js";
+
 const _CUSTOMER_COLLECTIONS_API = new CustomerCollectionsAPI();
 const _WORDS_IN_COLLECTION_API = new WordsInCollectionAPI();
 
@@ -178,6 +168,9 @@ function startToFindStatistic() {
     let divStatistics = document.getElementById(_DIV_COLLECTIONS_STATISTICS_CONTAINER_ID);
     if (divStatistics) {
         divStatistics.replaceChildren();
+
+        divStatistics.style.display = "grid";
+        divStatistics.style.alignItems = "center";
         divStatistics.appendChild(new LoadingElement().createDiv());
     }
 
@@ -193,6 +186,7 @@ async function tryToFillStatistic() {
     let divStatistics = document.getElementById(_DIV_COLLECTIONS_STATISTICS_CONTAINER_ID);
     if (divStatistics && currentFinder.getActive() === true) {
         divStatistics.replaceChildren();
+        divStatistics.style.cssText = "";
         for (let i = 0; i < statisticItems.length; i++) {
             if (currentFinder.getActive() !== true) break;
             divStatistics.appendChild(statisticItems[i]);
@@ -203,99 +197,77 @@ async function tryToFillStatistic() {
 async function createStatisticItems() {
     let statisticItems = [];
 
-    // Генерируем статистику по всем коллекциям слов по языкам ---
-    let JSONResponseLangs = await _LANGS_API.GET.getAll();
-    if (JSONResponseLangs.status === _HTTP_STATUSES.OK) {
-        let langsWithCount = [];
-        let numberOfCollectionsSum = 0n;
+    // Генерируем статистику по всем коллекциям слов с языком ---
+    let authId = _GLOBAL_COOKIES.AUTH_ID.getValue();
+    let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.getCustomerCollectionsWithLangStatisticsByCustomerId(authId);
+    if (JSONResponse.status === _HTTP_STATUSES.OK) {
+        let divStatistics = [];
+        let sumOfCollections = 0n;
+        let extraSumOfCollections = 0n;
+        let extraSumOfLangs = 0n;
 
-        // Ищем все коллекции пользователя по всем языкам ---
-        let authId = _GLOBAL_COOKIES.AUTH_ID.getValue();
-        let json = JSONResponseLangs.json;
+        let json = JSONResponse.json;
         for (let i = 0; i < json.length; i++) {
-            let lang = new LangResponseDTO(json[i]);
-            let JSONResponse =
-                await _CUSTOMER_COLLECTIONS_API.GET.getCountByCustomerIdAndLangCode(BigInt(authId), lang.code);
-            if (JSONResponse.status === _HTTP_STATUSES.OK) {
-                let longResponse = new LongResponse(JSONResponse.json);
-                let numberOfCollections = longResponse.value;
-                if (numberOfCollections > 0) {
-                    numberOfCollectionsSum += numberOfCollections;
+            let customerCollectionsWithLangStatistic =
+                new CustomerCollectionsWithLangStatisticResponseDTO(json[i]);
 
-                    let langWithCount =
-                        new LangWithCount(lang, numberOfCollections);
-                    langsWithCount.push(langWithCount);
+            sumOfCollections += customerCollectionsWithLangStatistic.numberOfCollections;
+            if (divStatistics.length >= _MAX_NUMBER_OF_COLLECTIONS_FOR_STATISTICS) {
+                extraSumOfCollections += customerCollectionsWithLangStatistic.numberOfCollections;
+                extraSumOfLangs++;
+            } else {
+                let divStatistic = await customerCollectionsWithLangStatistic.createDiv();
+                if (divStatistic) {
+                    divStatistics.push(divStatistic);
                 }
             }
         }
-        //---
-
-        // Генерируем статистику по коллекциям пользователя ---
-        langsWithCount.sort(compareLangWithCount);
-
-        let mostImportantCollectionsSum = 0n;
-        let divStatisticForCollectionsWithLangs = document.createElement("div");
-        for (let i = 0; i < langsWithCount.length; i++) {
-            if (i === _MAX_NUMBER_OF_COLLECTIONS_FOR_STATISTICS) break;
-
-            mostImportantCollectionsSum += langsWithCount[i].count;
-
-            let divLangWithCount = langsWithCount[i].createDiv();
-            divStatisticForCollectionsWithLangs.appendChild(divLangWithCount);
-        }
-        //---
 
         // Сумма всех коллекций пользователя ---
-        let spanNumberOfCollectionsText = document.createElement("span");
-        spanNumberOfCollectionsText.style.fontWeight = "bold";
-        spanNumberOfCollectionsText.textContent = "Общее количество ваших коллекций";
+        let spanSumOfCollectionsText = document.createElement("span");
+        spanSumOfCollectionsText.style.fontWeight = "bold";
+        spanSumOfCollectionsText.textContent = "Общее количество ваших коллекций";
 
-        let spanNumberOfCollectionsSum = document.createElement("span");
-        spanNumberOfCollectionsSum.textContent = `: ${numberOfCollectionsSum}`;
+        let spanSumOfCollections = document.createElement("span");
+        spanSumOfCollections.textContent = `: ${sumOfCollections}`;
 
-        let divNumberOfCollectionsSumContainer = document.createElement("div");
-        divNumberOfCollectionsSumContainer.appendChild(spanNumberOfCollectionsText);
-        divNumberOfCollectionsSumContainer.appendChild(spanNumberOfCollectionsSum);
+        let divSumOfCollectionsContainer = document.createElement("div");
+        divSumOfCollectionsContainer.appendChild(spanSumOfCollectionsText);
+        divSumOfCollectionsContainer.appendChild(spanSumOfCollections);
+
+        divStatistics.unshift(divSumOfCollectionsContainer);
         //---
 
-        // Если коллекций на различных языках больше, чем заявленный максимум, отображаем специальное сообщение ---
-        let divOtherCollectionsSumContainer;
-        let otherCollectionsSum = numberOfCollectionsSum - mostImportantCollectionsSum;
-        if (otherCollectionsSum > 0) {
-            divOtherCollectionsSumContainer = document.createElement("div");
-
-            let collectionsWord = changeEndOfTheWordByNumberOfItems("коллекция", otherCollectionsSum,
+        // Дополнительное сообщение, если языков больше, чем максимум (при необходимости) ---
+        if (extraSumOfCollections > 0n
+            && extraSumOfLangs > 0n) {
+            let collectionsWord = changeEndOfTheWordByNumberOfItems("коллекция", extraSumOfCollections,
                 new EndOfTheWord("й", 1),
                 new EndOfTheWord("и", 1),
                 null,
                 new EndOfTheWord("й", 1));
 
-            let otherLangs = langsWithCount.length - _MAX_NUMBER_OF_COLLECTIONS_FOR_STATISTICS;
-            let langsWord = changeEndOfTheWordByNumberOfItems("язык", otherCollectionsSum,
+            let langsWord = changeEndOfTheWordByNumberOfItems("язык", extraSumOfLangs,
                 new EndOfTheWord("ах", 0),
                 new EndOfTheWord("ах", 0),
                 new EndOfTheWord("е", 0),
                 new EndOfTheWord("ах", 0));
 
-            let spanOtherCollectionsSum = document.createElement("span");
-            spanOtherCollectionsSum.style.fontWeight = "bold";
-            spanOtherCollectionsSum.textContent = `...и ещё ${otherCollectionsSum} ${collectionsWord} на 
-                    ${otherLangs} ${langsWord}.`;
-            divOtherCollectionsSumContainer.appendChild(spanOtherCollectionsSum);
+            let divExtraStatistic = document.createElement("span");
+            divExtraStatistic.style.fontWeight = "bold";
+            divExtraStatistic.textContent = `...и ещё ${extraSumOfCollections} ${collectionsWord} на 
+                    ${extraSumOfLangs} ${langsWord}.`;
+
+            divStatistics.push(divExtraStatistic);
         }
         //---
 
-        // Добавляем элементы в основной контейнер ---
-        let divStatistic = document.createElement("div");
-        divStatistic.appendChild(divNumberOfCollectionsSumContainer);
-        divStatistic.appendChild(divStatisticForCollectionsWithLangs);
-        if (divOtherCollectionsSumContainer) {
-            divStatistic.appendChild(divOtherCollectionsSumContainer);
+        let div = document.createElement("div");
+        for (let i = 0; i < divStatistics.length; i++) {
+            div.appendChild(divStatistics[i]);
         }
-        divStatistic.appendChild(document.createElement("br"));
 
-        statisticItems.push(divStatistic);
-        //---
+        statisticItems.push(div);
     }
     //---
 

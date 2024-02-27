@@ -30,20 +30,17 @@ class CustomerCollectionsGETRequests {
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
     }
 
-    async findByKey(collectionKey) {
-        let requestURL = new URL(URL_TO_API_CUSTOMER_COLLECTIONS_FIND + "/by_key");
-        requestURL.searchParams.set("key", collectionKey);
+    async getCustomerCollectionsWithLangStatisticsByCustomerId(customerId) {
+        let requestURL = new URL(URL_TO_API_CUSTOMER_COLLECTIONS +
+            "/customer_collections_with_lang_statistics_by_customer_id");
+        requestURL.searchParams.set("customer_id", customerId);
 
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
     }
 
-    async getCountByCustomerIdAndLangCode(customerId, langCode) {
-        let requestURL = new URL(URL_TO_API_CUSTOMER_COLLECTIONS + "/count_by_customer_id_and_lang_code");
-        requestURL.searchParams.set("customer_id", customerId);
-
-        if (langCode) {
-            requestURL.searchParams.set("lang_code", langCode);
-        }
+    async findByKey(collectionKey) {
+        let requestURL = new URL(URL_TO_API_CUSTOMER_COLLECTIONS_FIND + "/by_key");
+        requestURL.searchParams.set("key", collectionKey);
 
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
     }

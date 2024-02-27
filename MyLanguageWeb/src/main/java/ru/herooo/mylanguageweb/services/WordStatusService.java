@@ -24,10 +24,10 @@ public class WordStatusService {
 
     // Поиск по коду
     public WordStatus find(String code) {
-        return WORD_STATUS_CRUD_REPOSITORY.findByCode(code);
+        return WORD_STATUS_CRUD_REPOSITORY.findByCode(code).orElse(null);
     }
 
     public WordStatus find(WordStatuses wordStatuses) {
-        return WORD_STATUS_CRUD_REPOSITORY.find(wordStatuses);
+        return WORD_STATUS_CRUD_REPOSITORY.find(wordStatuses).orElse(null);
     }
 }

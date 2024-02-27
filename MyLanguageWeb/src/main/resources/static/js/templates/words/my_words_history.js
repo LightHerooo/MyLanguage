@@ -19,11 +19,6 @@ import {
 } from "../../classes/date_parts.js";
 
 import {
-    WordStatusWithCount,
-    compareWordStatusWithCount
-} from "../../classes/dto/types/TODO/word_status_with_count.js";
-
-import {
     WordStatusHistoryResponseDTO
 } from "../../classes/dto/entity/word_status_history.js";
 
@@ -36,24 +31,12 @@ import {
 } from "../../classes/dto/other/custom_response_message.js";
 
 import {
-    WordStatusResponseDTO
-} from "../../classes/dto/entity/word_status.js";
-
-import {
-    LongResponse
-} from "../../classes/dto/other/long_response.js";
-
-import {
     LangUtils
 } from "../../classes/utils/entity/lang_utils.js";
 
 import {
     WordStatusUtils
 } from "../../classes/utils/entity/word_status_utils.js";
-
-import {
-    WordStatusesAPI
-} from "../../classes/api/word_statuses/word_statuses_api.js";
 
 import {
     WordsAPI
@@ -83,7 +66,24 @@ import {
     TextBoxUtils
 } from "../../classes/utils/text_box_utils.js";
 
-const _WORD_STATUSES_API = new WordStatusesAPI();
+import {
+    WordsWithStatusStatisticResponseDTO
+} from "../../classes/dto/types/words_with_status_statistic.js";
+
+class WordStatusHistoryItemsForFind {
+    tableHistory;
+    colgroupHistory;
+    tBodyHistory;
+    customTimerFinder;
+
+    constructor(tableHistory, colgroupHistory, tBodyHistory, customTimerFinder) {
+        this.tableHistory = tableHistory;
+        this.colgroupHistory = colgroupHistory;
+        this.tBodyHistory = tBodyHistory;
+        this.customTimerFinder = customTimerFinder;
+    }
+}
+
 const _WORDS_API = new WordsAPI();
 const _WORD_STATUS_HISTORIES = new WordStatusHistoriesAPI();
 
@@ -117,20 +117,6 @@ const _CUSTOM_TIMER_TB_FINDER = new CustomTimer();
 const _TIMEOUT_FOR_FINDERS = 1000;
 
 let _wordStatusHistoryItemsForFindMap = new Map();
-
-class WordStatusHistoryItemsForFind {
-    tableHistory;
-    colgroupHistory;
-    tBodyHistory;
-    customTimerFinder;
-
-    constructor(tableHistory, colgroupHistory, tBodyHistory, customTimerFinder) {
-        this.tableHistory = tableHistory;
-        this.colgroupHistory = colgroupHistory;
-        this.tBodyHistory = tBodyHistory;
-        this.customTimerFinder = customTimerFinder;
-    }
-}
 
 window.onload = async function() {
     prepareStatisticFinder();
@@ -212,6 +198,9 @@ function startToFindStatistic() {
     let divStatistic = document.getElementById(_MY_WORDS_HISTORY_STATISTICS_CONTAINER_ID);
     if (divStatistic) {
         divStatistic.replaceChildren();
+
+        divStatistic.style.display = "grid";
+        divStatistic.style.alignItems = "center";
         divStatistic.appendChild(new LoadingElement().createDiv());
     }
 
@@ -227,6 +216,7 @@ async function tryToFillStatistic() {
     let divStatistics = document.getElementById(_MY_WORDS_HISTORY_STATISTICS_CONTAINER_ID);
     if (divStatistics && currentFinder.getActive() === true) {
         divStatistics.replaceChildren();
+        divStatistics.style.cssText = "";
         for (let i = 0; i < statisticItems.length; i++) {
             if (currentFinder.getActive() !== true) break;
             divStatistics.appendChild(statisticItems[i]);
@@ -237,58 +227,45 @@ async function tryToFillStatistic() {
 async function createStatisticItems() {
     let statisticItems = [];
 
-    // Генерируем статистику по всем статусам слов пользователя
-    let JSONResponseWordStatuses = await _WORD_STATUSES_API.GET.getAll();
-    if (JSONResponseWordStatuses.status === _HTTP_STATUSES.OK) {
-        // Генерируем контейнер для статистики всех статусов слов ---
-        let divStatisticForCustomerWords = document.createElement("div");
-        //---
+    // Генерируем статистику по всем статусам слов пользователя ---
+    let authId = _GLOBAL_COOKIES.AUTH_ID.getValue();
+    let JSONResponse = await _WORDS_API.GET.getWordsWithStatusStatisticsByCustomerId(authId);
+    if (JSONResponse.status === _HTTP_STATUSES.OK) {
+        let divStatistics = [];
+        let sumOfCustomerWords = 0n;
 
-        // Генерируем статистику по всем статусам ---
-        let wordStatusesWithCount = [];
-        let customerId = _GLOBAL_COOKIES.AUTH_ID.getValue();
-        let wordStatusesJson = JSONResponseWordStatuses.json;
-        let numberOfWordsSum = 0n;
-        for (let i = 0; i < wordStatusesJson.length; i++) {
-            let wordStatus = new WordStatusResponseDTO(wordStatusesJson[i]);
-            let JSONResponseNumberOfWords =
-                await _WORDS_API.GET.getCountByCustomerIdAndWordStatusCode(customerId, wordStatus.code);
-            if (JSONResponseNumberOfWords.status === _HTTP_STATUSES.OK) {
-                let longResponse = new LongResponse(JSONResponseNumberOfWords.json);
-                numberOfWordsSum += longResponse.value;
-
-                let wordStatusWithCount = new WordStatusWithCount(wordStatus, longResponse.value);
-                wordStatusesWithCount.push(wordStatusWithCount);
+        let json = JSONResponse.json;
+        for (let i = 0; i < json.length; i++) {
+            let wordsWithStatusStatistic = new WordsWithStatusStatisticResponseDTO(json[i]);
+            let divStatistic = await wordsWithStatusStatistic.createDiv();
+            if (divStatistic) {
+                divStatistics.push(divStatistic);
+                sumOfCustomerWords += wordsWithStatusStatistic.numberOfWords;
             }
         }
 
-        // Сортируем статусы по убыванию количества
-        wordStatusesWithCount.sort(compareWordStatusWithCount);
-        for (let i = 0; i < wordStatusesWithCount.length; i++) {
-            divStatisticForCustomerWords.appendChild(wordStatusesWithCount[i].createDiv());
-        }
-        //---
-
-        // Сумма всех слов ---
+        // Создаём контейнер с общим количеством слов ---
         let spanNumberOfWordsText = document.createElement("span");
         spanNumberOfWordsText.style.fontWeight = "bold";
         spanNumberOfWordsText.textContent = "Общее количество предложенных вами слов";
 
-        let spanNumberOfWordsSum = document.createElement("span");
-        spanNumberOfWordsSum.textContent = `: ${numberOfWordsSum}`;
+        let spanSumOfWords = document.createElement("span");
+        spanSumOfWords.textContent = `: ${sumOfCustomerWords}`;
 
-        let divNumberOfWordsSumContainer = document.createElement("div");
-        divNumberOfWordsSumContainer.appendChild(spanNumberOfWordsText);
-        divNumberOfWordsSumContainer.appendChild(spanNumberOfWordsSum);
+        let divSumOfCustomerWordsContainer = document.createElement("div");
+        divSumOfCustomerWordsContainer.appendChild(spanNumberOfWordsText);
+        divSumOfCustomerWordsContainer.appendChild(spanSumOfWords);
+
+        divStatistics.unshift(divSumOfCustomerWordsContainer);
         //---
 
-        // Добавляем элементы в основной контейнер ---
-        let divStatistic = document.createElement("div");
-        divStatistic.appendChild(divNumberOfWordsSumContainer);
-        divStatistic.appendChild(divStatisticForCustomerWords);
-        divStatistic.appendChild(document.createElement("br"));
+        // Генерируем общий div, добавляем его в items ---
+        let divStatisticResult = document.createElement("div");
+        for (let i = 0; i < divStatistics.length; i++) {
+            divStatisticResult.appendChild(divStatistics[i]);
+        }
 
-        statisticItems.push(divStatistic);
+        statisticItems.push(divStatisticResult);
         //---
     }
 
@@ -467,6 +444,10 @@ async function createTableRow(wordResponseDTO, index) {
         let tdWord = document.createElement("td");
         tdWord.style.padding = "0";
         tdWord.style.paddingTop = "5px";
+        if (index % 2 !== 0) {
+            tdWord.style.paddingBottom = "5px";
+        }
+
         tdWord.colSpan = colgroupParent.childElementCount;
         tdWord.appendChild(divWordContainer);
         //---

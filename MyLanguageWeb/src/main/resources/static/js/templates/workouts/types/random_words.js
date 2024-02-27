@@ -1,51 +1,51 @@
 import {
     HttpStatuses
-} from "../../classes/http_statuses.js";
+} from "../../../classes/http_statuses.js";
 
 import {
     GlobalCookies
-} from "../../classes/global_cookies.js";
+} from "../../../classes/global_cookies.js";
 
 import {
     WorkoutTypes
-} from "../../classes/api/workout_types/workout_types.js";
+} from "../../../classes/api/workout_types/workout_types.js";
 
 import {
     RuleElement
-} from "../../classes/rule/rule_element.js";
+} from "../../../classes/rule/rule_element.js";
 
 import {
     RuleTypes
-} from "../../classes/rule/rule_types.js";
+} from "../../../classes/rule/rule_types.js";
 
 import {
     LangUtils
-} from "../../classes/utils/entity/lang_utils.js";
+} from "../../../classes/utils/entity/lang_utils.js";
 
 import {
     ComboBoxUtils
-} from "../../classes/utils/combo_box_utils.js";
+} from "../../../classes/utils/combo_box_utils.js";
 
 import {
     LoadingElement
-} from "../../classes/loading_element.js";
+} from "../../../classes/loading_element.js";
 
 import {
     WorkoutsAPI
-} from "../../classes/api/workouts_api.js";
+} from "../../../classes/api/workouts_api.js";
 
 import {
     WorkoutRequestDTO,
     WorkoutResponseDTO
-} from "../../classes/dto/entity/workout.js";
+} from "../../../classes/dto/entity/workout.js";
 
 import {
     NotOverWorkoutsTableHelper
-} from "../../classes/utils/for_templates/not_over_workouts_table_helper.js";
+} from "../../../classes/utils/for_templates/not_over_workouts_table_helper.js";
 
 import {
     CustomResponseMessage
-} from "../../classes/dto/other/custom_response_message.js";
+} from "../../../classes/dto/other/custom_response_message.js";
 
 const _WORKOUTS_API = new WorkoutsAPI();
 
@@ -93,41 +93,6 @@ window.onload = async function() {
     await tryToSetLastWorkoutSettings();
 
     changeDisableStatusInImportantElements(false);
-}
-
-function changeDisableStatusInImportantElements(isDisable) {
-    let cbInLangs = document.getElementById(_CB_IN_LANGS_ID);
-    if (cbInLangs) {
-        cbInLangs.disabled = isDisable;
-    }
-
-    let cbOutLangs = document.getElementById(_CB_OUT_LANGS_ID);
-    if (cbOutLangs) {
-        cbOutLangs.disabled = isDisable;
-    }
-
-    let cbNumberOfWords = document.getElementById(_CB_NUMBER_OF_WORDS_ID);
-    if (cbNumberOfWords) {
-        cbNumberOfWords.disabled = isDisable;
-    }
-
-    let btnSend = document.getElementById(_SUBMIT_BTN_ID);
-    if (btnSend) {
-        btnSend.disabled = isDisable;
-    }
-
-    let btnRefresh = document.getElementById(_BTN_REFRESH_ID);
-    if (btnRefresh) {
-        btnRefresh.disabled = isDisable;
-    }
-}
-
-function clearWorkoutStartInfoContainer() {
-    let divWorkoutStartInfoContainer =
-        document.getElementById(_DIV_WORKOUT_START_INFO_CONTAINER_ID);
-    if (divWorkoutStartInfoContainer) {
-        divWorkoutStartInfoContainer.replaceChildren();
-    }
 }
 
 async function prepareCbInLangs() {
@@ -188,6 +153,8 @@ function prepareCbNumberOfWords() {
 function prepareSubmitSend() {
     let submitSend = document.getElementById(_SUBMIT_SEND_ID);
     submitSend.addEventListener("submit", async function(event) {
+        event.preventDefault();
+
         // Блокируем элементы и отображаем загрузки ---
         changeDisableStatusInImportantElements(true);
         _notOverWorkoutsTableHelper.showLoading();
@@ -199,11 +166,12 @@ function prepareSubmitSend() {
         }
         //---
 
-        event.preventDefault();
-
-        if (await checkBeforeWorkoutStart() === true
-            && await createWorkout() === true) {
+        if (await checkBeforeWorkoutStart() === true) {
+            if (await createWorkout() === true) {
                 submitSend.submit();
+            } else {
+                changeDisableStatusInImportantElements(false);
+            }
         } else {
             clearWorkoutStartInfoContainer();
             changeDisableStatusInImportantElements(false);
@@ -260,6 +228,7 @@ async function tryToSetLastWorkoutSettings() {
     }
 }
 
+// Создание новой тренировки ---
 async function checkCorrectLangIn() {
     let cbInLangs = document.getElementById(_CB_IN_LANGS_ID);
     let divInLangContainer = document.getElementById(_DIV_IN_LANG_CONTAINER_ID);
@@ -408,3 +377,39 @@ async function createWorkout() {
 
     return isCorrect;
 }
+
+function changeDisableStatusInImportantElements(isDisable) {
+    let cbInLangs = document.getElementById(_CB_IN_LANGS_ID);
+    if (cbInLangs) {
+        cbInLangs.disabled = isDisable;
+    }
+
+    let cbOutLangs = document.getElementById(_CB_OUT_LANGS_ID);
+    if (cbOutLangs) {
+        cbOutLangs.disabled = isDisable;
+    }
+
+    let cbNumberOfWords = document.getElementById(_CB_NUMBER_OF_WORDS_ID);
+    if (cbNumberOfWords) {
+        cbNumberOfWords.disabled = isDisable;
+    }
+
+    let btnSend = document.getElementById(_SUBMIT_BTN_ID);
+    if (btnSend) {
+        btnSend.disabled = isDisable;
+    }
+
+    let btnRefresh = document.getElementById(_BTN_REFRESH_ID);
+    if (btnRefresh) {
+        btnRefresh.disabled = isDisable;
+    }
+}
+
+function clearWorkoutStartInfoContainer() {
+    let divWorkoutStartInfoContainer =
+        document.getElementById(_DIV_WORKOUT_START_INFO_CONTAINER_ID);
+    if (divWorkoutStartInfoContainer) {
+        divWorkoutStartInfoContainer.replaceChildren();
+    }
+}
+//---

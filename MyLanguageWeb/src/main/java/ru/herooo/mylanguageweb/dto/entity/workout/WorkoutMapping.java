@@ -98,25 +98,25 @@ public class WorkoutMapping {
 
         String workoutTypeCode = dto.getWorkoutTypeCode();
         if (STRING_UTILS.isNotStringVoid(workoutTypeCode)) {
-            WorkoutType workoutType = WORKOUT_TYPE_CRUD_REPOSITORY.findByCode(workoutTypeCode);
+            WorkoutType workoutType = WORKOUT_TYPE_CRUD_REPOSITORY.findByCode(workoutTypeCode).orElse(null);
             workout.setWorkoutType(workoutType);
         }
 
         String authCode = dto.getAuthCode();
         if (STRING_UTILS.isNotStringVoid(authCode)) {
-            Customer customer = CUSTOMER_CRUD_REPOSITORY.findByAuthCode(authCode);
+            Customer customer = CUSTOMER_CRUD_REPOSITORY.findByAuthCode(authCode).orElse(null);
             workout.setCustomer(customer);
         }
 
         String langInCode = dto.getLangInCode();
         if (STRING_UTILS.isNotStringVoid(langInCode)) {
-            Lang langIn = LANG_CRUD_REPOSITORY.findByCode(langInCode);
+            Lang langIn = LANG_CRUD_REPOSITORY.findByCode(langInCode).orElse(null);
             workout.setLangIn(langIn);
         }
 
         String langOutCode = dto.getLangOutCode();
         if (STRING_UTILS.isNotStringVoid(langOutCode)) {
-            Lang langOut = LANG_CRUD_REPOSITORY.findByCode(langOutCode);
+            Lang langOut = LANG_CRUD_REPOSITORY.findByCode(langOutCode).orElse(null);
             workout.setLangOut(langOut);
         }
 
@@ -126,7 +126,8 @@ public class WorkoutMapping {
         }
 
         // Не проводим дополнительных проверок, т.к. поле может быть NULL
-        CustomerCollection collection = CUSTOMER_COLLECTION_CRUD_REPOSITORY.findByKey(dto.getCollectionKey());
+        CustomerCollection collection = CUSTOMER_COLLECTION_CRUD_REPOSITORY.findByKey(dto.getCollectionKey())
+                .orElse(null);
         workout.setCustomerCollection(collection);
 
         return workout;

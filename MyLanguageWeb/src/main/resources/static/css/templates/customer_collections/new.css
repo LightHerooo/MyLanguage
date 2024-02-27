@@ -24,7 +24,7 @@ div.new-collection-data-item {
     gap: 5px;
 }
 
-a.btn-new-collection {
+a.a-btn-new-collection {
     min-height: 50px;
 
     display: flex;

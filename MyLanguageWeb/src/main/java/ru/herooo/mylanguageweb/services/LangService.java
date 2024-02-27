@@ -27,14 +27,14 @@ public class LangService {
     }
 
     public Lang find(String code) {
-        return LANG_CRUD_REPOSITORY.findByCode(code);
+        return LANG_CRUD_REPOSITORY.findByCode(code).orElse(null);
     }
 
     public Lang find(Langs langs) {
-        return LANG_CRUD_REPOSITORY.find(langs);
+        return LANG_CRUD_REPOSITORY.find(langs).orElse(null);
     }
 
-    public long count() {
-        return LANG_CRUD_REPOSITORY.count();
+    public long count(Boolean isActive) {
+        return LANG_CRUD_REPOSITORY.count(isActive).orElse(0L);
     }
 }
