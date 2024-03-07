@@ -1,13 +1,8 @@
-package ru.herooo.mylanguageutils.yandexdictionary;
+package ru.herooo.mylanguageutils.http;
 
-public class YandexDictionaryResponse {
+public class HttpJsonResponse {
     int code;
     String jsonStr;
-
-    public YandexDictionaryResponse(int code, String jsonStr) {
-        this.code = code;
-        this.jsonStr = jsonStr;
-    }
 
     public int getCode() {
         return code;

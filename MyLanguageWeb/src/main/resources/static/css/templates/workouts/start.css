@@ -62,12 +62,12 @@ div.start-workout-interaction-container {
 
 div.start-workout-interaction-with-answer-area {
     display: grid;
-    grid: 1fr 70px / 1fr;
+    grid: 1fr 90px / 1fr;
     gap: 10px;
 }
 
 div.answer-container {
     display: grid;
-    grid: 1fr / 1fr 180px;
+    grid: 1fr / 1fr 50px 180px;
     gap: 10px;
 }

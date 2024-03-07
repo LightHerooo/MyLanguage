@@ -3,11 +3,15 @@ package ru.herooo.mylanguageweb.controllers;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.server.ResponseStatusException;
 import ru.herooo.mylanguagedb.entities.Customer;
 import ru.herooo.mylanguagedb.entities.Workout;
+import ru.herooo.mylanguagedb.entities.WorkoutType;
 import ru.herooo.mylanguagedb.repositories.workouttype.WorkoutTypes;
 import ru.herooo.mylanguageweb.controllers.move.Redirects;
 import ru.herooo.mylanguageweb.controllers.move.Views;
@@ -20,8 +24,8 @@ import ru.herooo.mylanguageweb.services.WorkoutTypeService;
 @Controller
 @RequestMapping("/workouts")
 public class WorkoutsController {
-
     private final String WORKOUT_TYPE_ATTRIBUTE_NAME = "WORKOUT_TYPE";
+    private final String WORKOUT_ID_ATTRIBUTE_NAME = "WORKOUT_ID";
 
     private final CustomerService CUSTOMER_SERVICE;
     private final WorkoutTypeService WORKOUT_TYPE_SERVICE;
@@ -62,12 +66,37 @@ public class WorkoutsController {
     public String showRandomWordsPage(HttpServletRequest request) {
         Customer authCustomer = CUSTOMER_SERVICE.find(request);
         if (authCustomer != null) {
-            CONTROLLER_UTILS.setGeneralAttributes(request);
-            CONTROLLER_UTILS.changeDateLastVisitToAuthCustomer(request);
-            request.setAttribute(WORKOUT_TYPE_ATTRIBUTE_NAME,
-                    WORKOUT_TYPE_SERVICE.find(WorkoutTypes.RANDOM_WORDS));
+            WorkoutType workoutType = WORKOUT_TYPE_SERVICE.find(WorkoutTypes.RANDOM_WORDS);
+            if (workoutType != null
+                    && (workoutType.getActive() || CUSTOMER_SERVICE.isSuperUser(authCustomer))) {
+                CONTROLLER_UTILS.setGeneralAttributes(request);
+                CONTROLLER_UTILS.changeDateLastVisitToAuthCustomer(request);
+                request.setAttribute(WORKOUT_TYPE_ATTRIBUTE_NAME, workoutType);
 
-            return Views.WORKOUTS_RANDOM_WORDS.PATH_TO_FILE;
+                return Views.WORKOUTS_RANDOM_WORDS.PATH_TO_FILE;
+            } else {
+                return Redirects.WORKOUTS.REDIRECT_URL;
+            }
+        } else {
+            return Redirects.ENTRY.REDIRECT_URL;
+        }
+    }
+
+    @GetMapping("/collection_workout")
+    public String showCollectionWorkoutPage(HttpServletRequest request) {
+        Customer authCustomer = CUSTOMER_SERVICE.find(request);
+        if (authCustomer != null) {
+            WorkoutType workoutType = WORKOUT_TYPE_SERVICE.find(WorkoutTypes.COLLECTION_WORKOUT);
+            if (workoutType != null
+                    && (workoutType.getActive() || CUSTOMER_SERVICE.isSuperUser(authCustomer))) {
+                CONTROLLER_UTILS.setGeneralAttributes(request);
+                CONTROLLER_UTILS.changeDateLastVisitToAuthCustomer(request);
+                request.setAttribute(WORKOUT_TYPE_ATTRIBUTE_NAME, workoutType);
+
+                return Views.WORKOUTS_COLLECTION_WORKOUT.PATH_TO_FILE;
+            } else {
+                return Redirects.WORKOUTS.REDIRECT_URL;
+            }
         } else {
             return Redirects.ENTRY.REDIRECT_URL;
         }
@@ -93,6 +122,7 @@ public class WorkoutsController {
         }
     }
 
+    // Нужно для тестирования + обновления кеша на странице тренировки
     /*@GetMapping("/start")
     public String showStartPage(HttpServletRequest request, HttpServletResponse response) {
         Customer authCustomer = CUSTOMER_SERVICE.find(request);
@@ -105,4 +135,24 @@ public class WorkoutsController {
             return Redirects.WORKOUTS.REDIRECT_URL;
         }
     }*/
+
+    @GetMapping("/info/{id}")
+    public String showWorkoutInfoOnePage(HttpServletRequest request,
+                                         @PathVariable("id") Long id) {
+        Customer authCustomer = CUSTOMER_SERVICE.find(request);
+        if (authCustomer != null) {
+            Workout workout = WORKOUT_SERVICE.find(id);
+            if (workout != null) {
+                CONTROLLER_UTILS.setGeneralAttributes(request);
+                CONTROLLER_UTILS.changeDateLastVisitToAuthCustomer(request);
+                request.setAttribute(WORKOUT_ID_ATTRIBUTE_NAME, id);
+
+                return Views.WORKOUTS_SHOW_INFO_ONE.PATH_TO_FILE;
+            } else {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            }
+        } else {
+            return Redirects.ENTRY.REDIRECT_URL;
+        }
+    }
 }

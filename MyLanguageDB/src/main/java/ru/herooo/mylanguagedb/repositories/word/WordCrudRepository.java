@@ -30,6 +30,11 @@ public interface WordCrudRepository extends CrudRepository<Word, Long>, WordRepo
     List<Word> findListRandom(@Param("lang_code") String langCode,
                               @Param("count") Long count);
 
+    @Query(nativeQuery = true, value =
+            "SELECT * FROM get_words_by_title(:title, :word_status_code)")
+    List<Word> findListByTitle(@Param("title") String title,
+                               @Param("word_status_code") String wordStatusCode);
+
     @Query(nativeQuery = true,
             value = "SELECT * FROM get_words_after_filter" +
                     "(:title, :word_status_code, :language_code)")

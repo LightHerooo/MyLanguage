@@ -1,17 +1,17 @@
-package ru.herooo.mylanguageutils.yandexdictionary.dicresult;
+package ru.herooo.mylanguageutils.yandexdictionary.yandexdic;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.herooo.mylanguageutils.StringUtils;
-import ru.herooo.mylanguageutils.yandexdictionary.dicresult.classes.TranslatedSynonym;
-import ru.herooo.mylanguageutils.yandexdictionary.dicresult.classes.TranslatedWord;
-import ru.herooo.mylanguageutils.yandexdictionary.dicresult.classes.TranslatedGroup;
+import ru.herooo.mylanguageutils.yandexdictionary.yandexdic.classes.TranslatedSynonym;
+import ru.herooo.mylanguageutils.yandexdictionary.yandexdic.classes.TranslatedWord;
+import ru.herooo.mylanguageutils.yandexdictionary.yandexdic.classes.TranslatedGroup;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class DicResult {
+public class YandexDicResult {
     private final StringUtils STRING_UTILS = new StringUtils();
 
     @JsonProperty("def")

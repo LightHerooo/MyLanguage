@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title th:text="${WEB_APP_NAME} + ' - Настройка режима тренировки ' +
+                          '&quot;' + ${WORKOUT_TYPE.title} + '&quot;'">Настройка режима тренировки</title>
+        <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
+
+        <link rel="stylesheet" type="text/css" href="/css/root.css">
+        <link rel="stylesheet" type="text/css" href="/css/main.css">
+        <link rel="stylesheet" type="text/css" href="/css/info_blocks/info_block_with_img_and_header.css">
+        <link rel="stylesheet" type="text/css" href="/css/entity/collection_info.css">
+        <link rel="stylesheet" type="text/css" href="/css/other/rule.css">
+        <link rel="stylesheet" type="text/css" href="/css/other/loading.css">
+        <link rel="stylesheet" type="text/css" href="/css/other/element_with_flag.css">
+        <link rel="stylesheet" type="text/css" href="/css/entity/workout_info.css">
+        <link rel="stylesheet" type="text/css" href="/css/templates/workouts/types/general.css">
+        <link rel="stylesheet" type="text/css" href="/css/templates/workouts/types/collection_workout.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
+
+        <script type="module" src="/js/templates/workouts/types/collection_workout.js"></script>
+    </head>
+    <body>
+        <header>
+          <div th:insert="~{layouts/header}"></div>
+        </header>
+        <main>
+            <div class="info-block-with-img-and-header-container">
+                <div class="info-block-with-img-and-header-left-container">
+                    <img class="img-info-block-with-img-and-header"
+                         src="#"
+                         th:src="${WORKOUT_TYPE.pathToImage}"
+                         alt="workout_type.png"/>
+                </div>
+                <div class="info-block-with-img-and-header-right-container">
+                    <h1 class="h1-info-block-with-img-and-header"
+                        th:text="${WORKOUT_TYPE.title}">Название режима тренировки</h1>
+                    <div class="info-block-with-img-and-header-text"
+                         th:text="${WORKOUT_TYPE.message}">
+                      Информация о режиме тренировки.
+                    </div>
+                    <br>
+                </div>
+            </div>
+            <div class="workout-container">
+                <div class="workout-item">
+                    <div class="info-block-standard workout-item-header-container">
+                        <img class="img-workout-item-header"
+                             src="/images/other/add.png"
+                             alt="add.png"/>
+                        <h1 class="h1-workout-item-header">Новая тренировка</h1>
+                    </div>
+                    <div class="new-workout-start-container">
+                        <div class="info-block-standard">
+                            <form action="/workouts/start" id="submit_send" class="form-standard">
+                                <div class="form-item-standard" id="div_customer_collection_container">
+                                    <label class="label-standard" for="cb_customer_collections">
+                                        Коллекция, которую будете тренировать:</label>
+                                    <div class="element-with-flag-container">
+                                        <select id="cb_customer_collections" class="select-standard"></select>
+                                        <div class="flag-container">
+                                            <div id="customer_collection_flag"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-item-standard" id="div_lang_out_container">
+                                    <label class="label-standard" for="cb_langs_out">Язык, на который будете переводить:</label>
+                                    <div class="element-with-flag-container">
+                                        <select id="cb_langs_out" class="select-standard"></select>
+                                        <div class="flag-container">
+                                            <div id="lang_out_flag"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="horizontal-delimiter"></div>
+                                <div class="new-workout-start-actions-container">
+                                    <input id="btn_submit" type="submit"
+                                           class="submit-standard" value="Начать тренировку">
+                                    <button id="btn_drop_workout_settings" type="button"
+                                            class="button-standard btn-drop-workout-settings"
+                                            title="Сбросить настройки">
+                                        <img class="img-btn-drop-workout-settings"
+                                             src="/images/other/trash.png" alt="trash.png"/>
+                                    </button>
+                                </div>
+                                <div id="workout_start_info_container" class="workout-start-info-container"></div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="workout-item">
+                    <div class="info-block-standard workout-item-header-container">
+                        <div class="workout-item-header-container">
+                            <img class="img-workout-item-header"
+                                 src="/images/other/history.png"
+                                 alt="history.png"/>
+                            <h1 class="h1-workout-item-header">Незавершённые тренировки</h1>
+                        </div>
+                    </div>
+                    <div id="not_over_workouts_container" class="info-block-standard"></div>
+                </div>
+            </div>
+            <div class="words-in-collection-instruments">
+                <div class="words-in-collection-instruments-item">
+                    <label class="label-for-input-standard" for="tb_finder">Поиск:</label>
+                    <input id="tb_finder" class="text-standard" type="text">
+                </div>
+                <div class="words-in-collection-instruments-item">
+                    <label class="label-for-input-standard" for="btn_refresh_table"></label>
+                    <button id="btn_refresh_table" class="btn-refresh-standard" title="Обновить">
+                        <img class="btn-refresh-standard-img" src="/images/other/refresh.png" alt="refresh.png"/>
+                    </button>
+                </div>
+            </div>
+            <div id="div_collection_info" class="info-block-standard collection-info"></div>
+            <table class="table-standard">
+                <colgroup>
+                    <col style="width: 5%;">
+                    <col style="width: 65%;">
+                    <col style="width: 30%;">
+                </colgroup>
+                <thead id="words_in_collection_head">
+                    <tr>
+                        <th>№</th>
+                        <th>Слово</th>
+                        <th>Язык</th>
+                    </tr>
+                </thead>
+                <tbody id="words_in_collection_body"></tbody>
+            </table>
+        </main>
+    </body>
+</html>

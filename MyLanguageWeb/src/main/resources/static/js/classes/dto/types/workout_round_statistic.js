@@ -37,7 +37,7 @@ export class WorkoutRoundStatisticResponseDTO {
         }
     }
 
-    createDiv() {
+    createDivNotOver() {
         // Создаём основной контейнер ---
         let div = document.createElement("div");
         div.classList.add(_CSS_WORKOUT_ROUND_STATISTIC.DIV_WORKOUT_ROUND_STATISTIC_CONTAINER_STYLE_ID);
@@ -49,46 +49,92 @@ export class WorkoutRoundStatisticResponseDTO {
         divHeader.classList.add(_CSS_WORKOUT_ROUND_STATISTIC.DIV_WORKOUT_ROUND_STATISTIC_ITEM_HEADER);
         divHeader.textContent = "Неправильных ответов";
 
-        this.#divNumberOfFalseAnswers = document.createElement("div");
-        this.#divNumberOfFalseAnswers.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
-        this.#divNumberOfFalseAnswers.classList.add(_CSS_WORKOUT_ROUND_STATISTIC.DIV_WORKOUT_ROUND_STATISTIC_ITEM_STYLE_ID);
-        this.#divNumberOfFalseAnswers.style.color = _CSS_ROOT.DENY_FIRST_COLOR;
-        this.#divNumberOfFalseAnswers.id = _DIV_NUMBER_OF_FALSE_ANSWERS_ID;
-        this.#divNumberOfFalseAnswers.textContent = this.numberOfFalseAnswers;
+        let divAnswers = document.createElement("div");
+        divAnswers.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
+        divAnswers.classList.add(_CSS_WORKOUT_ROUND_STATISTIC.DIV_WORKOUT_ROUND_STATISTIC_ITEM_STYLE_ID);
+        divAnswers.style.color = _CSS_ROOT.DENY_FIRST_COLOR;
+        divAnswers.id = _DIV_NUMBER_OF_FALSE_ANSWERS_ID;
+        divAnswers.textContent = this.numberOfFalseAnswers;
 
         div.appendChild(divHeader);
-        div.appendChild(this.#divNumberOfFalseAnswers);
+        div.appendChild(divAnswers);
+        this.#divNumberOfFalseAnswers = divAnswers;
         //---
 
         // Количество вопросов без ответа (оставшихся) ---
         divHeader = divHeader.cloneNode(true);
         divHeader.textContent = "Осталось вопросов";
 
-        this.#divNumberOfQuestionsWithoutAnswer = document.createElement("div");
-        this.#divNumberOfQuestionsWithoutAnswer.classList.add(
-            _CSS_WORKOUT_ROUND_STATISTIC.DIV_WORKOUT_ROUND_STATISTIC_ITEM_STYLE_ID);
-        this.#divNumberOfQuestionsWithoutAnswer.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
-        this.#divNumberOfQuestionsWithoutAnswer.id = _DIV_NUMBER_OF_QUESTIONS_WITHOUT_ANSWER_ID;
-        this.#divNumberOfQuestionsWithoutAnswer.textContent = this.numberOfQuestionsWithoutAnswer;
+        divAnswers = divAnswers.cloneNode(false);
+        divAnswers.style.color = "";
+        divAnswers.id = _DIV_NUMBER_OF_QUESTIONS_WITHOUT_ANSWER_ID;
+        divAnswers.textContent = this.numberOfQuestionsWithoutAnswer;
 
         div.appendChild(divHeader);
-        div.appendChild(this.#divNumberOfQuestionsWithoutAnswer);
+        div.appendChild(divAnswers);
+        this.#divNumberOfQuestionsWithoutAnswer = divAnswers;
         //---
 
         // Количество правильных ответов ---
-        divHeader = divHeader.cloneNode(true);
+        divHeader = divHeader.cloneNode(false);
         divHeader.textContent = "Правильных ответов";
 
-        this.#divNumberOfTrueAnswers = document.createElement("div");
-        this.#divNumberOfTrueAnswers.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
-        this.#divNumberOfTrueAnswers.classList.add(
-            _CSS_WORKOUT_ROUND_STATISTIC.DIV_WORKOUT_ROUND_STATISTIC_ITEM_STYLE_ID);
-        this.#divNumberOfTrueAnswers.style.color = _CSS_ROOT.ACCEPT_FIRST_COLOR;
-        this.#divNumberOfTrueAnswers.id = _DIV_NUMBER_OF_TRUE_ANSWERS_ID;
-        this.#divNumberOfTrueAnswers.textContent = this.numberOfTrueAnswers;
+        divAnswers = divAnswers.cloneNode(false);
+        divAnswers.style.color = _CSS_ROOT.ACCEPT_FIRST_COLOR;
+        divAnswers.id = _DIV_NUMBER_OF_TRUE_ANSWERS_ID;
+        divAnswers.textContent = this.numberOfTrueAnswers;
 
         div.appendChild(divHeader);
-        div.appendChild(this.#divNumberOfTrueAnswers);
+        div.appendChild(divAnswers);
+        this.#divNumberOfTrueAnswers = divAnswers;
+        //---
+
+        return div;
+    }
+
+    createDivOver() {
+        // Создаём основной контейнер ---
+        let div = document.createElement("div");
+        div.classList.add(_CSS_WORKOUT_ROUND_STATISTIC.DIV_WORKOUT_ROUND_STATISTIC_CONTAINER_STYLE_ID);
+        //---
+
+        // Общее количество вопросов ---
+        let divHeader = document.createElement("div");
+        divHeader.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
+        divHeader.classList.add(_CSS_WORKOUT_ROUND_STATISTIC.DIV_WORKOUT_ROUND_STATISTIC_ITEM_HEADER);
+        divHeader.textContent = "Количество вопросов";
+
+        let divAnswers = document.createElement("div");
+        divAnswers.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
+        divAnswers.classList.add(_CSS_WORKOUT_ROUND_STATISTIC.DIV_WORKOUT_ROUND_STATISTIC_ITEM_STYLE_ID);
+        divAnswers.textContent = this.numberOfQuestions;
+
+        div.appendChild(divHeader);
+        div.appendChild(divAnswers);
+        //---
+
+        // Количество неправильных ответов ---
+        divHeader = divHeader.cloneNode(false);
+        divHeader.textContent = "Неправильных ответов";
+
+        divAnswers = divAnswers.cloneNode(false);
+        divAnswers.style.color = _CSS_ROOT.DENY_FIRST_COLOR;
+        divAnswers.textContent = this.numberOfFalseAnswers;
+
+        div.appendChild(divHeader);
+        div.appendChild(divAnswers);
+        //---
+
+        // Количество правильных ответов ---
+        divHeader = divHeader.cloneNode(false);
+        divHeader.textContent = "Правильных ответов";
+
+        divAnswers = divAnswers.cloneNode(false);
+        divAnswers.style.color = _CSS_ROOT.ACCEPT_FIRST_COLOR;
+        divAnswers.textContent = this.numberOfTrueAnswers;
+
+        div.appendChild(divHeader);
+        div.appendChild(divAnswers);
         //---
 
         return div;
@@ -103,8 +149,19 @@ export class WorkoutRoundStatisticResponseDTO {
             this.numberOfFalseAnswers++;
         }
 
-        this.#divNumberOfFalseAnswers.textContent = this.numberOfFalseAnswers;
-        this.#divNumberOfQuestionsWithoutAnswer.textContent = this.numberOfQuestionsWithoutAnswer;
-        this.#divNumberOfTrueAnswers.textContent = this.numberOfTrueAnswers;
+        let divNumberOfFalseAnswers = this.#divNumberOfFalseAnswers;
+        if (divNumberOfFalseAnswers) {
+            divNumberOfFalseAnswers.textContent = this.numberOfFalseAnswers;
+        }
+
+        let divNumberOfQuestionsWithoutAnswer = this.#divNumberOfQuestionsWithoutAnswer;
+        if (divNumberOfQuestionsWithoutAnswer) {
+            divNumberOfQuestionsWithoutAnswer.textContent = this.numberOfQuestionsWithoutAnswer
+        }
+
+        let divNumberOfTrueAnswers = this.#divNumberOfTrueAnswers;
+        if (divNumberOfTrueAnswers) {
+            divNumberOfTrueAnswers.textContent = this.numberOfTrueAnswers;
+        }
     }
 }

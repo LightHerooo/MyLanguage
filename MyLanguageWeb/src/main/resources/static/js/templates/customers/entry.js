@@ -156,7 +156,8 @@ function checkCorrectBeforeEntry() {
     let isLoginCorrect = checkCorrectLogin();
     let isPasswordCorrect = checkCorrectPassword();
 
-    return (isLoginCorrect && isPasswordCorrect);
+    return (isLoginCorrect === true
+        && isPasswordCorrect === true);
 }
 
 function clearErrorsContainer() {

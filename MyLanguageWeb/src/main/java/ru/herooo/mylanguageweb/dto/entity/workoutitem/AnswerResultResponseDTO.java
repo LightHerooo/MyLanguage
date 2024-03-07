@@ -6,14 +6,17 @@ import java.util.List;
 
 public class AnswerResultResponseDTO {
 
-    @JsonProperty("workout_item")
-    WorkoutItemResponseDTO workoutItem;
+    @JsonProperty("message")
+    private String message;
 
     @JsonProperty("is_correct")
-    boolean isCorrect;
+    private boolean isCorrect;
+
+    @JsonProperty("workout_item")
+    private WorkoutItemResponseDTO workoutItem;
 
     @JsonProperty("possible_answers")
-    List<String> possibleAnswers;
+    private List<String> possibleAnswers;
 
     public WorkoutItemResponseDTO getWorkoutItem() {
         return workoutItem;
@@ -37,5 +40,13 @@ public class AnswerResultResponseDTO {
 
     public void setPossibleAnswers(List<String> possibleAnswers) {
         this.possibleAnswers = possibleAnswers;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

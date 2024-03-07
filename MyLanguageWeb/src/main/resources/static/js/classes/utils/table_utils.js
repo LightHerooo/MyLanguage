@@ -9,7 +9,7 @@ import {
 const _CSS_MAIN = new CssMain();
 
 class GeneralFunctions {
-    createTrWithElementInside(numberOfColumns, differentElement) {
+    createTrWithElementInside(numberOfColumns, differentElement, doNeedToRemovePadding, doNeedToClearBackground) {
         // Создаём контейнер разделителя ---
         let divContainer = document.createElement("div");
         divContainer.style.display = "grid";
@@ -19,12 +19,19 @@ class GeneralFunctions {
         // Создаём колонку с длиной на все колонки ---
         let td = document.createElement("td");
         td.colSpan = numberOfColumns;
+        if (doNeedToRemovePadding === true) {
+            td.style.padding = "0px";
+        }
 
         td.appendChild(divContainer);
         //---
 
         // Создаём строку таблицы ---
         let tr = document.createElement("tr");
+        if (doNeedToClearBackground === true) {
+            tr.style.background = "none";
+        }
+
         tr.appendChild(td);
         //---
 
@@ -57,27 +64,23 @@ export class TableUtils {
         return colgroupElement.childElementCount;
     }
 
-    createTrWithElementInside(numberOfColumns, differentElement) {
-        return this.#GENERAL_FUNCTIONS.createTrWithElementInside(numberOfColumns, differentElement);
+    createTrWithElementInside(numberOfColumns, differentElement, doNeedToRemovePadding, doNeedToClearBackground) {
+        return this.#GENERAL_FUNCTIONS.createTrWithElementInside(
+            numberOfColumns, differentElement, doNeedToRemovePadding, doNeedToClearBackground);
     }
 
-    createTrShowMore(numberOfColumns, numberOfItems, callback) {
+    createTrShowMore(numberOfColumns, message, callback) {
         // Создаём кнопку "Показать больше" ---
         let aBtnShowMore = document.createElement("a");
         aBtnShowMore.classList.add(_CSS_MAIN.A_BUTTON_STANDARD_STYLE_ID);
         aBtnShowMore.classList.add(_CSS_MAIN.A_SHOW_MORE_STANDARD_STYLE_ID);
-        aBtnShowMore.text = `Показать ещё ${numberOfItems} элементов...`;
+        aBtnShowMore.textContent = message;
         //---
 
         // Создаём строку таблицы без фона ---
         let trShowMore =
-            this.createTrWithElementInside(numberOfColumns, aBtnShowMore);
-        trShowMore.style.background = "transparent";
-        //---
-
-        // Мы должны убрать отступы ---
-        let tdInsideTr = trShowMore.children.item(0);
-        tdInsideTr.style.padding = "0px";
+            this.createTrWithElementInside(
+                numberOfColumns, aBtnShowMore, true, true);
         //---
 
         // Вешаем событие на кнопку ---
@@ -135,11 +138,13 @@ class MessagesInsideTable {
         divMessage.textContent = text;
         divMessage.style.textAlign = "center";
 
-        return this.#GENERAL_FUNCTIONS.createTrWithElementInside(numberOfColumns, divMessage);
+        return this.#GENERAL_FUNCTIONS.createTrWithElementInside(
+            numberOfColumns, divMessage, false, false);
     }
 
     createTrLoading(numberOfColumns) {
         let loadingElement = new LoadingElement();
-        return this.#GENERAL_FUNCTIONS.createTrWithElementInside(numberOfColumns, loadingElement.createDiv());
+        return this.#GENERAL_FUNCTIONS.createTrWithElementInside(
+            numberOfColumns, loadingElement.createDiv(), false, false);
     }
 }

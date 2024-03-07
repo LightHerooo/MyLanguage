@@ -1,0 +1,37 @@
+div.show-info-one-main-header-container, div.show-info-one-other-header-container {
+    min-height: 70px;
+
+    font-weight: bold;
+    font-size: var(--second-font-size);
+}
+
+div.show-info-one-other-header-container {
+    margin-top: 25px;
+}
+
+img.img-show-info-one-header {
+    width: 64px;
+    height: 64px;
+}
+
+div.workout-info-with-actions-container {
+    min-height: 100px;
+
+    display: grid;
+    grid: 1fr / 1.5fr 1fr;
+    gap: 10px;
+}
+
+div.workout-action {
+    font-size: var(--third-font-size);
+    font-weight: bold;
+}
+
+img.img-workout-action {
+    width: 128px;
+    height: 128px;
+}
+
+div.workout-statistics-container {
+    min-height: 100px;
+}

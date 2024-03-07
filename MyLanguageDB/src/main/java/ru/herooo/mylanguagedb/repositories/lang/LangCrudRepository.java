@@ -17,10 +17,14 @@ public interface LangCrudRepository extends CrudRepository<Lang, Long>, LangRepo
     List<Lang> findAll();
 
     @Query(nativeQuery = true, value =
-            "SELECT * FROM get_langs(:is_active)")
-    List<Lang> findAll(@Param("is_active") Boolean isActive);
+            "SELECT * FROM get_langs_for_in(:is_active_for_in)")
+    List<Lang> findAllForIn(@Param("is_active_for_in") Boolean isActiveForIn);
 
     @Query(nativeQuery = true, value =
-            "SELECT COUNT(*) FROM get_langs(:is_active)")
-    Optional<Long> count(@Param("is_active") Boolean isActive);
+            "SELECT * FROM get_langs_for_out(:is_active_for_out)")
+    List<Lang> findAllForOut(@Param("is_active_for_out") Boolean isActiveForOut);
+
+    @Query(nativeQuery = true, value =
+            "SELECT COUNT(*) FROM get_langs_for_in(:is_active_for_in)")
+    Optional<Long> countForIn(@Param("is_active_for_in") Boolean isActiveForIn);
 }

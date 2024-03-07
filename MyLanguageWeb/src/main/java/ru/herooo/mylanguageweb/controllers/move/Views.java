@@ -9,6 +9,8 @@ public enum Views {
     WORKOUTS_SHOW("workouts/show"),
     WORKOUTS_START("workouts/start"),
     WORKOUTS_RANDOM_WORDS("workouts/types/random_words"),
+    WORKOUTS_COLLECTION_WORKOUT("workouts/types/collection_workout"),
+    WORKOUTS_SHOW_INFO_ONE("workouts/show_info_one"),
 
     WORDS_SHOW("words/show"),
     WORDS_NEW("words/new"),

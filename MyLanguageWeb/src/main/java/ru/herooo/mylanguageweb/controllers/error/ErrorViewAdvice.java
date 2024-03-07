@@ -17,8 +17,7 @@ public class ErrorViewAdvice {
     private final ControllerUtils CONTROLLER_UTILS;
 
     @Autowired
-    private ErrorViewAdvice(CustomerService customerService,
-                            ControllerUtils controllerUtils) {
+    private ErrorViewAdvice(ControllerUtils controllerUtils) {
         this.CONTROLLER_UTILS = controllerUtils;
     }
 

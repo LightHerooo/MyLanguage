@@ -1,24 +1,12 @@
 div.special-actions-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 20px;
-}
-
-div.special-actions-row {
     display: grid;
-    grid: 1fr / 1fr 1fr 1fr;
+    grid-auto-flow: row;
+    grid-template: 1fr / 1fr 1fr 1fr;
     gap: 20px;
 }
 
-a.special-action {
+div.special-action {
     height: 300px;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
     padding: 10px;
 
     font-weight: bold;

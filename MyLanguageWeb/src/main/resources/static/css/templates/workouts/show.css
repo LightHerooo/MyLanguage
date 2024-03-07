@@ -2,22 +2,15 @@ main {
     min-height: 1000px;
 }
 
-a.workout-types-item {
+div.workout-type-action {
     height: 300px;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
     padding: 10px;
 
     font-weight: bold;
     font-size: var(--second-font-size);
 }
 
-
-img.workout-types-item-img {
+img.img-workout-type-action {
     width: 128px;
     height: 128px;
 }

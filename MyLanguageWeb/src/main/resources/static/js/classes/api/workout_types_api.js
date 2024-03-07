@@ -1,10 +1,10 @@
 import {
     UrlToAPI
-} from "../url_to_api.js";
+} from "./url_to_api.js";
 
 import {
     XmlUtils
-} from "../../utils/json/xml_utils.js";
+} from "../utils/json/xml_utils.js";
 
 const _XML_UTILS = new XmlUtils();
 

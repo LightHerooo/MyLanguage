@@ -12,7 +12,7 @@ import {
 
 import {
     WordStatuses
-} from "../../classes/api/word_statuses/word_statuses.js";
+} from "../../classes/dto/entity/word_status/word_statuses.js";
 
 import {
     DateParts
@@ -65,7 +65,7 @@ import {
 
 import {
     AButtons
-} from "../../classes/a_buttons.js";
+} from "../../classes/a_buttons/a_buttons.js";
 
 import {
     ComboBoxUtils
@@ -80,16 +80,20 @@ import {
 } from "../../classes/dto/entity/customer_collection.js";
 
 import {
-    FlagElements
-} from "../../classes/flag_elements.js";
-
-import {
     TextBoxUtils
 } from "../../classes/utils/text_box_utils.js";
 
 import {
     WordsWithStatusStatisticResponseDTO
 } from "../../classes/dto/types/words_with_status_statistic.js";
+
+import {
+    AButtonImgSizes
+} from "../../classes/a_buttons/a_button_img_sizes.js";
+
+import {
+    ComboBoxWithFlag
+} from "../../classes/element_with_flag/combo_box_with_flag.js";
 
 const _CUSTOMER_COLLECTIONS_API = new CustomerCollectionsAPI();
 const _WORDS_API = new WordsAPI();
@@ -104,19 +108,23 @@ const _TABLE_UTILS = new TableUtils();
 const _A_BUTTONS = new AButtons();
 const _COMBO_BOX_UTILS = new ComboBoxUtils();
 const _WORD_TABLE_UTILS = new WordTableUtils();
-const _FLAG_ELEMENTS = new FlagElements();
 const _TEXT_BOX_UTILS = new TextBoxUtils();
+const _A_BUTTON_IMG_SIZES = new AButtonImgSizes();
+
+const _DIV_WORDS_STATISTICS_CONTAINER_ID = "words_statistics_container";
+const _TB_FINDER_ID = "tb_finder";
+
+const _CB_LANGS_ID = "cb_langs";
+const _DIV_LANG_FLAG_ID = "lang_flag";
 
 const _CB_CUSTOMER_COLLECTIONS_ID = "cb_customer_collections";
-const _TB_FINDER_ID = "tb_finder";
-const _CB_LANGS_ID = "cb_langs";
+const _DIV_COLLECTION_FLAG_ID = "collection_flag";
+
+const _BTN_REFRESH_ID = "btn_refresh";
+
+const _DIV_COLLECTION_INFO_ID = "div_collection_info";
 const _WORDS_TABLE_HEAD_ID = "words_table_head";
 const _WORDS_TABLE_BODY_ID = "words_table_body";
-const _DIV_COLLECTION_INFO_ID = "div_collection_info";
-const _DIV_WORDS_STATISTICS_CONTAINER_ID = "words_statistics_container";
-const _BTN_REFRESH_ID = "btn_refresh";
-const _DIV_LANG_FLAG_ID = "lang_flag";
-const _DIV_COLLECTION_FLAG_ID = "collection_flag";
 
 const _NUMBER_OF_WORDS = 20;
 let _lastWordNumberInList = 0;
@@ -152,13 +160,13 @@ function prepareTbFinder() {
 
 async function prepareCbLangs() {
     let cbLangs = document.getElementById(_CB_LANGS_ID);
-    if (cbLangs) {
+    let divLangFlag = document.getElementById(_DIV_LANG_FLAG_ID);
+    if (cbLangs && divLangFlag) {
         let firstOption = document.createElement("option");
         firstOption.textContent = "Все";
 
-        let divLangFlag = document.getElementById(_DIV_LANG_FLAG_ID);
-        _FLAG_ELEMENTS.DIV.setStyles(divLangFlag, null, true);
-        await _LANG_UTILS.prepareComboBox(cbLangs, firstOption, divLangFlag);
+        let cbLangsWithFlag = new ComboBoxWithFlag(cbLangs.parentElement, cbLangs, divLangFlag);
+        await _LANG_UTILS.CB_LANGS_IN.prepare(cbLangsWithFlag, firstOption, false);
 
         // Вешаем событие обновления списка при изменении элемента выпадающего списка
         cbLangs.addEventListener("change", startAllFinders);
@@ -167,37 +175,37 @@ async function prepareCbLangs() {
 
 async function prepareCbCustomerCollections() {
     let cbCustomerCollections = document.getElementById(_CB_CUSTOMER_COLLECTIONS_ID);
-    if (cbCustomerCollections) {
-        let divCollectionFlag = document.getElementById(_DIV_COLLECTION_FLAG_ID);
-        await _CUSTOMER_COLLECTION_UTILS.prepareComboBox(cbCustomerCollections, null, divCollectionFlag);
+    let divCollectionFlag = document.getElementById(_DIV_COLLECTION_FLAG_ID);
+    if (cbCustomerCollections && divCollectionFlag) {
+        let comboBoxWithFlag =
+            new ComboBoxWithFlag(cbCustomerCollections.parentElement, cbCustomerCollections, divCollectionFlag);
+        await _CUSTOMER_COLLECTION_UTILS.CB_CUSTOMER_COLLECTIONS.prepare(
+            comboBoxWithFlag, null, false);
 
         cbCustomerCollections.addEventListener("change", async function () {
-            startAllFinders();
-
             let langCode;
             let collectionKey = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbCustomerCollections);
             let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.findByKey(collectionKey);
             if (JSONResponse.status === _HTTP_STATUSES.OK) {
                 let customerCollection = new CustomerCollectionResponseDTO(JSONResponse.json);
-
-                // Берём код, только если язык активный
-                JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.validateIsLangActiveInCollectionByKey(collectionKey);
-                if (JSONResponse.status === _HTTP_STATUSES.OK) {
-                    langCode = customerCollection.lang.code;
-                }
+                langCode = customerCollection.lang.code;
             }
             //---
 
             // Меняем язык в списке языков + его флаг ---
             let cbLangs = document.getElementById(_CB_LANGS_ID);
-            cbLangs.removeEventListener("change", startAllFinders);
-            _LANG_UTILS.changeCbLangsItemByLangCode(cbLangs, langCode, true);
-            cbLangs.addEventListener("change", startAllFinders);
+            let divLangFlag = document.getElementById(_DIV_LANG_FLAG_ID);
+            if (cbLangs && divLangFlag) {
+                let cbLangsWithFlag = new ComboBoxWithFlag(cbLangs.parentElement, cbLangs, divLangFlag);
+                await _LANG_UTILS.changeCbLangsItemByLangCode(cbLangsWithFlag, langCode);
+            }
             //---
         });
 
         _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemIndex(
             cbCustomerCollections, 0, true);
+
+        cbCustomerCollections.addEventListener("change", startAllFinders);
     }
 }
 
@@ -334,6 +342,7 @@ async function createStatisticItems() {
     }
     //---
 
+    statisticItems.push(document.createElement("br"));
     return statisticItems;
 }
 //---
@@ -438,6 +447,7 @@ async function tryToFillTable(doNeedToClearTable, doNeedToShowTableMessage) {
         _WORD_STATUSES.ACTIVE.CODE, langCode, _lastWordIdOnPreviousPage);
     if (JSONResponse.status === _HTTP_STATUSES.OK) {
         let tableRows = await createTableRows(JSONResponse.json);
+
         let tableBody = document.getElementById(_WORDS_TABLE_BODY_ID);
         if (tableRows && tableBody && currentFinder.getActive() === true) {
             if (doNeedToClearTable === true) {
@@ -477,8 +487,9 @@ async function createTableRows(wordsFilteredPaginationJson) {
         let tableHead = document.getElementById(_WORDS_TABLE_HEAD_ID);
         let numberOfColumns = _TABLE_UTILS.getNumberOfColumnsByTableHead(tableHead);
 
+        let message =  `Показать ещё ${_NUMBER_OF_WORDS} элементов...`;
         let trShowMore = _TABLE_UTILS.createTrShowMore(numberOfColumns,
-            _NUMBER_OF_WORDS, async function() {
+            message, async function() {
                 await tryToFillTable(false, false);
             });
 
@@ -546,7 +557,7 @@ function setMessageInsideTable(message) {
 }
 
 async function createBtnAction(wordInCollectionRequestDTO) {
-    let aBtnAction = _A_BUTTONS.A_BUTTON_ACCEPT.createA();
+    let aBtnAction = _A_BUTTONS.A_BUTTON_ACCEPT.createA(_A_BUTTON_IMG_SIZES.SIZE_16);
 
     let wordId = wordInCollectionRequestDTO.wordId;
     let collectionKey = wordInCollectionRequestDTO.collectionKey;
@@ -573,8 +584,6 @@ async function createBtnAction(wordInCollectionRequestDTO) {
         let message = new CustomResponseMessage(JSONResponse.json);
         aBtnAction.title = message.text;
     }
-
-
 
     let divContainer = document.createElement("div");
     divContainer.style.display = "flex";

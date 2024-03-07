@@ -52,7 +52,7 @@ import {
 
 import {
     AButtons
-} from "../../classes/a_buttons.js";
+} from "../../classes/a_buttons/a_buttons.js";
 
 import {
     ComboBoxUtils
@@ -69,6 +69,14 @@ import {
 import {
     WordsWithStatusStatisticResponseDTO
 } from "../../classes/dto/types/words_with_status_statistic.js";
+
+import {
+    AButtonImgSizes
+} from "../../classes/a_buttons/a_button_img_sizes.js";
+
+import {
+    ComboBoxWithFlag
+} from "../../classes/element_with_flag/combo_box_with_flag.js";
 
 class WordStatusHistoryItemsForFind {
     tableHistory;
@@ -96,6 +104,7 @@ const _TABLE_UTILS = new TableUtils();
 const _A_BUTTONS = new AButtons();
 const _COMBO_BOX_UTILS = new ComboBoxUtils();
 const _TEXT_BOX_UTILS = new TextBoxUtils();
+const _A_BUTTON_IMG_SIZES = new AButtonImgSizes();
 
 const _MY_WORDS_HISTORY_STATISTICS_CONTAINER_ID = "my_words_history_statistics_container";
 const _TB_FINDER_ID = "tb_finder";
@@ -140,12 +149,13 @@ function prepareTbFinder() {
 
 async function prepareCbLangs() {
     let cbLangs = document.getElementById(_CB_LANGS_ID);
-    if (cbLangs) {
+    let divLangFlag = document.getElementById(_DIV_LANG_FLAG_ID);
+    if (cbLangs && divLangFlag) {
         let firstOption = document.createElement("option");
         firstOption.textContent = "Все";
 
-        let divLangFlag = document.getElementById(_DIV_LANG_FLAG_ID);
-        await _LANG_UTILS.prepareComboBox(cbLangs, firstOption, divLangFlag);
+        let cbLangsWithFlag = new ComboBoxWithFlag(cbLangs.parentElement, cbLangs, divLangFlag);
+        await _LANG_UTILS.CB_LANGS_IN.prepare(cbLangsWithFlag, firstOption, false);
 
         // Вешаем событие обновления списка при изменении элемента выпадающего списка
         cbLangs.addEventListener("change", function () {
@@ -160,11 +170,9 @@ async function prepareCbWordStatuses() {
         let firstOption = document.createElement("option");
         firstOption.textContent = "Все";
 
-        await _WORD_STATUS_UTILS.fillComboBox(cbWordStatuses, firstOption);
+        await _WORD_STATUS_UTILS.CB_WORD_STATUSES.prepare(cbWordStatuses, firstOption);
 
-        cbWordStatuses.addEventListener("change", function () {
-            startAllFinders();
-        });
+        cbWordStatuses.addEventListener("change", startAllFinders);
     }
 }
 
@@ -269,6 +277,7 @@ async function createStatisticItems() {
         //---
     }
 
+    statisticItems.push(document.createElement("br"));
     return statisticItems;
 }
 //---
@@ -380,8 +389,9 @@ async function createTableRows(customerWordsFilteredPaginationJson){
         let tableHead = document.getElementById(_MY_WORD_HISTORY_TABLE_HEAD_ID);
         let numberOfColumns = _TABLE_UTILS.getNumberOfColumnsByTableHead(tableHead);
 
+        let message =  `Показать ещё ${_NUMBER_OF_WORDS} элементов...`;
         let trShowMore = _TABLE_UTILS.createTrShowMore(numberOfColumns,
-            _NUMBER_OF_WORDS, async function () {
+            message, async function () {
                 await tryToFillTableRows(false, false);
             });
 
@@ -416,10 +426,6 @@ async function createTableRow(wordResponseDTO, index) {
         //---
 
         // Создаём тело таблицы с информацией о слове пользователя с его текущим статусом ---
-        for (let i = 0; i < row.childElementCount; i++) {
-            row.children.item(i).style.padding = "20px";
-        }
-
         let tBodyWordWithCurrentStatus = document.createElement("tbody");
         if (index % 2 !== 0) {
             let invisibleRow = document.createElement("tr");
@@ -528,7 +534,7 @@ function createABtnHistoryAction(wordStatusHistoryObj, parentContainer) {
     if (wordStatusHistoryObj) {
         changeToShowHistoryAction(aBtnHistoryAction, parentContainer, wordStatusHistoryObj.word.id);
     } else {
-        _A_BUTTONS.A_BUTTON_ARROW_DOWN.setStyles(aBtnHistoryAction);
+        _A_BUTTONS.A_BUTTON_ARROW_DOWN.setStyles(aBtnHistoryAction, _A_BUTTON_IMG_SIZES.SIZE_16);
         _A_BUTTONS.A_BUTTON_DISABLED.setStyles(aBtnHistoryAction);
         aBtnHistoryAction.title = "Невозможно получить историю изменения статуса слова.";
     }
@@ -543,7 +549,7 @@ function createABtnHistoryAction(wordStatusHistoryObj, parentContainer) {
 }
 
 function changeToShowHistoryAction(aBtnShowHistoryAction, parentElement, wordId) {
-    _A_BUTTONS.A_BUTTON_ARROW_DOWN.setStyles(aBtnShowHistoryAction);
+    _A_BUTTONS.A_BUTTON_ARROW_DOWN.setStyles(aBtnShowHistoryAction, _A_BUTTON_IMG_SIZES.SIZE_16);
     aBtnShowHistoryAction.title = "Показать историю изменения статуса слова";
     aBtnShowHistoryAction.onclick = null;
 
@@ -590,7 +596,7 @@ function changeToShowHistoryAction(aBtnShowHistoryAction, parentElement, wordId)
 }
 
 function changeToHideHistoryAction(aBtnShowHistoryAction, parentElement, wordId) {
-    _A_BUTTONS.A_BUTTON_ARROW_UP.setStyles(aBtnShowHistoryAction);
+    _A_BUTTONS.A_BUTTON_ARROW_UP.setStyles(aBtnShowHistoryAction, _A_BUTTON_IMG_SIZES.SIZE_16);
     aBtnShowHistoryAction.title = "Скрыть историю изменения статуса слова";
     aBtnShowHistoryAction.onclick = null;
 

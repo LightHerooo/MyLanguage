@@ -11,7 +11,8 @@ public class LangMapping {
         dto.setTitle(lang.getTitle());
         dto.setCode(lang.getCode());
         dto.setCodeForTranslate(lang.getCodeForTranslate());
-        dto.setIsActive(lang.isActive());
+        dto.setIsActiveForIn(lang.isActiveForIn());
+        dto.setIsActiveForOut(lang.isActiveForOut());
 
         return dto;
     }

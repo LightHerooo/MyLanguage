@@ -3,36 +3,28 @@ main {
 }
 
 div.words-statistics-container {
-    min-height: 200px;
+    min-height: 150px;
 
     display: flex;
     flex-direction: column;
 }
 
 div.words-actions {
+    height: 250px;
+
     display: grid;
     grid: 1fr / 1fr 1fr;
     gap: 10px;
 }
 
-a.words-actions-item {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    padding: 20px;
-
+div.words-action {
+    font-size: var(--third-font-size);
     font-weight: bold;
 }
 
 img.words-actions-img {
     width: 128px;
     height: 128px;
-}
-
-p.words-actions-text {
-    font-size: var(--third-font-size);
 }
 
 div.word-list-instruments {

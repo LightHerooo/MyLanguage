@@ -100,4 +100,8 @@ public class CustomerCollectionService {
 
         return newCollection;
     }
+
+    public void delete(CustomerCollection collection) {
+        CUSTOMER_COLLECTION_CRUD_REPOSITORY.delete(collection);
+    }
 }

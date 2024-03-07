@@ -1,16 +1,19 @@
 package ru.herooo.mylanguageweb.controllers.rest;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.herooo.mylanguagedb.entities.Customer;
 import ru.herooo.mylanguagedb.entities.WorkoutItem;
-import ru.herooo.mylanguageutils.yandexdictionary.YandexDictionaryResponse;
-import ru.herooo.mylanguageutils.yandexdictionary.YandexDictionaryUtils;
-import ru.herooo.mylanguageutils.yandexdictionary.dicresult.DicResult;
-import ru.herooo.mylanguageutils.yandexdictionary.errorresult.ErrorResult;
+import ru.herooo.mylanguageutils.http.HttpJsonResponse;
+import ru.herooo.mylanguageutils.yandexdictionary.yandexdic.YandexDicResult;
+import ru.herooo.mylanguageutils.yandexdictionary.YandexDictionaryError;
+import ru.herooo.mylanguageutils.yandexdictionary.yandexdic.YandexDicUtils;
 import ru.herooo.mylanguageweb.dto.entity.workout.WorkoutRequestDTO;
 import ru.herooo.mylanguageweb.dto.entity.workoutitem.AnswerResultResponseDTO;
 import ru.herooo.mylanguageweb.dto.entity.workoutitem.WorkoutItemRequestDTO;
@@ -22,6 +25,7 @@ import ru.herooo.mylanguageweb.services.CustomerService;
 import ru.herooo.mylanguageweb.services.WorkoutItemService;
 
 import java.util.List;
+import java.util.Random;
 
 @RestController
 @RequestMapping("/api/workout_items")
@@ -36,7 +40,7 @@ public class WorkoutItemsRestController {
 
     private final WorkoutItemMapping WORKOUT_ITEM_MAPPING;
 
-    private final YandexDictionaryUtils YANDEX_DICTIONARY_UTILS;
+    private final YandexDicUtils DIC_UTILS;
 
     @Autowired
     public WorkoutItemsRestController(WorkoutsRestController workoutsRestController,
@@ -47,7 +51,7 @@ public class WorkoutItemsRestController {
 
                                       WorkoutItemMapping workoutItemMapping,
 
-                                      YandexDictionaryUtils yandexDictionaryUtils) {
+                                      YandexDicUtils yandexDicUtils) {
         this.WORKOUTS_REST_CONTROLLER = workoutsRestController;
         this.CUSTOMERS_REST_CONTROLLER = customersRestController;
 
@@ -56,7 +60,7 @@ public class WorkoutItemsRestController {
 
         this.WORKOUT_ITEM_MAPPING = workoutItemMapping;
 
-        this.YANDEX_DICTIONARY_UTILS = yandexDictionaryUtils;
+        this.DIC_UTILS = yandexDicUtils;
     }
 
     @GetMapping("/with_answer_by_workout_id_and_round_number")
@@ -146,10 +150,24 @@ public class WorkoutItemsRestController {
 
     @PatchMapping("/set_answer")
     public ResponseEntity<?> setAnswer(HttpServletRequest request,
-                                       @RequestBody WorkoutItemRequestDTO dto) {
+                                       @Valid @RequestBody WorkoutItemRequestDTO dto,
+                                       BindingResult bindingResult) {
         ResponseEntity<?> response = validateBeforeCrud(request, dto);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
+        }
+
+        // Проверяем наличие ошибок привязки DTO
+        if (bindingResult.hasErrors()) {
+            String errorMessage = bindingResult
+                    .getAllErrors()
+                    .stream()
+                    .findAny()
+                    .get()
+                    .getDefaultMessage();
+
+            CustomResponseMessage message = new CustomResponseMessage(1, errorMessage);
+            return ResponseEntity.badRequest().body(message);
         }
 
         // Проверяем, не дан ли ответ на пришедший вопрос
@@ -159,7 +177,7 @@ public class WorkoutItemsRestController {
             return ResponseEntity.badRequest().body(message);
         }
 
-        response = getAnswerToQuestion(dto);
+        response = tryToGetAnswerResult(dto);
         if (response.getBody() instanceof AnswerResultResponseDTO answerResultResponseDTO) {
             workoutItem.setCorrect(answerResultResponseDTO.getIsCorrect());
             workoutItem = WORKOUT_ITEM_SERVICE.edit(workoutItem, dto);
@@ -283,23 +301,23 @@ public class WorkoutItemsRestController {
         return ResponseEntity.ok(message);
     }
 
-    public ResponseEntity<?> getAnswerToQuestion(@RequestBody WorkoutItemRequestDTO dto) {
+    public ResponseEntity<?> tryToGetAnswerResult(@RequestBody WorkoutItemRequestDTO dto) {
         ResponseEntity<?> response = find(dto.getId());
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
 
         WorkoutItem workoutItem = WORKOUT_ITEM_SERVICE.find(dto.getId());
-
         String word = workoutItem.getWordTitleQuestion();
         String langInCode = workoutItem.getWorkout().getLangIn().getCodeForTranslate();
         String langOutCode = workoutItem.getWorkout().getLangOut().getCodeForTranslate();
-        YandexDictionaryResponse dicResponse = YANDEX_DICTIONARY_UTILS.getResponse(word, langInCode, langOutCode);
-        if (dicResponse != null) {
-            if (dicResponse.getCode() == HttpStatus.OK.value()) {
-                DicResult dicResult = YANDEX_DICTIONARY_UTILS.getDicResult(dicResponse);
-                if (dicResult != null) {
-                    List<String> allTranslates =  dicResult.getAllTranslates();
+
+        HttpJsonResponse jsonResponse = DIC_UTILS.getHttpJsonResponse(word, langInCode, langOutCode);
+        if (jsonResponse != null) {
+            if (jsonResponse.getCode() == HttpStatus.OK.value()) {
+                YandexDicResult yandexDicResult = DIC_UTILS.getYandexDicResult(jsonResponse);
+                if (yandexDicResult != null) {
+                    List<String> allTranslates =  yandexDicResult.getAllTranslates();
                     if (allTranslates != null && allTranslates.size() > 0) {
                         boolean isCorrect = allTranslates
                                 .stream()
@@ -317,28 +335,45 @@ public class WorkoutItemsRestController {
                             allTranslates = allTranslates.subList(0, MAX_NUMBER_OF_POSSIBLE_VALUES);
                         }
 
+
                         AnswerResultResponseDTO answerResultResponseDTO = new AnswerResultResponseDTO();
                         answerResultResponseDTO.setIsCorrect(isCorrect);
                         answerResultResponseDTO.setPossibleAnswers(allTranslates);
+                        if (isCorrect) {
+                            String[] correctMessages = new String[]
+                                    {"Правильно!", "Верно!", "Молодец!", "Отлично!", "Так держать!"};
+
+                            Random random = new Random();
+                            answerResultResponseDTO.setMessage(
+                                    correctMessages[random.nextInt(correctMessages.length)]);
+                        } else {
+                            String[] incorrectMessages = new String[] {"Неправильно.", "Неверно."};
+
+                            Random random = new Random();
+                            answerResultResponseDTO.setMessage(
+                                    incorrectMessages[random.nextInt(incorrectMessages.length)]);
+                        }
+
                         return ResponseEntity.ok(answerResultResponseDTO);
                     } else {
-                        CustomResponseMessage message = new CustomResponseMessage(1,
-                                String.format("Переводы на слово '%s' не найдены.", word));
-                        return ResponseEntity.badRequest().body(message);
+                        AnswerResultResponseDTO answerResultResponseDTO = new AnswerResultResponseDTO();
+                        answerResultResponseDTO.setIsCorrect(false);
+                        answerResultResponseDTO.setMessage("Переводы слова не найдены.");
+                        return ResponseEntity.badRequest().body(answerResultResponseDTO);
                     }
                 } else {
-                    CustomResponseMessage message = new CustomResponseMessage(2,
-                            "Не удалось получить результат API.");
+                    CustomResponseMessage message = new CustomResponseMessage(1,
+                            "Не удалось получить результат обращения к API.");
                     return ResponseEntity.badRequest().body(message);
                 }
             } else {
-                ErrorResult errorResult = YANDEX_DICTIONARY_UTILS.getErrorResult(dicResponse);
+                YandexDictionaryError dicError = DIC_UTILS.getYandexDicError(jsonResponse);
                 CustomResponseMessage message = new CustomResponseMessage(
-                        errorResult.getCode(), errorResult.getMessage());
+                        dicError.getCode(), dicError.getMessage());
                 return ResponseEntity.badRequest().body(message);
             }
         } else {
-            CustomResponseMessage message = new CustomResponseMessage(3, "Не удалось обратиться к API.");
+            CustomResponseMessage message = new CustomResponseMessage(2, "Не удалось обратиться к API.");
             return ResponseEntity.badRequest().body(message);
         }
     }

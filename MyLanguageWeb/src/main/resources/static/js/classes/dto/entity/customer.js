@@ -1,6 +1,6 @@
 import {
     CustomerRoleResponseDTO
-} from "./customer_role.js";
+} from "./customer_role/customer_role.js";
 
 export class CustomerResponseDTO {
     id;

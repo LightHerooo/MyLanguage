@@ -20,8 +20,11 @@ public class LangResponseDTO {
     @JsonProperty("code_for_translate")
     private String codeForTranslate;
 
-    @JsonProperty("is_active")
-    private boolean isActive;
+    @JsonProperty("is_active_for_in")
+    private boolean isActiveForIn;
+
+    @JsonProperty("is_active_for_out")
+    private boolean isActiveForOut;
 
     public long getId() {
         return id;
@@ -55,11 +58,19 @@ public class LangResponseDTO {
         this.codeForTranslate = codeForTranslate;
     }
 
-    public boolean getIsActive() {
-        return isActive;
+    public boolean getIsActiveForIn() {
+        return isActiveForIn;
     }
 
-    public void setIsActive(boolean isActive) {
-        this.isActive = isActive;
+    public void setIsActiveForIn(boolean activeForIn) {
+        isActiveForIn = activeForIn;
+    }
+
+    public boolean getIsActiveForOut() {
+        return isActiveForOut;
+    }
+
+    public void setIsActiveForOut(boolean activeForOut) {
+        isActiveForOut = activeForOut;
     }
 }

@@ -12,7 +12,7 @@ import {
 
 import {
     WordStatuses
-} from "../../classes/api/word_statuses/word_statuses.js";
+} from "../../classes/dto/entity/word_status/word_statuses.js";
 
 import {
     WordStatusHistoryRequestDTO,
@@ -53,16 +53,16 @@ import {
 } from "../../classes/utils/table_utils.js";
 
 import {
-    AButtons
-} from "../../classes/a_buttons.js";
-
-import {
     ComboBoxUtils
 } from "../../classes/utils/combo_box_utils.js";
 
 import {
     TextBoxUtils
 } from "../../classes/utils/text_box_utils.js";
+
+import {
+    ComboBoxWithFlag
+} from "../../classes/element_with_flag/combo_box_with_flag.js";
 
 const _WORDS_API = new WordsAPI();
 const _WORDS_IN_COLLECTION_API = new WordsInCollectionAPI();
@@ -74,7 +74,6 @@ const _WORD_STATUSES = new WordStatuses();
 const _LANG_UTILS = new LangUtils();
 const _WORD_STATUS_UTILS = new WordStatusUtils();
 const _TABLE_UTILS = new TableUtils();
-const _A_BUTTONS = new AButtons();
 const _COMBO_BOX_UTILS = new ComboBoxUtils();
 const _TEXT_BOX_UTILS = new TextBoxUtils();
 
@@ -118,10 +117,13 @@ function prepareBtnDeleteInactiveWordsInCollections() {
         document.getElementById(_BTN_DELETE_INACTIVE_WORDS_IN_COLLECTIONS_ID);
     if (btnDeleteInactiveWordsInCollections) {
         btnDeleteInactiveWordsInCollections.addEventListener("click", async function() {
-            _A_BUTTONS.A_BUTTON_DISABLED.setStyles(this);
+            this.className = "";
+            this.classList.add(_CSS_MAIN.A_BUTTON_DISABLED_STANDARD_STYLE_ID);
+
             let JSONResponse = await _WORDS_IN_COLLECTION_API.DELETE.deleteInactiveWordsInCollections();
             if (JSONResponse.status === _HTTP_STATUSES.OK) {
-                _A_BUTTONS.A_BUTTON_DENY.setStyles(this, false);
+                this.className = "";
+                this.classList.add(_CSS_MAIN.A_BUTTON_DENY_STANDARD_STYLE_ID);
                 startAllFinders();
             }
         })
@@ -133,10 +135,13 @@ function prepareBtnDeleteAllUnclaimedWords() {
         document.getElementById(_BTN_DELETE_ALL_UNCLAIMED_WORDS_ID);
     if (btnDeleteAllUnclaimedWords) {
         btnDeleteAllUnclaimedWords.addEventListener("click", async function() {
-            _A_BUTTONS.A_BUTTON_DISABLED.setStyles(this);
+            this.className = "";
+            this.classList.add(_CSS_MAIN.A_BUTTON_DISABLED_STANDARD_STYLE_ID);
+
             let JSONResponse = await _WORDS_API.DELETE.deleteAllUnclaimedWords();
             if (JSONResponse.status === _HTTP_STATUSES.OK) {
-                _A_BUTTONS.A_BUTTON_DENY.setStyles(this, false);
+                this.className = "";
+                this.classList.add(_CSS_MAIN.A_BUTTON_DENY_STANDARD_STYLE_ID);
                 startAllFinders();
             }
         })
@@ -148,13 +153,15 @@ function prepareBtnAddWordStatusToWordsWithoutStatus() {
         document.getElementById(_BTN_ADD_WORD_STATUS_TO_WORDS_WITHOUT_STATUS);
     if (btnAddWordStatusToWordsWithoutStatus) {
         btnAddWordStatusToWordsWithoutStatus.addEventListener("click", async function() {
-            _A_BUTTONS.A_BUTTON_DISABLED.setStyles(this);
+            this.className = "";
+            this.classList.add(_CSS_MAIN.A_BUTTON_DISABLED_STANDARD_STYLE_ID);
 
             let requestDTO = new WordStatusHistoryRequestDTO();
             requestDTO.wordStatusCode = _WORD_STATUSES.NEW.CODE;
             let JSONResponse = await _WORD_STATUS_HISTORIES_API.POST.addWordStatusToWordsWithoutStatus(requestDTO);
             if (JSONResponse.status === _HTTP_STATUSES.OK) {
-                _A_BUTTONS.A_BUTTON_ACCEPT.setStyles(this, false);
+                this.className = "";
+                this.classList.add(_CSS_MAIN.A_BUTTON_ACCEPT_STANDARD_STYLE_ID);
                 startAllFinders();
             }
         })
@@ -171,12 +178,13 @@ function prepareTbFinder() {
 
 async function prepareCbLangs() {
     let cbLangs = document.getElementById(_CB_LANGS_ID);
-    if (cbLangs) {
+    let divLangFlag = document.getElementById(_DIV_LANG_FLAG_ID);
+    if (cbLangs && divLangFlag) {
         let firstOption = document.createElement("option");
         firstOption.textContent = "Все";
 
-        let divLangFlag = document.getElementById(_DIV_LANG_FLAG_ID);
-        await _LANG_UTILS.prepareComboBox(cbLangs, firstOption, divLangFlag);
+        let cbLangsWithFlag = new ComboBoxWithFlag(cbLangs.parentElement, cbLangs, divLangFlag);
+        await _LANG_UTILS.CB_LANGS_IN.prepare(cbLangsWithFlag, firstOption, false);
 
         // Вешаем событие обновления списка при изменении элемента выпадающего списка
         cbLangs.addEventListener("change", function () {
@@ -190,15 +198,13 @@ async function prepareCbWordStatuses() {
     if (cbWordStatuses) {
         let firstOption = document.createElement("option");
         firstOption.textContent = "Все";
-        await _WORD_STATUS_UTILS.fillComboBox(cbWordStatuses, firstOption);
+        await _WORD_STATUS_UTILS.CB_WORD_STATUSES.prepare(cbWordStatuses, firstOption);
 
         _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemId(
             cbWordStatuses, _WORD_STATUSES.NEW.CODE, true);
 
         // Вешаем событие обновления списка при изменении элемента выпадающего списка
-        cbWordStatuses.addEventListener("change", function () {
-            startAllFinders();
-        });
+        cbWordStatuses.addEventListener("change", startAllFinders);
     }
 }
 
@@ -311,8 +317,9 @@ async function createTableRows(wordsFilteredPaginationJson){
         let tableHead = document.getElementById(_CHANGE_WORD_TABLE_HEAD_ID);
         let numberOfColumns = _TABLE_UTILS.getNumberOfColumnsByTableHead(tableHead);
 
+        let message =  `Показать ещё ${_NUMBER_OF_WORDS} элементов...`;
         let trShowMore = _TABLE_UTILS.createTrShowMore(numberOfColumns,
-            _NUMBER_OF_WORDS, async function () {
+            message, async function () {
                 await tryToFillTableRows(false, false);
             });
 
@@ -363,7 +370,7 @@ async function createTableRow(wordResponseDTO) {
         cbWordStatuses.style.height = ROW_HEIGHT;
         cbWordStatuses.style.width = "100%";
 
-        await _WORD_STATUS_UTILS.fillComboBox(cbWordStatuses, null);
+        await _WORD_STATUS_UTILS.CB_WORD_STATUSES.prepare(cbWordStatuses, null);
 
         _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemId(
             cbWordStatuses, wordStatusHistory.wordStatus.code, true);

@@ -89,6 +89,10 @@ import {
     HtmlElementUtils
 } from "../../classes/utils/html_element_utils.js";
 
+import {
+    FlagElements
+} from "../../classes/flag_elements.js";
+
 const _WORKOUTS_API = new WorkoutsAPI();
 const _WORKOUT_ITEMS_API = new WorkoutItemsAPI();
 
@@ -103,6 +107,7 @@ const _RESOURCE_URLS = new ResourceUrls();
 const _BUTTON_UTILS = new ButtonUtils();
 const _HTML_ELEMENT_UTILS = new HtmlElementUtils();
 const _HOTKEYS = new Hotkeys();
+const _FLAG_ELEMENTS = new FlagElements();
 
 const _DIV_START_WORKOUT_INFO_ITEM_WITH_HEADER_CONTAINER_STYLE_ID =
     "start-workout-info-item-with-header-container";
@@ -116,8 +121,11 @@ const _DIV_WORKOUT_INFO_ID = "div_workout_info";
 const _DIV_TIMER_INFO_ID = "div_timer_info";
 const _DIV_ROUND_INFO_ID = "div_round_info";
 const _DIV_INTERACTION_CONTAINER_ID = "div_interaction_container";
+
+const _DIV_ANSWERS_HISTORY_CONTAINER = "div_answers_history_container";
 const _DIV_ANSWERS_HISTORY = "div_answers_history";
-const _DIV_CURRENT_ROUND_HISTORY_ID = "div_current_round_history";
+const _TABLE_ANSWERS_HISTORY = "table_current_round_history";
+const _TBODY_ANSWERS_HISTORY = "tbody_current_round_history";
 
 let _currentWorkout;
 let _currentRound = -1n;
@@ -375,7 +383,7 @@ async function showCurrentRoundInfo() {
                 //---
 
                 // Добавляем контейнер статистики раунда ---
-                divRoundInfo.appendChild(_workoutRoundStatistic.createDiv());
+                divRoundInfo.appendChild(_workoutRoundStatistic.createDivNotOver());
                 //---
             }
         }
@@ -389,22 +397,22 @@ async function showCurrentRoundInfo() {
 function showLoadingInAnswersHistory() {
     let loadingElement = new LoadingElement();
 
-    let divAnswersHistory = document.getElementById(_DIV_ANSWERS_HISTORY);
-    if (divAnswersHistory) {
-        divAnswersHistory.replaceChildren();
-        divAnswersHistory.className = "";
-        divAnswersHistory.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
-        divAnswersHistory.classList.add(_CSS_MAIN.DIV_CONTENT_CENTER_STANDARD_STYLE_ID);
-        divAnswersHistory.appendChild(loadingElement.createDiv());
+    let divAnswersHistoryContainer = document.getElementById(_DIV_ANSWERS_HISTORY_CONTAINER);
+    if (divAnswersHistoryContainer) {
+        divAnswersHistoryContainer.replaceChildren();
+        divAnswersHistoryContainer.className = "";
+        divAnswersHistoryContainer.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
+        divAnswersHistoryContainer.classList.add(_CSS_MAIN.DIV_CONTENT_CENTER_STANDARD_STYLE_ID);
+        divAnswersHistoryContainer.appendChild(loadingElement.createDiv());
     }
 }
 
 function showErrorInAnswersHistory(message) {
-    let divAnswersHistory = document.getElementById(_DIV_ANSWERS_HISTORY);
-    if (divAnswersHistory) {
-        divAnswersHistory.replaceChildren();
+    let divAnswersHistoryContainer = document.getElementById(_DIV_ANSWERS_HISTORY_CONTAINER);
+    if (divAnswersHistoryContainer) {
+        divAnswersHistoryContainer.replaceChildren();
 
-        let ruleElement = new RuleElement(divAnswersHistory, divAnswersHistory);
+        let ruleElement = new RuleElement(divAnswersHistoryContainer, divAnswersHistoryContainer);
         ruleElement.message = message;
         ruleElement.ruleType = _RULE_TYPES.ERROR;
         ruleElement.showRule();
@@ -414,8 +422,8 @@ function showErrorInAnswersHistory(message) {
 async function showCurrentRoundAnswersHistory() {
     let isCorrect = false;
 
-    let divAnswersHistory = document.getElementById(_DIV_ANSWERS_HISTORY);
-    if (divAnswersHistory) {
+    let divAnswersHistoryContainer = document.getElementById(_DIV_ANSWERS_HISTORY_CONTAINER);
+    if (divAnswersHistoryContainer) {
         isCorrect = checkCorrectValuesInImportantVariables();
         if (isCorrect === true) {
             let notFoundText;
@@ -432,9 +440,9 @@ async function showCurrentRoundAnswersHistory() {
             }
 
             if (isCorrect === true) {
-                divAnswersHistory.replaceChildren();
-                divAnswersHistory.className = "";
-                divAnswersHistory.classList.add(_DIV_START_WORKOUT_INFO_ITEM_WITH_HEADER_CONTAINER_STYLE_ID);
+                divAnswersHistoryContainer.replaceChildren();
+                divAnswersHistoryContainer.className = "";
+                divAnswersHistoryContainer.classList.add(_DIV_START_WORKOUT_INFO_ITEM_WITH_HEADER_CONTAINER_STYLE_ID);
 
                 // Генерируем заголовом контейнера ---
                 let divHeader = document.createElement("div");
@@ -450,33 +458,29 @@ async function showCurrentRoundAnswersHistory() {
                 spanHeader.textContent = "История";
                 divHeader.appendChild(spanHeader);
 
-                divAnswersHistory.appendChild(divHeader);
+                divAnswersHistoryContainer.appendChild(divHeader);
                 //---
 
                 // Генерируем контейнер с историей ---
-                let divCurrentRoundHistory = document.createElement("div");
-                divCurrentRoundHistory.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
-                divCurrentRoundHistory.classList.add(_CSS_MAIN.DIV_OVERFLOW_Y_STANDARD_STYLE_ID);
-                divCurrentRoundHistory.id = _DIV_CURRENT_ROUND_HISTORY_ID;
+                let divAnswersHistory = document.createElement("div");
+                divAnswersHistory.id = _DIV_ANSWERS_HISTORY;
+                divAnswersHistory.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
+                divAnswersHistory.classList.add(_CSS_MAIN.DIV_CONTENT_CENTER_STANDARD_STYLE_ID);
+                divAnswersHistoryContainer.appendChild(divAnswersHistory);
 
-                let json = JSONResponse.json;
-                if (!notFoundText && json.length > 0) {
-                    for (let i = 0; i < json.length; i++) {
-                        let workoutItem = new WorkoutItemResponseDTO(json[i]);
-                        addWorkoutItemInCurrentRoundHistory(divCurrentRoundHistory, workoutItem);
-                    }
-                } else {
+                if (notFoundText) {
                     let divMessage = document.createElement("div");
                     divMessage.style.fontSize = _CSS_ROOT.SECOND_FONT_SIZE;
                     divMessage.style.textAlign = "center";
                     divMessage.textContent = notFoundText;
-
-                    divCurrentRoundHistory.appendChild(divMessage);
+                    divAnswersHistory.appendChild(divMessage);
+                } else {
+                    let json = JSONResponse.json;
+                    for (let i = 0; i < json.length; i++) {
+                        let workoutItem = new WorkoutItemResponseDTO(json[i]);
+                        addAnswerToAnswersHistory(workoutItem);
+                    }
                 }
-
-                divAnswersHistory.appendChild(divCurrentRoundHistory);
-
-                divCurrentRoundHistory.scrollTop = divCurrentRoundHistory.scrollHeight;
                 //---
             }
         }
@@ -485,19 +489,75 @@ async function showCurrentRoundAnswersHistory() {
     return isCorrect;
 }
 
-function addWorkoutItemInCurrentRoundHistory(divCurrentRoundHistory, workoutItemObj) {
-    if (divCurrentRoundHistory) {
-        // Чистим контейнер, если это первый элемент истории ---
-        if (_lastAnswerNumberInAnswersHistory === 1) {
-            divCurrentRoundHistory.replaceChildren();
+function createTableCurrentRoundHistory() {
+    let table = document.createElement("table");
+    table.classList.add(_CSS_MAIN.TABLE_STANDARD_STYLE_ID);
+    table.style.margin = "0 -5px";
+    table.id = _TABLE_ANSWERS_HISTORY;
+
+    // Создаём colgroup ---
+    let colgroup = document.createElement("colgroup");
+
+    let colNum = document.createElement("col");
+    colNum.style.width = "70px";
+    colgroup.appendChild(colNum);
+
+    let colHelp = document.createElement("col");
+    colHelp.style.width = "50px";
+    colgroup.appendChild(colHelp);
+
+    let colResult = document.createElement("col");
+    colResult.style.width = "100%";
+    colgroup.appendChild(colResult);
+
+    let colImg = document.createElement("col");
+    colImg.style.width = "50px";
+    colgroup.appendChild(colImg);
+
+    table.appendChild(colgroup);
+    //---
+
+    // Создаём tBody ---
+    let tBody = document.createElement("tbody");
+    tBody.id = _TBODY_ANSWERS_HISTORY;
+
+    table.appendChild(tBody);
+    //---
+
+    return table;
+}
+
+function addAnswerToAnswersHistory(workoutItemObj) {
+    let divAnswersHistory = document.getElementById(_DIV_ANSWERS_HISTORY);
+    if (!divAnswersHistory) {
+        divAnswersHistory = document.createElement("div");
+        divAnswersHistory.id = _DIV_ANSWERS_HISTORY;
+
+        let divAnswersHistoryContainer = document.getElementById(_DIV_ANSWERS_HISTORY_CONTAINER);
+        if (divAnswersHistoryContainer) {
+            divAnswersHistoryContainer.appendChild(divAnswersHistory);
         }
-        //---
-
-        let workoutItemTable = workoutItemObj.createTableWithoutAnswer(_lastAnswerNumberInAnswersHistory++);
-        divCurrentRoundHistory.appendChild(workoutItemTable);
-
-        divCurrentRoundHistory.scrollTop = divCurrentRoundHistory.scrollHeight;
     }
+
+    let tableAnswersHistory = document.getElementById(_TABLE_ANSWERS_HISTORY);
+    if (!tableAnswersHistory) {
+        divAnswersHistory.replaceChildren();
+
+        divAnswersHistory.className = "";
+        divAnswersHistory.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
+        divAnswersHistory.classList.add(_CSS_MAIN.DIV_OVERFLOW_Y_STANDARD_STYLE_ID);
+
+        divAnswersHistory.appendChild(createTableCurrentRoundHistory());
+    }
+
+    let tBodyAnswersHistory = document.getElementById(_TBODY_ANSWERS_HISTORY);
+    if (tBodyAnswersHistory) {
+        let trQuestion = workoutItemObj.createTrQuestion(
+            _lastAnswerNumberInAnswersHistory++, false);
+        tBodyAnswersHistory.appendChild(trQuestion);
+    }
+
+    divAnswersHistory.scrollTop = divAnswersHistory.scrollHeight;
 }
 //---
 
@@ -553,6 +613,7 @@ function showErrorInInteractionContainer(message) {
         btnRedirect.classList.add(_CSS_MAIN.BUTTON_STANDARD_STYLE_ID);
         btnRedirect.textContent = "Вернуться на страницу тренировок";
         btnRedirect.addEventListener("click", function () {
+            window.onbeforeunload = null;
             window.location.replace(_RESOURCE_URLS.WORKOUTS);
         })
 
@@ -629,19 +690,19 @@ async function prepareInteractionContainerForStartRound() {
             //---
 
             // Устанавливаем собщение в контейнер истории ответов раунда ---
-            let divAnswersHistory = document.getElementById(_DIV_ANSWERS_HISTORY);
-            if (divAnswersHistory) {
-                divAnswersHistory.replaceChildren();
-                divAnswersHistory.className = "";
-                divAnswersHistory.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
-                divAnswersHistory.classList.add(_CSS_MAIN.DIV_CONTENT_CENTER_STANDARD_STYLE_ID);
+            let divAnswersHistoryContainer = document.getElementById(_DIV_ANSWERS_HISTORY_CONTAINER);
+            if (divAnswersHistoryContainer) {
+                divAnswersHistoryContainer.replaceChildren();
+                divAnswersHistoryContainer.className = "";
+                divAnswersHistoryContainer.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
+                divAnswersHistoryContainer.classList.add(_CSS_MAIN.DIV_CONTENT_CENTER_STANDARD_STYLE_ID);
 
                 let divMessageClone = divMessage.cloneNode(true);
                 divMessageClone.style.fontSize = _CSS_ROOT.THIRD_FONT_SIZE;
                 divMessageClone.textContent = `Нажмите кнопку "${actionText}", 
                     чтобы отобразить историю ответов ${_currentRound}-го раунда.`;
 
-                divAnswersHistory.appendChild(divMessageClone);
+                divAnswersHistoryContainer.appendChild(divMessageClone);
             }
             //---
 
@@ -693,6 +754,32 @@ async function prepareInteractionContainerForStartRound() {
     return isCorrect;
 }
 
+function checkCorrectAnswerValue(tbAnswer, parentElement) {
+    const MAX_ANSWER_LENGTH = 44;
+
+    let isCorrect = false;
+    if (tbAnswer) {
+        let ruleElement = new RuleElement(tbAnswer, parentElement);
+
+        let answer = tbAnswer.value.trim();
+        if (answer.length > MAX_ANSWER_LENGTH) {
+            isCorrect = false;
+            ruleElement.message = `Ответ не должен быть больше ${MAX_ANSWER_LENGTH}-х символов.`;
+            ruleElement.ruleType = _RULE_TYPES.ERROR;
+        } else {
+            isCorrect = true;
+        }
+
+        if (isCorrect === false) {
+            ruleElement.showRule();
+        } else {
+            ruleElement.removeRule();
+        }
+    }
+
+    return isCorrect;
+}
+
 async function prepareInteractionContainerForSendAnswer(workoutItem) {
     showLoadingInInteractionContainer();
 
@@ -723,9 +810,9 @@ async function prepareInteractionContainerForSendAnswer(workoutItem) {
 
             // Контейнер для ввода ответа ---
             let divAnswerContainer = document.createElement("div");
-            divAnswerContainer.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
             divAnswerContainer.classList.add(_DIV_ANSWER_CONTAINER_STYLE_ID);
 
+            // Поле с ответом
             let tbAnswer = document.createElement("input");
             tbAnswer.classList.add(_CSS_MAIN.INPUT_TEXT_STANDARD_STYLE_ID);
             tbAnswer.type = "text";
@@ -736,33 +823,44 @@ async function prepareInteractionContainerForSendAnswer(workoutItem) {
             })
             divAnswerContainer.appendChild(tbAnswer);
 
+            // Исходящий флаг
+            let divOutFlag = _FLAG_ELEMENTS.DIV.create(_currentWorkout.langOut.code, true);
+            let divOutFlagContainer = document.createElement("div");
+            divOutFlagContainer.style.paddingBottom = "5px";
+            divOutFlagContainer.style.paddingRight = "5px";
+            divOutFlagContainer.appendChild(divOutFlag);
+            divAnswerContainer.appendChild(divOutFlagContainer);
+
+            // Кнопка "Ответить"
             let btnSendAnswer = document.createElement("button");
             btnSendAnswer.classList.add(_CSS_MAIN.BUTTON_STANDARD_STYLE_ID);
             btnSendAnswer.textContent = "Ответить";
             btnSendAnswer.addEventListener("click", async function () {
-                tbAnswer.disabled = true;
-                btnSendAnswer.disabled = true;
+                if (checkCorrectAnswerValue(tbAnswer) === true) {
+                    tbAnswer.disabled = true;
+                    btnSendAnswer.disabled = true;
 
-                // Сохраняем текущее время (для будущего возобновления тренировки) ---
-                let isCorrect = true;
+                    // Сохраняем текущее время (для будущего возобновления тренировки) ---
+                    let isCorrect = true;
 
-                let dto = new WorkoutRequestDTO();
-                dto.id = _currentWorkout.id;
-                dto.currentMilliseconds = _customTimerTickerWorkoutTimer.getMilliseconds();
+                    let dto = new WorkoutRequestDTO();
+                    dto.id = _currentWorkout.id;
+                    dto.currentMilliseconds = _customTimerTickerWorkoutTimer.getMilliseconds();
 
-                let JSONResponse = await _WORKOUTS_API.PATCH.setCurrentMilliseconds(dto);
-                if (JSONResponse.status === _HTTP_STATUSES.OK) {
-                    _currentWorkout = new WorkoutResponseDTO(JSONResponse.json);
-                } else {
-                    isCorrect = false;
+                    let JSONResponse = await _WORKOUTS_API.PATCH.setCurrentMilliseconds(dto);
+                    if (JSONResponse.status === _HTTP_STATUSES.OK) {
+                        _currentWorkout = new WorkoutResponseDTO(JSONResponse.json);
+                    } else {
+                        isCorrect = false;
 
-                    let message = new CustomResponseMessage(JSONResponse.json);
-                    showErrorInInteractionContainer(message.text);
-                }
-                //---
+                        let message = new CustomResponseMessage(JSONResponse.json);
+                        showErrorInInteractionContainer(message.text);
+                    }
+                    //---
 
-                if (isCorrect === true) {
-                    await prepareInteractionContainerForShowResult(workoutItem.id, tbAnswer.value);
+                    if (isCorrect === true) {
+                        await prepareInteractionContainerForShowResult(workoutItem.id, tbAnswer.value);
+                    }
                 }
             });
 
@@ -770,10 +868,23 @@ async function prepareInteractionContainerForSendAnswer(workoutItem) {
                 let event = new Event("click");
                 btnSendAnswer.dispatchEvent(event);
             }, true);
-
             divAnswerContainer.appendChild(btnSendAnswer);
+            //---
 
-            divInteractionContainer.appendChild(divAnswerContainer);
+            // Добавляем созданный контейнер в дополнительный (для корректного отображения предупреждения) ---
+            let divAnswerContainerVerticalFlex = document.createElement("div");
+            divAnswerContainerVerticalFlex.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
+            divAnswerContainerVerticalFlex.style.display = "flex";
+            divAnswerContainerVerticalFlex.style.flexDirection = "column";
+            divAnswerContainerVerticalFlex.style.justifyContent = "center";
+            divAnswerContainerVerticalFlex.style.gap = "5px";
+            divAnswerContainerVerticalFlex.appendChild(divAnswerContainer);
+
+            tbAnswer.addEventListener("input", function () {
+                checkCorrectAnswerValue(this, divAnswerContainerVerticalFlex);
+            });
+
+            divInteractionContainer.appendChild(divAnswerContainerVerticalFlex);
             tbAnswer.focus();
             //---
         } else {
@@ -795,9 +906,9 @@ async function prepareInteractionContainerForShowResult(workoutItemId, answer) {
         let answerResult = new AnswerResultResponseDTO(JSONResponse.json);
 
         // Добавляем ответ в историю ---
-        let divCurrentRoundHistory = document.getElementById(_DIV_CURRENT_ROUND_HISTORY_ID);
-        if (divCurrentRoundHistory) {
-            addWorkoutItemInCurrentRoundHistory(divCurrentRoundHistory, answerResult.workoutItem);
+        let divAnswersHistory = document.getElementById(_DIV_ANSWERS_HISTORY);
+        if (divAnswersHistory) {
+            addAnswerToAnswersHistory(answerResult.workoutItem);
         }
         //---
 
@@ -807,8 +918,8 @@ async function prepareInteractionContainerForShowResult(workoutItemId, answer) {
         }
         //---
 
-        // Копируем слово в следующий раунл, если мы ответили неправильно ---
-        if (answerResult.isCorrect === false) {
+        // Копируем слово в следующий раунд, если найдены переводы и ответ неверный ---
+        if (answerResult.possibleAnswers && answerResult.isCorrect === false) {
             let dto = new WorkoutItemRequestDTO();
             dto.id = answerResult.workoutItem.id;
             JSONResponse = await _WORKOUT_ITEMS_API.POST.addToNextRound(dto);
@@ -832,13 +943,8 @@ async function prepareInteractionContainerForShowResult(workoutItemId, answer) {
             let divResultTextHeader = document.createElement("div");
             divResultTextHeader.style.fontSize = _CSS_ROOT.FIRST_FONT_SIZE;
             divResultTextHeader.style.fontWeight = "bold";
-            if (answerResult.isCorrect === true) {
-                let headerTexts = ["Правильно!", "Верно!", "Молодец!", "Отлично!"];
-                divResultTextHeader.textContent = headerTexts[Math.floor(Math.random() * headerTexts.length)];
-            } else {
-                let headerTexts = ["Неправильно.", "Неверно."];
-                divResultTextHeader.textContent = headerTexts[Math.floor(Math.random() * headerTexts.length)];
-            }
+            divResultTextHeader.textContent = answerResult.message;
+
             divAnswerResultData.appendChild(divResultTextHeader);
 
             // Вопрос -> Ответ
@@ -865,23 +971,30 @@ async function prepareInteractionContainerForShowResult(workoutItemId, answer) {
             divAnswerResultData.appendChild(divResultQuestionWithAnswer);
 
             // Другие переводы
-            if (answerResult.possibleAnswers && answerResult.possibleAnswers.length > 0) {
-                let spanOtherTranslatesLeft = document.createElement("span");
-                spanOtherTranslatesLeft.style.fontWeight = "bold";
-                spanOtherTranslatesLeft.textContent = answerResult.isCorrect === true
-                    ? "Другие ответы: "
-                    : "Правильные ответы: ";
+            if (answerResult.possibleAnswers) {
+                if (answerResult.possibleAnswers.length > 0) {
+                    let spanOtherTranslatesLeft = document.createElement("span");
+                    spanOtherTranslatesLeft.style.fontWeight = "bold";
+                    spanOtherTranslatesLeft.textContent = answerResult.isCorrect === true
+                        ? "Другие ответы: "
+                        : "Правильные ответы: ";
 
-                let spanOtherTranslatesRight = document.createElement("span");
-                spanOtherTranslatesRight.textContent = answerResult.getPossibleAnswersStr();
+                    let spanOtherTranslatesRight = document.createElement("span");
+                    spanOtherTranslatesRight.textContent = answerResult.getPossibleAnswersStr();
 
-                let divOtherTranslates = document.createElement("div");
-                divOtherTranslates.style.fontSize = _CSS_ROOT.THIRD_FONT_SIZE;
-                divOtherTranslates.style.opacity = _CSS_ROOT.OPACITY_STANDARD;
-                divOtherTranslates.appendChild(spanOtherTranslatesLeft);
-                divOtherTranslates.appendChild(spanOtherTranslatesRight);
+                    let divOtherTranslates = document.createElement("div");
+                    divOtherTranslates.style.fontSize = _CSS_ROOT.THIRD_FONT_SIZE;
+                    divOtherTranslates.style.opacity = _CSS_ROOT.OPACITY_STANDARD;
+                    divOtherTranslates.appendChild(spanOtherTranslatesLeft);
+                    divOtherTranslates.appendChild(spanOtherTranslatesRight);
 
-                divAnswerResultData.appendChild(divOtherTranslates);
+                    divAnswerResultData.appendChild(divOtherTranslates);
+                }
+            } else {
+                let divWarning = document.createElement("div");
+                divWarning.style.fontSize = _CSS_ROOT.THIRD_FONT_SIZE;
+                divWarning.textContent = "Этот вопрос не будет добавлен в следующий раунд.";
+                divAnswerResultData.appendChild(divWarning);
             }
 
             // Основной контейнер
@@ -954,7 +1067,7 @@ async function prepareWorkoutRound() {
             let JSONResponse = await _WORKOUTS_API.PATCH.close(dto);
             if (JSONResponse.status === _HTTP_STATUSES.OK) {
                 window.onbeforeunload = null;
-                window.location.replace(_RESOURCE_URLS.WORKOUTS);
+                window.location.replace(`${_RESOURCE_URLS.WORKOUTS_INFO}/${_currentWorkout.id}`);
             } else {
                 let message = new CustomResponseMessage(JSONResponse.json).text;
                 showErrorInInteractionContainer(message);

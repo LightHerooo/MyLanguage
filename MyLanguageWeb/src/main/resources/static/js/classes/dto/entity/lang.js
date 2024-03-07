@@ -9,7 +9,8 @@ export class LangResponseDTO {
     title;
     code;
     codeForTranslate;
-    isActive;
+    isActiveForIn;
+    isActiveForOut;
 
     constructor(langJson) {
         if (langJson) {
@@ -17,7 +18,8 @@ export class LangResponseDTO {
             this.title = langJson["title"];
             this.code = langJson["code"];
             this.codeForTranslate = langJson["code_for_translate"];
-            this.isActive = langJson["is_active"];
+            this.isActiveForIn = langJson["is_active_for_in"];
+            this.isActiveForOut = langJson["is_active_for_out"];
         }
     }
 

@@ -9,6 +9,6 @@ class WorkoutType {
 }
 
 export class WorkoutTypes {
-    RANDOM_WORDS = new WorkoutType(1, "random_words");
-    COLLECTION_WORKOUT = new WorkoutType(2, "collection_workout");
+    RANDOM_WORDS = new WorkoutType(1n, "random_words");
+    COLLECTION_WORKOUT = new WorkoutType(2n, "collection_workout");
 }

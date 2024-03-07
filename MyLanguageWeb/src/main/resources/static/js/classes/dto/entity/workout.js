@@ -4,7 +4,7 @@ import {
 
 import {
     WorkoutTypeResponseDTO
-} from "./workout_type.js";
+} from "./workout_type/workout_type.js";
 
 import {
     LangResponseDTO
@@ -133,14 +133,14 @@ export class WorkoutResponseDTO {
         divRightContainer.appendChild(divWorkoutInfoRow);
 
         // Дата начала
-        let dateOfEndObj = new Date(this.dateOfStart);
+        let dateOfStartObj = new Date(this.dateOfStart);
         divWorkoutInfoRow = document.createElement("div");
         spanLeftText = document.createElement("span");
         spanLeftText.classList.add(_CSS_WORKOUT_INFO.SPAN_WORKOUT_INFO_LEFT_TEXT_STYLE_ID);
         spanLeftText.textContent = "Дата начала: ";
         divWorkoutInfoRow.appendChild(spanLeftText);
 
-        let dateParts = new DateParts(dateOfEndObj);
+        let dateParts = new DateParts(dateOfStartObj);
         spanRightText = document.createElement("span");
         spanRightText.classList.add(_CSS_WORKOUT_INFO.SPAN_WORKOUT_INFO_RIGHT_TEXT_STYLE_ID);
         spanRightText.textContent = dateParts.getDateWithTimeStr();
@@ -148,15 +148,16 @@ export class WorkoutResponseDTO {
         divRightContainer.appendChild(divWorkoutInfoRow);
 
         // Дата окончания (при наличии)
-        let dateOfEnd = this.dateOfEnd;
-        if (dateOfEnd) {
+        if (this.dateOfEnd) {
+            let dateOfEndObj = new Date(this.dateOfEnd);
+
             divWorkoutInfoRow = document.createElement("div");
             spanLeftText = document.createElement("span");
             spanLeftText.classList.add(_CSS_WORKOUT_INFO.SPAN_WORKOUT_INFO_LEFT_TEXT_STYLE_ID);
             spanLeftText.textContent = "Дата окончания: ";
             divWorkoutInfoRow.appendChild(spanLeftText);
 
-            dateParts = new DateParts(dateOfEnd);
+            dateParts = new DateParts(dateOfEndObj);
             spanRightText = document.createElement("span");
             spanRightText.classList.add(_CSS_WORKOUT_INFO.SPAN_WORKOUT_INFO_RIGHT_TEXT_STYLE_ID);
             spanRightText.textContent = dateParts.getDateWithTimeStr();

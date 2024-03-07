@@ -1,6 +1,7 @@
 export class ResourceUrls {
-    #mainUrl = "http://localhost:8080";
+    MAIN = "http://localhost:8080";
 
-    WORKOUTS = this.#mainUrl + "/workouts";
+    WORKOUTS = this.MAIN + "/workouts";
     WORKOUTS_START = this.WORKOUTS + "/start";
+    WORKOUTS_INFO = this.WORKOUTS + "/info";
 }

@@ -21,8 +21,11 @@ public class Lang {
     @Column(name="code_for_translate")
     private String codeForTranslate;
 
-    @Column(name="is_active")
-    private boolean isActive;
+    @Column(name="is_active_for_in")
+    private boolean isActiveForIn;
+
+    @Column(name="is_active_for_out")
+    private boolean isActiveForOut;
 
     @Override
     public boolean equals(Object o) {
@@ -66,11 +69,19 @@ public class Lang {
         this.codeForTranslate = codeForTranslate;
     }
 
-    public boolean isActive() {
-        return isActive;
+    public boolean isActiveForIn() {
+        return isActiveForIn;
     }
 
-    public void setActive(boolean active) {
-        isActive = active;
+    public void setActiveForIn(boolean activeForIn) {
+        isActiveForIn = activeForIn;
+    }
+
+    public boolean isActiveForOut() {
+        return isActiveForOut;
+    }
+
+    public void setActiveForOut(boolean activeForOut) {
+        isActiveForOut = activeForOut;
     }
 }

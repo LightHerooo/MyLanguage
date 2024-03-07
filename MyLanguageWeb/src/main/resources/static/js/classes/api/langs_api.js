@@ -23,8 +23,28 @@ class LangsGETRequests {
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
     }
 
-    async getAllActives() {
-        let requestURL = new URL(URL_TO_API_LANGS + "/actives");
+    async getAllForIn() {
+        let requestURL = new URL(URL_TO_API_LANGS + "/for_in");
+
+        return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
+    }
+
+    async getAllForOut() {
+        let requestURL = new URL(URL_TO_API_LANGS + "/for_out");
+
+        return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
+    }
+
+    async getAllForInByLangOutCode(langOutCode) {
+        let requestURL = new URL(URL_TO_API_LANGS + "/for_in_by_lang_out_code");
+        requestURL.searchParams.set("lang_out_code", langOutCode);
+
+        return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
+    }
+
+    async getAllForOutByLangInCode(langInCode) {
+        let requestURL = new URL(URL_TO_API_LANGS + "/for_out_by_lang_in_code");
+        requestURL.searchParams.set("lang_in_code", langInCode);
 
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
     }
@@ -36,9 +56,24 @@ class LangsGETRequests {
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
     }
 
-    async validateIsActiveByCode(code) {
-        let requestURL = new URL(URL_TO_API_LANGS_VALIDATE + "/is_active_by_code");
+    async validateIsActiveForInByCode(code) {
+        let requestURL = new URL(URL_TO_API_LANGS_VALIDATE + "/is_active_for_in_by_code");
         requestURL.searchParams.set("code", code);
+
+        return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
+    }
+
+    async validateIsActiveForOutByCode(code) {
+        let requestURL = new URL(URL_TO_API_LANGS_VALIDATE + "/is_active_for_out_by_code");
+        requestURL.searchParams.set("code", code);
+
+        return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
+    }
+
+    async validateCoupleOfLanguages(langInCode, langOutCode) {
+        let requestURL = new URL(URL_TO_API_LANGS_VALIDATE + "/couple_of_languages");
+        requestURL.searchParams.set("lang_in_code", langInCode);
+        requestURL.searchParams.set("lang_out_code", langOutCode);
 
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
     }

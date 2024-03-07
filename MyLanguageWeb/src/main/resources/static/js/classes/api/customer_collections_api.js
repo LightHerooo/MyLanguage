@@ -23,9 +23,17 @@ export class CustomerCollectionsAPI {
 }
 
 class CustomerCollectionsGETRequests {
-    async getAllByCustomerId(customerId) {
-        let requestURL = new URL(URL_TO_API_CUSTOMER_COLLECTIONS + "/by_customer_id");
+    async getAllForInByCustomerId(customerId) {
+        let requestURL = new URL(URL_TO_API_CUSTOMER_COLLECTIONS + "/for_in_by_customer_id");
         requestURL.searchParams.set("customer_id", customerId);
+
+        return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
+    }
+
+    async getAllForInByCustomerIdAndLangOutCode(customerId, langOutCode) {
+        let requestURL = new URL(URL_TO_API_CUSTOMER_COLLECTIONS + "/for_in_by_customer_id_and_lang_out_code");
+        requestURL.searchParams.set("customer_id", customerId);
+        requestURL.searchParams.set("lang_out_code", langOutCode);
 
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
     }
@@ -60,6 +68,14 @@ class CustomerCollectionsGETRequests {
 
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
     }
+
+    async validateMinNumberOfWordsForWorkoutByKey(key) {
+        let requestURL = new URL(
+            URL_TO_API_CUSTOMER_COLLECTIONS_VALIDATE + "/min_number_of_words_for_workout_by_key");
+        requestURL.searchParams.set("key", key);
+
+        return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
+    }
 }
 
 class CustomerCollectionsPOSTRequests {
@@ -69,6 +85,15 @@ class CustomerCollectionsPOSTRequests {
             'title': customerCollectionRequestDTO.title,
             'customer_id': customerCollectionRequestDTO.customerId,
             'lang_code': customerCollectionRequestDTO.langCode
+        });
+
+        return await _XML_UTILS.getJSONResponseByPOSTXml(requestURL, jsonStr);
+    }
+
+    async createByWorkoutId(customerCollectionRequestDTO){
+        let requestURL = new URL(URL_TO_API_CUSTOMER_COLLECTIONS + "/create_by_workout_id");
+        let jsonStr = _JSON_UTILS.stringify({
+            'workout_id': customerCollectionRequestDTO.workoutId
         });
 
         return await _XML_UTILS.getJSONResponseByPOSTXml(requestURL, jsonStr);

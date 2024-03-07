@@ -43,7 +43,7 @@ function prepareTbNickname() {
     let tbNickname = document.getElementById(_TB_NICKNAME_ID);
     tbNickname.addEventListener("input", async function () {
         clearErrorsContainer();
-        await checkCorrectNickname();
+        await _CUSTOMER_UTILS.TB_CUSTOMER_NICKNAME.checkCorrectValue(this, this.parentElement, _CUSTOM_TIMER_CHECKER);
     })
 }
 
@@ -51,7 +51,7 @@ function prepareTbEmail() {
     let tbEmail = document.getElementById(_TB_EMAIL_ID);
     tbEmail.addEventListener("input", async function () {
         clearErrorsContainer();
-        await checkCorrectEmail();
+        await _CUSTOMER_UTILS.TB_CUSTOMER_EMAIL.checkCorrectValue(this, this.parentElement, _CUSTOM_TIMER_CHECKER);
     })
 }
 
@@ -59,7 +59,7 @@ function prepareTbLogin() {
     let tbLogin = document.getElementById(_TB_LOGIN_ID);
     tbLogin.addEventListener("input", async function () {
         clearErrorsContainer();
-        await checkCorrectLogin();
+        await _CUSTOMER_UTILS.TB_CUSTOMER_LOGIN.checkCorrectValue(this, this.parentElement, _CUSTOM_TIMER_CHECKER);
     })
 }
 
@@ -67,7 +67,7 @@ function preparePbPassword() {
     let pbPassword = document.getElementById(_PB_PASSWORD_ID);
     pbPassword.addEventListener("input", function () {
         clearErrorsContainer();
-        checkCorrectPassword();
+        _CUSTOMER_UTILS.PB_CUSTOMER_PASSWORD.checkCorrectValue(this, this.parentElement);
     })
 }
 
@@ -75,7 +75,11 @@ function preparePbPasswordRepeat() {
     let pbPasswordRepeat = document.getElementById(_PB_PASSWORD_REPEAT_ID);
     pbPasswordRepeat.addEventListener("input", function () {
         clearErrorsContainer();
-        checkCorrectPasswordRepeat();
+
+        let pbPassword = document.getElementById(_PB_PASSWORD_ID);
+        if (pbPassword) {
+            _CUSTOMER_UTILS.PB_CUSTOMER_PASSWORD_REPEAT.checkCorrectValue(this, pbPassword, this.parentElement);
+        }
     })
 }
 
@@ -130,6 +134,7 @@ function prepareSubmit() {
         //---
 
         if (await checkCorrectBeforeRegister() === true) {
+            window.onbeforeunload = null;
             formRegister.submit();
         } else {
             form.removeChild(divLoading);
@@ -139,43 +144,56 @@ function prepareSubmit() {
 }
 
 // Регистрация пользователя ---
-async function checkCorrectLogin() {
-    let tbLogin = document.getElementById(_TB_LOGIN_ID);
-    return await _CUSTOMER_UTILS.checkCorrectValueInTbLogin(tbLogin, tbLogin.parentElement, _CUSTOM_TIMER_CHECKER);
-}
-
-async function checkCorrectEmail() {
-    let tbEmail = document.getElementById(_TB_EMAIL_ID);
-    return await _CUSTOMER_UTILS.checkCorrectValueInTbEmail(tbEmail, tbEmail.parentElement, _CUSTOM_TIMER_CHECKER);
-}
-
-async function checkCorrectNickname() {
-    let tbNickname = document.getElementById(_TB_NICKNAME_ID);
-    return await _CUSTOMER_UTILS
-        .checkCorrectValueInTbNickname(tbNickname, tbNickname.parentElement, _CUSTOM_TIMER_CHECKER);
-}
-
-function checkCorrectPassword() {
-    let pbPassword = document.getElementById(_PB_PASSWORD_ID);
-    return _CUSTOMER_UTILS.checkCorrectValueInPbPassword(pbPassword, pbPassword.parentElement);
-}
-
-function checkCorrectPasswordRepeat() {
-    let pbPassword = document.getElementById(_PB_PASSWORD_ID);
-    let pbPasswordRepeat = document.getElementById(_PB_PASSWORD_REPEAT_ID);
-
-    return _CUSTOMER_UTILS
-        .checkCorrectValueInPbPasswordRepeat(pbPasswordRepeat, pbPassword, pbPasswordRepeat.parentElement)
-}
-
 async function checkCorrectBeforeRegister() {
-    let isLoginCorrect = await checkCorrectLogin();
-    let isEmailCorrect = await checkCorrectEmail();
-    let isNicknameCorrect = await checkCorrectNickname();
-    let isPasswordCorrect = checkCorrectPassword();
-    let isPasswordRepeatCorrect = checkCorrectPasswordRepeat();
+    // Проверяем никнейм ---
+    let isNicknameCorrect = false;
+    let tbNickname = document.getElementById(_TB_NICKNAME_ID);
+    if (tbNickname) {
+        isNicknameCorrect = await _CUSTOMER_UTILS.TB_CUSTOMER_NICKNAME.checkCorrectValue(
+            tbNickname, tbNickname.parentElement, _CUSTOM_TIMER_CHECKER);
+    }
+    //---
 
-    return (isLoginCorrect && isEmailCorrect && isNicknameCorrect && isPasswordCorrect && isPasswordRepeatCorrect);
+    // Проверяем Email ---
+    let isEmailCorrect = false;
+    let tbEmail = document.getElementById(_TB_EMAIL_ID);
+    if (tbEmail) {
+        isEmailCorrect = await _CUSTOMER_UTILS.TB_CUSTOMER_EMAIL.checkCorrectValue(
+            tbEmail, tbEmail.parentElement, _CUSTOM_TIMER_CHECKER);
+    }
+    //---
+
+    // Проверяем логин ---
+    let isLoginCorrect = false;
+    let tbLogin = document.getElementById(_TB_LOGIN_ID);
+    if (tbLogin) {
+        isLoginCorrect = await _CUSTOMER_UTILS.TB_CUSTOMER_LOGIN.checkCorrectValue(
+            tbLogin, tbLogin.parentElement, _CUSTOM_TIMER_CHECKER);
+    }
+    //---
+
+    // Проверяем пароль ---
+    let isPasswordCorrect = false;
+    let pbPassword = document.getElementById(_PB_PASSWORD_ID);
+    if (pbPassword) {
+        isPasswordCorrect = _CUSTOMER_UTILS.PB_CUSTOMER_PASSWORD.checkCorrectValue(pbPassword, pbPassword.parentElement);
+    }
+    //---
+
+    // Проверяем повтор пароля ---
+    let isPasswordRepeatCorrect = false;
+    let pbPasswordRepeat = document.getElementById(_PB_PASSWORD_REPEAT_ID);
+    if (pbPasswordRepeat && pbPassword) {
+        isPasswordRepeatCorrect = _CUSTOMER_UTILS.PB_CUSTOMER_PASSWORD_REPEAT.checkCorrectValue(
+            pbPasswordRepeat, pbPassword, pbPasswordRepeat.parentElement)
+    }
+    //---
+
+    return (isLoginCorrect === true
+        && isEmailCorrect === true
+        && isNicknameCorrect === true
+        && isPasswordCorrect === true
+        && isPasswordRepeatCorrect === true);
 }
 
 function clearErrorsContainer() {

@@ -3,6 +3,8 @@ export class ImageSources {
     OTHER = new OtherFolder();
     RULES = new RulesFolder();
     CUSTOMER_COLLECTIONS = new CustomerCollectionsFolder();
+    CUSTOMERS = new CustomersFolder();
+    WORKOUTS = new WorkoutsFolder();
 }
 
 class OtherFolder {
@@ -30,4 +32,16 @@ class CustomerCollectionsFolder {
     #PATH_TO_CUSTOMER_COLLECTIONS_FOLDER = PATH_TO_IMAGES_FOLDER + "/customer_collections";
 
     BOOKS = this.#PATH_TO_CUSTOMER_COLLECTIONS_FOLDER + "/books.png";
+}
+
+class CustomersFolder {
+    #PATH_TO_CUSTOMER_COLLECTIONS_FOLDER = PATH_TO_IMAGES_FOLDER + "/customers";
+
+    ENTRY = this.#PATH_TO_CUSTOMER_COLLECTIONS_FOLDER + "/entry.png";
+}
+
+class WorkoutsFolder {
+    #PATH_TO_CUSTOMER_COLLECTIONS_FOLDER = PATH_TO_IMAGES_FOLDER + "/workouts";
+
+    BRAIN = this.#PATH_TO_CUSTOMER_COLLECTIONS_FOLDER + "/brain.png";
 }

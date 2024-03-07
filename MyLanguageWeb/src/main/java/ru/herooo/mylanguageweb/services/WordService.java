@@ -38,6 +38,10 @@ public class WordService {
         return WORD_CRUD_REPOSITORY.findListRandom(langCode, count);
     }
 
+    public List<Word> findListByTitle(String title, String wordStatusCode) {
+        return WORD_CRUD_REPOSITORY.findListByTitle(title, wordStatusCode);
+    }
+
     // Получение слов после сортировки
     public List<Word> findAll(String title, String wordStatusCode, String langCode) {
         return WORD_CRUD_REPOSITORY.findAllAfterFilter(title, wordStatusCode, langCode);

@@ -28,6 +28,12 @@ public class CustomerCollectionRequestDTO {
     @JsonProperty("key")
     private String key;
 
+    @JsonSerialize(using = LongSerializer.class)
+    @JsonDeserialize(using = LongDeserializer.class)
+    @JsonProperty("workout_id")
+    private long workoutId;
+
+
     @JsonProperty("auth_code")
     private String authCode;
 
@@ -71,5 +77,13 @@ public class CustomerCollectionRequestDTO {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public long getWorkoutId() {
+        return workoutId;
+    }
+
+    public void setWorkoutId(long workoutId) {
+        this.workoutId = workoutId;
     }
 }

@@ -3,6 +3,7 @@ package ru.herooo.mylanguageweb.dto.entity.workoutitem;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import jakarta.validation.constraints.Size;
 import ru.herooo.mylanguageutils.StringUtils;
 import ru.herooo.mylanguageweb.controllers.json.LongDeserializer;
 import ru.herooo.mylanguageweb.controllers.json.LongSerializer;
@@ -13,6 +14,8 @@ public class WorkoutItemRequestDTO {
     @JsonSerialize(using = LongSerializer.class)
     @JsonDeserialize(using = LongDeserializer.class)
     private long id;
+
+    @Size(max = 44, message = "Длина ответа должна быть не более 44-х символов.")
     @JsonProperty("word_title_answer")
     private String wordTitleAnswer;
 

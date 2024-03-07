@@ -37,11 +37,14 @@ public class WordInCollectionService {
                 title, customerCollectionKey, numberOfWords, lastWordInCollectionIdOnPreviousPage);
     }
 
+    public WordInCollection add(WordInCollection wordInCollection) {
+        wordInCollection.setDateOfAdditional(LocalDateTime.now());
+        return WORD_IN_COLLECTION_CRUD_REPOSITORY.save(wordInCollection);
+    }
+
     public WordInCollection add(WordInCollectionRequestDTO dto) {
         WordInCollection wordInCollection = WORD_IN_COLLECTION_MAPPING.mapToWordInCollection(dto);
-        wordInCollection.setDateOfAdditional(LocalDateTime.now());
-
-        return WORD_IN_COLLECTION_CRUD_REPOSITORY.save(wordInCollection);
+        return add(wordInCollection);
     }
 
     public WordInCollection find(Word word, CustomerCollection customerCollection) {

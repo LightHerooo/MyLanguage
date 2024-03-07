@@ -4,166 +4,247 @@ import {
 
 import {
     WorkoutTypeResponseDTO
-} from "../../classes/dto/entity/workout_type.js";
+} from "../../classes/dto/entity/workout_type/workout_type.js";
 
 import {
     CssMain
 } from "../../classes/css/css_main.js";
 
 import {
-    CssInfoBlockWithImgAndHeader
-} from "../../classes/css/info_blocks/css_info_block_with_img_and_header.js";
+    WorkoutTypesAPI
+} from "../../classes/api/workout_types_api.js";
 
 import {
-    WorkoutTypesAPI
-} from "../../classes/api/workout_types/workout_types_api.js";
+    CustomTimer
+} from "../../classes/custom_timer/custom_timer.js";
+
+import {
+    LoadingElement
+} from "../../classes/loading_element.js";
+
+import {
+    CssRoot
+} from "../../classes/css/css_root.js";
+
+import {
+    CustomResponseMessage
+} from "../../classes/dto/other/custom_response_message.js";
+
+import {
+    ImageSources
+} from "../../classes/image_sources.js";
+
+import {
+    ResourceUrls
+} from "../../classes/resource_urls.js";
+
+import {
+    GlobalCookies
+} from "../../classes/global_cookies.js";
+
+import {
+    CustomersAPI
+} from "../../classes/api/customers_api.js";
+
+import {
+    CustomerResponseDTO
+} from "../../classes/dto/entity/customer.js";
+
+import {
+    CustomerRoles
+} from "../../classes/dto/entity/customer_role/customer_roles.js";
 
 const _WORKOUT_TYPES_API = new WorkoutTypesAPI();
+const _CUSTOMERS_API = new CustomersAPI();
+
+const _CSS_MAIN = new CssMain();
+const _CSS_ROOT = new CssRoot();
 
 const _HTTP_STATUSES = new HttpStatuses();
-const _CSS_MAIN = new CssMain();
-const _CSS_INFO_BLOCK_WITH_IMG_AND_HEADER = new CssInfoBlockWithImgAndHeader();
+const _IMAGE_SOURCES = new ImageSources();
+const _RESOURCE_URLS = new ResourceUrls()
+const _GLOBAL_COOKIES = new GlobalCookies();
+const _CUSTOMER_ROLES = new CustomerRoles();
 
-const _A_WORKOUT_TYPES_ITEM_STYLE_ID = "workout-types-item";
-const _IMG_WORKOUT_TYPES_ITEM_IMG_STYLE_ID = "workout-types-item-img";
+const _DIV_WORKOUT_TYPE_ACTION_STYLE_ID = "workout-type-action";
+const _IMG_IMG_WORKOUT_TYPE_ACTION_STYLE_ID = "img-workout-type-action";
 
 const _DIV_WORKOUT_TYPES_CONTAINER_ID = "workout_types_container";
-const _DIV_WORKOUT_TYPE_INFO_CONTAINER_ID = "workout_type_info_container";
+
+const _CUSTOM_TIMER_WORKOUT_TYPES_FINDER = new CustomTimer();
 
 window.onload = async function () {
-    await prepareWorkoutTypesContainer();
+    // Подготавливаем таймеры ---
+    prepareWorkoutTypesFinder();
+    //---
+
+    // Запускаем таймеры ---
+    startToFindWorkoutTypes();
+    //---
 }
 
-async function prepareWorkoutTypesContainer() {
+// Поиск режимов тренировок ---
+function prepareWorkoutTypesFinder() {
+    _CUSTOM_TIMER_WORKOUT_TYPES_FINDER.setTimeout(250);
+    _CUSTOM_TIMER_WORKOUT_TYPES_FINDER.setHandler(async function() {
+        await tryToFillWorkoutTypes();
+    });
+}
+
+function startToFindWorkoutTypes() {
+    if (_CUSTOM_TIMER_WORKOUT_TYPES_FINDER) {
+        _CUSTOM_TIMER_WORKOUT_TYPES_FINDER.stop();
+    }
+
+    let divWorkoutTypesContainer = document.getElementById(_DIV_WORKOUT_TYPES_CONTAINER_ID);
+    if (divWorkoutTypesContainer) {
+        divWorkoutTypesContainer.className = "";
+        divWorkoutTypesContainer.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
+        divWorkoutTypesContainer.classList.add(_CSS_MAIN.DIV_CONTENT_CENTER_STANDARD_STYLE_ID);
+        divWorkoutTypesContainer.appendChild(new LoadingElement().createDiv());
+    }
+
+    if (_CUSTOM_TIMER_WORKOUT_TYPES_FINDER) {
+        _CUSTOM_TIMER_WORKOUT_TYPES_FINDER.start();
+    }
+}
+
+async function tryToFillWorkoutTypes() {
     let divWorkoutTypesContainer = document.getElementById(_DIV_WORKOUT_TYPES_CONTAINER_ID);
     if (divWorkoutTypesContainer) {
         let JSONResponse = await _WORKOUT_TYPES_API.GET.getAll();
         if (JSONResponse.status === _HTTP_STATUSES.OK) {
-            let workoutTypesJson = JSONResponse.json;
+            let divWorkoutTypes = await createDivWorkoutTypes(JSONResponse.json);
 
-            // Применяем стили контейнеру, добавляем столько колонок, сколько типов тренировок ---
-            divWorkoutTypesContainer.style.display = "grid";
+            divWorkoutTypesContainer.replaceChildren();
+            divWorkoutTypesContainer.className = "";
+            divWorkoutTypesContainer.appendChild(divWorkoutTypes);
+        } else {
+            let divMessage = document.createElement("div");
+            divMessage.style.fontSize = _CSS_ROOT.SECOND_FONT_SIZE;
+            divMessage.textContent = new CustomResponseMessage(JSONResponse.json).text;
 
-            let frColumns = "1fr";
-            for (let j = 0; j < workoutTypesJson.length - 1; j++) {
-                frColumns += " 1fr";
-            }
-
-            divWorkoutTypesContainer.style.grid = "1fr / " + frColumns;
-            divWorkoutTypesContainer.style.gap = "20px";
-            //---
-
-            for (let i = 0; i < workoutTypesJson.length; i++) {
-                let workoutType = new WorkoutTypeResponseDTO(workoutTypesJson[i]);
-
-                // Изображение ---
-                let imgWorkoutTypeImage = document.createElement("img");
-                imgWorkoutTypeImage.classList.add(_IMG_WORKOUT_TYPES_ITEM_IMG_STYLE_ID);
-                imgWorkoutTypeImage.src = workoutType.pathToImage;
-                //---
-
-                // Название ---
-                let divWorkoutTypeTitle = document.createElement("div");
-                divWorkoutTypeTitle.textContent = workoutType.title;
-                if (workoutType.isActive === false) {
-                    divWorkoutTypeTitle.textContent += " (Скоро)";
-                }
-                //---
-
-                // Создаём кнопку ---
-                let aWorkoutType = document.createElement("a");
-                aWorkoutType.classList.add(_A_WORKOUT_TYPES_ITEM_STYLE_ID);
-
-                if (workoutType.isActive === true) {
-                    aWorkoutType.classList.add(_CSS_MAIN.A_BUTTON_STANDARD_STYLE_ID);
-                    aWorkoutType.href = "/workouts/" + workoutType.code;
-                } else {
-                    aWorkoutType.classList.add(_CSS_MAIN.A_BUTTON_DISABLED_STANDARD_STYLE_ID);
-                    aWorkoutType.style.pointerEvents = "auto";
-                    aWorkoutType.style.cursor = "pointer";
-                }
-
-                aWorkoutType.addEventListener("mouseover", function () {
-                    showWorkoutTypeInfo(workoutType);
-                });
-
-                aWorkoutType.addEventListener("mouseout", function () {
-                    let divWorkoutTypeInfoContainer =
-                        document.getElementById(_DIV_WORKOUT_TYPE_INFO_CONTAINER_ID);
-                    if (divWorkoutTypeInfoContainer) {
-                        divWorkoutTypeInfoContainer.replaceChildren();
-                    }
-                });
-
-                aWorkoutType.append(imgWorkoutTypeImage);
-                aWorkoutType.append(divWorkoutTypeTitle);
-                //---
-
-                // Добавляем кнопку в контейнер ---
-                divWorkoutTypesContainer.appendChild(aWorkoutType);
-                //---
-            }
+            divWorkoutTypesContainer.replaceChildren();
+            divWorkoutTypesContainer.className = "";
+            divWorkoutTypesContainer.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
+            divWorkoutTypesContainer.classList.add(_CSS_MAIN.DIV_CONTENT_CENTER_STANDARD_STYLE_ID);
+            divWorkoutTypesContainer.appendChild(divMessage);
         }
     }
 }
 
-function showWorkoutTypeInfo(workoutTypeObj) {
-    let divWorkoutTypeInfoContainer = document.getElementById(_DIV_WORKOUT_TYPE_INFO_CONTAINER_ID);
-    if (divWorkoutTypeInfoContainer) {
-        // Изображение ---
-        let imgWorkoutType = document.createElement("img");
-        imgWorkoutType.classList.add(_CSS_INFO_BLOCK_WITH_IMG_AND_HEADER.IMG_INFO_BLOCK_WITH_IMG_AND_HEADER_STYLE_ID);
-        imgWorkoutType.src = workoutTypeObj.pathToImage;
+async function createDivWorkoutTypes(workoutTypesJson) {
+    // Высчитываем количество колонок и строк ---
+    let numberOfColumns = 3;
+    let numberOfRows = Math.ceil(workoutTypesJson.length / numberOfColumns);
+
+    let gridTemplateColumnsStr = "1fr";
+    for (let i = 0; i < numberOfColumns - 1; i++) {
+        gridTemplateColumnsStr += " 1fr";
+    }
+
+    let gridTemplateRowsStr = "1fr";
+    for (let i = 0; i < numberOfRows - 1; i++) {
+        gridTemplateRowsStr += " 1fr";
+    }
+    //---
+
+    // Ищем пользователя, чтобы определить его роль ---
+    let customerId = _GLOBAL_COOKIES.AUTH_ID.getValue();
+
+    let customer;
+    let JSONResponse = await _CUSTOMERS_API.GET.findById(customerId);
+    if (JSONResponse.status === _HTTP_STATUSES.OK) {
+        customer = new CustomerResponseDTO(JSONResponse.json);
+    }
+    //---
+
+    // Создаём контейнер ---
+    let divWorkoutTypes = document.createElement("div");
+    divWorkoutTypes.style.display = "grid";
+    divWorkoutTypes.style.gridAutoFlow = "row";
+    divWorkoutTypes.style.gridTemplateColumns = gridTemplateColumnsStr;
+    divWorkoutTypes.style.gridTemplateRows = gridTemplateRowsStr;
+    divWorkoutTypes.style.gap = "20px";
+    //---
+
+    for (let i = 0; i < numberOfColumns * numberOfRows; i++) {
+        let workoutType;
+        if (i < workoutTypesJson.length) {
+            workoutType = new WorkoutTypeResponseDTO(workoutTypesJson[i]);
+        }
+
+        // Создаём контейнер для будущей кнопки ---
+        let divAction = document.createElement("div");
+        divAction.classList.add(_CSS_MAIN.DIV_VERTICAL_FLEX_CONTAINER_STANDARD_STYLE_ID);
+        divAction.classList.add(_DIV_WORKOUT_TYPE_ACTION_STYLE_ID);
         //---
 
-        // Левый контейнер ---
-        let divWorkoutTypeInfoLeftContainer = document.createElement("div");
-        divWorkoutTypeInfoLeftContainer.classList.add(
-            _CSS_INFO_BLOCK_WITH_IMG_AND_HEADER.DIV_INFO_BLOCK_WITH_IMG_AND_HEADER_LEFT_CONTAINER_STYLE_ID);
-        divWorkoutTypeInfoLeftContainer.appendChild(imgWorkoutType);
+        // Изображение ---
+        let imgWorkoutTypeImage = document.createElement("img");
+        imgWorkoutTypeImage.classList.add(_IMG_IMG_WORKOUT_TYPE_ACTION_STYLE_ID);
+
+        let pathToImage;
+        if (workoutType) {
+            pathToImage = workoutType.pathToImage;
+        }
+
+        if (!pathToImage) {
+            pathToImage = _IMAGE_SOURCES.WORKOUTS.BRAIN;
+        }
+
+        imgWorkoutTypeImage.src = pathToImage;
+        divAction.appendChild(imgWorkoutTypeImage);
         //---
 
         // Название ---
-        let h1WorkoutTypeTitle = document.createElement("h1");
-        h1WorkoutTypeTitle.classList.add(
-            _CSS_INFO_BLOCK_WITH_IMG_AND_HEADER.H1_INFO_BLOCK_WITH_IMG_AND_HEADER_STYLE_ID);
-        h1WorkoutTypeTitle.textContent = workoutTypeObj.title;
-        if (workoutTypeObj.isActive === false) {
-            h1WorkoutTypeTitle.textContent += " (Скоро)";
-        }
-        //---
+        let divWorkoutTypeTitle = document.createElement("div");
 
-        // Описание ---
-        let divWorkoutTypeMessage = document.createElement("div");
-        divWorkoutTypeMessage.classList.add(
-            _CSS_INFO_BLOCK_WITH_IMG_AND_HEADER.DIV_INFO_BLOCK_WITH_IMG_AND_HEADER_TEXT_STYLE_ID);
-        divWorkoutTypeMessage.textContent = workoutTypeObj.message;
-        //---
-
-        // Правый контейнер ---
-        let divWorkoutTypeInfoRightContainer = document.createElement("div");
-        divWorkoutTypeInfoRightContainer.classList.add(
-            _CSS_INFO_BLOCK_WITH_IMG_AND_HEADER.DIV_INFO_BLOCK_WITH_IMG_AND_HEADER_RIGHT_CONTAINER_STYLE_ID);
-        divWorkoutTypeInfoRightContainer.appendChild(h1WorkoutTypeTitle);
-        divWorkoutTypeInfoRightContainer.appendChild(divWorkoutTypeMessage);
-        //---
-
-        // Генерируем итоговый контейнер ---
-        const DIV_WORKOUT_INFO_ID = "workout_type_info";
-
-        let divWorkoutTypeInfo = document.getElementById(DIV_WORKOUT_INFO_ID);
-        if (divWorkoutTypeInfo) {
-            divWorkoutTypeInfo.replaceChildren();
-        } else {
-            divWorkoutTypeInfo = document.createElement("div");
-            divWorkoutTypeInfo.id = DIV_WORKOUT_INFO_ID;
-            divWorkoutTypeInfo.classList.add(
-                _CSS_INFO_BLOCK_WITH_IMG_AND_HEADER.DIV_INFO_BLOCK_WITH_IMG_AND_HEADER_CONTAINER_STYLE_ID);
-            divWorkoutTypeInfoContainer.appendChild(divWorkoutTypeInfo);
+        let title;
+        if (workoutType) {
+            title = workoutType.title
         }
 
-        divWorkoutTypeInfo.appendChild(divWorkoutTypeInfoLeftContainer);
-        divWorkoutTypeInfo.appendChild(divWorkoutTypeInfoRightContainer);
+        if (!title) {
+            title = "...";
+        }
+
+        divWorkoutTypeTitle.textContent = title;
+        divAction.appendChild(divWorkoutTypeTitle);
         //---
+
+        // Создаём кнопку ---
+        let isActive;
+        if (workoutType) {
+            if (customer &&
+                (customer.role.id === _CUSTOMER_ROLES.ADMIN.ID
+                    || customer.role.id === _CUSTOMER_ROLES.MODERATOR.ID)) {
+                isActive = true;
+            } else {
+                isActive = workoutType.isActive;
+            }
+        }
+
+        if (!isActive) {
+            isActive = false;
+        }
+
+        let aBtnAction = document.createElement("a");
+        aBtnAction.classList.add(isActive === true
+            ? _CSS_MAIN.A_BUTTON_STANDARD_STYLE_ID
+            : _CSS_MAIN.A_BUTTON_DISABLED_STANDARD_STYLE_ID);
+
+        if (workoutType) {
+            aBtnAction.title = workoutType.message;
+            aBtnAction.href = `${_RESOURCE_URLS.WORKOUTS}/${workoutType.code}`;
+        }
+
+        aBtnAction.appendChild(divAction);
+        //---
+
+        divWorkoutTypes.appendChild(aBtnAction);
     }
+
+    return divWorkoutTypes;
 }
+//---

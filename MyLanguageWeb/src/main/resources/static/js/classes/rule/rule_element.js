@@ -11,13 +11,13 @@ const _RULE_TYPES = new RuleTypes();
 
 export class RuleElement {
     #ruleElementId;
-    #parentElement;
+    #containerForRule;
     message;
     ruleType;
 
-    constructor(elementForRule, parentElement) {
+    constructor(elementForRule, containerForRule) {
         this.#ruleElementId = elementForRule.id + "_rule_element";
-        this.#parentElement = parentElement;
+        this.#containerForRule = containerForRule;
     }
 
     #getRule() {
@@ -31,8 +31,8 @@ export class RuleElement {
             rule.classList.add(_CSS_RULE.DIV_RULE_CONTAINER_STYLE_ID);
             rule.id = this.#ruleElementId;
 
-            if (this.#parentElement) {
-                this.#parentElement.appendChild(rule);
+            if (this.#containerForRule) {
+                this.#containerForRule.appendChild(rule);
             }
         } else {
             rule.replaceChildren();

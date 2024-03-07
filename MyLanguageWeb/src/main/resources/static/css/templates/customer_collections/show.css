@@ -10,29 +10,21 @@ div.words-statistics-container {
 }
 
 div.customer-collections-actions {
+    height: 250px;
+
     display: grid;
     grid: 1fr / 1fr;
     gap: 10px;
 }
 
-a.customer-collections-actions-item {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    padding: 20px;
-
+div.customer-collections-action {
+    font-size: var(--third-font-size);
     font-weight: bold;
 }
 
 img.customer-collections-actions-img {
     width: 128px;
     height: 128px;
-}
-
-p.customer-collections-actions-text {
-    font-size: var(--third-font-size);
 }
 
 div.collection-words-container {

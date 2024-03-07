@@ -208,5 +208,6 @@ export class CustomerCollectionResponseDTO {
 export class CustomerCollectionRequestDTO {
     title;
     langCode;
+    workoutId;
     key;
 }

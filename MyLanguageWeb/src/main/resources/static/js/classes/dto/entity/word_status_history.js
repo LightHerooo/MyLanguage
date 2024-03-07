@@ -4,7 +4,7 @@ import {
 
 import {
     WordStatusResponseDTO
-} from "./word_status.js";
+} from "./word_status/word_status.js";
 
 export class WordStatusHistoryResponseDTO {
     id;

@@ -13,23 +13,16 @@ div.hello-message-text {
 }
 
 div.actions-container {
+    height: 300px;
+
     display: grid;
     grid: 1fr / 1fr 1fr 1fr 1fr;
     gap: 20px;
 }
 
-a.action {
-    height: 300px;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    padding: 10px;
-
-    font-weight: bold;
+div.action {
     font-size: var(--second-font-size);
+    font-weight: bold;
 }
 
 img.action-img {

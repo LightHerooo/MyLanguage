@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.herooo.mylanguagedb.entities.Workout;
 import ru.herooo.mylanguagedb.repositories.WorkoutCrudRepository;
 import ru.herooo.mylanguagedb.types.WorkoutRoundStatistic;
+import ru.herooo.mylanguagedb.types.WorkoutStatistic;
 import ru.herooo.mylanguageutils.StringUtils;
 import ru.herooo.mylanguageweb.dto.entity.workout.WorkoutMapping;
 import ru.herooo.mylanguageweb.dto.entity.workout.WorkoutRequestDTO;
@@ -106,6 +107,10 @@ public class WorkoutService {
         return WORKOUT_CRUD_REPOSITORY.findLastInactive(customerId).orElse(null);
     }
 
+    public WorkoutStatistic findWorkoutStatistic(Long workoutId) {
+        return WORKOUT_CRUD_REPOSITORY.findWorkoutStatistic(workoutId).orElse(null);
+    }
+
     public WorkoutRoundStatistic findRoundStatistic(Long workoutId, Long roundNumber) {
         return WORKOUT_CRUD_REPOSITORY.findRoundStatistic(workoutId, roundNumber).orElse(null);
     }
@@ -115,15 +120,17 @@ public class WorkoutService {
     }
 
     public String validateSecurityKey(HttpServletRequest request, String securityKey) {
+        String validSecurityKey = securityKey;
+
         try {
-            if (STRING_UTILS.isStringVoid(securityKey)) {
+            if (STRING_UTILS.isStringVoid(validSecurityKey)) {
                 // Проверяем авторизацию пользователя через куки
-                securityKey = GLOBAL_COOKIE_UTILS.getCookieInHttpRequest(
+                validSecurityKey = GLOBAL_COOKIE_UTILS.getCookieInHttpRequest(
                         request, GlobalCookies.WORKOUT_SECURITY_KEY).getValue();
             }
         } catch (Throwable e) { }
 
-        return securityKey;
+        return validSecurityKey;
     }
 
     public void repairNotOver(Long customerId, String workoutTypeCode) {

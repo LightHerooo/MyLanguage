@@ -37,13 +37,19 @@ div.new-workout-start-container {
     flex-direction: column;
 }
 
-div.not-over-workouts-header-container {
+div.new-workout-start-actions-container {
     display: grid;
-    grid: 70px / 1fr 70px;
+    grid: 1fr / 1fr 50px;
     gap: 10px;
 }
 
-img.img-refresh {
+button.btn-drop-workout-settings {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+img.img-btn-drop-workout-settings {
     width: 32px;
     height: 32px;
 }

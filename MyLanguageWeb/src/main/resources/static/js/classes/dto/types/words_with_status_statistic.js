@@ -1,6 +1,6 @@
 import {
     WordStatusesAPI
-} from "../../api/word_statuses/word_statuses_api.js";
+} from "../../api/word_statuses_api.js";
 
 import {
     HttpStatuses
@@ -8,7 +8,7 @@ import {
 
 import {
     WordStatusResponseDTO
-} from "../entity/word_status.js";
+} from "../entity/word_status/word_status.js";
 
 const _WORD_STATUSES_API = new WordStatusesAPI();
 

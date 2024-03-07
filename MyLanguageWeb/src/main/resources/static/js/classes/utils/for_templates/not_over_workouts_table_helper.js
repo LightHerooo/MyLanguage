@@ -24,7 +24,7 @@ import {
 
 import {
     AButtons
-} from "../../a_buttons.js";
+} from "../../a_buttons/a_buttons.js";
 
 import {
     ResourceUrls
@@ -63,6 +63,10 @@ import {
     CustomResponseMessage
 } from "../../dto/other/custom_response_message.js";
 
+import {
+    AButtonImgSizes
+} from "../../a_buttons/a_button_img_sizes.js";
+
 const _WORKOUTS_API = new WorkoutsAPI();
 
 const _CSS_MAIN = new CssMain();
@@ -73,6 +77,7 @@ const _A_BUTTONS = new AButtons();
 const _RESOURCE_URLS = new ResourceUrls();
 const _GLOBAL_COOKIES = new GlobalCookies();
 const _HTTP_STATUSES = new HttpStatuses();
+const _A_BUTTON_IMG_SIZES = new AButtonImgSizes();
 
 const _MAX_NUMBER_OF_NOT_OVER_WORKOUTS = 3;
 
@@ -276,13 +281,13 @@ export class NotOverWorkoutsTableHelper {
 
                     // Действия ---
                     let divActions = document.createElement("div");
-                    divActions.classList.add(_CSS_MAIN.DIV_CONTENT_CENTER_STANDARD_STYLE_ID);
-                    divActions.style.display = "flex";
-                    divActions.style.flexDirection = "column";
+                    divActions.style.display = "grid";
+                    divActions.style.grid = "1fr 1fr / 1fr";
                     divActions.style.gap = "5px";
 
                     let thisClass = this;
-                    let aContinue = _A_BUTTONS.A_BUTTON_ARROW_RIGHT.createA();
+
+                    let aContinue = _A_BUTTONS.A_BUTTON_ARROW_RIGHT.createA(_A_BUTTON_IMG_SIZES.SIZE_32);
                     aContinue.title = "Продолжить тренировку";
                     aContinue.addEventListener("click", async function () {
                         thisClass.#changeDisableStatusFunction(true);
@@ -300,7 +305,7 @@ export class NotOverWorkoutsTableHelper {
                     });
                     divActions.appendChild(aContinue);
 
-                    let aDelete = _A_BUTTONS.A_BUTTON_DENY.createA();
+                    let aDelete = _A_BUTTONS.A_BUTTON_DENY.createA(_A_BUTTON_IMG_SIZES.SIZE_32);
                     aDelete.title = "Удалить тренировку";
                     aDelete.addEventListener("click", async function () {
                         thisClass.showLoading();
@@ -321,7 +326,7 @@ export class NotOverWorkoutsTableHelper {
 
                     if (isHeaderReady === false) {
                         col = col.cloneNode(true);
-                        col.style.width = "50px";
+                        col.style.width = "80px";
                         colgroup.appendChild(col);
 
                         thHeader = thHeader.cloneNode(false);

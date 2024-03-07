@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.herooo.mylanguagedb.entities.Workout;
 import ru.herooo.mylanguagedb.types.WorkoutRoundStatistic;
+import ru.herooo.mylanguagedb.types.WorkoutStatistic;
 
 import java.util.List;
 import java.util.Optional;
@@ -55,11 +56,20 @@ public interface WorkoutCrudRepository extends CrudRepository<Workout, Long> {
     Optional<Long> findMaxRoundNumber(@Param("workout_id") Long workoutId);
 
     @Query(nativeQuery = true, value =
+            "SELECT ws.number_of_milliseconds AS numberOfMilliseconds, " +
+                    "ws.number_of_rounds AS numberOfRounds, " +
+                    "ws.number_of_answers AS numberOfAnswers, " +
+                    "ws.number_of_true_answers AS numberOfTrueAnswers, " +
+                    "ws.number_of_false_answers AS numberOfFalseAnswers " +
+            "FROM get_workout_statistic(:workout_id) ws")
+    Optional<WorkoutStatistic> findWorkoutStatistic(@Param("workout_id") Long workoutId);
+
+    @Query(nativeQuery = true, value =
             "SELECT wrs.number_of_questions AS numberOfQuestions, " +
                     "wrs.number_of_true_answers AS numberOfTrueAnswers, " +
                     "wrs.number_of_false_answers AS numberOfFalseAnswers, " +
                     "wrs.number_of_questions_without_answer AS numberOfQuestionsWithoutAnswer " +
             "FROM get_workout_round_statistic(:workout_id, :round_number) wrs")
     Optional<WorkoutRoundStatistic> findRoundStatistic(@Param("workout_id") Long workoutId,
-                                             @Param("round_number") Long roundNumber);
+                                                       @Param("round_number") Long roundNumber);
 }

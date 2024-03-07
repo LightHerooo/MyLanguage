@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title th:text="${WEB_APP_NAME} + ' - Информация о тренировке №' + ${WORKOUT_ID}"></title>
+        <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
+        <link rel="stylesheet" type="text/css" href="/css/root.css">
+        <link rel="stylesheet" type="text/css" href="/css/main.css">
+        <link rel="stylesheet" type="text/css" href="/css/other/loading.css">
+        <link rel="stylesheet" type="text/css" href="/css/other/rule.css">
+        <link rel="stylesheet" type="text/css" href="/css/entity/workout_info.css">
+        <link rel="stylesheet" type="text/css" href="/css/types/workout_statistic.css">
+        <link rel="stylesheet" type="text/css" href="/css/types/workout_round_statistic.css">
+        <link rel="stylesheet" type="text/css" href="/css/templates/workouts/show_info_one.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
+
+        <script type="module" src="/js/templates/workouts/show_info_one.js"></script>
+    </head>
+    <body>
+        <header>
+          <div th:insert="~{layouts/header}"></div>
+        </header>
+        <main>
+            <div class="horizontal-flex-container-standard show-info-one-main-header-container info-block-standard">
+                <img class="img-show-info-one-header" src="/images/workouts/brain.png" alt="brain.png"/>
+                <div th:text="'Информация о тренировке №' + ${WORKOUT_ID}"></div>
+            </div>
+            <div class="workout-info-with-actions-container">
+                <div id="div_workout_info" class="info-block-standard"></div>
+                <div id="div_workout_extra_actions" class="info-block-standard"></div>
+            </div>
+            <div class="horizontal-flex-container-standard show-info-one-other-header-container info-block-standard">
+                <img class="img-show-info-one-header" src="/images/other/statistic.png" alt="statistic.png"/>
+                <div>Статистика</div>
+            </div>
+            <div id="div_workout_statistics" class="workout-statistics-container info-block-standard"></div>
+
+            <div class="horizontal-flex-container-standard show-info-one-other-header-container info-block-standard">
+                <img class="img-show-info-one-header" src="/images/other/history.png" alt="history.png"/>
+                <div>История ответов</div>
+            </div>
+            <table class="table-standard">
+                <colgroup>
+                    <col style="width: 70px"/>
+                    <col style="width: 50px"/>
+                    <col style="width: 100%"/>
+                    <col style="width: 100px"/>
+                </colgroup>
+                <thead id="thead_workout_history">
+                    <tr>
+                        <th>№</th>
+                        <th></th>
+                        <th>Вопрос/ответ</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="tbody_workout_history"></tbody>
+            </table>
+        </main>
+    </body>
+</html>

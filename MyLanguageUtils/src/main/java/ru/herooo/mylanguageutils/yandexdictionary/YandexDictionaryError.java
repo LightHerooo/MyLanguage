@@ -1,10 +1,12 @@
-package ru.herooo.mylanguageutils.yandexdictionary.errorresult;
+package ru.herooo.mylanguageutils.yandexdictionary;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class ErrorResult {
+public class YandexDictionaryError {
+    @JsonProperty("code")
     int code;
 
+    @JsonProperty("message")
     String message;
 
     public int getCode() {

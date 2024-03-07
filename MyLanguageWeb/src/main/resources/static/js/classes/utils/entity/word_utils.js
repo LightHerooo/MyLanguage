@@ -33,13 +33,17 @@ const _HTTP_STATUSES = new HttpStatuses();
 const _GLOBAL_COOKIES = new GlobalCookies();
 
 export class WordUtils {
-    async checkCorrectValueInTbTitle(tbTitle, parentElement, langCode, customTimerObj) {
+    TB_WORD_TITLE = new TbWordTitle();
+}
+
+class TbWordTitle {
+    async checkCorrectValue(tbTitle, langCode, customTimerObj){
         let isCorrect = true;
-        if (tbTitle && parentElement) {
+        if (tbTitle) {
             const TITLE_MAX_SIZE = 44;
             const TITLE_REGEXP = /^[^ ]+$/;
 
-            let ruleElement = new RuleElement(tbTitle, parentElement);
+            let ruleElement = new RuleElement(tbTitle, tbTitle.parentElement);
 
             customTimerObj.stop();
             let inputText = tbTitle.value.trim();

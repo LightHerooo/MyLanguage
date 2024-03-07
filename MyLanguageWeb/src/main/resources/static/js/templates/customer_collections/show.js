@@ -29,10 +29,6 @@ import {
 } from "../../classes/utils/entity/customer_collection_utils.js";
 
 import {
-    LangsAPI
-} from "../../classes/api/langs_api.js";
-
-import {
     CustomerCollectionsAPI
 } from "../../classes/api/customer_collections_api.js";
 
@@ -50,7 +46,7 @@ import {
 
 import {
     AButtons
-} from "../../classes/a_buttons.js";
+} from "../../classes/a_buttons/a_buttons.js";
 
 import {
     ComboBoxUtils
@@ -68,6 +64,14 @@ import {
     CustomerCollectionsWithLangStatisticResponseDTO
 } from "../../classes/dto/types/customer_collections_with_lang_statistic.js";
 
+import {
+    AButtonImgSizes
+} from "../../classes/a_buttons/a_button_img_sizes.js";
+
+import {
+    ComboBoxWithFlag
+} from "../../classes/element_with_flag/combo_box_with_flag.js";
+
 const _CUSTOMER_COLLECTIONS_API = new CustomerCollectionsAPI();
 const _WORDS_IN_COLLECTION_API = new WordsInCollectionAPI();
 
@@ -79,6 +83,7 @@ const _A_BUTTONS = new AButtons();
 const _COMBO_BOX_UTILS = new ComboBoxUtils();
 const _WORD_TABLE_UTILS = new WordTableUtils();
 const _TEXT_BOX_UTILS = new TextBoxUtils();
+const _A_BUTTON_IMG_SIZES = new AButtonImgSizes();
 
 const _TB_FINDER_ID = "tb_finder";
 const _CB_CUSTOMER_COLLECTIONS_ID = "cb_customer_collections";
@@ -124,16 +129,14 @@ function prepareTbFinder() {
 
 async function prepareCbCustomerCollections() {
     let cbCustomerCollections = document.getElementById(_CB_CUSTOMER_COLLECTIONS_ID);
-    if (cbCustomerCollections) {
-        let divCollectionFlag = document.getElementById(_DIV_COLLECTION_FLAG_ID);
-        await _CUSTOMER_COLLECTION_UTILS.prepareComboBox(cbCustomerCollections, null, divCollectionFlag);
+    let divCollectionFlag = document.getElementById(_DIV_COLLECTION_FLAG_ID);
+    if (cbCustomerCollections && divCollectionFlag) {
+        let comboBoxWithFlag =
+            new ComboBoxWithFlag(cbCustomerCollections.parentElement, cbCustomerCollections, divCollectionFlag);
+        await _CUSTOMER_COLLECTION_UTILS.CB_CUSTOMER_COLLECTIONS.prepare(
+            comboBoxWithFlag, null, false);
 
-        cbCustomerCollections.addEventListener("change", async function () {
-            startAllFinders();
-        })
-
-        _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemIndex(
-            cbCustomerCollections, 0, true);
+        cbCustomerCollections.addEventListener("change", startAllFinders);
     }
 }
 
@@ -268,6 +271,7 @@ async function createStatisticItems() {
         }
 
         statisticItems.push(div);
+        statisticItems.push(document.createElement("br"));
     }
     //---
 
@@ -416,8 +420,9 @@ async function createTableRows(allWordsInCollectionFilteredPaginationJson){
         let tableHead = document.getElementById(_COLLECTION_WORD_TABLE_HEAD_ID);
         let numberOfColumns = _TABLE_UTILS.getNumberOfColumnsByTableHead(tableHead);
 
+        let message =  `Показать ещё ${_NUMBER_OF_WORDS} элементов...`;
         let trShowMore = _TABLE_UTILS.createTrShowMore(numberOfColumns,
-            _NUMBER_OF_WORDS, async function (){
+            message, async function (){
                 await tryToFillTableRows(false, false);
             });
 
@@ -464,7 +469,7 @@ async function createTableRow(wordInCollectionResponseDTO) {
 }
 
 async function createBtnAction(wordInCollectionRequestDTO) {
-    let aBtnAction = _A_BUTTONS.A_BUTTON_DENY.createA();
+    let aBtnAction = _A_BUTTONS.A_BUTTON_DENY.createA(_A_BUTTON_IMG_SIZES.SIZE_16);
     await _WORD_TABLE_UTILS.changeToRemoveAction(aBtnAction, wordInCollectionRequestDTO);
 
     aBtnAction.addEventListener("click", function () {

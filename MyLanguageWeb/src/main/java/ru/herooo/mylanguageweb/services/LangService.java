@@ -22,8 +22,12 @@ public class LangService {
         return LANG_CRUD_REPOSITORY.findAll();
     }
 
-    public List<Lang> findAll(Boolean isActive) {
-        return LANG_CRUD_REPOSITORY.findAll(isActive);
+    public List<Lang> findAllForIn(Boolean isActiveForIn) {
+        return LANG_CRUD_REPOSITORY.findAllForIn(isActiveForIn);
+    }
+
+    public List<Lang> findAllForOut(Boolean isActiveForOut) {
+        return LANG_CRUD_REPOSITORY.findAllForOut(isActiveForOut);
     }
 
     public Lang find(String code) {
@@ -35,6 +39,6 @@ public class LangService {
     }
 
     public long count(Boolean isActive) {
-        return LANG_CRUD_REPOSITORY.count(isActive).orElse(0L);
+        return LANG_CRUD_REPOSITORY.countForIn(isActive).orElse(0L);
     }
 }

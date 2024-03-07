@@ -17,6 +17,13 @@ export class CustomersAPI {
 }
 
 class CustomersGETRequests {
+    async findById(id) {
+        let requestURL = new URL(URL_TO_API_CUSTOMERS_FIND + "/by_id");
+        requestURL.searchParams.set("id", id);
+
+        return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
+    }
+
     async findExistsByLogin(login) {
         let requestURL = new URL(URL_TO_API_CUSTOMERS_FIND_EXISTS + "/by_login");
         requestURL.searchParams.set("login", login);

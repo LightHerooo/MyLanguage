@@ -296,7 +296,7 @@ public class WordsRestController {
                 return response;
             }
 
-            response = LANGS_REST_CONTROLLER.validateIsActive(langCode);
+            response = LANGS_REST_CONTROLLER.validateIsActiveForIn(langCode);
             if (response.getStatusCode() != HttpStatus.OK) {
                 return response;
             }
@@ -395,10 +395,10 @@ public class WordsRestController {
                 return response;
             }
 
-            // Ищем запрещеённые слова с названием, как у текущего слова
+            // Ищем запрещённые слова с названием, как у текущего слова
             Word word = WORD_SERVICE.findById(dto.getId());
-            List<Word> blockedWords = WORD_SERVICE.findAll(word.getTitle(),
-                    WordStatuses.BLOCKED.CODE, null);
+            List<Word> blockedWords = WORD_SERVICE.findListByTitle(word.getTitle(),
+                    WordStatuses.BLOCKED.CODE);
 
             // Удаляем из полученного списка запрещённых слов текущее
             blockedWords = blockedWords
@@ -434,7 +434,7 @@ public class WordsRestController {
             }
 
             // Проверяем язык на активность
-            response = LANGS_REST_CONTROLLER.validateIsActive(dto.getLangCode());
+            response = LANGS_REST_CONTROLLER.validateIsActiveForIn(dto.getLangCode());
             if (response.getStatusCode() != HttpStatus.OK) {
                 return response;
             }

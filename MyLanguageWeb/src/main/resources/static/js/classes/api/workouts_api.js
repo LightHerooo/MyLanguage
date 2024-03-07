@@ -15,6 +15,7 @@ const _XML_UTILS = new XmlUtils();
 
 const URL_TO_API_WORKOUTS = new UrlToAPI().VALUE + "/workouts";
 const URL_TO_API_WORKOUTS_FIND = URL_TO_API_WORKOUTS + "/find";
+const URL_TO_API_WORKOUTS_VALIDATE = URL_TO_API_WORKOUTS + "/validate";
 
 export class WorkoutsAPI {
     GET = new WorkoutsGETRequests();
@@ -55,10 +56,38 @@ class WorkoutsGETRequests {
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
     }
 
+    async findStatisticByWorkoutId(workoutId) {
+        let requestURL = new URL(URL_TO_API_WORKOUTS_FIND + "/statistic_by_workout_id");
+        requestURL.searchParams.set("workout_id", workoutId);
+
+        return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
+    }
+
     async findRoundStatisticByWorkoutIdAndRoundNumber(workoutId, roundNumber) {
         let requestURL = new URL(URL_TO_API_WORKOUTS_FIND + "/round_statistic_by_workout_id_and_round_number");
         requestURL.searchParams.set("workout_id", workoutId);
         requestURL.searchParams.set("round_number", roundNumber);
+
+        return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
+    }
+
+    async findById(id) {
+        let requestURL = new URL(URL_TO_API_WORKOUTS_FIND + "/by_id");
+        requestURL.searchParams.set("id", id);
+
+        return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
+    }
+
+    async findMaxRoundNumberByWorkoutId(workoutId) {
+        let requestURL = new URL(URL_TO_API_WORKOUTS_FIND + "/max_round_number_by_workout_id");
+        requestURL.searchParams.set("workout_id", workoutId);
+
+        return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
+    }
+
+    async validateIsWorkoutEndedByWorkoutId(workoutId) {
+        let requestURL = new URL(URL_TO_API_WORKOUTS_VALIDATE + "/is_workout_ended");
+        requestURL.searchParams.set("workout_id", workoutId);
 
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
     }

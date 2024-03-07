@@ -24,7 +24,15 @@ const _RULE_TYPES = new RuleTypes();
 const _HTTP_STATUSES = new HttpStatuses();
 
 export class CustomerUtils {
-    async checkCorrectValueInTbLogin(tbLogin, parentElement, customTimerObj) {
+    TB_CUSTOMER_LOGIN = new TbCustomerLogin();
+    TB_CUSTOMER_EMAIL = new TbCustomerEmail();
+    TB_CUSTOMER_NICKNAME = new TbCustomerNickname();
+    PB_CUSTOMER_PASSWORD = new PbCustomerPassword();
+    PB_CUSTOMER_PASSWORD_REPEAT = new PbCustomerPasswordRepeat();
+}
+
+class TbCustomerLogin {
+    async checkCorrectValue(tbLogin, parentElement, customTimerObj) {
         let isCorrect = true;
 
         if (tbLogin && parentElement) {
@@ -83,8 +91,10 @@ export class CustomerUtils {
 
         return isCorrect;
     }
+}
 
-    async checkCorrectValueInTbEmail(tbEmail, parentElement, customTimerObj) {
+class TbCustomerEmail {
+    async checkCorrectValue(tbEmail, parentElement, customTimerObj){
         let isCorrect = true;
         if (tbEmail && parentElement) {
             const EMAIL_REGEXP = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
@@ -137,8 +147,10 @@ export class CustomerUtils {
 
         return isCorrect;
     }
+}
 
-    async checkCorrectValueInTbNickname(tbNickname, parentElement, customTimerObj) {
+class TbCustomerNickname {
+    async checkCorrectValue(tbNickname, parentElement, customTimerObj){
         let isCorrect = true;
         if (tbNickname && parentElement) {
             const NICKNAME_MIN_SIZE = 3;
@@ -148,7 +160,7 @@ export class CustomerUtils {
             let ruleElement = new RuleElement(tbNickname, parentElement);
 
             customTimerObj.stop();
-                let inputText = tbNickname.value.trim();
+            let inputText = tbNickname.value.trim();
             if (!inputText) {
                 isCorrect = false;
                 ruleElement.message = "Никнейм не может быть пустым.";
@@ -196,8 +208,10 @@ export class CustomerUtils {
 
         return isCorrect;
     }
+}
 
-    checkCorrectValueInPbPassword(pbPassword, parentElement) {
+class PbCustomerPassword {
+    checkCorrectValue(pbPassword, parentElement) {
         let isCorrect = true;
         if (pbPassword && parentElement) {
             const PASSWORD_MIN_SIZE = 8;
@@ -240,8 +254,10 @@ export class CustomerUtils {
 
         return isCorrect;
     }
+}
 
-    checkCorrectValueInPbPasswordRepeat(pbPasswordRepeat, pbPassword, parentElement) {
+class PbCustomerPasswordRepeat {
+    checkCorrectValue(pbPasswordRepeat, pbPassword, parentElement) {
         let isCorrect = true;
 
         if (pbPasswordRepeat && pbPassword && parentElement) {

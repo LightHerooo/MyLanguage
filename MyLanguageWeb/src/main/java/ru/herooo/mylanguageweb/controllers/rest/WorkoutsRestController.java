@@ -2,18 +2,22 @@ package ru.herooo.mylanguageweb.controllers.rest;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.herooo.mylanguagedb.entities.*;
 import ru.herooo.mylanguagedb.repositories.workouttype.WorkoutTypes;
 import ru.herooo.mylanguagedb.types.WorkoutRoundStatistic;
+import ru.herooo.mylanguagedb.types.WorkoutStatistic;
+import ru.herooo.mylanguageutils.StringUtils;
 import ru.herooo.mylanguageweb.dto.other.CustomResponseMessage;
 import ru.herooo.mylanguageweb.dto.other.LongResponse;
 import ru.herooo.mylanguageweb.dto.entity.workout.WorkoutMapping;
 import ru.herooo.mylanguageweb.dto.entity.workout.WorkoutRequestDTO;
 import ru.herooo.mylanguageweb.dto.entity.workout.WorkoutResponseDTO;
 import ru.herooo.mylanguageweb.dto.types.WorkoutRoundStatisticResponseDTO;
+import ru.herooo.mylanguageweb.dto.types.WorkoutStatisticResponseDTO;
 import ru.herooo.mylanguageweb.services.*;
 
 import java.util.Arrays;
@@ -28,6 +32,7 @@ public class WorkoutsRestController {
     private final CustomersRestController CUSTOMERS_REST_CONTROLLER;
     private final WorkoutTypesRestController WORKOUT_TYPES_REST_CONTROLLER;
     private final LangsRestController LANGS_REST_CONTROLLER;
+    private final CustomerCollectionsRestController CUSTOMER_COLLECTIONS_REST_CONTROLLER;
 
     private final CustomerService CUSTOMER_SERVICE;
     private final WorkoutTypeService WORKOUT_TYPE_SERVICE;
@@ -35,14 +40,18 @@ public class WorkoutsRestController {
     private final WordService WORD_SERVICE;
     private final WorkoutItemService WORKOUT_ITEM_SERVICE;
     private final LangService LANG_SERVICE;
-
+    private final CustomerCollectionService CUSTOMER_COLLECTION_SERVICE;
+    private final WordInCollectionService WORD_IN_COLLECTION_SERVICE;
 
     private final WorkoutMapping WORKOUT_MAPPING;
+
+    private final StringUtils STRING_UTILS;
 
     @Autowired
     public WorkoutsRestController(WorkoutTypesRestController workoutTypesRestController,
                                   CustomersRestController customersRestController,
                                   LangsRestController langsRestController,
+                                  @Lazy CustomerCollectionsRestController customerCollectionsRestController,
 
                                   CustomerService customerService,
                                   WorkoutTypeService workoutTypeService,
@@ -50,11 +59,16 @@ public class WorkoutsRestController {
                                   WordService wordService,
                                   WorkoutItemService workoutItemService,
                                   LangService langService,
+                                  CustomerCollectionService customerCollectionService,
+                                  WordInCollectionService wordInCollectionService,
 
-                                  WorkoutMapping workoutMapping) {
+                                  WorkoutMapping workoutMapping,
+
+                                  StringUtils stringUtils) {
         this.WORKOUT_TYPES_REST_CONTROLLER = workoutTypesRestController;
         this.CUSTOMERS_REST_CONTROLLER = customersRestController;
         this.LANGS_REST_CONTROLLER = langsRestController;
+        this.CUSTOMER_COLLECTIONS_REST_CONTROLLER = customerCollectionsRestController;
 
         this.CUSTOMER_SERVICE = customerService;
         this.WORKOUT_TYPE_SERVICE = workoutTypeService;
@@ -62,8 +76,12 @@ public class WorkoutsRestController {
         this.WORD_SERVICE = wordService;
         this.WORKOUT_ITEM_SERVICE = workoutItemService;
         this.LANG_SERVICE = langService;
+        this.CUSTOMER_COLLECTION_SERVICE = customerCollectionService;
+        this.WORD_IN_COLLECTION_SERVICE = wordInCollectionService;
 
         this.WORKOUT_MAPPING = workoutMapping;
+
+        this.STRING_UTILS = stringUtils;
     }
 
     @GetMapping("/not_over")
@@ -332,6 +350,30 @@ public class WorkoutsRestController {
         }
     }
 
+    @GetMapping("/find/statistic_by_workout_id")
+    public ResponseEntity<?> findStatistic(@RequestParam("workout_id") Long workoutId) {
+        ResponseEntity<?> response = find(workoutId);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        // Тренировка должна быть завершена
+        response = validateIsWorkoutEnded(workoutId);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        WorkoutStatistic workoutStatistic = WORKOUT_SERVICE.findWorkoutStatistic(workoutId);
+        if (workoutStatistic != null) {
+            WorkoutStatisticResponseDTO dto = new WorkoutStatisticResponseDTO(workoutStatistic);
+            return ResponseEntity.ok(dto);
+        } else {
+            CustomResponseMessage message = new CustomResponseMessage(1,
+                    String.format("Не удалось получить статистику по тренировке с id = '%d'.", workoutId));
+            return ResponseEntity.badRequest().body(message);
+        }
+    }
+
     @GetMapping("/find/round_statistic_by_workout_id_and_round_number")
     public ResponseEntity<?> findRoundStatistic(
             @RequestParam("workout_id") Long workoutId,
@@ -359,6 +401,16 @@ public class WorkoutsRestController {
         }
     }
 
+    @GetMapping("/find/max_round_number_by_workout_id")
+    public ResponseEntity<?> findMaxRoundNumber(@RequestParam("workout_id") Long workoutId) {
+        ResponseEntity<?> response = find(workoutId);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        long maxRoundNumber = WORKOUT_SERVICE.findMaxRoundNumber(workoutId);
+        return ResponseEntity.ok(new LongResponse(maxRoundNumber));
+    }
 
     @PostMapping("/validate/before_crud")
     public ResponseEntity<?> validateBeforeCrud(HttpServletRequest request,
@@ -373,6 +425,24 @@ public class WorkoutsRestController {
         }
 
         if (dto.getId() == 0) {
+            // Если указана коллекция, мы должны изменить некоторые значения dto
+            if (STRING_UTILS.isNotStringVoid(dto.getCollectionKey())) {
+                // Проверяем, принадлежит ли коллекция пользователю
+                Customer customer = CUSTOMER_SERVICE.findByAuthCode(dto.getAuthCode());
+                response = CUSTOMER_COLLECTIONS_REST_CONTROLLER.find(customer.getId(), dto.getCollectionKey());
+                if (response.getStatusCode() != HttpStatus.OK) {
+                    return response;
+                }
+
+                CustomerCollection collection = CUSTOMER_COLLECTION_SERVICE.find(dto.getCollectionKey());
+
+                // Вносим в dto входной язык
+                dto.setLangInCode(collection.getLang().getCode());
+
+                // Вносим в dto количество слов
+                dto.setNumberOfWords(WORD_IN_COLLECTION_SERVICE.count(collection.getKey()));
+            }
+
             // Проверяем начальный язык
             response = LANGS_REST_CONTROLLER.find(dto.getLangInCode());
             if (response.getStatusCode() != HttpStatus.OK) {
@@ -380,7 +450,7 @@ public class WorkoutsRestController {
             }
 
             // Проверяем начальный язык на доступность
-            response = LANGS_REST_CONTROLLER.validateIsActive(dto.getLangInCode());
+            response = LANGS_REST_CONTROLLER.validateIsActiveForIn(dto.getLangInCode());
             if (response.getStatusCode() != HttpStatus.OK) {
                 return response;
             }
@@ -392,7 +462,13 @@ public class WorkoutsRestController {
             }
 
             // Проверяем конечный язык на доступность
-            response = LANGS_REST_CONTROLLER.validateIsActive(dto.getLangOutCode());
+            response = LANGS_REST_CONTROLLER.validateIsActiveForOut(dto.getLangOutCode());
+            if (response.getStatusCode() != HttpStatus.OK) {
+                return response;
+            }
+
+            // Проверяем, поддерживается ли пара языков
+            response = LANGS_REST_CONTROLLER.validateCoupleOfLanguages(dto.getLangInCode(), dto.getLangOutCode());
             if (response.getStatusCode() != HttpStatus.OK) {
                 return response;
             }
@@ -426,10 +502,35 @@ public class WorkoutsRestController {
                         "Разрешено взаимодействовать только со своими тренировками.");
                 return ResponseEntity.badRequest().body(message);
             }
+
+            // Проверяем, поддерживается ли пара языков ---
+            response = LANGS_REST_CONTROLLER.validateCoupleOfLanguages(
+                    workout.getLangIn().getCode(), workout.getLangOut().getCode());
+            if (response.getStatusCode() != HttpStatus.OK) {
+                return response;
+            }
+            //---
         }
 
         CustomResponseMessage message = new CustomResponseMessage(1, "Данные корректны.");
         return ResponseEntity.ok(message);
+    }
+
+    @GetMapping("/validate/is_workout_ended")
+    public ResponseEntity<?> validateIsWorkoutEnded(@RequestParam("workout_id") Long workoutId) {
+        ResponseEntity<?> response = find(workoutId);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        Workout workout = WORKOUT_SERVICE.find(workoutId);
+        if (workout.getDateOfEnd() != null) {
+            CustomResponseMessage message = new CustomResponseMessage(1, "Тренировка завершена.");
+            return ResponseEntity.ok(message);
+        } else {
+            CustomResponseMessage message = new CustomResponseMessage(1, "Тренировка не завершена.");
+            return ResponseEntity.badRequest().body(message);
+        }
     }
 
     @GetMapping("/validate/is_not_workout_ended")
@@ -500,8 +601,9 @@ public class WorkoutsRestController {
             return response;
         }
 
+        Customer customer = CUSTOMER_SERVICE.findByAuthCode(dto.getAuthCode());
         WorkoutType workoutType = WORKOUT_TYPE_SERVICE.find(dto.getWorkoutTypeCode());
-        if (!workoutType.getActive()) {
+        if (!workoutType.getActive() && !CUSTOMER_SERVICE.isSuperUser(customer)) {
             CustomResponseMessage message = new CustomResponseMessage(1,
                     String.format("Режим тренировки '%s' недоступен.", workoutType.getTitle()));
             return ResponseEntity.badRequest().body(message);
@@ -510,10 +612,10 @@ public class WorkoutsRestController {
         // Флаг проверки подготовленности режима
         boolean isTypePrepared = false;
 
-        // Режим "Случайные слова"
         if (workoutType.getId() == WorkoutTypes.RANDOM_WORDS.ID) {
+            // Режим "Случайные слова"
             // Проверяем количество (повторно, дополнительные условия)
-            final long[] POSSIBLE_NUMBER_OF_WORDS_VALUES = new long[]{10, 20, 30, 40, 50};
+            final long[] POSSIBLE_NUMBER_OF_WORDS_VALUES = new long[]{10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
             boolean isNumberOfWordsPossible = Arrays.stream(POSSIBLE_NUMBER_OF_WORDS_VALUES)
                     .anyMatch(number -> number == dto.getNumberOfWords());
             if (!isNumberOfWordsPossible) {
@@ -544,6 +646,14 @@ public class WorkoutsRestController {
             }
 
             isTypePrepared = true;
+        } else if (workoutType.getId() == WorkoutTypes.COLLECTION_WORKOUT.ID) {
+            // Проверяем принадлежность коллекции к пользователю, который создал тренировку
+            response = CUSTOMER_COLLECTIONS_REST_CONTROLLER.find(customer.getId(), dto.getCollectionKey());
+            if (response.getStatusCode() != HttpStatus.OK) {
+                return response;
+            }
+
+            isTypePrepared = true;
         }
 
         if (isTypePrepared) {
@@ -560,20 +670,40 @@ public class WorkoutsRestController {
         // Флаг проверки успешности генерации слов тренировки
         boolean areItemsCreated = false;
 
-        // Режим "Случайные слова"
         if (workout.getWorkoutType().getId() == WorkoutTypes.RANDOM_WORDS.ID) {
+            // Режим "Случайные слова"
             List<Word> randomWords = WORD_SERVICE.findListRandom(
                     workout.getLangIn().getCode(), workout.getNumberOfWords());
 
-            for (Word word: randomWords) {
-                WorkoutItem workoutItem = new WorkoutItem();
-                workoutItem.setWorkout(workout);
-                workoutItem.setWordTitleQuestion(word.getTitle());
+            if (randomWords != null && randomWords.size() > 0) {
+                for (Word word: randomWords) {
+                    WorkoutItem workoutItem = new WorkoutItem();
+                    workoutItem.setWorkout(workout);
+                    workoutItem.setWordTitleQuestion(word.getTitle());
 
-                workoutItem = WORKOUT_ITEM_SERVICE.add(workoutItem);
-                areItemsCreated = workoutItem != null;
-                if (!areItemsCreated) {
-                    break;
+                    workoutItem = WORKOUT_ITEM_SERVICE.add(workoutItem);
+                    areItemsCreated = workoutItem != null;
+                    if (!areItemsCreated) {
+                        break;
+                    }
+                }
+            }
+        } else if (workout.getWorkoutType().getId() == WorkoutTypes.COLLECTION_WORKOUT.ID) {
+            // Режим "Тренировка коллекции"
+            List<WordInCollection> wordsInCollection = WORD_IN_COLLECTION_SERVICE.findAll(
+                    null, workout.getCustomerCollection().getKey());
+
+            if (wordsInCollection != null && wordsInCollection.size() > 0) {
+                for (WordInCollection wordInCollection: wordsInCollection) {
+                    WorkoutItem workoutItem = new WorkoutItem();
+                    workoutItem.setWorkout(workout);
+                    workoutItem.setWordTitleQuestion(wordInCollection.getWord().getTitle());
+
+                    workoutItem = WORKOUT_ITEM_SERVICE.add(workoutItem);
+                    areItemsCreated = workoutItem != null;
+                    if (!areItemsCreated) {
+                        break;
+                    }
                 }
             }
         }

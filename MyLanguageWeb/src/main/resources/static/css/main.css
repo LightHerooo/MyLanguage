@@ -63,6 +63,11 @@ a.a-button-disabled-standard {
     -moz-appearance: button;
     cursor: pointer;
 
+    display: grid;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+
     border: 5px solid var(--third-color);
     background: rgba(var(--first-color-rgb), var(--opacity-standard));
 
@@ -268,12 +273,6 @@ input.checkbox-standard {
     cursor: pointer;
 }
 
-div.content-center-standard {
-    display: grid;
-    justify-content: center;
-    align-items: center;
-}
-
 div.overflow-y-standard {
     overflow-y: scroll;
 }
@@ -292,5 +291,27 @@ div.overflow-y-standard::-webkit-scrollbar
 div.overflow-y-standard::-webkit-scrollbar-thumb
 {
     background-color: var(--second-color);
+}
+
+div.horizontal-flex-container-standard {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+div.vertical-flex-container-standard {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+div.content-center-standard {
+    display: grid;
+    justify-content: center;
+    align-items: center;
 }
 

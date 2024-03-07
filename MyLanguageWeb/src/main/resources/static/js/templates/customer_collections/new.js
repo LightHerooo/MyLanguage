@@ -36,7 +36,7 @@ import {
 
 import {
     AButtons
-} from "../../classes/a_buttons.js";
+} from "../../classes/a_buttons/a_buttons.js";
 
 import {
     ComboBoxUtils
@@ -50,20 +50,24 @@ import {
     LoadingElement
 } from "../../classes/loading_element.js";
 
-class CustomerCollectionRowElements {
+import {
+    AButtonImgSizes
+} from "../../classes/a_buttons/a_button_img_sizes.js";
+
+import {
+    ComboBoxWithFlag
+} from "../../classes/element_with_flag/combo_box_with_flag.js";
+
+class CustomerCollectionRow {
     divRow;
-    tbTitleParent;
     tbTitle;
-    cbLangsParent;
-    cbLangs;
+    cbLangsWithFlag;
     aBtnDelete;
 
-    constructor(divRow, tbTitleParent, tbTitle, cbLangsParent, cbLangs, aBtnDelete) {
+    constructor(divRow, tbTitle, cbLangsWithFlag, aBtnDelete) {
         this.divRow = divRow;
-        this.tbTitleParent = tbTitleParent;
         this.tbTitle = tbTitle;
-        this.cbLangsParent = cbLangsParent;
-        this.cbLangs = cbLangs;
+        this.cbLangsWithFlag = cbLangsWithFlag;
         this.aBtnDelete = aBtnDelete;
     }
 }
@@ -79,14 +83,15 @@ const _LANG_UTILS = new LangUtils();
 const _CUSTOMER_COLLECITON_UTILS = new CustomerCollectionUtils();
 const _A_BUTTONS = new AButtons();
 const _COMBO_BOX_UTILS = new ComboBoxUtils();
+const _A_BUTTON_IMG_SIZES = new AButtonImgSizes();
 
 const _A_BTN_NEW_COLLECTION_STYLE_ID = "a-btn-new-collection";
 
-const NEW_COLLECTIONS_CONTAINER_ITEM_STYLE_ID = "new-collections-container-item";
-const NEW_COLLECTION_DATA_STYLE_ID = "new-collection-data";
-const NEW_COLLECTION_DATA_ITEM_STYLE_ID = "new-collection-data-item";
+const _NEW_COLLECTIONS_CONTAINER_ITEM_STYLE_ID = "new-collections-container-item";
+const _NEW_COLLECTION_DATA_STYLE_ID = "new-collection-data";
+const _NEW_COLLECTION_DATA_ITEM_STYLE_ID = "new-collection-data-item";
 
-const _NEW_COLLECTIONS_CONTAINER_ID = "new_collections_container";
+const _DIV_NEW_COLLECTIONS_CONTAINER_ID = "new_collections_container";
 const _A_BTN_NEW_COLLECTION_ID = "a_btn_new_collection";
 const _DIV_SEND_NEW_COLLECTIONS_INFO_ID = "send_new_collections_info";
 const _SUBMIT_SEND_ID = "submit_send";
@@ -95,8 +100,8 @@ const _BTN_SEND_ID = "btn_send";
 const MIN_NUMBER_OF_NEW_COLLECTION_ITEMS = 1;
 const MAX_NUMBER_OF_NEW_COLLECTION_ITEMS = 5;
 
-let _indexOfNewCollection = 0;
-let _newCollectionsMap = new Map();
+let _indexOfNewCollectionRow = 0;
+let _newCustomerCollectionRowsMap = new Map();
 
 const _CUSTOM_TIMER_CHECKER = new CustomTimer();
 
@@ -104,7 +109,7 @@ window.onload = async function () {
     await prepareABtnNewCollection();
     prepareSubmitSend();
 
-    await createNewCollectionElement();
+    await createNewCollectionRow();
 }
 
 window.onbeforeunload = async function () {
@@ -112,12 +117,12 @@ window.onbeforeunload = async function () {
 }
 
 function prepareABtnNewCollection() {
-    let btnNewCollection = document.getElementById(_A_BTN_NEW_COLLECTION_ID);
-    if (btnNewCollection) {
-        btnNewCollection.addEventListener("click", async function() {
-            if (_newCollectionsMap.size < MAX_NUMBER_OF_NEW_COLLECTION_ITEMS) {
+    let aBtnNewCollection = document.getElementById(_A_BTN_NEW_COLLECTION_ID);
+    if (aBtnNewCollection) {
+        aBtnNewCollection.addEventListener("click", async function() {
+            if (_newCustomerCollectionRowsMap.size < MAX_NUMBER_OF_NEW_COLLECTION_ITEMS) {
                 clearNewCollectionsInfoContainer();
-                await createNewCollectionElement();
+                await createNewCollectionRow();
             } else {
                 let message = `За раз можно создать не более ${MAX_NUMBER_OF_NEW_COLLECTION_ITEMS} коллекций.`;
                 let ruleType = _RULE_TYPES.WARNING;
@@ -159,20 +164,19 @@ function prepareSubmitSend() {
 }
 
 // Создание новых коллекций ---
-async function createNewCollectionElement() {
+async function createNewCollectionRow() {
     // Создаём поле "Название" ---
     let lbTitle = document.createElement("label");
     lbTitle.classList.add(_CSS_MAIN.LABEL_STANDARD_STYLE_ID);
     lbTitle.textContent = "Название:";
 
     let tbTitle = document.createElement("input");
-    tbTitle.id = "tb_title" + "_" + _indexOfNewCollection;
+    tbTitle.id = `tb_title_${_indexOfNewCollectionRow}`;
     tbTitle.type = "text";
     tbTitle.classList.add(_CSS_MAIN.INPUT_TEXT_STANDARD_STYLE_ID);
 
     let divTitle = document.createElement("div");
-    divTitle.id = "div_title" + "_" + _indexOfNewCollection;
-    divTitle.classList.add(NEW_COLLECTION_DATA_ITEM_STYLE_ID);
+    divTitle.classList.add(_NEW_COLLECTION_DATA_ITEM_STYLE_ID);
     divTitle.appendChild(lbTitle);
     divTitle.appendChild(tbTitle);
     //---
@@ -184,48 +188,27 @@ async function createNewCollectionElement() {
     divFlagContainer.appendChild(divLangFlag);
 
     let cbLangs = document.createElement("select");
-    cbLangs.id = "cb_langs" + "_" + _indexOfNewCollection;
+    cbLangs.id = `cb_langs_${_indexOfNewCollectionRow}`;
     cbLangs.classList.add(_CSS_MAIN.SELECT_STANDARD_STYLE_ID);
-
-    let firstOption = document.createElement("option");
-    firstOption.textContent = "Все";
-    await _LANG_UTILS.prepareComboBox(cbLangs, firstOption, divLangFlag);
 
     let divElementWithFlagContainer = document.createElement("div");
     divElementWithFlagContainer.classList.add(_CSS_ELEMENT_WITH_FLAG.DIV_ELEMENT_WITH_FLAG_CONTAINER_STYLE_ID);
     divElementWithFlagContainer.appendChild(cbLangs);
     divElementWithFlagContainer.appendChild(divFlagContainer);
-    //---
 
-    // Создаём выпадающий список "Язык" ---
     let lbLang = document.createElement("label");
     lbLang.classList.add(_CSS_MAIN.LABEL_STANDARD_STYLE_ID);
     lbLang.textContent = "Язык:";
 
     let divLang = document.createElement("div");
-    divLang.id = "div_lang" + "_" + _indexOfNewCollection;
-    divLang.classList.add(NEW_COLLECTION_DATA_ITEM_STYLE_ID);
+    divLang.classList.add(_NEW_COLLECTION_DATA_ITEM_STYLE_ID);
     divLang.appendChild(lbLang);
     divLang.appendChild(divElementWithFlagContainer);
     //---
 
-    // Вешаем события на элементы ---
-    tbTitle.addEventListener("input", async function () {
-        clearNewCollectionsInfoContainer();
-        await checkCorrectTitle(this, cbLangs, divTitle);
-    })
-
-
-    cbLangs.addEventListener("change", async function() {
-        clearNewCollectionsInfoContainer();
-        await checkCorrectLang(this, divLang);
-        await checkCorrectTitle(tbTitle, this, divTitle);
-    });
-    //---
-
     // Создаём элемент "Данные новой коллекции" ---
     let divNewCollectionData = document.createElement("div");
-    divNewCollectionData.classList.add(NEW_COLLECTION_DATA_STYLE_ID);
+    divNewCollectionData.classList.add(_NEW_COLLECTION_DATA_STYLE_ID);
     divNewCollectionData.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
     divNewCollectionData.appendChild(divTitle);
     divNewCollectionData.appendChild(divLang);
@@ -233,15 +216,47 @@ async function createNewCollectionElement() {
 
     // Создаём элемент "Новая коллекция" ---
     let divNewCollection = document.createElement("div");
-    divNewCollection.classList.add(NEW_COLLECTIONS_CONTAINER_ITEM_STYLE_ID);
+    divNewCollection.classList.add(_NEW_COLLECTIONS_CONTAINER_ITEM_STYLE_ID);
+    divNewCollection.appendChild(divNewCollectionData);
+    //---
 
-    // Внутри элемента создаём кнопку удаления
-    let aBtnDelete = _A_BUTTONS.A_BUTTON_DENY.createA();
+    // Создаём кнопку "Удалить" ---
+    let aBtnDelete = _A_BUTTONS.A_BUTTON_DENY.createA(_A_BUTTON_IMG_SIZES.SIZE_32);
+    divNewCollection.appendChild(aBtnDelete);
+    //---
+
+    // Добавляем элементы в мапу ---
+    let cbLangsWithFlag = new ComboBoxWithFlag(divLang, cbLangs, divLangFlag);
+
+    let customerCollectionRow =
+        new CustomerCollectionRow(divNewCollection, tbTitle, cbLangsWithFlag, aBtnDelete);
+    _newCustomerCollectionRowsMap.set(_indexOfNewCollectionRow++, customerCollectionRow);
+    //---
+
+    // Подготавливаем поле "Название" ---
+    tbTitle.addEventListener("input", async function () {
+        clearNewCollectionsInfoContainer();
+        await checkCorrectTitle(customerCollectionRow);
+    })
+    //---
+
+    // Подготавливаем выпадающий список "Языки" ---
+    let firstOption = document.createElement("option");
+    firstOption.textContent = "Выберите язык";
+
+    await _LANG_UTILS.CB_LANGS_IN.prepare(cbLangsWithFlag, firstOption, true);
+    cbLangs.addEventListener("change", async function() {
+        clearNewCollectionsInfoContainer();
+        await checkCorrectTitle(customerCollectionRow);
+    });
+    //---
+
+    // Подготавливаем кнопку "Удалить" ---
     aBtnDelete.addEventListener("click", function () {
         let isCorrect = true;
         let message;
         let ruleType;
-        if (_newCollectionsMap.size === MIN_NUMBER_OF_NEW_COLLECTION_ITEMS) {
+        if (_newCustomerCollectionRowsMap.size === MIN_NUMBER_OF_NEW_COLLECTION_ITEMS) {
             isCorrect = false;
             message = `Новых коллекций должно быть не менее ${MIN_NUMBER_OF_NEW_COLLECTION_ITEMS}.`;
             ruleType = _RULE_TYPES.WARNING;
@@ -251,67 +266,51 @@ async function createNewCollectionElement() {
             showRuleInNewCollectionsInfoContainer(message, ruleType);
         } else {
             clearNewCollectionsInfoContainer();
-            for (let key of _newCollectionsMap.keys()) {
-                let customerCollectionRowElements = _newCollectionsMap.get(key);
-                let iTbTitle = customerCollectionRowElements.tbTitle;
-                let iCbLangs = customerCollectionRowElements.cbLangs;
-                if (tbTitle.id === iTbTitle.id
-                    && cbLangs.id === iCbLangs.id) {
-                    _newCollectionsMap.delete(key);
+            for (let key of _newCustomerCollectionRowsMap.keys()) {
+                let customerCollectionRow = _newCustomerCollectionRowsMap.get(key);
+                if (customerCollectionRow.divRow === divNewCollection) {
+                    _newCustomerCollectionRowsMap.delete(key);
                     break;
                 }
             }
 
-            let divCollectionsContainer = document.getElementById(_NEW_COLLECTIONS_CONTAINER_ID);
+            let divCollectionsContainer = document.getElementById(_DIV_NEW_COLLECTIONS_CONTAINER_ID);
             divCollectionsContainer.removeChild(divNewCollection);
         }
     });
-
-    divNewCollection.appendChild(divNewCollectionData);
-    divNewCollection.appendChild(aBtnDelete);
     //---
 
     // Добавляем собранный элемент в контейнер ---
-    let divCollectionsContainer = document.getElementById(_NEW_COLLECTIONS_CONTAINER_ID);
+    let divCollectionsContainer = document.getElementById(_DIV_NEW_COLLECTIONS_CONTAINER_ID);
     if (divCollectionsContainer != null) {
         divCollectionsContainer.appendChild(divNewCollection);
     }
     //---
-
-    // Добавляем элементы ввода в Map ---
-    let customerCollectionRowElements =
-        new CustomerCollectionRowElements(divNewCollection, divTitle, tbTitle, divLang, cbLangs, aBtnDelete);
-    _newCollectionsMap.set(_indexOfNewCollection++, customerCollectionRowElements);
-    //---
 }
 
-async function checkCorrectTitle(tbTitle, cbLangs, parentElement) {
-    let langCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbLangs);
-    return await _CUSTOMER_COLLECITON_UTILS
-        .checkCorrectValueInTbTitle(tbTitle, parentElement, langCode, _CUSTOM_TIMER_CHECKER);
-}
-
-async function checkCorrectLang(cbLangs, parentElement) {
-    return await _LANG_UTILS.checkCorrectValueInComboBox(cbLangs, parentElement);
+async function checkCorrectTitle(customerCollectionRow) {
+    let langCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(customerCollectionRow.cbLangsWithFlag.comboBox);
+    return await _CUSTOMER_COLLECITON_UTILS.TB_CUSTOMER_COLLECTION_TITLE.checkCorrectValue(
+        customerCollectionRow.tbTitle, langCode, _CUSTOM_TIMER_CHECKER);
 }
 
 function checkAllTitles() {
     let isCorrectAll = true;
-    for (let iKey of _newCollectionsMap.keys()) {
-        let row = _newCollectionsMap.get(iKey);
+    for (let iKey of _newCustomerCollectionRowsMap.keys()) {
+        let row = _newCustomerCollectionRowsMap.get(iKey);
 
         let iTbTitle = row.tbTitle;
-        let iTitle = iTbTitle.value.toLowerCase().trim();
+        let iTitleValue = iTbTitle.value.toLowerCase().trim();
 
         let isCorrectOne = true;
         let ruleElement = new RuleElement(iTbTitle, iTbTitle.parentElement);
 
-        for (let jKey of _newCollectionsMap.keys()) {
+        for (let jKey of _newCustomerCollectionRowsMap.keys()) {
             if (iKey === jKey) continue;
-            let jCustomerCollectionRowElements = _newCollectionsMap.get(jKey);
+            let jCustomerCollectionRow = _newCustomerCollectionRowsMap.get(jKey);
 
-            let jTitle = jCustomerCollectionRowElements.tbTitle.value.toLowerCase().trim();
-            if (iTitle === jTitle) {
+            let jTitle = jCustomerCollectionRow.tbTitle.value.toLowerCase().trim();
+            if (iTitleValue === jTitle) {
                 isCorrectAll = false;
                 isCorrectOne = false;
 
@@ -335,15 +334,16 @@ function checkAllTitles() {
 
 async function checkBeforeSend() {
     let isCorrect = true;
-    for (let key of _newCollectionsMap.keys()) {
-        let row = _newCollectionsMap.get(key);
+    for (let key of _newCustomerCollectionRowsMap.keys()) {
+        let row = _newCustomerCollectionRowsMap.get(key);
         let titleIsCorrect =
-            await checkCorrectTitle(row.tbTitle, row.cbLangs, row.tbTitleParent);
+            await checkCorrectTitle(row);
         let langIsCorrect =
-            await checkCorrectLang(row.cbLangs, row.cbLangsParent);
+            await _LANG_UTILS.CB_LANGS_IN.checkCorrectValue(row.cbLangsWithFlag)
 
         if (isCorrect === true) {
-            isCorrect = (titleIsCorrect && langIsCorrect);
+            isCorrect = (titleIsCorrect === true
+                && langIsCorrect === true);
         }
     }
 
@@ -356,35 +356,43 @@ async function checkBeforeSend() {
 
 async function sendNewCollections() {
     let acceptCollectionKeys = [];
-    for (let key of _newCollectionsMap.keys()) {
-        let customerCollectionRowElements = _newCollectionsMap.get(key);
+    for (let key of _newCustomerCollectionRowsMap.keys()) {
+        let customerCollectionRow = _newCustomerCollectionRowsMap.get(key);
+        if (customerCollectionRow) {
+            let tbTitle = customerCollectionRow.tbTitle;
+            let cbLangs = customerCollectionRow.cbLangsWithFlag.comboBox;
+            if (tbTitle && cbLangs) {
+                let dto = new CustomerCollectionRequestDTO();
+                dto.title = tbTitle.value.trim();
+                dto.langCode =
+                    _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbLangs);
 
-        let customerCollectionRequestDTO = new CustomerCollectionRequestDTO();
-        customerCollectionRequestDTO.title = customerCollectionRowElements.tbTitle.value.trim();
-        customerCollectionRequestDTO.langCode =
-            _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(customerCollectionRowElements.cbLangs);
-
-
-        let JSONResponse = await _CUSTOMER_COLLECTIONS_API.POST.add(customerCollectionRequestDTO);
-        if (JSONResponse.status === _HTTP_STATUSES.OK) {
-            acceptCollectionKeys.push(key);
+                let JSONResponse = await _CUSTOMER_COLLECTIONS_API.POST.add(dto);
+                if (JSONResponse.status === _HTTP_STATUSES.OK) {
+                    acceptCollectionKeys.push(key);
+                }
+            }
         }
     }
 
     let isCorrect = true;
     let message;
     let ruleType;
-    if (acceptCollectionKeys.length !== _newCollectionsMap.size) {
+    if (acceptCollectionKeys.length !== _newCustomerCollectionRowsMap.size) {
         isCorrect = false;
         message = "Произошла ошибка при попытке создания некоторых коллекций. Попробуйте ещё раз.";
         ruleType = _RULE_TYPES.ERROR;
+    }
 
+    if (isCorrect === false) {
         for (let i = 0; i < acceptCollectionKeys.length; i++) {
-            let key = acceptCollectionKeys[i];
-            let divRow = _newCollectionsMap.get(key).divRow;
-            divRow.parentNode.removeChild(divRow);
+            let customerCollectionRow = _newCustomerCollectionRowsMap.get(acceptCollectionKeys[i]);
+            if (customerCollectionRow) {
+                let divRow = customerCollectionRow.divRow;
 
-            _newCollectionsMap.delete(acceptCollectionKeys[i]);
+                divRow.parentNode.removeChild(divRow);
+                _newCustomerCollectionRowsMap.delete(acceptCollectionKeys[i]);
+            }
         }
     }
 
@@ -405,6 +413,8 @@ function clearNewCollectionsInfoContainer() {
 function showRuleInNewCollectionsInfoContainer(message, ruleType) {
     let divSendNewWordsInfo = document.getElementById(_DIV_SEND_NEW_COLLECTIONS_INFO_ID);
     if (divSendNewWordsInfo) {
+        clearNewCollectionsInfoContainer();
+
         let ruleElement = new RuleElement(divSendNewWordsInfo, divSendNewWordsInfo);
         ruleElement.message = message;
         ruleElement.ruleType = ruleType;
@@ -423,7 +433,7 @@ function changeDisableStatusInImportantElements(isDisable) {
     if (aBtnNewWord) {
         if (isDisable === true) {
             aBtnNewWord.className = "";
-            _A_BUTTONS.A_BUTTON_DISABLED.setStyles(aBtnNewWord);
+            aBtnNewWord.classList.add(_CSS_MAIN.A_BUTTON_DISABLED_STANDARD_STYLE_ID);
             aBtnNewWord.classList.add(_A_BTN_NEW_COLLECTION_STYLE_ID);
         } else {
             aBtnNewWord.className = "";
@@ -434,18 +444,22 @@ function changeDisableStatusInImportantElements(isDisable) {
     //---
 
     // Элементы каждой новой коллекции ---
-    for (let key of _newCollectionsMap.keys()) {
-        let row = _newCollectionsMap.get(key);
+    for (let key of _newCustomerCollectionRowsMap.keys()) {
+        let row = _newCustomerCollectionRowsMap.get(key);
         if (row) {
             row.tbTitle.disabled = isDisable;
-            row.cbLangs.disabled = isDisable;
+
+            let cbLangsWithFlag = row.cbLangsWithFlag;
+            if (cbLangsWithFlag) {
+                cbLangsWithFlag.comboBox.disabled = isDisable;
+            }
 
             let aBtnDelete = row.aBtnDelete;
             if (aBtnDelete) {
                 if (isDisable === true) {
                     _A_BUTTONS.A_BUTTON_DISABLED.setStyles(aBtnDelete);
                 } else {
-                    _A_BUTTONS.A_BUTTON_DENY.setStyles(aBtnDelete);
+                    _A_BUTTONS.A_BUTTON_DENY.setStyles(aBtnDelete, _A_BUTTON_IMG_SIZES.SIZE_32);
                 }
             }
         }

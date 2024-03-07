@@ -1,5 +1,4 @@
 import {
-    WordInCollectionRequestDTO,
     WordInCollectionResponseDTO
 } from "../../dto/entity/word_in_collection.js";
 
@@ -13,19 +12,24 @@ import {
 
 import {
     AButtons
-} from "../../a_buttons.js";
+} from "../../a_buttons/a_buttons.js";
+
+import {
+    AButtonImgSizes
+} from "../../a_buttons/a_button_img_sizes.js";
 
 const _WORDS_IN_COLLECTION_API = new WordsInCollectionAPI();
 
 const _HTTP_STATUSES = new HttpStatuses();
 const _A_BUTTONS = new AButtons();
+const _A_BUTTON_IMG_SIZES = new AButtonImgSizes();
 
 export class WordTableUtils {
     async changeToAddAction(aBtnActionElement, wordInCollectionRequestDTO) {
         _A_BUTTONS.A_BUTTON_DISABLED.setStyles(aBtnActionElement);
         aBtnActionElement.onclick = null;
 
-        _A_BUTTONS.A_BUTTON_ACCEPT.setStyles(aBtnActionElement, true);
+        _A_BUTTONS.A_BUTTON_ACCEPT.setStyles(aBtnActionElement, _A_BUTTON_IMG_SIZES.SIZE_16);
         aBtnActionElement.title = "Добавить слово в коллекцию";
 
         aBtnActionElement.onclick = async function () {
@@ -49,7 +53,7 @@ export class WordTableUtils {
         _A_BUTTONS.A_BUTTON_DISABLED.setStyles(aBtnActionElement);
         aBtnActionElement.onclick = null;
 
-        _A_BUTTONS.A_BUTTON_DENY.setStyles(aBtnActionElement, true);
+        _A_BUTTONS.A_BUTTON_DENY.setStyles(aBtnActionElement, _A_BUTTON_IMG_SIZES.SIZE_16);
         aBtnActionElement.title = "Удалить слово из коллекции";
 
         aBtnActionElement.onclick = async function() {

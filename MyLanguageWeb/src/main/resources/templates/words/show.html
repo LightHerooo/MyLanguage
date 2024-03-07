@@ -54,13 +54,17 @@
             </div>
         </div>
         <div th:if="${AUTH_CUSTOMER != null}" class="words-actions">
-            <a class="words-actions-item a-button-standard" href="/words/new">
-                <img class="words-actions-img" src="/images/words/new_words.png" alt="new_words.png"/>
-                <p class="words-actions-text">Предложить новые слова</p>
+            <a class="a-button-standard" href="/words/new">
+                <div class="vertical-flex-container-standard words-action">
+                    <img class="words-actions-img" src="/images/words/new_words.png" alt="new_words.png"/>
+                    <div>Предложить новые слова</div>
+                </div>
             </a>
-            <a class="words-actions-item a-button-standard" href="/words/my_words_history">
-                <img class="words-actions-img" src="/images/words/my_words_history.png" alt="new_words_history.png"/>
-                <p class="words-actions-text">История моих предложенных слов</p>
+            <a class="a-button-standard" href="/words/my_words_history">
+                <div class="vertical-flex-container-standard words-action">
+                    <img class="words-actions-img" src="/images/words/my_words_history.png" alt="new_words_history.png"/>
+                    <div>История моих предложенных слов</div>
+                </div>
             </a>
         </div>
         <div th:class="${AUTH_CUSTOMER != null ? 'word-list-instruments-auth' : 'word-list-instruments'}">
