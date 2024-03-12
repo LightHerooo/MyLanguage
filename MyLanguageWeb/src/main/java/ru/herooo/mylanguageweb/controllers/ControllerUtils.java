@@ -5,9 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.herooo.mylanguagedb.entities.Customer;
 import ru.herooo.mylanguageweb.dto.entity.customer.CustomerMapping;
-import ru.herooo.mylanguageweb.dto.entity.customer.CustomerRequestDTO;
 import ru.herooo.mylanguageweb.dto.entity.customer.CustomerResponseDTO;
-import ru.herooo.mylanguageweb.dto.other.CustomResponseMessage;
 import ru.herooo.mylanguageweb.services.CustomerService;
 
 import java.time.LocalDateTime;
@@ -16,7 +14,9 @@ import java.time.LocalDateTime;
 public class ControllerUtils {
     private final String WEB_APP_NAME_ATTRIBUTE_NAME = "WEB_APP_NAME";
     private final String AUTH_CUSTOMER_ATTRIBUTE_NAME = "AUTH_CUSTOMER";
-    private final String IS_USER_SUPER_ATTRIBUTE_NAME = "IS_USER_SUPER";
+    private final String IS_SUPER_USER_ATTRIBUTE_NAME = "IS_SUPER_USER";
+    private final String IS_ADMIN_ATTRIBUTE_NAME = "IS_ADMIN";
+    private final String IS_MODERATOR_ATTRIBUTE_NAME = "IS_MODERATOR";
 
     private final CustomerService CUSTOMER_SERVICE;
     private final CustomerMapping CUSTOMER_MAPPING;
@@ -40,7 +40,13 @@ public class ControllerUtils {
         }
 
         // Пользователь - супер-юзер?
-        request.setAttribute(IS_USER_SUPER_ATTRIBUTE_NAME, CUSTOMER_SERVICE.isSuperUser(authCustomer));
+        request.setAttribute(IS_SUPER_USER_ATTRIBUTE_NAME, CUSTOMER_SERVICE.isSuperUser(authCustomer));
+
+        // Пользователь - администратор?
+        request.setAttribute(IS_ADMIN_ATTRIBUTE_NAME, CUSTOMER_SERVICE.isAdmin(authCustomer));
+
+        // Пользователь - модератор?
+        request.setAttribute(IS_MODERATOR_ATTRIBUTE_NAME, CUSTOMER_SERVICE.isModerator(authCustomer));
     }
 
     public void changeDateLastVisitToAuthCustomer(HttpServletRequest request) {

@@ -129,7 +129,15 @@ public class Customer {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Customer customer = (Customer) o;
-        return id == customer.id && Objects.equals(nickname, customer.nickname) && Objects.equals(dateOfCreate, customer.dateOfCreate) && Objects.equals(dateOfLastVisit, customer.dateOfLastVisit) && Objects.equals(login, customer.login) && Objects.equals(password, customer.password) && Objects.equals(email, customer.email) && Objects.equals(authCode, customer.authCode) && Objects.equals(role, customer.role);
+        return id == customer.id
+                && Objects.equals(nickname, customer.nickname)
+                && Objects.equals(dateOfCreate, customer.dateOfCreate)
+                && Objects.equals(dateOfLastVisit, customer.dateOfLastVisit)
+                && Objects.equals(login, customer.login)
+                && Objects.equals(password, customer.password)
+                && Objects.equals(email, customer.email)
+                && Objects.equals(authCode, customer.authCode)
+                && Objects.equals(role, customer.role);
     }
 
     @Override

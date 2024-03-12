@@ -18,8 +18,8 @@ public class LangService {
     }
 
     // Получение всех языков
-    public List<Lang> findAll() {
-        return LANG_CRUD_REPOSITORY.findAll();
+    public List<Lang> findAll(String title) {
+        return LANG_CRUD_REPOSITORY.findAllAfterFilter(title);
     }
 
     public List<Lang> findAllForIn(Boolean isActiveForIn) {
@@ -40,5 +40,25 @@ public class LangService {
 
     public long count(Boolean isActive) {
         return LANG_CRUD_REPOSITORY.countForIn(isActive).orElse(0L);
+    }
+
+    public Lang changeActivityForIn(Lang lang, boolean isActiveForIn) {
+        Lang result = null;
+        if (lang != null) {
+            lang.setActiveForIn(isActiveForIn);
+            result = LANG_CRUD_REPOSITORY.save(lang);
+        }
+
+        return result;
+    }
+
+    public Lang changeActivityForOut(Lang lang, boolean isActiveForOut) {
+        Lang result = null;
+        if (lang != null) {
+            lang.setActiveForOut(isActiveForOut);
+            result = LANG_CRUD_REPOSITORY.save(lang);
+        }
+
+        return result;
     }
 }

@@ -7,7 +7,7 @@
 
     <link rel="stylesheet" type="text/css" href="/css/root.css">
     <link rel="stylesheet" type="text/css" href="/css/main.css">
-    <link rel="stylesheet" type="text/css" href="/css/info_blocks/info_block_with_header.css">
+    <link rel="stylesheet" type="text/css" href="/css/info_blocks/medium_info_block.css">
     <link rel="stylesheet" type="text/css" href="/css/templates/index.css">
 </head>
 <body>
@@ -15,10 +15,10 @@
         <div th:insert="~{layouts/header}"></div>
     </header>
     <main>
-        <div class="info-block-with-header-container hello-message-container">
-            <h1 class="h1-info-block-with-header h1-hello-message"
+        <div class="medium-info-block-container hello-message-container">
+            <h1 class="h1-medium-info-block h1-hello-message"
                th:text="|Добро пожаловать на ресурс ${WEB_APP_NAME}|">${helloMessageText}</h1>
-            <div class="info-block-with-header-text hello-message-text">
+            <div class="medium-info-block-text hello-message-text">
                 Изучайте и тренируйте
                 <span th:text="|${NUMBER_OF_WORDS_TEXT}|"/>
                  на

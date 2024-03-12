@@ -7,7 +7,8 @@
 
     <link rel="stylesheet" type="text/css" href="/css/root.css">
     <link rel="stylesheet" type="text/css" href="/css/main.css">
-    <link rel="stylesheet" type="text/css" href="/css/info_blocks/info_block_with_img_and_header.css">
+    <link rel="stylesheet" type="text/css" href="/css/info_blocks/big_info_block.css">
+    <link rel="stylesheet" type="text/css" href="/css/other/instruments_for_table.css">
     <link rel="stylesheet" type="text/css" href="/css/entity/collection_info.css">
     <link rel="stylesheet" type="text/css" href="/css/other/loading.css">
     <link rel="stylesheet" type="text/css" href="/css/other/element_with_flag.css">
@@ -21,24 +22,24 @@
         <div th:insert="~{layouts/header}"></div>
     </header>
     <main>
-        <div class="info-block-with-img-and-header-container">
-            <div class="info-block-with-img-and-header-left-container">
-                <img class="img-info-block-with-img-and-header"
+        <div class="big-info-block-container">
+            <div class="big-info-block-left-container">
+                <img class="img-big-info-block"
                      src="/images/words/words.png"
                      alt="all_words.png"/>
             </div>
-            <div class="info-block-with-img-and-header-right-container">
-                <h1 class="h1-info-block-with-img-and-header">Слова</h1>
-                <div class="info-block-with-img-and-header-text">
+            <div class="big-info-block-right-container">
+                <h1 class="h1-big-info-block">Слова</h1>
+                <div class="big-info-block-text">
                     На странице находятся все слова со статусом
-                    <a class="word-status-standard"
-                       th:style="'color: #' + ${ACTIVE_WORD_STATUS.colorHexCode}"
+                    <a class="a-for-hint"
+                       th:style="'color: #' + ${ACTIVE_WORD_STATUS.color.hexCode}"
                        th:text="'&quot;' + ${ACTIVE_WORD_STATUS.title} + '&quot;'"
                        th:title="${ACTIVE_WORD_STATUS.message}"/>
                     ресурса <span th:text="${WEB_APP_NAME}"/>.
 
                 </div>
-                <div class="info-block-with-img-and-header-text" th:if="${AUTH_CUSTOMER == null}">
+                <div class="big-info-block-text" th:if="${AUTH_CUSTOMER == null}">
                     <br>
                     <span style="font-weight: bold">
                         <a href="/customers/entry">Авторизуйтесь</a>, чтобы получить дополнительные возможности:
@@ -49,75 +50,77 @@
                     - Просмотр истории ваших предложенных слов.<br>
                 </div>
                 <br>
-                <div class="info-block-with-img-and-header-text words-statistics-container"
+                <div class="big-info-block-text statistics-container"
                      id="words_statistics_container"></div>
             </div>
         </div>
-        <div th:if="${AUTH_CUSTOMER != null}" class="words-actions">
+        <div class="actions-container" th:if="${AUTH_CUSTOMER != null}">
             <a class="a-button-standard" href="/words/new">
-                <div class="vertical-flex-container-standard words-action">
-                    <img class="words-actions-img" src="/images/words/new_words.png" alt="new_words.png"/>
+                <div class="vertical-flex-container-standard action">
+                    <img class="img-action" src="/images/words/new_words.png" alt="new_words.png"/>
                     <div>Предложить новые слова</div>
                 </div>
             </a>
             <a class="a-button-standard" href="/words/my_words_history">
-                <div class="vertical-flex-container-standard words-action">
-                    <img class="words-actions-img" src="/images/words/my_words_history.png" alt="new_words_history.png"/>
+                <div class="vertical-flex-container-standard action">
+                    <img class="img-action" src="/images/words/my_words_history.png" alt="new_words_history.png"/>
                     <div>История моих предложенных слов</div>
                 </div>
             </a>
         </div>
-        <div th:class="${AUTH_CUSTOMER != null ? 'word-list-instruments-auth' : 'word-list-instruments'}">
-            <div class="word-list-instruments-item">
-                <label class="label-for-input-standard" for="tb_finder">Поиск:</label>
-                <input id="tb_finder" class="text-standard" type="text">
+        <div th:class="${AUTH_CUSTOMER != null
+            ? 'instruments-for-table-container-margin instruments-for-find-words-container-auth'
+            : 'instruments-for-table-container-margin instruments-for-find-words-container'}">
+            <div class="label-for-input-container">
+                <label class="label-standard" for="tb_finder">Поиск:</label>
             </div>
-            <div class="word-list-instruments-item">
-                <label class="label-for-input-standard" for="cb_langs">Язык:</label>
-                <div class="element-with-flag-container">
-                    <select id="cb_langs" class="select-standard"></select>
-                    <div class="flag-container">
-                        <div id="lang_flag"></div>
-                    </div>
+            <input id="tb_finder" class="text-standard" type="text">
+
+            <div class="label-for-input-container">
+                <label class="label-standard" for="cb_langs">Язык:</label>
+            </div>
+            <div class="element-with-flag-container">
+                <select id="cb_langs" class="select-standard"></select>
+                <div class="flag-container">
+                    <div id="lang_flag"></div>
                 </div>
             </div>
-            <div class="word-list-instruments-item" th:if="${AUTH_CUSTOMER != null}">
-                <label class="label-for-input-standard" for="cb_customer_collections">Коллекция:</label>
-                <div class="element-with-flag-container">
-                    <select id="cb_customer_collections" class="select-standard"></select>
-                    <div class="flag-container">
-                        <div id="collection_flag"></div>
-                    </div>
+
+            <div class="label-for-input-container" th:if="${AUTH_CUSTOMER != null}">
+                <label class="label-standard" for="cb_customer_collections">Коллекция:</label>
+            </div>
+
+            <div class="element-with-flag-container" th:if="${AUTH_CUSTOMER != null}">
+                <select id="cb_customer_collections" class="select-standard"></select>
+                <div class="flag-container">
+                    <div id="collection_flag"></div>
                 </div>
             </div>
-            <div class="word-list-instruments-item">
-                <label class="label-for-input-standard" for="btn_refresh"></label>
-                <button id="btn_refresh" class="btn-refresh-standard" title="Обновить">
-                    <img class="btn-refresh-standard-img" src="/images/other/refresh.png" alt="refresh.png"/>
-                </button>
-            </div>
+
+            <div class="label-for-input-container"></div>
+            <button id="btn_refresh" class="button-with-img-standard" title="Обновить">
+                <img class="img-btn-refresh" src="/images/other/refresh.png" alt="refresh.png"/>
+            </button>
         </div>
-        <div th:if="${AUTH_CUSTOMER != null}" id="div_collection_info"
-             class="info-block-standard collection-info"></div>
-        <div class="word-list-container" id="word_list_container">
-            <table class="table-standard">
-                <colgroup >
-                    <col style="width: 5%;">
-                    <col style="width: 65%;">
-                    <col style="width: 30%;">
-                    <col style="width: 50px" th:if="${AUTH_CUSTOMER != null}">
-                </colgroup>
-                <thead id="words_table_head">
-                    <tr>
-                        <th>№</th>
-                        <th>Слово</th>
-                        <th>Язык</th>
-                        <th th:if="${AUTH_CUSTOMER != null}"></th>
-                    </tr>
-                </thead>
-                <tbody id="words_table_body"></tbody>
-            </table>
-        </div>
+        <div id="div_collection_info" class="info-block-standard collection-info"
+             th:if="${AUTH_CUSTOMER != null}"></div>
+        <table class="table-standard">
+            <colgroup >
+                <col style="width: 5%;">
+                <col style="width: 65%;">
+                <col style="width: 30%;">
+                <col style="width: 50px" th:if="${AUTH_CUSTOMER != null}">
+            </colgroup>
+            <thead id="words_table_head">
+                <tr>
+                    <th>№</th>
+                    <th>Слово</th>
+                    <th>Язык</th>
+                    <th th:if="${AUTH_CUSTOMER != null}"></th>
+                </tr>
+            </thead>
+            <tbody id="words_table_body"></tbody>
+        </table>
     </main>
 </body>
 </html>

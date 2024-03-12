@@ -24,7 +24,12 @@ public enum Views {
     CUSTOMER_COLLECTIONS_NEW("customer_collections/new"),
 
     SPECIAL_ACTIONS_SHOW("special_actions/show"),
-    SPECIAL_ACTIONS_CHANGE_CURRENT_STATUS_TO_WORDS("special_actions/change_current_status_to_words")
+    SPECIAL_ACTIONS_CHANGE_CURRENT_STATUS_TO_WORDS("special_actions/actions/change_current_status_to_words"),
+    SPECIAL_ACTIONS_CHANGE_ACTIVE_STATUSES_TO_LANGS("special_actions/actions/change_active_statuses_to_langs"),
+    SPECIAL_ACTIONS_CHANGE_ACTIVE_STATUS_TO_WORKOUT_TYPES(
+            "special_actions/actions/change_active_status_to_workout_types"),
+    SPECIAL_ACTIONS_CHANGE_ROLE_TO_CUSTOMERS(
+            "special_actions/actions/change_role_to_customers"),
     ;
 
     public final String PATH_TO_FILE;

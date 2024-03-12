@@ -51,10 +51,6 @@ import {
 } from "../../classes/loading_element.js";
 
 import {
-    GlobalCookies
-} from "../../classes/global_cookies.js";
-
-import {
     AButtonImgSizes
 } from "../../classes/a_buttons/a_button_img_sizes.js";
 
@@ -87,7 +83,6 @@ const _LANG_UTILS = new LangUtils();
 const _WORD_UTILS = new WordUtils();
 const _A_BUTTONS = new AButtons();
 const _COMBO_BOX_UTILS = new ComboBoxUtils();
-const _GLOBAL_COOKIES = new GlobalCookies();
 const _A_BUTTON_IMG_SIZES = new AButtonImgSizes();
 
 const _NEW_WORD_DATA_ITEM_STYLE_ID = "new-word-data-item";
@@ -368,7 +363,6 @@ async function sendNewWords() {
             if (tbTitle && cbLangs) {
                 let dto = new WordRequestDTO();
                 dto.title = tbTitle.value.trim();
-                dto.customerId = BigInt(_GLOBAL_COOKIES.AUTH_ID.getValue());
                 dto.langCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbLangs);
 
                 let JSONResponse = await _WORDS_API.POST.add(dto);

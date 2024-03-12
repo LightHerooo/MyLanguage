@@ -36,13 +36,6 @@ public interface WordCrudRepository extends CrudRepository<Word, Long>, WordRepo
                                @Param("word_status_code") String wordStatusCode);
 
     @Query(nativeQuery = true,
-            value = "SELECT * FROM get_words_after_filter" +
-                    "(:title, :word_status_code, :language_code)")
-    List<Word> findAllAfterFilter(@Param("title") String title,
-                                  @Param("word_status_code") String wordStatusCode,
-                                  @Param("language_code") String languageCode);
-
-    @Query(nativeQuery = true,
             value = "SELECT * FROM get_words_after_filter_pagination" +
                     "(:title, :word_status_code, :lang_code, " +
                     ":number_of_words, :last_word_id_on_previous_page)")

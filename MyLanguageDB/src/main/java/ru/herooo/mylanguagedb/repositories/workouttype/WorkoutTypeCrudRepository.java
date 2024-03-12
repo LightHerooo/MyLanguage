@@ -2,6 +2,7 @@ package ru.herooo.mylanguagedb.repositories.workouttype;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.herooo.mylanguagedb.entities.WorkoutType;
 
@@ -12,8 +13,7 @@ import java.util.Optional;
 public interface WorkoutTypeCrudRepository extends CrudRepository<WorkoutType, Long>, WorkoutTypeRepository<WorkoutType> {
     Optional<WorkoutType> findByCode(String code);
 
-    @Query(value =
-            "FROM WorkoutType wt " +
-            "ORDER BY wt.id ASC, wt.isActive ASC")
-    List<WorkoutType> findAll();
+    @Query(nativeQuery = true, value =
+            "SELECT * FROM get_workout_types_after_filter(:title)")
+    List<WorkoutType> findAllAfterFilter(@Param("title") String title);
 }

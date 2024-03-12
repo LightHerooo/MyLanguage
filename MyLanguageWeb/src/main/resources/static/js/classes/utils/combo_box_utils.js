@@ -1,7 +1,47 @@
+import {
+    CssRoot
+} from "../css/css_root.js";
+
+const _CSS_ROOT = new CssRoot();
+
 export class ComboBoxUtils {
     GET_SELECTED_ITEM = new SelectedItemFinder();
     GET_SELECTED_ITEM_ID = new SelectedItemIdFinder();
     CHANGE_SELECTED_ITEM = new SelectedItemChanger();
+
+    callChangeEvent(comboBoxElement) {
+        let generalFunctions = new GeneralFunctions();
+        generalFunctions.callChangeEvent(comboBoxElement);
+    }
+
+    prepareCbBoolean(cbBoolean) {
+        if (cbBoolean) {
+            cbBoolean.replaceChildren();
+
+            let trueOption = document.createElement("option");
+            trueOption.style.color = _CSS_ROOT.ACCEPT_FIRST_COLOR;
+            trueOption.textContent = "Да";
+            cbBoolean.appendChild(trueOption);
+
+            let falseOption = document.createElement("option");
+            falseOption.style.color = _CSS_ROOT.DENY_FIRST_COLOR;
+            falseOption.textContent = "Нет";
+            cbBoolean.appendChild(falseOption);
+
+            let thisClass = this;
+            cbBoolean.addEventListener("change", async function() {
+                let selectedOption = thisClass.GET_SELECTED_ITEM.byComboBox(this);
+                this.style.backgroundColor = selectedOption.style.color;
+            });
+        }
+    }
+}
+
+class GeneralFunctions {
+    callChangeEvent(comboBoxElement) {
+        let event = new Event('change');
+        comboBoxElement.dispatchEvent(event);
+    }
 }
 
 class SelectedItemFinder {
@@ -57,8 +97,8 @@ class SelectedItemChanger {
             }
 
             if (doNeedToCallChangeEvent === true) {
-                let event = new Event('change');
-                comboBoxElement.dispatchEvent(event);
+                let generalFunctions = new GeneralFunctions();
+                generalFunctions.callChangeEvent(comboBoxElement);
             }
         }
     }
@@ -73,8 +113,8 @@ class SelectedItemChanger {
             comboBoxElement.selectedIndex = itemIndex;
 
             if (doNeedToCallChangeEvent === true) {
-                let event = new Event('change');
-                comboBoxElement.dispatchEvent(event);
+                let generalFunctions = new GeneralFunctions();
+                generalFunctions.callChangeEvent(comboBoxElement);
             }
         }
     }

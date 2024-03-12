@@ -266,35 +266,36 @@ public class WorkoutItemsRestController {
             return response;
         }
 
-        if (dto.getId() != 0) {
-            response = find(dto.getId());
-            if (response.getStatusCode() != HttpStatus.OK) {
-                return response;
-            }
+        // Ищем элемент тренировки
+        response = find(dto.getId());
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
 
-            // Тренировка не должна быть завершена
-            WorkoutItem workoutItem = WORKOUT_ITEM_SERVICE.find(dto.getId());
-            response = WORKOUTS_REST_CONTROLLER.validateIsNotWorkoutEnded(workoutItem.getWorkout().getId());
-            if (response.getStatusCode() != HttpStatus.OK) {
-                return response;
-            }
+        // Проверяем ключ безопасности
+        WorkoutItem workoutItem = WORKOUT_ITEM_SERVICE.find(dto.getId());
 
-            // Сравниваем пользователя элемента тренировки с пользователем, который хочет её изменить
-            Customer authCustomer = CUSTOMER_SERVICE.findByAuthCode(dto.getAuthCode());
-            if (!workoutItem.getWorkout().getCustomer().equals(authCustomer)) {
-                CustomResponseMessage message = new CustomResponseMessage(1,
-                        "Разрешено взаимодействовать только с элементами своих тренировок.");
-                return ResponseEntity.badRequest().body(message);
-            }
+        WorkoutRequestDTO workoutRequestDTO = new WorkoutRequestDTO();
+        workoutRequestDTO.setId(workoutItem.getWorkout().getId());
+        workoutRequestDTO.setSecurityKey(dto.getSecurityKey());
 
-            // Проверяем ключ безопасности
-            WorkoutRequestDTO workoutRequestDTO = new WorkoutRequestDTO();
-            workoutRequestDTO.setId(workoutItem.getWorkout().getId());
-            workoutRequestDTO.setSecurityKey(dto.getSecurityKey());
-            response = WORKOUTS_REST_CONTROLLER.validateSecurityKey(request, workoutRequestDTO);
-            if (response.getStatusCode() != HttpStatus.OK) {
-                return response;
-            }
+        response = WORKOUTS_REST_CONTROLLER.validateSecurityKey(request, workoutRequestDTO);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        // Сравниваем пользователя элемента тренировки с пользователем, который хочет её изменить
+        Customer authCustomer = CUSTOMER_SERVICE.findByAuthCode(dto.getAuthCode());
+        if (!workoutItem.getWorkout().getCustomer().equals(authCustomer)) {
+            CustomResponseMessage message = new CustomResponseMessage(1,
+                    "Разрешено взаимодействовать только с элементами своих тренировок.");
+            return ResponseEntity.badRequest().body(message);
+        }
+
+        // Тренировка не должна быть завершена
+        response = WORKOUTS_REST_CONTROLLER.validateIsNotWorkoutEnded(workoutItem.getWorkout().getId());
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
         }
 
         CustomResponseMessage message = new CustomResponseMessage(1, "Данные корректны.");

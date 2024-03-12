@@ -7,7 +7,7 @@
 
     <link rel="stylesheet" type="text/css" href="/css/root.css">
     <link rel="stylesheet" type="text/css" href="/css/main.css">
-    <link rel="stylesheet" type="text/css" href="/css/info_blocks/info_block_with_img_and_header.css">
+    <link rel="stylesheet" type="text/css" href="/css/info_blocks/big_info_block.css">
     <link rel="stylesheet" type="text/css" href="/css/other/rule.css">
     <link rel="stylesheet" type="text/css" href="/css/other/loading.css">
     <link rel="stylesheet" type="text/css" href="/css/other/element_with_flag.css">
@@ -21,14 +21,14 @@
             <div th:insert="~{layouts/header}"></div>
         </header>
         <main>
-            <div class="info-block-with-img-and-header-container">
-                <div class="info-block-with-img-and-header-left-container">
-                    <img class="img-info-block-with-img-and-header" src="/images/words/new_words.png"
+            <div class="big-info-block-container">
+                <div class="big-info-block-left-container">
+                    <img class="img-big-info-block" src="/images/words/new_words.png"
                          alt="new_words.png"/>
                 </div>
-                <div class="info-block-with-img-and-header-right-container">
-                    <h1 class="h1-info-block-with-img-and-header">Предложение новых слов</h1>
-                    <div class="info-block-with-img-and-header-text">
+                <div class="big-info-block-right-container">
+                    <h1 class="h1-big-info-block">Предложение новых слов</h1>
+                    <div class="big-info-block-text">
                         Предлагайте новые слова для добавления в базу
                         <span th:text="${WEB_APP_NAME}"/>.
                         За раз можно предложить не более 5-ти слов.

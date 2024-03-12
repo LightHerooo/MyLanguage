@@ -83,7 +83,6 @@ class CustomerCollectionsPOSTRequests {
         let requestURL = new URL(URL_TO_API_CUSTOMER_COLLECTIONS);
         let jsonStr = _JSON_UTILS.stringify({
             'title': customerCollectionRequestDTO.title,
-            'customer_id': customerCollectionRequestDTO.customerId,
             'lang_code': customerCollectionRequestDTO.langCode
         });
 
@@ -99,23 +98,11 @@ class CustomerCollectionsPOSTRequests {
         return await _XML_UTILS.getJSONResponseByPOSTXml(requestURL, jsonStr);
     }
 
-    async copyByKey(customerCollectionRequestDTO) {
-        let requestURL = new URL(URL_TO_API_CUSTOMER_COLLECTIONS + "/copy_by_key");
-        let jsonStr = _JSON_UTILS.stringify({
-            'title': customerCollectionRequestDTO.title,
-            'customer_id': customerCollectionRequestDTO.customerId,
-            'key': customerCollectionRequestDTO.key
-        });
-
-        return await _XML_UTILS.getJSONResponseByPOSTXml(requestURL, jsonStr);
-    }
-
-    async validateBeforeCrud(customerCollectionRequestDTO) {
-        let requestURL = new URL(URL_TO_API_CUSTOMER_COLLECTIONS_VALIDATE + "/before_crud");
+    async validateBeforeAdd(customerCollectionRequestDTO) {
+        let requestURL = new URL(URL_TO_API_CUSTOMER_COLLECTIONS_VALIDATE + "/before_add");
         let jsonStr = _JSON_UTILS.stringify({
             'id': customerCollectionRequestDTO.id,
             'title': customerCollectionRequestDTO.title,
-            'customer_id': customerCollectionRequestDTO.customerId,
             'lang_code': customerCollectionRequestDTO.langCode,
             'key': customerCollectionRequestDTO.key
         });

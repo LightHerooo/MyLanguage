@@ -423,7 +423,7 @@ async function checkBeforeWorkoutStart() {
     let divLangOutFlag = document.getElementById(_DIV_LANG_OUT_FLAG_ID);
     if (divLangOutContainer && cbLangsOut && divLangOutFlag) {
         let cbLangsOutWithFlag = new ComboBoxWithFlag(divLangOutContainer, cbLangsOut, divLangOutFlag);
-        isLangOutCorrect = await _LANG_UTILS.CB_LANGS_IN.checkCorrectValue(cbLangsOutWithFlag);
+        isLangOutCorrect = await _LANG_UTILS.CB_LANGS_OUT.checkCorrectValue(cbLangsOutWithFlag);
     }
     //---
 

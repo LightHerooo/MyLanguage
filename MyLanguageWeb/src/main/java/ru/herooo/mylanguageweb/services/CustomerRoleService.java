@@ -5,6 +5,8 @@ import ru.herooo.mylanguagedb.entities.CustomerRole;
 import ru.herooo.mylanguagedb.repositories.customerrole.CustomerRoleCrudRepository;
 import ru.herooo.mylanguagedb.repositories.customerrole.CustomerRoles;
 
+import java.util.List;
+
 @Service
 public class CustomerRoleService {
 
@@ -12,6 +14,10 @@ public class CustomerRoleService {
 
     public CustomerRoleService(CustomerRoleCrudRepository customerRoleCrudRepository) {
         this.CUSTOMER_ROLE_CRUD_REPOSITORY = customerRoleCrudRepository;
+    }
+
+    public List<CustomerRole> findAll() {
+        return CUSTOMER_ROLE_CRUD_REPOSITORY.findAll();
     }
 
     public CustomerRole find(CustomerRoles role) {

@@ -7,7 +7,8 @@
 
         <link rel="stylesheet" type="text/css" href="/css/root.css">
         <link rel="stylesheet" type="text/css" href="/css/main.css">
-        <link rel="stylesheet" type="text/css" href="/css/info_blocks/info_block_with_img_and_header.css">
+        <link rel="stylesheet" type="text/css" href="/css/info_blocks/big_info_block.css">
+        <link rel="stylesheet" type="text/css" href="/css/info_blocks/small_info_block.css">
         <link rel="stylesheet" type="text/css" href="/css/templates/special_actions/show.css">
     </head>
     <body>
@@ -15,23 +16,40 @@
             <div th:insert="~{layouts/header}"></div>
         </header>
         <main>
-            <div class="info-block-with-img-and-header-container">
-                <div class="info-block-with-img-and-header-left-container">
-                    <img class="img-info-block-with-img-and-header"
+            <div class="big-info-block-container">
+                <div class="big-info-block-left-container">
+                    <img class="img-big-info-block"
                          src="#"
                          th:src="${AUTH_CUSTOMER.role.pathToImage}"
                          alt="role.png"/>
                 </div>
-                <div class="info-block-with-img-and-header-right-container">
-                    <h1 class="h1-info-block-with-img-and-header">Специальные возможности</h1>
-                    <div class="info-block-with-img-and-header-text">
-                        Только для администраторов и модераторов. Работа с данными ресурса
-                        <span th:text="${WEB_APP_NAME}"/>.
+                <div class="big-info-block-right-container">
+                    <h1 class="h1-big-info-block"
+                        th:style="${AUTH_CUSTOMER.role.color != null
+                        ? 'color: #' + AUTH_CUSTOMER.role.color.hexCode
+                        : ''}">Специальные возможности</h1>
+                    <div class="big-info-block-text">
+                        Работа с данными ресурса <span th:text="${WEB_APP_NAME}"/>.
+                        Доступ к специальным возможностям имеют пользователи с ролями
+                        <a class="a-for-hint"
+                           th:style="'color: #' + ${ADMIN_ROLE.color.hexCode}"
+                           th:text="'&quot;' + ${ADMIN_ROLE.title} + '&quot;'"
+                           th:title="${ADMIN_ROLE.message}"/>
+                        и
+                        <a class="a-for-hint"
+                           th:style="'color: #' + ${MODERATOR_ROLE.color.hexCode}"
+                           th:text="'&quot;' + ${MODERATOR_ROLE.title} + '&quot;'"
+                           th:title="${MODERATOR_ROLE.message}"/>.
                     </div>
                     <br>
                 </div>
             </div>
-            <div class="special-actions-container">
+
+            <div class="small-info-block-container">
+                <img class="img-small-info-block" src="/images/words/cards.png" alt="cards.png"/>
+                <h1 class="h1-small-info-block">Слова</h1>
+            </div>
+            <div class="word-actions-for-admin-container" th:if="${IS_ADMIN == true}">
                 <a class="a-button-standard" href="/special_actions/change_current_status_to_words">
                     <div class="vertical-flex-container-standard special-action">
                         <img class="img-special-action" src="/images/words/cards.png" alt="cards.png">
@@ -39,16 +57,109 @@
                     </div>
                 </a>
                 <a class="a-button-disabled-standard">
+                    <div class="vertical-flex-container-standard special-action">...</div>
+                </a>
+                <a class="a-button-disabled-standard">
+                    <div class="vertical-flex-container-standard special-action">...</div>
+                </a>
+            </div>
+            <div class="word-actions-for-moderator-container" th:if="${IS_MODERATOR == true}">
+                <a class="a-button-standard" href="/special_actions/change_current_status_to_words">
                     <div class="vertical-flex-container-standard special-action">
-                        <img class="img-special-action" src="/images/customer_collections/books.png" alt="books.png">
-                        <div>...</div>
+                        <img class="img-special-action" src="/images/words/cards.png" alt="cards.png">
+                        <div>Изменение текущего статуса в словах</div>
                     </div>
                 </a>
                 <a class="a-button-disabled-standard">
+                    <div class="vertical-flex-container-standard special-action">...</div>
+                </a>
+                <a class="a-button-disabled-standard">
+                    <div class="vertical-flex-container-standard special-action">...</div>
+                </a>
+            </div>
+
+            <div class="small-info-block-container">
+                <img class="img-small-info-block" src="/images/logo/logo.png" alt="logo.png"/>
+                <h1 class="h1-small-info-block">Языки</h1>
+            </div>
+            <div class="lang-actions-for-admin-container" th:if="${IS_ADMIN == true}">
+                <a class="a-button-standard" href="/special_actions/change_active_statuses_to_langs">
                     <div class="vertical-flex-container-standard special-action">
-                        <img class="img-special-action" src="/images/customer_collections/books.png" alt="books.png">
-                        <div>...</div>
+                        <img class="img-special-action" src="/images/logo/logo.png" alt="logo.png">
+                        <div>Изменение статусов активности в языках</div>
                     </div>
+                </a>
+                <a class="a-button-disabled-standard">
+                    <div class="vertical-flex-container-standard special-action">...</div>
+                </a>
+                <a class="a-button-disabled-standard">
+                    <div class="vertical-flex-container-standard special-action">...</div>
+                </a>
+            </div>
+            <div class="lang-actions-for-moderator-container" th:if="${IS_MODERATOR == true}">
+                <a class="a-button-standard" href="/special_actions/change_active_statuses_to_langs">
+                    <div class="vertical-flex-container-standard special-action">
+                        <img class="img-special-action" src="/images/logo/logo.png" alt="logo.png">
+                        <div>Изменение статусов активности в языках</div>
+                    </div>
+                </a>
+                <a class="a-button-disabled-standard">
+                    <div class="vertical-flex-container-standard special-action">...</div>
+                </a>
+                <a class="a-button-disabled-standard">
+                    <div class="vertical-flex-container-standard special-action">...</div>
+                </a>
+            </div>
+
+            <div class="small-info-block-container">
+                <img class="img-small-info-block" src="/images/workouts/brain.png" alt="brain.png"/>
+                <h1 class="h1-small-info-block">Режимы тренировок</h1>
+            </div>
+            <div class="workout-type-actions-for-admin-container" th:if="${IS_ADMIN == true}">
+                <a class="a-button-standard" href="/special_actions/change_active_status_to_workout_types">
+                    <div class="vertical-flex-container-standard special-action">
+                        <img class="img-special-action" src="/images/workouts/brain.png" alt="brain.png">
+                        <div>Изменение статуса активности в режимах тренировок</div>
+                    </div>
+                </a>
+                <a class="a-button-disabled-standard">
+                    <div class="vertical-flex-container-standard special-action">...</div>
+                </a>
+                <a class="a-button-disabled-standard">
+                    <div class="vertical-flex-container-standard special-action">...</div>
+                </a>
+            </div>
+            <div class="workout-type-actions-for-moderator-container" th:if="${IS_MODERATOR == true}">
+                <a class="a-button-standard" href="/special_actions/change_active_status_to_workout_types">
+                    <div class="vertical-flex-container-standard special-action">
+                        <img class="img-special-action" src="/images/workouts/brain.png" alt="brain.png">
+                        <div>Изменение статуса активности в режимах тренировок</div>
+                    </div>
+                </a>
+                <a class="a-button-disabled-standard">
+                    <div class="vertical-flex-container-standard special-action">...</div>
+                </a>
+                <a class="a-button-disabled-standard">
+                    <div class="vertical-flex-container-standard special-action">...</div>
+                </a>
+            </div>
+
+            <div class="small-info-block-container" th:if="${IS_ADMIN == true}">
+                <img class="img-small-info-block" src="/images/customer_roles/customer.png" alt="customer.png"/>
+                <h1 class="h1-small-info-block">Пользователи</h1>
+            </div>
+            <div class="customer-actions-for-admin-container" th:if="${IS_ADMIN == true}">
+                <a class="a-button-standard" href="/special_actions/change_role_to_customers">
+                    <div class="vertical-flex-container-standard special-action">
+                        <img class="img-special-action" src="/images/customer_roles/customer.png" alt="customer.png">
+                        <div>Изменение роли у пользователей</div>
+                    </div>
+                </a>
+                <a class="a-button-disabled-standard">
+                    <div class="vertical-flex-container-standard special-action">...</div>
+                </a>
+                <a class="a-button-disabled-standard">
+                    <div class="vertical-flex-container-standard special-action">...</div>
                 </a>
             </div>
         </main>

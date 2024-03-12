@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title th:text="|${WEB_APP_NAME} - Изменение роли у пользователей|"></title>
+        <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
+
+        <link rel="stylesheet" type="text/css" href="/css/root.css">
+        <link rel="stylesheet" type="text/css" href="/css/main.css">
+        <link rel="stylesheet" type="text/css" href="/css/info_blocks/big_info_block.css">
+        <link rel="stylesheet" type="text/css" href="/css/other/instruments_for_table.css">
+        <link rel="stylesheet" type="text/css" href="/css/other/loading.css">
+        <link rel="stylesheet" type="text/css" href="/css/templates/special_actions/actions/general.css">
+        <link rel="stylesheet" type="text/css" href="/css/templates/special_actions/actions/change_role_to_customers.css">
+
+        <script type="module" src="/js/templates/special_actions/change_role_to_customers.js"></script>
+    </head>
+    <body>
+        <header>
+            <div th:insert="~{layouts/header}"></div>
+        </header>
+        <main>
+            <div class="big-info-block-container">
+                <div class="big-info-block-left-container">
+                    <img class="img-big-info-block"
+                         src="/images/customer_roles/customer.png"
+                         alt="logo.png"/>
+                </div>
+                <div class="big-info-block-right-container">
+                    <h1 class="h1-big-info-block">Изменение роли у пользователей</h1>
+                    <div class="big-info-block-text">
+                        Изменяйте роли у пользователей, чтобы открыть им новые возможности.
+                        Будьте предельно внимательны к пользователям, которым хотите изменить роль.
+                    </div>
+                    <br>
+                    <div class="big-info-block-text">
+                        <div style="font-weight: bold">Роли пользователей:</div>
+                        <div th:each="customerRole: ${CUSTOMER_ROLES}">
+                            <a class="a-for-hint"
+                               th:style="${customerRole.color != null
+                               ? 'color: #' + customerRole.color.hexCode
+                               : ''}"
+                               th:text="${customerRole.title}"
+                               th:title="${customerRole.message}"/>
+                            -
+                            <span th:text="${customerRole.message}"/>
+                        </div>
+                    </div>
+                    <br>
+                </div>
+            </div>
+            <div class="instruments-for-table-container-margin instruments-for-find-customers-container">
+                <div class="label-for-input-container">
+                    <label class="label-standard" for="tb_finder">Поиск:</label>
+                </div>
+                <input id="tb_finder" type="text" class="text-standard">
+
+                <div class="label-for-input-container">
+                    <label class="label-standard" for="cb_customer_roles">Роли:</label>
+                </div>
+                <select id="cb_customer_roles" class="select-standard"></select>
+
+                <div class="label-for-input-container"></div>
+                <button id="btn_refresh" class="button-with-img-standard" title="Обновить">
+                    <img class="img-btn-refresh" src="/images/other/refresh.png" alt="refresh.png"/>
+                </button>
+            </div>
+            <table class="table-standard">
+                <colgroup>
+                    <col style="width: 5%;">
+                    <col style="width: 60%;">
+                    <col style="width: 35%;">
+                </colgroup>
+                <thead id="thead_customers">
+                <tr>
+                    <th>№</th>
+                    <th>Никнейм</th>
+                    <th>Роль</th>
+                </tr>
+                </thead>
+                <tbody id="tbody_customers"></tbody>
+            </table>
+        </main>
+    </body>
+</html>

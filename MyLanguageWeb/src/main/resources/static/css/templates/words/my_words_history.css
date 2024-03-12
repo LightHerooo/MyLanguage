@@ -2,30 +2,14 @@ main {
     min-height: 1300px;
 }
 
-div.words-statistics-container {
+div.statistics-container {
     min-height: 150px;
 
     display: flex;
     flex-direction: column;
 }
 
-div.my-word-history-list-instruments {
-    height: 100px;
-
+div.instruments-for-find-word-histories-container {
     display: grid;
-    grid: 1fr / 2fr 1fr 1fr 50px;
-    gap: 10px;
-    margin-top: 50px;
-}
-
-div.my-word-history-list-instruments-item {
-    display: grid;
-    grid: 50px 1fr / 1fr;
-    gap: 5px;
-}
-
-div.my-word-history-list-container {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    grid-template-columns: 2fr 1fr 1fr 50px;
 }

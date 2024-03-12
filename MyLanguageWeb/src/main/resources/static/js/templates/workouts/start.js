@@ -93,11 +93,16 @@ import {
     FlagElements
 } from "../../classes/flag_elements.js";
 
+import {
+    CssSmallInfoBlock
+} from "../../classes/css/css_small_info_block.js";
+
 const _WORKOUTS_API = new WorkoutsAPI();
 const _WORKOUT_ITEMS_API = new WorkoutItemsAPI();
 
 const _CSS_MAIN = new CssMain();
 const _CSS_ROOT = new CssRoot();
+const _CSS_SMALL_INFO_BLOCK = new CssSmallInfoBlock();
 
 const _GLOBAL_COOKIES = new GlobalCookies();
 const _HTTP_STATUSES = new HttpStatuses();
@@ -111,8 +116,6 @@ const _FLAG_ELEMENTS = new FlagElements();
 
 const _DIV_START_WORKOUT_INFO_ITEM_WITH_HEADER_CONTAINER_STYLE_ID =
     "start-workout-info-item-with-header-container";
-const _DIV_START_WORKOUT_INFO_ITEM_HEADER_CONTAINER_STYLE_ID = "start-workout-info-item-header-container";
-const _IMG_WORKOUT_INFO_ITEM_HEADER_STYLE_ID = "img-workout-info-item-header";
 
 const _DIV_START_WORKOUT_INTERACTION_WITH_ANSWER_AREA_STYLE_ID = "start-workout-interaction-with-answer-area";
 const _DIV_ANSWER_CONTAINER_STYLE_ID = "answer-container";
@@ -367,17 +370,17 @@ async function showCurrentRoundInfo() {
 
                 // Создаём заголовок ---
                 let divHeader = document.createElement("div");
-                divHeader.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
-                divHeader.classList.add(_DIV_START_WORKOUT_INFO_ITEM_HEADER_CONTAINER_STYLE_ID);
+                divHeader.classList.add(_CSS_SMALL_INFO_BLOCK.DIV_SMALL_INFO_BLOCK_CONTAINER_STYLE_ID);
 
                 let imgHeader = document.createElement("img");
                 imgHeader.src = _IMAGE_SOURCES.OTHER.FLAME;
-                imgHeader.classList.add(_IMG_WORKOUT_INFO_ITEM_HEADER_STYLE_ID);
+                imgHeader.classList.add(_CSS_SMALL_INFO_BLOCK.IMG_IMG_SMALL_INFO_BLOCK_STYLE_ID);
                 divHeader.appendChild(imgHeader);
 
-                let spanHeaderText = document.createElement("span");
-                spanHeaderText.textContent = `${_currentRound}-й раунд`;
-                divHeader.appendChild(spanHeaderText);
+                let h1Header = document.createElement("h1");
+                h1Header.classList.add(_CSS_SMALL_INFO_BLOCK.H1_H1_SMALL_INFO_BLOCK_STYLE_ID);
+                h1Header.textContent = `${_currentRound}-й раунд`;
+                divHeader.appendChild(h1Header);
 
                 divRoundInfo.appendChild(divHeader);
                 //---
@@ -446,17 +449,17 @@ async function showCurrentRoundAnswersHistory() {
 
                 // Генерируем заголовом контейнера ---
                 let divHeader = document.createElement("div");
-                divHeader.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
-                divHeader.classList.add(_DIV_START_WORKOUT_INFO_ITEM_HEADER_CONTAINER_STYLE_ID);
+                divHeader.classList.add(_CSS_SMALL_INFO_BLOCK.DIV_SMALL_INFO_BLOCK_CONTAINER_STYLE_ID);
 
                 let imgHeader = document.createElement("img");
-                imgHeader.classList.add(_IMG_WORKOUT_INFO_ITEM_HEADER_STYLE_ID);
+                imgHeader.classList.add(_CSS_SMALL_INFO_BLOCK.IMG_IMG_SMALL_INFO_BLOCK_STYLE_ID);
                 imgHeader.src = _IMAGE_SOURCES.OTHER.HISTORY;
                 divHeader.appendChild(imgHeader);
 
-                let spanHeader = document.createElement("span");
-                spanHeader.textContent = "История";
-                divHeader.appendChild(spanHeader);
+                let h1Header = document.createElement("h1");
+                h1Header.classList.add(_CSS_SMALL_INFO_BLOCK.H1_H1_SMALL_INFO_BLOCK_STYLE_ID);
+                h1Header.textContent = "История";
+                divHeader.appendChild(h1Header);
 
                 divAnswersHistoryContainer.appendChild(divHeader);
                 //---

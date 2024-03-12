@@ -42,11 +42,6 @@ public class WordService {
         return WORD_CRUD_REPOSITORY.findListByTitle(title, wordStatusCode);
     }
 
-    // Получение слов после сортировки
-    public List<Word> findAll(String title, String wordStatusCode, String langCode) {
-        return WORD_CRUD_REPOSITORY.findAllAfterFilter(title, wordStatusCode, langCode);
-    }
-
     // Получение слов после сортировки с пагинацией
     public List<Word> findAll(String title, String wordStatusCode,
                               String langCode, Long numberOfWordsOnPage,
@@ -101,11 +96,6 @@ public class WordService {
         word.setTitle(title);
 
         word.setDateOfCreate(LocalDateTime.now());
-        return WORD_CRUD_REPOSITORY.save(word);
-    }
-
-    public Word edit(Word oldWord, WordRequestDTO dto) {
-        Word word = WORD_MAPPING.mapToWord(oldWord, dto);
         return WORD_CRUD_REPOSITORY.save(word);
     }
 

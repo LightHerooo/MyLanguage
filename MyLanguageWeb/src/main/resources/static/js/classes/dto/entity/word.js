@@ -33,6 +33,5 @@ export class WordResponseDTO {
 export class WordRequestDTO {
     id;
     title;
-    customerId;
     langCode;
 }

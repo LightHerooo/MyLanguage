@@ -1,0 +1,29 @@
+div.procedure-action {
+    min-height: 40px;
+
+    display: grid;
+    grid: 1fr / 1fr 50px;
+    align-items: center;
+    gap: 10px;
+
+    font-size: var(--third-font-size);
+    font-weight: bold;
+}
+
+img.img-procedure-action {
+    width: 32px;
+    height: 32px;
+}
+
+div.header-container {
+    margin-top: 50px;
+
+    text-align: center;
+    font-size: var(--second-font-size);
+    font-weight: bold;
+}
+
+img.img-header {
+    width: 32px;
+    height: 32px;
+}

@@ -47,3 +47,9 @@ export class LangResponseDTO {
         return span;
     }
 }
+
+export class LangRequestDTO {
+    code;
+    isActiveForIn;
+    isActiveForOut;
+}

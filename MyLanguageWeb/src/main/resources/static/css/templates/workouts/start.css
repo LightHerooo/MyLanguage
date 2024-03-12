@@ -21,23 +21,6 @@ div.start-workout-info-item-with-header-container {
     gap: 10px;
 }
 
-div.start-workout-info-item-header-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-
-    font-size: var(--second-font-size);
-    font-weight: bold;
-    text-align: center;
-}
-
-img.img-workout-info-item-header {
-    width: 64px;
-    height: 64px;
-}
-
 div.start-workout-info {
     display: grid;
     justify-content: left;

@@ -321,7 +321,7 @@ class TbCustomerCollectionTitle {
                 let JSONResponsePromise = new Promise(resolve => {
                     customTimerObj.setTimeout(250);
                     customTimerObj.setHandler(async function () {
-                        resolve(await _CUSTOMER_COLLECTIONS_API.POST.validateBeforeCrud(customerCollectionRequestDTO));
+                        resolve(await _CUSTOMER_COLLECTIONS_API.POST.validateBeforeAdd(customerCollectionRequestDTO));
                     });
 
                     customTimerObj.start();

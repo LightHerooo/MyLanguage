@@ -1,4 +1,4 @@
-div.info-block-with-header-container {
+div.medium-info-block-container {
     min-height: 200px;
     background: rgba(var(--first-color-rgb), var(--opacity-standard));
     padding: 10px;
@@ -8,13 +8,12 @@ div.info-block-with-header-container {
     gap: 20px;
 }
 
-h1.h1-info-block-with-header {
+h1.h1-medium-info-block {
     font-size: var(--second-font-size);
     text-align: center;
 }
 
-div.info-block-with-header-text {
+div.medium-info-block-text {
     font-size: var(--third-font-size);
     margin-top: -20px;
 }
-

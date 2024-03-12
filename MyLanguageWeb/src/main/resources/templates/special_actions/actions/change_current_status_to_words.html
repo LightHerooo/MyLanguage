@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title th:text="|${WEB_APP_NAME} - Изменение текущего статуса в словах|"> Изменение текущего статуса в словах</title>
+        <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
+
+        <link rel="stylesheet" type="text/css" href="/css/root.css">
+        <link rel="stylesheet" type="text/css" href="/css/main.css">
+        <link rel="stylesheet" type="text/css" href="/css/info_blocks/big_info_block.css">
+        <link rel="stylesheet" type="text/css" href="/css/other/instruments_for_table.css">
+        <link rel="stylesheet" type="text/css" href="/css/other/loading.css">
+        <link rel="stylesheet" type="text/css" href="/css/other/element_with_flag.css">
+        <link rel="stylesheet" type="text/css" href="/css/templates/special_actions/actions/general.css">
+        <link rel="stylesheet" type="text/css" href="/css/templates/special_actions/actions/change_current_status_to_words.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
+
+        <script type="module" src="/js/templates/special_actions/change_current_status_to_words.js"></script>
+    </head>
+    <body>
+        <header>
+            <div th:insert="~{layouts/header}"></div>
+        </header>
+        <main>
+            <div class="big-info-block-container">
+                <div class="big-info-block-left-container">
+                    <img class="img-big-info-block"
+                         src="/images/words/cards.png"
+                         alt="cards.png"/>
+                </div>
+                <div class="big-info-block-right-container">
+                    <h1 class="h1-big-info-block">Изменение текущего статуса в словах</h1>
+                    <div class="big-info-block-text">
+                        Изменяйте статус словам, чтобы контролировать их использование пользователями ресурса.
+                        Изменение статуса слова мгновенно изменяет его в базе данных.
+                    </div>
+                    <br>
+                    <div class="big-info-block-text">
+                        <div style="font-weight: bold">Статусы слов:</div>
+                        <div th:each="wordStatus: ${WORD_STATUSES}">
+                            <a class="a-for-hint"
+                               th:style="'color: #' + ${wordStatus.color.hexCode}"
+                               th:text="${wordStatus.title}"
+                               th:title="${wordStatus.message}"/>
+                            -
+                            <span th:text="${wordStatus.message}"/>
+                        </div>
+                    </div>
+                    <br>
+                </div>
+            </div>
+            <div class="actions-container">
+                <a class="a-button-deny-standard" id="btn_delete_inactive_words_in_collections">
+                    <div class="procedure-action">
+                        <div class="content-center-standard">
+                            <div>Удалить слова со статусом, отличным от "Активный", из коллекций пользователей</div>
+                        </div>
+                        <div class="content-center-standard">
+                            <img class="img-procedure-action" src="/images/other/delete.png" alt="delete.png"/>
+                        </div>
+                    </div>
+                </a>
+                <a class="a-button-deny-standard" id="btn_delete_all_unclaimed_words">
+                    <div class="procedure-action">
+                        <div>Удалить все слова со статусом "Невостребованный"</div>
+                        <img class="img-procedure-action" src="/images/other/delete.png" alt="delete.png"/>
+                    </div>
+                </a>
+                <a class="a-button-accept-standard" id="btn_add_word_status_to_words_without_status">
+                    <div class="procedure-action">
+                        <div class="content-center-standard">
+                            <div>Присвоить статус "Новый" словам без статуса</div>
+                        </div>
+                        <div class="content-center-standard">
+                            <img class="img-procedure-action" src="/images/other/add.png" alt="add.png"/>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="instruments-for-table-container-margin instruments-for-find-words-container">
+                <div class="label-for-input-container">
+                    <label class="label-standard" for="tb_finder">Поиск:</label>
+                </div>
+                <input id="tb_finder" class="text-standard" type="text">
+
+                <div class="label-for-input-container">
+                    <label class="label-standard" for="cb_langs">Язык:</label>
+                </div>
+                <div class="element-with-flag-container">
+                    <select id="cb_langs" class="select-standard"></select>
+                    <div class="flag-container">
+                        <div id="lang_flag"></div>
+                    </div>
+                </div>
+
+                <div class="label-for-input-container">
+                    <label class="label-standard" for="cb_word_statuses">Статус:</label>
+                </div>
+                <select id="cb_word_statuses" class="select-standard"></select>
+
+                <div class="label-for-input-container"></div>
+                <button id="btn_refresh" class="button-with-img-standard" title="Обновить">
+                    <img class="img-btn-refresh" src="/images/other/refresh.png" alt="refresh.png"/>
+                </button>
+            </div>
+            <table class="table-standard">
+                <colgroup >
+                    <col style="width: 5%;">
+                    <col style="width: 45%;">
+                    <col style="width: 25%;">
+                    <col style="width: 25%;">
+                </colgroup>
+                <thead id="change_word_table_head">
+                <tr>
+                    <th>№</th>
+                    <th>Слово</th>
+                    <th>Язык</th>
+                    <th>Статус</th>
+                </tr>
+                </thead>
+                <tbody id="change_word_table_body"></tbody>
+            </table>
+        </main>
+    </body>
+</html>

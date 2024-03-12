@@ -1,5 +1,6 @@
 package ru.herooo.mylanguageweb.controllers.rest;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,6 +10,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import ru.herooo.mylanguagedb.entities.Customer;
 import ru.herooo.mylanguagedb.entities.CustomerCollection;
+import ru.herooo.mylanguagedb.entities.CustomerRole;
 import ru.herooo.mylanguagedb.repositories.lang.Langs;
 import ru.herooo.mylanguageweb.dto.other.CustomResponseMessage;
 import ru.herooo.mylanguageweb.dto.entity.customer.CustomerEntryRequestDTO;
@@ -16,28 +18,78 @@ import ru.herooo.mylanguageweb.dto.entity.customer.CustomerMapping;
 import ru.herooo.mylanguageweb.dto.entity.customer.CustomerRequestDTO;
 import ru.herooo.mylanguageweb.dto.entity.customer.CustomerResponseDTO;
 import ru.herooo.mylanguageweb.services.CustomerCollectionService;
+import ru.herooo.mylanguageweb.services.CustomerRoleService;
 import ru.herooo.mylanguageweb.services.CustomerService;
 import ru.herooo.mylanguageweb.services.LangService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/customers")
 public class CustomersRestController {
+    private final CustomerRolesRestController CUSTOMER_ROLES_REST_CONTROLLER;
+
     private final CustomerService CUSTOMER_SERVICE;
     private final CustomerCollectionService CUSTOMER_COLLECTION_SERVICE;
     private final LangService LANG_SERVICE;
+    private final CustomerRoleService CUSTOMER_ROLE_SERVICE;
+
 
     private final CustomerMapping CUSTOMER_MAPPING;
 
     @Autowired
-    public CustomersRestController(CustomerService customerService,
+    public CustomersRestController(CustomerRolesRestController customerRolesRestController,
+
+                                   CustomerService customerService,
                                    CustomerCollectionService customerCollectionService,
                                    LangService langService,
+                                   CustomerRoleService customerRoleService,
+
                                    CustomerMapping customerMapping) {
+        this.CUSTOMER_ROLES_REST_CONTROLLER = customerRolesRestController;
+
         this.CUSTOMER_SERVICE = customerService;
         this.CUSTOMER_COLLECTION_SERVICE = customerCollectionService;
         this.LANG_SERVICE = langService;
+        this.CUSTOMER_ROLE_SERVICE = customerRoleService;
 
         this.CUSTOMER_MAPPING = customerMapping;
+    }
+
+    @GetMapping("/filtered_pagination")
+    public ResponseEntity<?> getAll(@RequestParam("number_of_items") Long numberOfItems,
+                                    @RequestParam(value = "nickname", required = false) String nickname,
+                                    @RequestParam(value = "customer_role_code",
+                                            required = false) String customerRoleCode,
+                                    @RequestParam(value = "last_customer_id_on_previous_page",
+                                            required = false, defaultValue = "0") Long lastCustomerIdOnPreviousPage) {
+        if (numberOfItems == null || numberOfItems <= 0) {
+            CustomResponseMessage message =
+                    new CustomResponseMessage(1, "Количество записей должно быть больше 0.");
+            return ResponseEntity.badRequest().body(message);
+        }
+
+        if (lastCustomerIdOnPreviousPage == null || lastCustomerIdOnPreviousPage < 0) {
+            CustomResponseMessage message =
+                    new CustomResponseMessage(2,
+                            "ID последнего пользователя на предыдущей странице не должен быть отрицательным. " +
+                                    "Если вы хотите отобразить первую страницу, укажите ID = 0.");
+            return ResponseEntity.badRequest().body(message);
+        }
+
+        List<Customer> customers = CUSTOMER_SERVICE.getAll(
+                nickname, customerRoleCode, numberOfItems, lastCustomerIdOnPreviousPage);
+        if (customers != null && customers.size() > 0) {
+            List<CustomerResponseDTO> responseDTOs = customers
+                    .stream()
+                    .map(CUSTOMER_MAPPING::mapToResponseDTO)
+                    .toList();
+            return ResponseEntity.ok(responseDTOs);
+        } else {
+            CustomResponseMessage message = new CustomResponseMessage(1,
+                    "Пользователи по указанным фильтрам не найдены.");
+            return ResponseEntity.badRequest().body(message);
+        }
     }
 
     @PostMapping("/register")
@@ -123,6 +175,56 @@ public class CustomersRestController {
             return ResponseEntity.ok(dto);
         } else {
             CustomResponseMessage message = new CustomResponseMessage(2, "Неправильный логин или пароль.");
+            return ResponseEntity.badRequest().body(message);
+        }
+    }
+
+    @PatchMapping("/change_role")
+    public ResponseEntity<?> changeRole(HttpServletRequest request,
+                                        @RequestBody CustomerRequestDTO dto) {
+        String validateAuthCode = CUSTOMER_SERVICE.validateAuthCode(request, dto.getAuthCode());
+        dto.setAuthCode(validateAuthCode);
+
+        ResponseEntity<?> response = findExistsByAuthCode(dto.getAuthCode());
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        // Менять роль может только администратор
+        Customer authCustomer = CUSTOMER_SERVICE.findByAuthCode(dto.getAuthCode());
+        if (!CUSTOMER_SERVICE.isAdmin(authCustomer)) {
+            CustomResponseMessage message = new CustomResponseMessage(1, "У вас недостаточно прав.");
+            return ResponseEntity.badRequest().body(message);
+        }
+
+        // Проверяем существование пользователя, которому будем изменять роль
+        response = find(dto.getId());
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        // Нельзя изменить себе же роль
+        Customer changedCustomer = CUSTOMER_SERVICE.find(dto.getId());
+        if (authCustomer.equals(changedCustomer)) {
+            CustomResponseMessage message = new CustomResponseMessage(2,
+                    "Нельзя изменить роль своему пользователю.");
+            return ResponseEntity.badRequest().body(message);
+        }
+
+        // Проверям роль, которую хотим присвоить
+        response = CUSTOMER_ROLES_REST_CONTROLLER.findByCode(dto.getRoleCode());
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        CustomerRole newRole = CUSTOMER_ROLE_SERVICE.find(dto.getRoleCode());
+        changedCustomer = CUSTOMER_SERVICE.changeRole(changedCustomer, newRole);
+        if (changedCustomer != null) {
+            CustomerResponseDTO responseDTO = CUSTOMER_MAPPING.mapToResponseDTO(changedCustomer);
+            return ResponseEntity.ok(responseDTO);
+        } else {
+            CustomResponseMessage message = new CustomResponseMessage(3,
+                    String.format("Не удалось изменить роль пользователя с id = '%d'.", dto.getId()));
             return ResponseEntity.badRequest().body(message);
         }
     }

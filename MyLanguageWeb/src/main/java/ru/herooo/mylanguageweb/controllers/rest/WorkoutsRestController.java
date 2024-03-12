@@ -502,14 +502,6 @@ public class WorkoutsRestController {
                         "Разрешено взаимодействовать только со своими тренировками.");
                 return ResponseEntity.badRequest().body(message);
             }
-
-            // Проверяем, поддерживается ли пара языков ---
-            response = LANGS_REST_CONTROLLER.validateCoupleOfLanguages(
-                    workout.getLangIn().getCode(), workout.getLangOut().getCode());
-            if (response.getStatusCode() != HttpStatus.OK) {
-                return response;
-            }
-            //---
         }
 
         CustomResponseMessage message = new CustomResponseMessage(1, "Данные корректны.");

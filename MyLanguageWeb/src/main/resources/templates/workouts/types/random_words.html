@@ -8,7 +8,8 @@
 
     <link rel="stylesheet" type="text/css" href="/css/root.css">
     <link rel="stylesheet" type="text/css" href="/css/main.css">
-    <link rel="stylesheet" type="text/css" href="/css/info_blocks/info_block_with_img_and_header.css">
+    <link rel="stylesheet" type="text/css" href="/css/info_blocks/big_info_block.css">
+    <link rel="stylesheet" type="text/css" href="/css/info_blocks/small_info_block.css">
     <link rel="stylesheet" type="text/css" href="/css/other/rule.css">
     <link rel="stylesheet" type="text/css" href="/css/other/loading.css">
     <link rel="stylesheet" type="text/css" href="/css/other/element_with_flag.css">
@@ -23,17 +24,17 @@
             <div th:insert="~{layouts/header}"></div>
         </header>
         <main>
-            <div class="info-block-with-img-and-header-container">
-                <div class="info-block-with-img-and-header-left-container">
-                    <img class="img-info-block-with-img-and-header"
+            <div class="big-info-block-container">
+                <div class="big-info-block-left-container">
+                    <img class="img-big-info-block"
                          src="#"
                          th:src="${WORKOUT_TYPE.pathToImage}"
                          alt="workout_type.png"/>
                 </div>
-                <div class="info-block-with-img-and-header-right-container">
-                    <h1 class="h1-info-block-with-img-and-header"
+                <div class="big-info-block-right-container">
+                    <h1 class="h1-big-info-block"
                         th:text="${WORKOUT_TYPE.title}">Название режима тренировки</h1>
-                    <div class="info-block-with-img-and-header-text"
+                    <div class="big-info-block-text"
                          th:text="${WORKOUT_TYPE.message}">
                         Информация о режиме тренировки.
                     </div>
@@ -42,11 +43,11 @@
             </div>
             <div class="workout-container">
                 <div class="workout-item">
-                    <div class="info-block-standard workout-item-header-container">
-                        <img class="img-workout-item-header"
+                    <div class="small-info-block-container">
+                        <img class="img-small-info-block"
                              src="/images/other/add.png"
                              alt="add.png"/>
-                        <h1 class="h1-workout-item-header">Новая тренировка</h1>
+                        <h1 class="h1-small-info-block">Новая тренировка</h1>
                     </div>
                     <div class="new-workout-start-container">
                         <div class="info-block-standard">
@@ -74,13 +75,13 @@
                                     <select id="cb_number_of_words" class="select-standard"></select>
                                 </div>
                                 <div class="horizontal-delimiter"></div>
-                                <div class="new-workout-start-actions-container">
+                                <div class="form-actions-container">
                                     <input id="btn_submit" type="submit"
                                            class="submit-standard" value="Начать тренировку">
                                     <button id="btn_drop_workout_settings" type="button"
-                                            class="button-standard btn-drop-workout-settings"
+                                            class="button-with-img-standard"
                                             title="Сбросить настройки">
-                                        <img class="img-btn-drop-workout-settings"
+                                        <img class="img-btn-drop"
                                              src="/images/other/trash.png" alt="trash.png"/>
                                     </button>
                                 </div>
@@ -90,13 +91,11 @@
                     </div>
                 </div>
                 <div class="workout-item">
-                    <div class="info-block-standard workout-item-header-container">
-                        <div class="workout-item-header-container">
-                            <img class="img-workout-item-header"
-                                 src="/images/other/history.png"
-                                 alt="history.png"/>
-                            <h1 class="h1-workout-item-header">Незавершённые тренировки</h1>
-                        </div>
+                    <div class="small-info-block-container">
+                        <img class="img-small-info-block"
+                             src="/images/other/history.png"
+                             alt="history.png"/>
+                        <h1 class="h1-small-info-block">Незавершённые тренировки</h1>
                     </div>
                     <div id="not_over_workouts_container" class="info-block-standard"></div>
                 </div>

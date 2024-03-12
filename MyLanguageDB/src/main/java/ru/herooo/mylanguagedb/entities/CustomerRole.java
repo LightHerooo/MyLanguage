@@ -22,6 +22,13 @@ public class CustomerRole {
     @Column(name="code")
     private String code;
 
+    @Column(name="message")
+    private String message;
+
+    @ManyToOne
+    @JoinColumn(name = "color_id")
+    private Color color;
+
     public CustomerRole() {}
 
     public long getId() {
@@ -50,5 +57,30 @@ public class CustomerRole {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        CustomerRole customerRole = (CustomerRole) obj;
+
+        return this.id == customerRole.getId();
     }
 }

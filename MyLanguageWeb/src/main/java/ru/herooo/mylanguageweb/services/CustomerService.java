@@ -18,6 +18,7 @@ import ru.herooo.mylanguageweb.global.GlobalCookieUtils;
 import ru.herooo.mylanguageweb.global.GlobalCookies;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class CustomerService {
@@ -40,6 +41,11 @@ public class CustomerService {
         this.CUSTOMER_MAPPING = customerMapping;
         this.STRING_UTILS = stringUtils;
         this.GLOBAL_COOKIE_UTILS = globalCookieUtils;
+    }
+
+    public List<Customer> getAll(String nickname, String customerRoleCode, Long numberOfItems, Long lastCustomerIdOnPreviousPage) {
+        return CUSTOMER_CRUD_REPOSITORY
+                .findAllAfterFilterWithPagination(nickname, customerRoleCode, numberOfItems, lastCustomerIdOnPreviousPage);
     }
 
     // Регистрация пользователя
@@ -81,6 +87,16 @@ public class CustomerService {
     public void exit(HttpServletResponse response) {
         GLOBAL_COOKIE_UTILS.deleteCookieInHttpResponse(response, GlobalCookies.AUTH_CODE);
         GLOBAL_COOKIE_UTILS.deleteCookieInHttpResponse(response, GlobalCookies.AUTH_ID);
+    }
+
+    public Customer changeRole(Customer customer, CustomerRole customerRole) {
+        Customer result = null;
+        if (customer != null && customerRole != null) {
+            customer.setRole(customerRole);
+            result = CUSTOMER_CRUD_REPOSITORY.save(customer);
+        }
+
+        return result;
     }
 
     // Поиск по Id

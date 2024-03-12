@@ -103,12 +103,11 @@ class WordsPOSTRequests {
         return await _XML_UTILS.getJSONResponseByPOSTXml(requestURL, jsonStr);
     }
 
-    async validateBeforeCrud(wordRequestDTO) {
-        let requestURL = new URL(URL_TO_API_WORDS_VALIDATE + "/before_crud");
+    async validateBeforeAdd(wordRequestDTO) {
+        let requestURL = new URL(URL_TO_API_WORDS_VALIDATE + "/before_add");
         let jsonStr = _JSON_UTILS.stringify({
             'id': wordRequestDTO.id,
             'title': wordRequestDTO.title,
-            'customer_id': wordRequestDTO.customerId,
             'lang_code': wordRequestDTO.langCode
         });
 
@@ -117,11 +116,10 @@ class WordsPOSTRequests {
 }
 
 class WordsPATCHRequests {
-    async edit(wordRequestDTO) {
-        let requestURL = new URL(URL_TO_API_WORDS);
+    async changeWordStatus(wordRequestDTO) {
+        let requestURL = new URL(URL_TO_API_WORDS + "/change_word_status");
         let jsonStr = _JSON_UTILS.stringify({
             'id': wordRequestDTO.id,
-            'customer_id': wordRequestDTO.customerId,
             'word_status_code': wordRequestDTO.wordStatusCode
         });
 

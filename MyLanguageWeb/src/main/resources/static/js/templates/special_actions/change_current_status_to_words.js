@@ -93,8 +93,10 @@ let _lastWordNumberInList = 0;
 let _lastWordIdOnPreviousPage = 0n;
 
 const _CUSTOM_TIMER_WORDS_FINDER = new CustomTimer();
-const _CUSTOM_TIMER_TB_FINDER = new CustomTimer();
 const _TIMEOUT_FOR_FINDERS = 1000;
+
+const _CUSTOM_TIMER_TB_FINDER = new CustomTimer();
+const _CUSTOM_TIMER_FOR_REFRESH = new CustomTimer();
 
 window.onload = async function() {
     // Подготавливаем таймеры ---
@@ -212,12 +214,75 @@ function prepareBtnRefresh() {
     let btnRefresh = document.getElementById(_BTN_REFRESH_ID);
     if (btnRefresh) {
         btnRefresh.addEventListener("click", async function() {
+            changeDisableStatusToFinderInstruments(true);
+
+            // Отображаем загрузки на момент перезагрузки ---
+            showLoadingInTable();
+            //---
+
+            let refreshPromise = new Promise(resolve => {
+                _CUSTOM_TIMER_FOR_REFRESH.stop();
+
+                _CUSTOM_TIMER_FOR_REFRESH.setTimeout(500);
+                _CUSTOM_TIMER_FOR_REFRESH.setHandler(async function() {
+                    let cbLangs = document.getElementById(_CB_LANGS_ID);
+                    let divLangFlag = document.getElementById(_DIV_LANG_FLAG_ID);
+                    if (cbLangs && divLangFlag) {
+                        let firstOption = document.createElement("option");
+                        firstOption.textContent = "Все";
+
+                        let cbLangsWithFlag = new ComboBoxWithFlag(cbLangs.parentElement, cbLangs, divLangFlag);
+                        await _LANG_UTILS.CB_LANGS_IN.fill(cbLangsWithFlag, firstOption);
+                    }
+
+                    resolve();
+                });
+
+                _CUSTOM_TIMER_FOR_REFRESH.start();
+            });
+            await refreshPromise;
+
             startAllFinders();
+            changeDisableStatusToFinderInstruments(false);
         })
     }
 }
 
+function changeDisableStatusToFinderInstruments(isDisable) {
+    let btnRefresh = document.getElementById(_BTN_REFRESH_ID);
+    if (btnRefresh) {
+        btnRefresh.disabled = isDisable;
+    }
+
+    let tbFinder = document.getElementById(_TB_FINDER_ID);
+    if (tbFinder) {
+        tbFinder.disabled = isDisable;
+    }
+
+    let cbLangs = document.getElementById(_CB_LANGS_ID);
+    if (cbLangs) {
+        cbLangs.disabled = isDisable;
+    }
+
+    let cbWordStatuses = document.getElementById(_CB_WORD_STATUSES);
+    if (cbWordStatuses) {
+        cbWordStatuses.disabled = isDisable;
+    }
+}
+
 // Слова ---
+function showLoadingInTable() {
+    let tableHead = document.getElementById(_CHANGE_WORD_TABLE_HEAD_ID);
+    let tableBody = document.getElementById(_CHANGE_WORD_TABLE_BODY_ID);
+    if (tableHead && tableBody) {
+        let numberOfColumns = _TABLE_UTILS.getNumberOfColumnsByTableHead(tableHead);
+        let trMessage = _TABLE_UTILS.MESSAGES_INSIDE_TABLE.createTrLoading(numberOfColumns);
+
+        tableBody.replaceChildren();
+        tableBody.appendChild(trMessage);
+    }
+}
+
 function prepareWordsFinder() {
     _CUSTOM_TIMER_WORDS_FINDER.setTimeout(_TIMEOUT_FOR_FINDERS);
     _CUSTOM_TIMER_WORDS_FINDER.setHandler(async function() {
@@ -233,15 +298,7 @@ function startToFindWords() {
         _CUSTOM_TIMER_WORDS_FINDER.stop();
     }
 
-    let tableHead = document.getElementById(_CHANGE_WORD_TABLE_HEAD_ID);
-    let tableBody = document.getElementById(_CHANGE_WORD_TABLE_BODY_ID);
-    if (tableHead && tableBody) {
-        let numberOfColumns = _TABLE_UTILS.getNumberOfColumnsByTableHead(tableHead);
-        let trMessage = _TABLE_UTILS.MESSAGES_INSIDE_TABLE.createTrLoading(numberOfColumns);
-
-        tableBody.replaceChildren();
-        tableBody.appendChild(trMessage);
-    }
+    showLoadingInTable();
 
     if (_CUSTOM_TIMER_WORDS_FINDER) {
         _CUSTOM_TIMER_WORDS_FINDER.start();
@@ -387,10 +444,9 @@ async function createTableRow(wordResponseDTO) {
 
             let wordRequestDTO = new WordRequestDTO();
             wordRequestDTO.id = wordStatusHistory.word.id;
-            wordRequestDTO.customerId = wordStatusHistory.word.customer.id;
             wordRequestDTO.wordStatusCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbWordStatuses);
 
-            let JSONResponse = await _WORDS_API.PATCH.edit(wordRequestDTO);
+            let JSONResponse = await _WORDS_API.PATCH.changeWordStatus(wordRequestDTO);
             if (JSONResponse.status === _HTTP_STATUSES.OK) {
                 cbWordStatuses.disabled = false;
             }

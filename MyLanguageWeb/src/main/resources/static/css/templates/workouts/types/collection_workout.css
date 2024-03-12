@@ -1,15 +1,6 @@
-div.words-in-collection-instruments {
-    height: 100px;
-
+div.instruments-for-find-words-in-collection-container {
     display: grid;
-    grid: 1fr / 1fr 50px;
-    gap: 10px;
-}
-
-div.words-in-collection-instruments-item {
-    display: grid;
-    grid: 50px 1fr / 1fr;
-    gap: 5px;
+    grid-template-columns: 1fr 50px;
 }
 
 div.collection-info {

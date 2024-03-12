@@ -514,7 +514,7 @@ async function checkBeforeWorkoutStart() {
     if (divLangOutFlag && cbLangsOut && divLangOutFlag) {
         let cbLangsOutWithFlag =
             new ComboBoxWithFlag(divLangOutContainer, cbLangsOut, divLangOutFlag);
-        isLangOutCorrect = await _LANG_UTILS.CB_LANGS_IN.checkCorrectValue(cbLangsOutWithFlag);
+        isLangOutCorrect = await _LANG_UTILS.CB_LANGS_OUT.checkCorrectValue(cbLangsOutWithFlag);
     }
     //---
 

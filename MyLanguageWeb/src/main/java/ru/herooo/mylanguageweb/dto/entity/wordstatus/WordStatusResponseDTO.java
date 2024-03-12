@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import ru.herooo.mylanguageweb.controllers.json.LongDeserializer;
 import ru.herooo.mylanguageweb.controllers.json.LongSerializer;
+import ru.herooo.mylanguageweb.dto.entity.color.ColorResponseDTO;
 
 public class WordStatusResponseDTO {
     @JsonSerialize(using = LongSerializer.class)
@@ -20,8 +21,8 @@ public class WordStatusResponseDTO {
     @JsonProperty("message")
     private String message;
 
-    @JsonProperty("color_hex_code")
-    private String colorHexCode;
+    @JsonProperty("color")
+    private ColorResponseDTO color;
 
     public long getId() {
         return id;
@@ -55,11 +56,11 @@ public class WordStatusResponseDTO {
         this.message = message;
     }
 
-    public String getColorHexCode() {
-        return colorHexCode;
+    public ColorResponseDTO getColor() {
+        return color;
     }
 
-    public void setColorHexCode(String colorHexCode) {
-        this.colorHexCode = colorHexCode;
+    public void setColor(ColorResponseDTO color) {
+        this.color = color;
     }
 }

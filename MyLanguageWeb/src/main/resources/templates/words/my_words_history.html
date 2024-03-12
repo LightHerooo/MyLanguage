@@ -7,7 +7,8 @@
 
         <link rel="stylesheet" type="text/css" href="/css/root.css">
         <link rel="stylesheet" type="text/css" href="/css/main.css">
-        <link rel="stylesheet" type="text/css" href="/css/info_blocks/info_block_with_img_and_header.css">
+        <link rel="stylesheet" type="text/css" href="/css/info_blocks/big_info_block.css">
+        <link rel="stylesheet" type="text/css" href="/css/other/instruments_for_table.css">
         <link rel="stylesheet" type="text/css" href="/css/other/loading.css">
         <link rel="stylesheet" type="text/css" href="/css/other/element_with_flag.css">
         <link rel="stylesheet" type="text/css" href="/css/templates/words/my_words_history.css">
@@ -20,77 +21,76 @@
             <div th:insert="~{layouts/header}"></div>
         </header>
         <main>
-            <div class="info-block-with-img-and-header-container">
-                <div class="info-block-with-img-and-header-left-container">
-                    <img class="img-info-block-with-img-and-header" src="/images/words/my_words_history.png"
+            <div class="big-info-block-container">
+                <div class="big-info-block-left-container">
+                    <img class="img-big-info-block" src="/images/words/my_words_history.png"
                          alt="my_words_history.png"/>
                 </div>
-                <div class="info-block-with-img-and-header-right-container">
-                    <h1 class="h1-info-block-with-img-and-header">История моих предложенных слов</h1>
-                    <div class="info-block-with-img-and-header-text">
+                <div class="big-info-block-right-container">
+                    <h1 class="h1-big-info-block">История моих предложенных слов</h1>
+                    <div class="big-info-block-text">
                         На странице находятся все слова, которые вы предлагали для добавления.
                         Вы можете посмотреть историю изменений статусов слов, нажав на кнопку рядом со строкой слова.
                         Помните, что слова со статусом
-                        <a class="word-status-standard"
-                           th:style="'color: #' + ${UNCLAIMED_WORD_STATUS.colorHexCode}"
+                        <a class="a-for-hint"
+                           th:style="'color: #' + ${UNCLAIMED_WORD_STATUS.color.hexCode}"
                            th:text="'&quot;' + ${UNCLAIMED_WORD_STATUS.title} + '&quot;'"
                            th:title="${UNCLAIMED_WORD_STATUS.message}"/>
                         со временем удаляются из базы, из-за чего просмотр изменения статуса слова в таких словах
                         <span style="font-weight: bold" >станет недоступна</span>.
                     </div>
                     <br>
-                    <div class="info-block-with-img-and-header-text words-statistics-container"
+                    <div class="big-info-block-text statistics-container"
                          id="my_words_history_statistics_container"></div>
                 </div>
             </div>
-            <div class="my-word-history-list-instruments">
-                <div class="my-word-history-list-instruments-item">
-                    <label class="label-for-input-standard" for="tb_finder">Поиск:</label>
-                    <input id="tb_finder" class="text-standard" type="text">
+            <div class="instruments-for-table-container-margin instruments-for-find-word-histories-container">
+                <div class="label-for-input-container">
+                    <label class="label-standard" for="tb_finder">Поиск:</label>
                 </div>
-                <div class="my-word-history-list-instruments-item">
-                    <label class="label-for-input-standard" for="cb_langs">Язык:</label>
-                    <div class="element-with-flag-container">
-                        <select id="cb_langs" class="select-standard"></select>
-                        <div class="flag-container">
-                            <div id="lang_flag"></div>
-                        </div>
+                <input id="tb_finder" class="text-standard" type="text">
+
+                <div class="label-for-input-container">
+                    <label class="label-standard" for="cb_langs">Язык:</label>
+                </div>
+                <div class="element-with-flag-container">
+                    <select id="cb_langs" class="select-standard"></select>
+                    <div class="flag-container">
+                        <div id="lang_flag"></div>
                     </div>
                 </div>
-                <div class="my-word-history-list-instruments-item">
-                    <label class="label-for-input-standard" for="cb_word_statuses">Статус:</label>
-                    <select id="cb_word_statuses" class="select-standard"></select>
+
+                <div class="label-for-input-container">
+                    <label class="label-standard" for="cb_word_statuses">Статус:</label>
                 </div>
-                <div class="my-word-history-list-instruments-item">
-                    <label class="label-for-input-standard" for="btn_refresh"></label>
-                    <button id="btn_refresh" class="btn-refresh-standard" title="Обновить">
-                        <img class="btn-refresh-standard-img" src="/images/other/refresh.png" alt="refresh.png"/>
-                    </button>
-                </div>
+                <select id="cb_word_statuses" class="select-standard"></select>
+
+                <div class="label-for-input-container"></div>
+                <button id="btn_refresh" class="button-with-img-standard" title="Обновить">
+                    <img class="img-btn-refresh" src="/images/other/refresh.png" alt="refresh.png"/>
+                </button>
             </div>
-            <div class="my-word-history-list-container" id="my_word_history_list_container">
-                <table class="table-standard">
-                    <colgroup id="my_word_history_table_colgroup">
-                        <col style="width: 5%;">
-                        <col style="width: 35%;">
-                        <col style="width: 20%;">
-                        <col style="width: 20%;">
-                        <col style="width: 20%;">
-                        <col style="width: 50px;">
-                    </colgroup>
-                    <thead id="my_word_history_table_head">
-                        <tr>
-                            <th>№</th>
-                            <th>Слово</th>
-                            <th>Язык</th>
-                            <th>Статус</th>
-                            <th>Дата изменения</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody id="my_word_history_table_body"></tbody>
-                </table>
-            </div>
+            <table class="table-standard">
+                <colgroup id="my_word_history_table_colgroup">
+                    <col style="width: 5%;">
+                    <col style="width: 35%;">
+                    <col style="width: 20%;">
+                    <col style="width: 20%;">
+                    <col style="width: 20%;">
+                    <col style="width: 50px;">
+                </colgroup>
+                <thead id="my_word_history_table_head">
+                    <tr>
+                        <th>№</th>
+                        <th>Слово</th>
+                        <th>Язык</th>
+                        <th>Статус</th>
+                        <th>Дата изменения</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="my_word_history_table_body"></tbody>
+            </table>
         </main>
     </body>
 </html>

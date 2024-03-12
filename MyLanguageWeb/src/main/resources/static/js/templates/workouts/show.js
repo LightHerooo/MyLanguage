@@ -85,7 +85,7 @@ window.onload = async function () {
 
 // Поиск режимов тренировок ---
 function prepareWorkoutTypesFinder() {
-    _CUSTOM_TIMER_WORKOUT_TYPES_FINDER.setTimeout(250);
+    _CUSTOM_TIMER_WORKOUT_TYPES_FINDER.setTimeout(1000);
     _CUSTOM_TIMER_WORKOUT_TYPES_FINDER.setHandler(async function() {
         await tryToFillWorkoutTypes();
     });
@@ -101,6 +101,7 @@ function startToFindWorkoutTypes() {
         divWorkoutTypesContainer.className = "";
         divWorkoutTypesContainer.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
         divWorkoutTypesContainer.classList.add(_CSS_MAIN.DIV_CONTENT_CENTER_STANDARD_STYLE_ID);
+        divWorkoutTypesContainer.style.height = "200px";
         divWorkoutTypesContainer.appendChild(new LoadingElement().createDiv());
     }
 
@@ -112,7 +113,7 @@ function startToFindWorkoutTypes() {
 async function tryToFillWorkoutTypes() {
     let divWorkoutTypesContainer = document.getElementById(_DIV_WORKOUT_TYPES_CONTAINER_ID);
     if (divWorkoutTypesContainer) {
-        let JSONResponse = await _WORKOUT_TYPES_API.GET.getAll();
+        let JSONResponse = await _WORKOUT_TYPES_API.GET.getAllFiltered(null);
         if (JSONResponse.status === _HTTP_STATUSES.OK) {
             let divWorkoutTypes = await createDivWorkoutTypes(JSONResponse.json);
 
@@ -128,6 +129,7 @@ async function tryToFillWorkoutTypes() {
             divWorkoutTypesContainer.className = "";
             divWorkoutTypesContainer.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
             divWorkoutTypesContainer.classList.add(_CSS_MAIN.DIV_CONTENT_CENTER_STANDARD_STYLE_ID);
+            divWorkoutTypesContainer.style.height = "200px";
             divWorkoutTypesContainer.appendChild(divMessage);
         }
     }

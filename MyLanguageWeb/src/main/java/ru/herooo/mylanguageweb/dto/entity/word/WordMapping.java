@@ -72,19 +72,12 @@ public class WordMapping {
             word.setLang(lang);
         }
 
-        return mapToWord(word, dto);
-    }
-
-    // Маппинг для изменения (все вносимые поля могут быть изменены)
-    public Word mapToWord(Word oldWord, WordRequestDTO dto) {
-        long customerId = dto.getCustomerId();
-        if (customerId > 0) {
-            Customer customer = CUSTOMER_CRUD_REPOSITORY.findById(customerId).orElse(null);
-            if (customer != null) {
-                oldWord.setAuthor(customer);
-            }
+        String authCode = dto.getAuthCode();
+        if (STRING_UTILS.isNotStringVoid(authCode)) {
+            Customer customer = CUSTOMER_CRUD_REPOSITORY.findByAuthCode(authCode).orElse(null);
+            word.setAuthor(customer);
         }
 
-        return oldWord;
+        return word;
     }
 }

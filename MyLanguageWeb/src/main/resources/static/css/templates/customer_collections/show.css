@@ -2,50 +2,34 @@ main {
     min-height: 1500px;
 }
 
-div.words-statistics-container {
+div.statistics-container {
     min-height: 100px;
 
     display: flex;
     flex-direction: column;
 }
 
-div.customer-collections-actions {
-    height: 250px;
-
+div.actions-container {
     display: grid;
     grid: 1fr / 1fr;
     gap: 10px;
 }
 
-div.customer-collections-action {
+div.action {
+    height: 250px;
+
     font-size: var(--third-font-size);
     font-weight: bold;
 }
 
-img.customer-collections-actions-img {
+img.img-action {
     width: 128px;
     height: 128px;
 }
 
-div.collection-words-container {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-div.collection-words-instruments {
-    height: 100px;
-
+div.instruments-for-find-words-in-collection-container {
     display: grid;
-    grid: 1fr / 2fr 1fr 50px;
-    gap: 10px;
-    margin-top: 50px;
-}
-
-div.collection-words-instruments-item {
-    display: grid;
-    grid: 50px 1fr / 1fr;
-    gap: 5px;
+    grid-template-columns: 2fr 1fr 50px;
 }
 
 div.collection-info {

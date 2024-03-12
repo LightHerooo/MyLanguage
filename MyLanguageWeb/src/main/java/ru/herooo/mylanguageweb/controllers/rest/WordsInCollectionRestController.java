@@ -26,7 +26,6 @@ import java.util.List;
 public class WordsInCollectionRestController {
 
     private final CustomersRestController CUSTOMERS_REST_CONTROLLER;
-    private final LangsRestController LANGS_REST_CONTROLLER;
     private final CustomerCollectionsRestController CUSTOMER_COLLECTIONS_REST_CONTROLLER;
     private final WordsRestController WORDS_REST_CONTROLLER;
 
@@ -40,16 +39,16 @@ public class WordsInCollectionRestController {
     @Autowired
     public WordsInCollectionRestController(
             CustomersRestController customersRestController,
-            LangsRestController langsRestController,
-           CustomerCollectionsRestController customerCollectionsRestController,
-           WordsRestController wordsRestController,
-           CustomerService customerService,
-           WordService wordService,
-           CustomerCollectionService customerCollectionService,
-           WordInCollectionService wordInCollectionService,
+            CustomerCollectionsRestController customerCollectionsRestController,
+            WordsRestController wordsRestController,
+
+            CustomerService customerService,
+            WordService wordService,
+            CustomerCollectionService customerCollectionService,
+            WordInCollectionService wordInCollectionService,
+
             WordInCollectionMapping wordInCollectionMapping) {
         this.CUSTOMERS_REST_CONTROLLER = customersRestController;
-        this.LANGS_REST_CONTROLLER = langsRestController;
         this.CUSTOMER_COLLECTIONS_REST_CONTROLLER = customerCollectionsRestController;
         this.WORDS_REST_CONTROLLER = wordsRestController;
 
@@ -60,6 +59,7 @@ public class WordsInCollectionRestController {
 
         this.WORD_IN_COLLECTION_MAPPING = wordInCollectionMapping;
     }
+
     @GetMapping("/filtered")
     public ResponseEntity<?> getAll(
             @RequestParam("collection_key") String collectionKey,
@@ -143,6 +143,7 @@ public class WordsInCollectionRestController {
             return response;
         }
 
+        // Проверяем, совпадают ли языки слова и коллекции
         Word word = WORD_SERVICE.findById(dto.getWordId());
         CustomerCollection customerCollection = CUSTOMER_COLLECTION_SERVICE.find(dto.getCustomerCollectionKey());
 
@@ -173,11 +174,6 @@ public class WordsInCollectionRestController {
     @DeleteMapping
     public ResponseEntity<?> delete(HttpServletRequest request, @RequestBody WordInCollectionRequestDTO dto) {
         ResponseEntity<?> response = validateBeforeCrud(request, dto);
-        if (response.getStatusCode() != HttpStatus.OK) {
-            return response;
-        }
-
-        response = find(dto.getId());
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
@@ -311,7 +307,7 @@ public class WordsInCollectionRestController {
             return response;
         }
 
-        String collectionKey = null;
+        String collectionKey;
         Customer authCustomer = CUSTOMER_SERVICE.findByAuthCode(dto.getAuthCode());
         if (dto.getId() != 0) {
             // Если слово в коллекции не новое, достаём ключ коллекции из этого слова

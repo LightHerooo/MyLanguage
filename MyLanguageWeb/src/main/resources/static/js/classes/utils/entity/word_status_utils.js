@@ -24,7 +24,7 @@ export class WordStatusUtils {
 }
 
 class CbWordStatuses {
-    async #fillClear(cbWordStatuses, firstOption) {
+    async prepare(cbWordStatuses, firstOption){
         if (cbWordStatuses) {
             cbWordStatuses.replaceChildren();
 
@@ -39,39 +39,22 @@ class CbWordStatuses {
                     let wordStatus = new WordStatusResponseDTO(json[i]);
 
                     let option = document.createElement("option");
-                    option.style.color = "#" + wordStatus.colorHexCode;
-                    option.textContent = wordStatus.title;
                     option.id = wordStatus.code;
+
+                    let color = wordStatus.color;
+                    if (color) {
+                        option.style.color = "#" + color.hexCode;
+                    }
+                    option.textContent = wordStatus.title;
 
                     cbWordStatuses.appendChild(option);
                 }
             }
-        }
-    }
-
-    async prepare(cbWordStatuses, firstOption){
-        if (cbWordStatuses) {
-            await this.#fillClear(cbWordStatuses, firstOption);
 
             cbWordStatuses.addEventListener("change", function () {
-                let selectedOption = _COMBO_BOX_UTILS.GET_SELECTED_ITEM.byComboBox(this);
-                this.style.backgroundColor = selectedOption.style.color;
+                let selectedOption = _COMBO_BOX_UTILS.GET_SELECTED_ITEM.byComboBox(cbWordStatuses);
+                cbWordStatuses.style.backgroundColor = selectedOption.style.color;
             });
-        }
-    }
-
-    async fill(cbWordStatuses, firstOption) {
-        if (cbWordStatuses) {
-            // Запоминаем, какой элемент был выбран до очистки списка ---
-            let oldWordStatus = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbWordStatuses);
-            //---
-
-            await this.#fillClear(cbWordStatuses, firstOption);
-
-            // Пытаемся установить старый элемент ---
-            _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemId(
-                cbWordStatuses, oldWordStatus, false);
-            //---
         }
     }
 }

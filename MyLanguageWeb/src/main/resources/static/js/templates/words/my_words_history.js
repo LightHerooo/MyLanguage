@@ -122,8 +122,10 @@ let _lastWordIdOnPreviousPage = 0n;
 
 const _CUSTOM_TIMER_STATISTIC_FINDER = new CustomTimer();
 const _CUSTOM_TIMER_WORDS_FINDER = new CustomTimer();
-const _CUSTOM_TIMER_TB_FINDER = new CustomTimer();
 const _TIMEOUT_FOR_FINDERS = 1000;
+
+const _CUSTOM_TIMER_TB_FINDER = new CustomTimer();
+const _CUSTOM_TIMER_FOR_REFRESH = new CustomTimer();
 
 let _wordStatusHistoryItemsForFindMap = new Map();
 
@@ -180,7 +182,37 @@ function prepareBtnRefresh() {
     let btnRefresh = document.getElementById(_BTN_REFRESH_ID);
     if (btnRefresh) {
         btnRefresh.addEventListener("click", async function() {
+            changeDisableStatusToFinderInstruments(true);
+
+            // Отображаем загрузки на момент перезагрузки ---
+            showLoadingInStatistic();
+            showLoadingInTable();
+            //---
+
+            let refreshPromise = new Promise(resolve => {
+                _CUSTOM_TIMER_FOR_REFRESH.stop();
+
+                _CUSTOM_TIMER_FOR_REFRESH.setTimeout(500);
+                _CUSTOM_TIMER_FOR_REFRESH.setHandler(async function() {
+                    let cbLangs = document.getElementById(_CB_LANGS_ID);
+                    let divLangFlag = document.getElementById(_DIV_LANG_FLAG_ID);
+                    if (cbLangs && divLangFlag) {
+                        let firstOption = document.createElement("option");
+                        firstOption.textContent = "Все";
+
+                        let cbLangsWithFlag = new ComboBoxWithFlag(cbLangs.parentElement, cbLangs, divLangFlag);
+                        await _LANG_UTILS.CB_LANGS_IN.fill(cbLangsWithFlag, firstOption);
+                    }
+
+                    resolve();
+                });
+
+                _CUSTOM_TIMER_FOR_REFRESH.start();
+            });
+            await refreshPromise;
+
             startAllFinders();
+            changeDisableStatusToFinderInstruments(false);
         })
     }
 }
@@ -190,7 +222,40 @@ function startAllFinders() {
     startToFindWords();
 }
 
+function changeDisableStatusToFinderInstruments(isDisable) {
+    let btnRefresh = document.getElementById(_BTN_REFRESH_ID);
+    if (btnRefresh) {
+        btnRefresh.disabled = isDisable;
+    }
+
+    let tbFinder = document.getElementById(_TB_FINDER_ID);
+    if (tbFinder) {
+        tbFinder.disabled = isDisable;
+    }
+
+    let cbLangs = document.getElementById(_CB_LANGS_ID);
+    if (cbLangs) {
+        cbLangs.disabled = isDisable;
+    }
+
+    let cbWordStatuses = document.getElementById(_CB_WORD_STATUSES);
+    if (cbWordStatuses) {
+        cbWordStatuses.disabled = isDisable;
+    }
+}
+
 // Статистика ---
+function showLoadingInStatistic() {
+    let divStatistic = document.getElementById(_MY_WORDS_HISTORY_STATISTICS_CONTAINER_ID);
+    if (divStatistic) {
+        divStatistic.replaceChildren();
+
+        divStatistic.style.display = "grid";
+        divStatistic.style.alignItems = "center";
+        divStatistic.appendChild(new LoadingElement().createDiv());
+    }
+}
+
 function prepareStatisticFinder() {
     _CUSTOM_TIMER_STATISTIC_FINDER.setTimeout(_TIMEOUT_FOR_FINDERS);
     _CUSTOM_TIMER_STATISTIC_FINDER.setHandler(async function() {
@@ -203,14 +268,7 @@ function startToFindStatistic() {
         _CUSTOM_TIMER_STATISTIC_FINDER.stop();
     }
 
-    let divStatistic = document.getElementById(_MY_WORDS_HISTORY_STATISTICS_CONTAINER_ID);
-    if (divStatistic) {
-        divStatistic.replaceChildren();
-
-        divStatistic.style.display = "grid";
-        divStatistic.style.alignItems = "center";
-        divStatistic.appendChild(new LoadingElement().createDiv());
-    }
+    showLoadingInStatistic();
 
     if (_CUSTOM_TIMER_STATISTIC_FINDER) {
         _CUSTOM_TIMER_STATISTIC_FINDER.start();
@@ -283,6 +341,18 @@ async function createStatisticItems() {
 //---
 
 // Слова с текущим статусом слова ---
+function showLoadingInTable() {
+    let tableHead = document.getElementById(_MY_WORD_HISTORY_TABLE_HEAD_ID);
+    let tableBody = document.getElementById(_MY_WORD_HISTORY_TABLE_BODY_ID);
+    if (tableHead && tableBody) {
+        let numberOfColumns = _TABLE_UTILS.getNumberOfColumnsByTableHead(tableHead);
+        let trMessage = _TABLE_UTILS.MESSAGES_INSIDE_TABLE.createTrLoading(numberOfColumns);
+
+        tableBody.replaceChildren();
+        tableBody.appendChild(trMessage);
+    }
+}
+
 function prepareWordsFinder() {
     _CUSTOM_TIMER_WORDS_FINDER.setTimeout(_TIMEOUT_FOR_FINDERS);
     _CUSTOM_TIMER_WORDS_FINDER.setHandler(async function() {
@@ -309,15 +379,7 @@ function startToFindWords() {
         _CUSTOM_TIMER_WORDS_FINDER.stop();
     }
 
-    let tableHead = document.getElementById(_MY_WORD_HISTORY_TABLE_HEAD_ID);
-    let tableBody = document.getElementById(_MY_WORD_HISTORY_TABLE_BODY_ID);
-    if (tableHead && tableBody) {
-        let numberOfColumns = _TABLE_UTILS.getNumberOfColumnsByTableHead(tableHead);
-        let trMessage = _TABLE_UTILS.MESSAGES_INSIDE_TABLE.createTrLoading(numberOfColumns);
-
-        tableBody.replaceChildren();
-        tableBody.appendChild(trMessage);
-    }
+    showLoadingInTable();
 
     if (_CUSTOM_TIMER_WORDS_FINDER) {
         _CUSTOM_TIMER_WORDS_FINDER.start();
@@ -437,6 +499,7 @@ async function createTableRow(wordResponseDTO, index) {
         // Создаём таблицу с информацией о слове пользователя с его текущим статусом, помещаем её в контейнер ---
         let tableWordWithCurrentStatus = document.createElement("table");
         tableWordWithCurrentStatus.classList.add(_CSS_MAIN.TABLE_STANDARD_STYLE_ID);
+        tableWordWithCurrentStatus.style.margin = "-10px -5px";
 
         let colgroupParent = document.getElementById(_MY_WORD_HISTORY_TABLE_COLGROUP_ID);
         colgroupParent = colgroupParent.cloneNode(true);
@@ -560,6 +623,7 @@ function changeToShowHistoryAction(aBtnShowHistoryAction, parentElement, wordId)
             // Создаём таблицу ---
             let tableHistory = document.createElement("table");
             tableHistory.classList.add(_CSS_MAIN.TABLE_STANDARD_STYLE_ID);
+            tableHistory.style.margin = "-10px -5px";
 
             let colgroupParent = document.getElementById(_MY_WORD_HISTORY_TABLE_COLGROUP_ID);
             colgroupParent = colgroupParent.cloneNode(true);

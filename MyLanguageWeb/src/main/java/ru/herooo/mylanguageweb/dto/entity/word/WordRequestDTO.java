@@ -17,11 +17,6 @@ public class WordRequestDTO {
     @JsonDeserialize(using = LongDeserializer.class)
     private long id;
 
-    @JsonSerialize(using = LongSerializer.class)
-    @JsonDeserialize(using = LongDeserializer.class)
-    @JsonProperty("customer_id")
-    private long customerId;
-
     @NotBlank(message = "Слово не может быть пустым.")
     @Size(max = 44, message = "Длина должна быть не более 44-х символов.")
     @Pattern(regexp = "^[^ ]+$", message = "Слово не должно содержать пробелов.")
@@ -78,13 +73,5 @@ public class WordRequestDTO {
 
     public void setWordStatusCode(String wordStatusCode) {
         this.wordStatusCode = wordStatusCode;
-    }
-
-    public long getCustomerId() {
-        return customerId;
-    }
-
-    public void setCustomerId(long customerId) {
-        this.customerId = customerId;
     }
 }

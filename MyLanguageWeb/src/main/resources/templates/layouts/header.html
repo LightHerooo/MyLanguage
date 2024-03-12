@@ -52,24 +52,34 @@
             <div class="vertical-delimiter-margin"></div>
         </div>
         <div class="authorization-container" th:if="${AUTH_CUSTOMER != null}">
-            <div th:if="${IS_USER_SUPER == true}" class="vertical-delimiter-margin"></div>
-            <a th:if="${IS_USER_SUPER == true}" class="nav-item" href="/special_actions">
+            <div th:if="${IS_SUPER_USER == true}" class="vertical-delimiter-margin"></div>
+            <a th:if="${IS_SUPER_USER == true}" class="nav-item" href="/special_actions">
                 <img class="nav-item-img"
                      src="#" th:src="${AUTH_CUSTOMER.role.pathToImage}"
                      alt="role.png"/>
-                <div class="nav-special-actions-text">Специальные возможности</div>
+                <div class="nav-special-actions-text"
+                     th:style="${AUTH_CUSTOMER.role.color != null
+                     ? 'color: #' + AUTH_CUSTOMER.role.color.hexCode
+                     : ''}">Специальные возможности</div>
             </a>
             <div class="vertical-delimiter-margin"></div>
             <a class="nav-item" th:href="@{/customers/{id}(id = ${AUTH_CUSTOMER.id})}">
                 <img class="auth-customer-img" src="/images/customer_roles/customer.png" alt="customer.png"/>
                 <div class="auth-customer-info-container">
-                    <div class="customer-nickname" th:text="${AUTH_CUSTOMER.nickname}"/>
+                    <div class="customer-nickname"
+                         th:text="${AUTH_CUSTOMER.nickname}"
+                         th:style="${AUTH_CUSTOMER.role.color != null
+                         ? 'color: #' + AUTH_CUSTOMER.role.color.hexCode
+                         : ''}"></div>
                     <div class="auth-customer-info-extra-container">
                         <div class="auth-customer-info-extra-item">
                             <img class="auth-customer-info-extra-item-img"
                                  src="#" th:src="${AUTH_CUSTOMER.role.pathToImage}"
                                  alt="role.png"/>
-                            <div th:text="${AUTH_CUSTOMER.role.title}"/>
+                            <div th:text="${AUTH_CUSTOMER.role.title}"
+                                 th:style="${AUTH_CUSTOMER.role.color != null
+                                 ? 'color: #' + AUTH_CUSTOMER.role.color.hexCode
+                                 : ''}"></div>
                         </div>
                         <div class="vertical-delimiter"></div>
                         <div class="auth-customer-info-extra-item">

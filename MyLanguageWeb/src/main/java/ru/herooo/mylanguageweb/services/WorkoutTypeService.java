@@ -17,8 +17,8 @@ public class WorkoutTypeService {
         this.WORKOUT_TYPE_CRUD_REPOSITORY = workoutTypeCrudRepository;
     }
 
-    public List<WorkoutType> findAll() {
-        return WORKOUT_TYPE_CRUD_REPOSITORY.findAll();
+    public List<WorkoutType> findAll(String title) {
+        return WORKOUT_TYPE_CRUD_REPOSITORY.findAllAfterFilter(title);
     }
 
     public WorkoutType find(WorkoutTypes workoutTypes) {
@@ -27,5 +27,15 @@ public class WorkoutTypeService {
 
     public WorkoutType find(String code) {
         return WORKOUT_TYPE_CRUD_REPOSITORY.findByCode(code).orElse(null);
+    }
+
+    public WorkoutType changeActiveStatus(WorkoutType workoutType, boolean isActive) {
+        WorkoutType result = null;
+        if (workoutType != null) {
+            workoutType.setActive(isActive);
+            result = WORKOUT_TYPE_CRUD_REPOSITORY.save(workoutType);
+        }
+
+        return result;
     }
 }

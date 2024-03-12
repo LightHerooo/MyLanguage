@@ -11,10 +11,9 @@ import java.util.Optional;
 public interface LangCrudRepository extends CrudRepository<Lang, Long>, LangRepository<Lang> {
     Optional<Lang> findByCode(String code);
 
-    @Query(value =
-            "FROM Lang l " +
-            "ORDER BY l.title")
-    List<Lang> findAll();
+    @Query(nativeQuery = true, value =
+            "SELECT * FROM get_langs_after_filter(:title)")
+    List<Lang> findAllAfterFilter(@Param("title") String title);
 
     @Query(nativeQuery = true, value =
             "SELECT * FROM get_langs_for_in(:is_active_for_in)")

@@ -15,3 +15,8 @@ export class WorkoutTypeResponseDTO {
         this.isActive = workoutTypeJson["is_active"];
     }
 }
+
+export class WorkoutTypeRequestDTO {
+    code;
+    isActive;
+}

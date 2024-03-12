@@ -1,9 +1,13 @@
+import {
+    ColorResponseDTO
+} from "../color.js";
+
 export class WordStatusResponseDTO {
     id;
     title;
     code;
     message;
-    colorHexCode;
+    color;
 
     constructor(wordStatusJson) {
         if (wordStatusJson) {
@@ -11,7 +15,11 @@ export class WordStatusResponseDTO {
             this.title = wordStatusJson["title"];
             this.code = wordStatusJson["code"];
             this.message = wordStatusJson["message"];
-            this.colorHexCode = wordStatusJson["color_hex_code"];
+
+            let color = wordStatusJson["color"];
+            if (color) {
+                this.color = new ColorResponseDTO(color);
+            }
         }
     }
 
@@ -19,7 +27,12 @@ export class WordStatusResponseDTO {
         let aWordStatus = document.createElement("a");
         aWordStatus.style.cursor = "pointer";
         aWordStatus.style.textDecoration = "underline dotted";
-        aWordStatus.style.color = "#" + this.colorHexCode;
+
+        let color = this.color;
+        if (color) {
+            aWordStatus.style.color = "#" + color.hexCode;
+        }
+
         aWordStatus.style.fontWeight = "bold";
         aWordStatus.title = this.message;
         aWordStatus.textContent = this.title;

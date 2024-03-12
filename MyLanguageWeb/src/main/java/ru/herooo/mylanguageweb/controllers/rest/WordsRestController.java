@@ -33,7 +33,7 @@ public class WordsRestController {
     private final WordStatusHistoryService WORD_STATUS_HISTORY_SERVICE;
     private final WordStatusService WORD_STATUS_SERVICE;
     private final LangService LANG_SERVICE;
-    private final WordService WORD_SERVICE;
+    private WordService WORD_SERVICE;
 
     private final WordMapping WORD_MAPPING;
 
@@ -62,28 +62,6 @@ public class WordsRestController {
 
         this.WORD_MAPPING = wordMapping;
     }
-
-    @GetMapping("/filtered")
-    public ResponseEntity<?> getAll(
-            @RequestParam(value = "title", required = false) String title,
-            @RequestParam(value = "word_status_code", required = false) String wordStatusCode,
-            @RequestParam(value = "lang_code", required = false) String langCode) {
-        ResponseEntity<?> response = validateBeforeFilter(wordStatusCode, langCode);
-        if (response.getStatusCode() != HttpStatus.OK) {
-            return response;
-        }
-
-        List<Word> wordsAfterFilter = WORD_SERVICE.findAll(title, wordStatusCode, langCode);
-        if (wordsAfterFilter != null && wordsAfterFilter.size() > 0) {
-            List<WordResponseDTO> wordsDTO = wordsAfterFilter.stream().map(WORD_MAPPING::mapToResponseDTO).toList();
-            return ResponseEntity.ok().body(wordsDTO);
-        } else {
-            CustomResponseMessage message = new CustomResponseMessage(1,
-                    "Слова по указанным фильтрам не найдены.");
-            return ResponseEntity.badRequest().body(message);
-        }
-    }
-
     @GetMapping("/filtered_pagination")
     public ResponseEntity<?> getAll(
             @RequestParam("number_of_words") Long numberOfWords,
@@ -190,7 +168,7 @@ public class WordsRestController {
     public ResponseEntity<?> add(HttpServletRequest request,
                                  @Valid @RequestBody WordRequestDTO dto,
                                  BindingResult bindingResult) {
-        ResponseEntity<?> response = validateBeforeCrud(request, dto, bindingResult);
+        ResponseEntity<?> response = validateBeforeAdd(request, dto, bindingResult);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
@@ -212,35 +190,70 @@ public class WordsRestController {
         }
     }
 
-    @PatchMapping()
-    public ResponseEntity<?> edit(HttpServletRequest request,
-                                  @RequestBody WordRequestDTO dto,
-                                  BindingResult bindingResult) {
-        ResponseEntity<?> response = validateBeforeCrud(request, dto, bindingResult);
+    @PatchMapping("/change_word_status")
+    public ResponseEntity<?> changeWordStatus(HttpServletRequest request,
+                                              @RequestBody WordRequestDTO dto) {
+        String validateAuthCode = CUSTOMER_SERVICE.validateAuthCode(request, dto.getAuthCode());
+        dto.setAuthCode(validateAuthCode);
+
+        // Проверяем авторизированного пользователя
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.findExistsByAuthCode(dto.getAuthCode());
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
 
-        // Проверяем код статуса слова
-        response = WORD_STATUSES_REST_CONTROLLER.find(dto.getWordStatusCode());
+        // Изменять статус словам может только суперпользователь
+        Customer customer = CUSTOMER_SERVICE.findByAuthCode(dto.getAuthCode());
+        if (!CUSTOMER_SERVICE.isSuperUser(customer)) {
+            CustomResponseMessage message = new CustomResponseMessage(1, "У вас недостаточно прав.");
+            return ResponseEntity.badRequest().body(message);
+        }
+
+        // Проверяем существование слова
+        response = find(dto.getId());
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
 
+        // Проверяем статус слова, который будем присваивать
+        String wordStatusCode = dto.getWordStatusCode();
+        response = WORD_STATUSES_REST_CONTROLLER.find(wordStatusCode);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        // Если слово уже запрещено, то статус можно установить только "Невостребованный"
         Word word = WORD_SERVICE.findById(dto.getId());
-        word = WORD_SERVICE.edit(word, dto);
-        if (word != null) {
-            // Устанавливаем новый статус слова (если предыдущее != новому)
-            WordStatusHistory oldWordStatusHistory = WORD_STATUS_HISTORY_SERVICE.getCurrentWordStatusHistoryToWord(word);
-            WordStatus newWordStatus = WORD_STATUS_SERVICE.find(dto.getWordStatusCode());
-            if (!newWordStatus.equals(oldWordStatusHistory.getWordStatus())) {
-                WORD_STATUS_HISTORY_SERVICE.addWordStatusToWord(word.getId(), newWordStatus.getCode());
-            }
+        List<Word> blockedWords = WORD_SERVICE.findListByTitle(word.getTitle(),
+                WordStatuses.BLOCKED.CODE);
 
-            return ResponseEntity.ok(word);
+        blockedWords = blockedWords
+                .stream()
+                .filter(w -> w.getId() != dto.getId())
+                .toList();
+
+        WordStatus wordStatus = WORD_STATUS_SERVICE.find(wordStatusCode);
+        if (blockedWords.size() > 0 && wordStatus.getId() != WordStatuses.UNCLAIMED.ID) {
+            WordStatus unclaimedWordStatus = WORD_STATUS_SERVICE.find(WordStatuses.UNCLAIMED);
+            CustomResponseMessage message = new CustomResponseMessage(3,
+                    String.format("Это слово уже запрещено. Установите этому слову статус '%s'.",
+                            unclaimedWordStatus.getTitle()));
+            return ResponseEntity.badRequest().body(message);
+        }
+
+        // Устанавливаем новый статус слова (если предыдущее != новому)
+        WordStatusHistory oldWordStatusHistory = WORD_STATUS_HISTORY_SERVICE.getCurrentWordStatusHistoryToWord(word);
+        WordStatus newWordStatus = WORD_STATUS_SERVICE.find(dto.getWordStatusCode());
+        if (!newWordStatus.equals(oldWordStatusHistory.getWordStatus())) {
+            WORD_STATUS_HISTORY_SERVICE.addWordStatusToWord(word.getId(), newWordStatus.getCode());
+
+            CustomResponseMessage message = new CustomResponseMessage(1,
+                    String.format("Статус слова c id = '%d' успешно изменён на '%s'.",
+                            word.getId(), newWordStatus.getTitle()));
+            return ResponseEntity.ok(message);
         } else {
             CustomResponseMessage message = new CustomResponseMessage(1,
-                    "Произошла ошибка при изменении слова.");
+                    String.format("Слово уже имеет статус '%s'. Выберите другой статус.", newWordStatus.getTitle()));
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -339,10 +352,10 @@ public class WordsRestController {
         return ResponseEntity.ok(message);
     }
 
-    @PostMapping("/validate/before_crud")
-    public ResponseEntity<?> validateBeforeCrud(HttpServletRequest request,
-                                                @Valid @RequestBody WordRequestDTO dto,
-                                                BindingResult bindingResult) {
+    @PostMapping("/validate/before_add")
+    public ResponseEntity<?> validateBeforeAdd(HttpServletRequest request,
+                                               @Valid @RequestBody WordRequestDTO dto,
+                                               BindingResult bindingResult) {
         String validateAuthCode = CUSTOMER_SERVICE.validateAuthCode(request, dto.getAuthCode());
         dto.setAuthCode(validateAuthCode);
 
@@ -365,89 +378,36 @@ public class WordsRestController {
             return ResponseEntity.badRequest().body(message);
         }
 
-        // Слово может изменять только супер-юзер
-        if (dto.getId() != 0) {
-            Customer customer = CUSTOMER_SERVICE.findByAuthCode(dto.getAuthCode());
-            if (!CUSTOMER_SERVICE.isSuperUser(customer)) {
-                CustomResponseMessage message = new CustomResponseMessage(1, "У вас недостаточно прав.");
-                return ResponseEntity.badRequest().body(message);
-            }
-        }
-
-        // Проверяем автора слова
-        response = CUSTOMERS_REST_CONTROLLER.find(dto.getCustomerId());
+        // Проверяем язык
+        response = LANGS_REST_CONTROLLER.find(dto.getLangCode());
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
 
-        // Ищем запрещённые слова с пришедшим названием
-        if (dto.getId() != 0) {
-            // Проверяем существование слова
-            response = find(dto.getId());
-            if (response.getStatusCode() != HttpStatus.OK) {
-                return response;
-            }
-
-            // Проверяем статус слова, который будем присваивать
-            String wordStatusCode = dto.getWordStatusCode();
-            response = WORD_STATUSES_REST_CONTROLLER.find(wordStatusCode);
-            if (response.getStatusCode() != HttpStatus.OK) {
-                return response;
-            }
-
-            // Ищем запрещённые слова с названием, как у текущего слова
-            Word word = WORD_SERVICE.findById(dto.getId());
-            List<Word> blockedWords = WORD_SERVICE.findListByTitle(word.getTitle(),
-                    WordStatuses.BLOCKED.CODE);
-
-            // Удаляем из полученного списка запрещённых слов текущее
-            blockedWords = blockedWords
-                    .stream()
-                    .filter(w -> w.getId() != dto.getId())
-                    .toList();
-
-            // Если список запрещённых слов не пуст, то мы можем изменить статус слова только на "Невостребованный"
-            WordStatus wordStatus = WORD_STATUS_SERVICE.find(wordStatusCode);
-            if (blockedWords.size() > 0 && wordStatus.getId() != WordStatuses.UNCLAIMED.ID) {
-                WordStatus unclaimedWordStatus = WORD_STATUS_SERVICE.find(WordStatuses.UNCLAIMED);
-                CustomResponseMessage message = new CustomResponseMessage(3,
-                        String.format("Это слово уже запрещено. Установите этому слову статус '%s'.",
-                                unclaimedWordStatus.getTitle()));
-                return ResponseEntity.badRequest().body(message);
-            }
-        } else {
-            // Если слово новое, ищем запрещённые слова по пришедшему названию
-            List<Word> blockedWords = WORD_SERVICE.findAll(dto.getTitle(),
-                    WordStatuses.BLOCKED.CODE, null);
-            if (blockedWords.size() > 0) {
-                CustomResponseMessage message = new CustomResponseMessage(4, "Это слово запрещено.");
-                return ResponseEntity.badRequest().body(message);
-            }
+        // Проверяем язык на активность
+        response = LANGS_REST_CONTROLLER.validateIsActiveForIn(dto.getLangCode());
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
         }
 
-        // Ищем похожее слово в БД (если оно новое)
-        if (dto.getId() == 0) {
-            // Проверяем язык
-            response = LANGS_REST_CONTROLLER.find(dto.getLangCode());
-            if (response.getStatusCode() != HttpStatus.OK) {
-                return response;
-            }
-
-            // Проверяем язык на активность
-            response = LANGS_REST_CONTROLLER.validateIsActiveForIn(dto.getLangCode());
-            if (response.getStatusCode() != HttpStatus.OK) {
-                return response;
-            }
-
-            Lang lang = LANG_SERVICE.find(dto.getLangCode());
-            Word word = WORD_SERVICE
-                    .findFirstByTitleIgnoreCaseAndLang(dto.getTitle(), lang);
-            if (word != null) {
-                CustomResponseMessage message = new CustomResponseMessage(5, "Это слово уже существует.");
-                return ResponseEntity.badRequest().body(message);
-            }
+        // Проверяем, не запрещено ли слово
+        List<Word> blockedWords = WORD_SERVICE.findListByTitle(dto.getTitle(),
+                WordStatuses.BLOCKED.CODE);
+        if (blockedWords.size() > 0) {
+            CustomResponseMessage message = new CustomResponseMessage(4, "Это слово запрещено.");
+            return ResponseEntity.badRequest().body(message);
         }
 
-        return ResponseEntity.ok(dto);
+        // Проверяем, нет ли уже в базе слова с таким же названием и языком
+        Lang lang = LANG_SERVICE.find(dto.getLangCode());
+        Word word = WORD_SERVICE
+                .findFirstByTitleIgnoreCaseAndLang(dto.getTitle(), lang);
+        if (word != null) {
+            CustomResponseMessage message = new CustomResponseMessage(5, "Это слово уже существует.");
+            return ResponseEntity.badRequest().body(message);
+        }
+
+        CustomResponseMessage message = new CustomResponseMessage(1, "Данные для добавления слова корректны.");
+        return ResponseEntity.ok(message);
     }
 }

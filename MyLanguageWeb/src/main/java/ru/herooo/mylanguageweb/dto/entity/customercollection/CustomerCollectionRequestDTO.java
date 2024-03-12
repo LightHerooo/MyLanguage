@@ -33,7 +33,6 @@ public class CustomerCollectionRequestDTO {
     @JsonProperty("workout_id")
     private long workoutId;
 
-
     @JsonProperty("auth_code")
     private String authCode;
 

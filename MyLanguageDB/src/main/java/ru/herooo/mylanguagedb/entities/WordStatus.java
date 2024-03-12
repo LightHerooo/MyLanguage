@@ -21,8 +21,9 @@ public class WordStatus {
     @Column(name = "message")
     private String message;
 
-    @Column(name = "color_hex_code")
-    private String colorHexCode;
+    @ManyToOne
+    @JoinColumn(name = "color_id")
+    private Color color;
 
     public long getId() {
         return id;
@@ -52,12 +53,12 @@ public class WordStatus {
         this.message = message;
     }
 
-    public String getColorHexCode() {
-        return colorHexCode;
+    public Color getColor() {
+        return color;
     }
 
-    public void setColorHexCode(String colorHexCode) {
-        this.colorHexCode = colorHexCode;
+    public void setColor(Color color) {
+        this.color = color;
     }
 
     @Override

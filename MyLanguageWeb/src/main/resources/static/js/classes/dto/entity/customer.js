@@ -23,3 +23,8 @@ export class CustomerResponseDTO {
         }
     }
 }
+
+export class CustomerRequestDTO {
+    id;
+    roleCode;
+}

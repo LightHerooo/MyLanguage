@@ -32,6 +32,7 @@ main {
     gap: 20px;
 }
 
+
 div.info-block-standard {
     background: rgba(var(--first-color-rgb), var(--opacity-standard));
     padding: 10px;
@@ -54,6 +55,64 @@ div.vertical-delimiter, div.vertical-delimiter-margin {
 div.vertical-delimiter-margin {
     margin: 25px 5px 25px 5px;
 }
+
+div.form-item-standard {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+}
+
+div.checkbox-container-standard {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+div.overflow-y-standard {
+    overflow-y: scroll;
+}
+
+div.overflow-y-standard::-webkit-scrollbar-track
+{
+    background-color: var(--first-color);
+}
+
+div.overflow-y-standard::-webkit-scrollbar
+{
+    width: 15px;
+    background-color: var(--first-color);;
+}
+
+div.overflow-y-standard::-webkit-scrollbar-thumb
+{
+    background-color: var(--second-color);
+}
+
+div.horizontal-flex-container-standard {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+div.vertical-flex-container-standard {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+div.content-center-standard {
+    display: grid;
+    justify-content: center;
+    align-items: center;
+}
+
 
 a.a-button-standard,
 a.a-button-accept-standard,
@@ -118,10 +177,30 @@ a.a-button-disabled-standard {
     opacity: 0.5;
 }
 
+a.a-show-more-standard {
+    padding: 10px;
+    font-size: var(--third-font-size);
+    text-align: center;
+    font-weight: bold;
+}
+
+a.a-checkbox-standard {
+    cursor: pointer;
+    text-decoration: none;
+    font-size: var(--third-font-size);
+}
+
+a.a-for-hint {
+    font-weight: bold;
+    text-decoration: underline dotted;
+    cursor: pointer;
+}
+
+
 table.table-standard {
     border-spacing: 5px 5px;
     table-layout: fixed;
-    margin: -10px -5px;
+    margin: -5px -5px;
     width: calc(100% + 10px);
 
     overflow: hidden;
@@ -151,23 +230,6 @@ table.table-standard tbody tr:nth-child(even){
     background: var(--second-color);
 }
 
-form.form-standard {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 15px;
-}
-
-div.form-item-standard {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 5px;
-}
-
-label.label-standard {
-    font-size: var(--third-font-size);
-}
 
 select.select-standard {
     min-height: 40px;
@@ -187,6 +249,26 @@ select.select-standard option {
     font-family: inherit;
     font-size: var(--third-font-size);
 }
+
+
+button.button-standard, button.button-with-img-standard {
+    cursor: pointer;
+    background: var(--second-color);
+
+    font-size: var(--third-font-size);
+    font-family: inherit;
+}
+
+button.button-with-img-standard {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+button.button-standard:hover, button.button-with-img-standard:hover {
+    background: var(--third-color);
+}
+
 
 input.text-standard {
     min-height: 40px;
@@ -209,109 +291,18 @@ input.submit-standard:hover {
     background: var(--third-color);
 }
 
-label.label-for-input-standard {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-
-    background: rgba(var(--first-color-rgb), var(--opacity-standard));
-
-    font-family: inherit;
-    font-size: var(--third-font-size);
-    font-weight: bold;
-}
-
-a.a-show-more-standard {
-    padding: 10px;
-    font-size: var(--third-font-size);
-    text-align: center;
-    font-weight: bold;
-}
-
-button.button-standard, button.btn-refresh-standard {
-    cursor: pointer;
-    background: var(--second-color);
-
-    font-size: var(--third-font-size);
-    font-family: inherit;
-}
-
-button.button-standard:hover, button.btn-refresh-standard:hover {
-    background: var(--third-color);
-}
-
-button.btn-refresh-standard {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-img.btn-refresh-standard-img {
-    width: 32px;
-    height: 32px;
-}
-
-a.word-status-standard {
-    font-weight: bold;
-    text-decoration: underline dotted;
-    cursor: pointer;
-}
-
-div.checkbox-container-standard {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-}
-
-a.a-checkbox-standard {
-    cursor: pointer;
-    text-decoration: none;
-    font-size: var(--third-font-size);
-}
-
 input.checkbox-standard {
     cursor: pointer;
 }
 
-div.overflow-y-standard {
-    overflow-y: scroll;
-}
 
-div.overflow-y-standard::-webkit-scrollbar-track
-{
-    background-color: var(--first-color);
-}
-
-div.overflow-y-standard::-webkit-scrollbar
-{
-    width: 15px;
-    background-color: var(--first-color);;
-}
-
-div.overflow-y-standard::-webkit-scrollbar-thumb
-{
-    background-color: var(--second-color);
-}
-
-div.horizontal-flex-container-standard {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-}
-
-div.vertical-flex-container-standard {
+form.form-standard {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
-    gap: 10px;
+    gap: 15px;
 }
 
-div.content-center-standard {
-    display: grid;
-    justify-content: center;
-    align-items: center;
+label.label-standard {
+    font-size: var(--third-font-size);
 }
-

@@ -22,15 +22,10 @@ import {
     WordsAPI
 } from "../../api/words_api.js";
 
-import {
-    GlobalCookies
-} from "../../global_cookies.js";
-
 const _WORDS_API = new WordsAPI();
 
 const _RULE_TYPES = new RuleTypes();
 const _HTTP_STATUSES = new HttpStatuses();
-const _GLOBAL_COOKIES = new GlobalCookies();
 
 export class WordUtils {
     TB_WORD_TITLE = new TbWordTitle();
@@ -64,12 +59,11 @@ class TbWordTitle {
 
                 let wordRequestDTO = new WordRequestDTO();
                 wordRequestDTO.title = tbTitle.value;
-                wordRequestDTO.customerId = BigInt(_GLOBAL_COOKIES.AUTH_ID.getValue());
                 wordRequestDTO.langCode = langCode;
 
                 let JSONResponsePromise = new Promise(resolve => {
                     customTimerObj.setHandler(async function () {
-                        resolve(await _WORDS_API.POST.validateBeforeCrud(wordRequestDTO));
+                        resolve(await _WORDS_API.POST.validateBeforeAdd(wordRequestDTO));
                     });
 
                     customTimerObj.setTimeout(250);

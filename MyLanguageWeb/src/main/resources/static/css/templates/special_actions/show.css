@@ -1,4 +1,46 @@
-div.special-actions-container {
+div.word-actions-for-admin-container {
+    display: grid;
+    grid-auto-flow: row;
+    grid-template: 1fr / 1fr 1fr 1fr;
+    gap: 20px;
+}
+
+div.word-actions-for-moderator-container {
+    display: grid;
+    grid-auto-flow: row;
+    grid-template: 1fr / 1fr 1fr 1fr;
+    gap: 20px;
+}
+
+div.lang-actions-for-admin-container {
+    display: grid;
+    grid-auto-flow: row;
+    grid-template: 1fr / 1fr 1fr 1fr;
+    gap: 20px;
+}
+
+div.lang-actions-for-moderator-container {
+    display: grid;
+    grid-auto-flow: row;
+    grid-template: 1fr / 1fr 1fr 1fr;
+    gap: 20px;
+}
+
+div.workout-type-actions-for-admin-container {
+    display: grid;
+    grid-auto-flow: row;
+    grid-template: 1fr / 1fr 1fr 1fr;
+    gap: 20px;
+}
+
+div.workout-type-actions-for-moderator-container {
+    display: grid;
+    grid-auto-flow: row;
+    grid-template: 1fr / 1fr 1fr 1fr;
+    gap: 20px;
+}
+
+div.customer-actions-for-admin-container {
     display: grid;
     grid-auto-flow: row;
     grid-template: 1fr / 1fr 1fr 1fr;

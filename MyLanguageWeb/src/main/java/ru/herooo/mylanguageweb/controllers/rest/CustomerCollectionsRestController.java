@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.herooo.mylanguagedb.entities.*;
 import ru.herooo.mylanguagedb.types.CustomerCollectionsWithLangStatistic;
 import ru.herooo.mylanguageutils.yandexdictionary.yandexlangs.YandexLangsResult;
-import ru.herooo.mylanguageweb.dto.entity.lang.LangResponseDTO;
 import ru.herooo.mylanguageweb.dto.other.CustomResponseMessage;
 import ru.herooo.mylanguageweb.dto.entity.customercollection.CustomerCollectionMapping;
 import ru.herooo.mylanguageweb.dto.entity.customercollection.CustomerCollectionRequestDTO;
@@ -150,45 +149,6 @@ public class CustomerCollectionsRestController {
         }
     }
 
-    @PostMapping("/copy_by_key")
-    public ResponseEntity<?> copyByKey(HttpServletRequest request,
-                                       @Valid @RequestBody CustomerCollectionRequestDTO dto,
-                                       BindingResult bindingResult) {
-        ResponseEntity<?> response = validateBeforeCrud(request, dto, bindingResult);
-        if (response.getStatusCode() != HttpStatus.OK) {
-            return response;
-        }
-
-        response = find(dto.getKey());
-        if (response.getStatusCode() != HttpStatus.OK) {
-            return response;
-        }
-
-        response = validateIsLangActiveInCollection(dto.getKey());
-        if (response.getStatusCode() != HttpStatus.OK) {
-            return response;
-        }
-
-        // Проверяем количество слов в коллекции, которую хотим скопировать
-        CustomerCollection collection = CUSTOMER_COLLECTION_SERVICE.find(dto.getKey());
-        long numberOfWords = WORD_IN_COLLECTION_SERVICE.count(collection.getKey());
-        if (numberOfWords == 0) {
-            CustomResponseMessage message = new CustomResponseMessage(1, "В указанной коллекции нет слов.");
-            return ResponseEntity.badRequest().body(message);
-        }
-
-        Customer authCustomer = CUSTOMER_SERVICE.findByAuthCode(dto.getAuthCode());
-        collection = CUSTOMER_COLLECTION_SERVICE.copy(collection, dto.getTitle(), authCustomer);
-        if (collection != null) {
-            CustomerCollectionResponseDTO responseDTO = CUSTOMER_COLLECTION_MAPPING.mapToResponseDTO(collection);
-            return ResponseEntity.ok(responseDTO);
-        } else {
-            CustomResponseMessage message = new CustomResponseMessage(2,
-                    "Произошла ошибка создания коллекции по ключу.");
-            return ResponseEntity.badRequest().body(message);
-        }
-    }
-
     @PostMapping("/create_by_workout_id")
     public ResponseEntity<?> createByWorkoutId(HttpServletRequest request,
                                                @RequestBody CustomerCollectionRequestDTO dto,
@@ -257,13 +217,7 @@ public class CustomerCollectionsRestController {
     public ResponseEntity<?> add(HttpServletRequest request,
                                  @Valid @RequestBody CustomerCollectionRequestDTO dto,
                                  BindingResult bindingResult) {
-        ResponseEntity<?> response = validateBeforeCrud(request, dto, bindingResult);
-        if (response.getStatusCode() != HttpStatus.OK) {
-            return response;
-        }
-
-        // Проверяем язык
-        response = LANGS_REST_CONTROLLER.find(dto.getLangCode());
+        ResponseEntity<?> response = validateBeforeAdd(request, dto, bindingResult);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
@@ -333,10 +287,10 @@ public class CustomerCollectionsRestController {
         }
     }
 
-    @PostMapping("/validate/before_crud")
-    public ResponseEntity<?> validateBeforeCrud(HttpServletRequest request,
-                                                @Valid @RequestBody CustomerCollectionRequestDTO dto,
-                                                BindingResult bindingResult) {
+    @PostMapping("/validate/before_add")
+    public ResponseEntity<?> validateBeforeAdd(HttpServletRequest request,
+                                               @Valid @RequestBody CustomerCollectionRequestDTO dto,
+                                               BindingResult bindingResult) {
         String validateAuthCode = CUSTOMER_SERVICE.validateAuthCode(request, dto.getAuthCode());
         dto.setAuthCode(validateAuthCode);
 
@@ -358,37 +312,31 @@ public class CustomerCollectionsRestController {
             return ResponseEntity.badRequest().body(message);
         }
 
-        if (dto.getId() == 0) {
-            // Проверяем язык
-            response = LANGS_REST_CONTROLLER.find(dto.getLangCode());
-            if (response.getStatusCode() != HttpStatus.OK) {
-                return response;
-            }
+        // Проверяем язык
+        response = LANGS_REST_CONTROLLER.find(dto.getLangCode());
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
 
-            // Проверяем язык на активность
-            response = LANGS_REST_CONTROLLER.validateIsActiveForIn(dto.getLangCode());
-            if (response.getStatusCode() != HttpStatus.OK) {
-                return response;
-            }
-        } else {
-            CustomerCollection collection = CUSTOMER_COLLECTION_SERVICE.find(dto.getId());
-            response = validateIsLangActiveInCollection(collection.getKey());
-            if (response.getStatusCode() != HttpStatus.OK) {
-                return response;
-            }
+        // Проверяем язык на активность
+        response = LANGS_REST_CONTROLLER.validateIsActiveForIn(dto.getLangCode());
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
         }
 
         // Проверяем наличие коллекции с таким же названием у создающего
         Customer authCustomer = CUSTOMER_SERVICE.findByAuthCode(dto.getAuthCode());
         CustomerCollection collection =
                 CUSTOMER_COLLECTION_SERVICE.findByCustomerAndTitle(authCustomer, dto.getTitle());
-        if (collection != null && (dto.getId() == 0 || dto.getId() != collection.getId())) {
+        if (collection != null) {
             CustomResponseMessage message = new CustomResponseMessage(2,
                     "У вас уже есть коллекция с таким названием.");
             return ResponseEntity.badRequest().body(message);
         }
 
-        return ResponseEntity.ok(dto);
+        CustomResponseMessage message = new CustomResponseMessage(1,
+                "Данные для добавления коллекции корректны.");
+        return ResponseEntity.ok(message);
     }
 
     @GetMapping("/validate/is_lang_active_in_collection_by_key")

@@ -6,6 +6,7 @@
         <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
         <link rel="stylesheet" type="text/css" href="/css/root.css">
         <link rel="stylesheet" type="text/css" href="/css/main.css">
+        <link rel="stylesheet" type="text/css" href="/css/info_blocks/small_info_block.css">
         <link rel="stylesheet" type="text/css" href="/css/other/loading.css">
         <link rel="stylesheet" type="text/css" href="/css/other/rule.css">
         <link rel="stylesheet" type="text/css" href="/css/entity/workout_info.css">
@@ -21,23 +22,23 @@
           <div th:insert="~{layouts/header}"></div>
         </header>
         <main>
-            <div class="horizontal-flex-container-standard show-info-one-main-header-container info-block-standard">
-                <img class="img-show-info-one-header" src="/images/workouts/brain.png" alt="brain.png"/>
-                <div th:text="'Информация о тренировке №' + ${WORKOUT_ID}"></div>
+            <div class="small-info-block-container">
+                <img class="img-small-info-block" src="/images/workouts/brain.png" alt="brain.png"/>
+                <h1 class="h1-small-info-block" th:text="'Информация о тренировке №' + ${WORKOUT_ID}"></h1>
             </div>
             <div class="workout-info-with-actions-container">
                 <div id="div_workout_info" class="info-block-standard"></div>
                 <div id="div_workout_extra_actions" class="info-block-standard"></div>
             </div>
-            <div class="horizontal-flex-container-standard show-info-one-other-header-container info-block-standard">
-                <img class="img-show-info-one-header" src="/images/other/statistic.png" alt="statistic.png"/>
-                <div>Статистика</div>
+            <div class="small-info-block-container">
+                <img class="img-small-info-block" src="/images/other/statistic.png" alt="statistic.png"/>
+                <h1 class="h1-small-info-block">Статистика</h1>
             </div>
             <div id="div_workout_statistics" class="workout-statistics-container info-block-standard"></div>
 
-            <div class="horizontal-flex-container-standard show-info-one-other-header-container info-block-standard">
-                <img class="img-show-info-one-header" src="/images/other/history.png" alt="history.png"/>
-                <div>История ответов</div>
+            <div class="small-info-block-container">
+                <img class="img-small-info-block" src="/images/other/history.png" alt="history.png"/>
+                <h1 class="h1-small-info-block">История ответов</h1>
             </div>
             <table class="table-standard">
                 <colgroup>

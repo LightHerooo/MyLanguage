@@ -12,7 +12,6 @@ export class CssMain {
     DIV_HORIZONTAL_FLEX_CONTAINER_STANDARD_STYLE_ID = "horizontal-flex-container-standard";
     DIV_VERTICAL_FLEX_CONTAINER_STANDARD_STYLE_ID = "vertical-flex-container-standard";
 
-
     LABEL_STANDARD_STYLE_ID = "label-standard";
     INPUT_TEXT_STANDARD_STYLE_ID = "text-standard";
     SELECT_STANDARD_STYLE_ID = "select-standard";

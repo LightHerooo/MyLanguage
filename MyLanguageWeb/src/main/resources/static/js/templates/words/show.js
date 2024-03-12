@@ -133,8 +133,10 @@ let _lastWordIdOnPreviousPage = 0n;
 const _CUSTOM_TIMER_STATISTIC_FINDER = new CustomTimer();
 const _CUSTOM_TIMER_COLLECTION_INFO_FINDER = new CustomTimer();
 const _CUSTOM_TIMER_WORDS_FINDER = new CustomTimer();
-const _CUSTOM_TIMER_TB_FINDER = new CustomTimer();
 const _TIMEOUT_FOR_FINDERS = 1000;
+
+const _CUSTOM_TIMER_TB_FINDER = new CustomTimer();
+const _CUSTOM_TIMER_FOR_REFRESH = new CustomTimer();
 
 window.onload = async function () {
     // Подготавливаем таймеры ---
@@ -213,7 +215,53 @@ function prepareBtnRefresh() {
     let btnRefresh = document.getElementById(_BTN_REFRESH_ID);
     if (btnRefresh) {
         btnRefresh.addEventListener("click", async function() {
+            changeDisableStatusToFinderInstruments(true);
+
+            // Отображаем загрузки на момент перезагрузки ---
+            showLoadingInStatistic();
+            showLoadingInCollectionInfo();
+            showLoadingInTable();
+            //---
+
+            let refreshPromise = new Promise(resolve => {
+                _CUSTOM_TIMER_FOR_REFRESH.stop();
+
+                _CUSTOM_TIMER_FOR_REFRESH.setTimeout(500);
+                _CUSTOM_TIMER_FOR_REFRESH.setHandler(async function() {
+                    let cbLangs = document.getElementById(_CB_LANGS_ID);
+                    let divLangFlag = document.getElementById(_DIV_LANG_FLAG_ID);
+                    if (cbLangs && divLangFlag) {
+                        let firstOption = document.createElement("option");
+                        firstOption.textContent = "Все";
+
+                        let cbLangsWithFlag = new ComboBoxWithFlag(cbLangs.parentElement, cbLangs, divLangFlag);
+                        await _LANG_UTILS.CB_LANGS_IN.fill(cbLangsWithFlag, firstOption);
+                    }
+
+                    let cbCustomerCollections = document.getElementById(_CB_CUSTOMER_COLLECTIONS_ID);
+                    let divCollectionFlag = document.getElementById(_DIV_COLLECTION_FLAG_ID);
+                    if (cbCustomerCollections && divCollectionFlag) {
+                        let comboBoxWithFlag =
+                            new ComboBoxWithFlag(cbCustomerCollections.parentElement, cbCustomerCollections, divCollectionFlag);
+
+                        await _CUSTOMER_COLLECTION_UTILS.CB_CUSTOMER_COLLECTIONS.fill(comboBoxWithFlag, null);
+
+                        // Мы должны вызвать change событие без запуска таймеров ---
+                        cbCustomerCollections.removeEventListener("change", startAllFinders);
+                        _COMBO_BOX_UTILS.callChangeEvent(cbCustomerCollections);
+                        cbCustomerCollections.addEventListener("change", startAllFinders);
+                        //---
+                    }
+
+                    resolve();
+                });
+
+                _CUSTOM_TIMER_FOR_REFRESH.start();
+            });
+            await refreshPromise;
+
             startAllFinders();
+            changeDisableStatusToFinderInstruments(false);
         })
     }
 }
@@ -229,7 +277,40 @@ function startAllFinders() {
     startToFindWords();
 }
 
+function changeDisableStatusToFinderInstruments(isDisable) {
+    let btnRefresh = document.getElementById(_BTN_REFRESH_ID);
+    if (btnRefresh) {
+        btnRefresh.disabled = isDisable;
+    }
+
+    let tbFinder = document.getElementById(_TB_FINDER_ID);
+    if (tbFinder) {
+        tbFinder.disabled = isDisable;
+    }
+
+    let cbLangs = document.getElementById(_CB_LANGS_ID);
+    if (cbLangs) {
+        cbLangs.disabled = isDisable;
+    }
+
+    let cbCollections = document.getElementById(_CB_CUSTOMER_COLLECTIONS_ID);
+    if (cbCollections) {
+        cbCollections.disabled = isDisable;
+    }
+}
+
 // Статистика ---
+function showLoadingInStatistic() {
+    let divStatistic = document.getElementById(_DIV_WORDS_STATISTICS_CONTAINER_ID);
+    if (divStatistic) {
+        divStatistic.replaceChildren();
+
+        divStatistic.style.display = "grid";
+        divStatistic.style.alignItems = "center";
+        divStatistic.appendChild(new LoadingElement().createDiv());
+    }
+}
+
 function prepareStatisticFinder() {
     _CUSTOM_TIMER_STATISTIC_FINDER.setTimeout(_TIMEOUT_FOR_FINDERS);
     _CUSTOM_TIMER_STATISTIC_FINDER.setHandler(async function () {
@@ -242,14 +323,7 @@ function startToFindStatistic() {
         _CUSTOM_TIMER_STATISTIC_FINDER.stop();
     }
 
-    let divStatistic = document.getElementById(_DIV_WORDS_STATISTICS_CONTAINER_ID);
-    if (divStatistic) {
-        divStatistic.replaceChildren();
-
-        divStatistic.style.display = "grid";
-        divStatistic.style.alignItems = "center";
-        divStatistic.appendChild(new LoadingElement().createDiv());
-    }
+    showLoadingInStatistic();
 
     if (_CUSTOM_TIMER_STATISTIC_FINDER) {
         _CUSTOM_TIMER_STATISTIC_FINDER.start();
@@ -348,6 +422,14 @@ async function createStatisticItems() {
 //---
 
 // Информация о коллекции ---
+function showLoadingInCollectionInfo() {
+    let divCollectionInfo = document.getElementById(_DIV_COLLECTION_INFO_ID);
+    if (divCollectionInfo) {
+        divCollectionInfo.replaceChildren();
+        divCollectionInfo.appendChild(new LoadingElement().createDiv());
+    }
+}
+
 function prepareCollectionInfoFinder() {
     _CUSTOM_TIMER_COLLECTION_INFO_FINDER.setTimeout(_TIMEOUT_FOR_FINDERS);
     _CUSTOM_TIMER_COLLECTION_INFO_FINDER.setHandler(async function() {
@@ -360,11 +442,7 @@ function startToFindCollectionInfo() {
         _CUSTOM_TIMER_COLLECTION_INFO_FINDER.stop();
     }
 
-    let divCollectionInfo = document.getElementById(_DIV_COLLECTION_INFO_ID);
-    if (divCollectionInfo) {
-        divCollectionInfo.replaceChildren();
-        divCollectionInfo.appendChild(new LoadingElement().createDiv());
-    }
+    showLoadingInCollectionInfo();
 
     if (_CUSTOM_TIMER_COLLECTION_INFO_FINDER) {
         _CUSTOM_TIMER_COLLECTION_INFO_FINDER.start();
@@ -389,6 +467,20 @@ async function tryToFillCollectionInfo() {
 //---
 
 // Поиск слов ---
+function showLoadingInTable() {
+    // Отображаем загрузку в таблице ---
+    let tableHead = document.getElementById(_WORDS_TABLE_HEAD_ID);
+    let tableBody = document.getElementById(_WORDS_TABLE_BODY_ID);
+    if (tableHead && tableBody) {
+        let numberOfColumns = _TABLE_UTILS.getNumberOfColumnsByTableHead(tableHead);
+        let trMessage = _TABLE_UTILS.MESSAGES_INSIDE_TABLE.createTrLoading(numberOfColumns);
+
+        tableBody.replaceChildren();
+        tableBody.appendChild(trMessage);
+    }
+    //---
+}
+
 function prepareWordsFinder() {
     _CUSTOM_TIMER_WORDS_FINDER.setTimeout(_TIMEOUT_FOR_FINDERS);
     _CUSTOM_TIMER_WORDS_FINDER.setHandler(async function () {
@@ -420,17 +512,7 @@ function startToFindWords() {
         _CUSTOM_TIMER_WORDS_FINDER.stop();
     }
 
-    // Отображаем загрузку в таблице ---
-    let tableHead = document.getElementById(_WORDS_TABLE_HEAD_ID);
-    let tableBody = document.getElementById(_WORDS_TABLE_BODY_ID);
-    if (tableHead && tableBody) {
-        let numberOfColumns = _TABLE_UTILS.getNumberOfColumnsByTableHead(tableHead);
-        let trMessage = _TABLE_UTILS.MESSAGES_INSIDE_TABLE.createTrLoading(numberOfColumns);
-
-        tableBody.replaceChildren();
-        tableBody.appendChild(trMessage);
-    }
-    //---
+    showLoadingInTable();
 
     if (_CUSTOM_TIMER_WORDS_FINDER) {
         _CUSTOM_TIMER_WORDS_FINDER.start();
