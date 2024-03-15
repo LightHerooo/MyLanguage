@@ -6,18 +6,15 @@ import java.util.Random;
 
 public class StringUtils {
 
-    private final Random random = new Random();
-
     public String getRandomStrEn(int length) {
+        Random random = new Random();
+        String rndStrBuffer = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstvwxyz";
         StringBuilder strBuilder = new StringBuilder(length);
-        int anLen = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".length();
-        synchronized(random) {
-            for(int i = 0; i < length; ++i) {
-                strBuilder.append("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".charAt(random.nextInt(anLen)));
-            }
-
-            return strBuilder.toString();
+        for (int i = 0; i < length; i++) {
+            strBuilder.append(rndStrBuffer.charAt(random.nextInt(rndStrBuffer.length())));
         }
+
+        return strBuilder.toString();
     }
 
     public String changeEndOfTheWordByNumberOfItems(String word,

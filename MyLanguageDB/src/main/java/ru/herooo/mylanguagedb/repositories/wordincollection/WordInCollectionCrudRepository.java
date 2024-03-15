@@ -21,22 +21,22 @@ public interface WordInCollectionCrudRepository extends CrudRepository<WordInCol
 
     @Query(nativeQuery = true,
         value = "SELECT * FROM get_words_in_collection_after_filter" +
-                "(:title, :customer_collection_key)")
+                "(:title, :collection_id)")
     List<WordInCollection> findAll(
             @Param("title") String title,
-            @Param("customer_collection_key") String customerCollectionKey);
+            @Param("collection_id") Long collectionId);
 
     @Query(nativeQuery = true,
             value = "SELECT * FROM get_words_in_collection_after_filter_pagination" +
-                    "(:title, :customer_collection_key, :number_of_words," +
+                    "(:title, :collection_id, :number_of_words," +
                     ":last_word_in_collection_id_on_previous_page)")
     List<WordInCollection> findAll(
             @Param("title") String title,
-            @Param("customer_collection_key") String customerCollectionKey,
+            @Param("collection_id") Long collectionId,
             @Param("number_of_words") Long numberOfWords,
             @Param("last_word_in_collection_id_on_previous_page") Long lastWordInCollectionIdOnPreviousPage);
 
     @Query(nativeQuery = true,
-            value = "SELECT COUNT(*) FROM get_words_in_collection_after_filter(NULL, :collection_key)")
-    Optional<Long> count(@Param("collection_key") String collectionKey);
+            value = "SELECT COUNT(*) FROM get_words_in_collection_after_filter(NULL, :collection_id)")
+    Optional<Long> count(@Param("collection_id") Long collectionId);
 }

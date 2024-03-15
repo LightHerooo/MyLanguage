@@ -12,7 +12,6 @@ import {
 
 const _CSS_MAIN = new CssMain();
 const _IMAGE_SOURCES = new ImageSources();
-const _A_BUTTON_IMG_SIZES = new AButtonImgSizes();
 
 export class AButtons {
     A_BUTTON_DISABLED = new AButtonDisabled();
@@ -46,16 +45,16 @@ class GeneralFunctions {
 class AButtonDisabled {
     #GENERAL_FUNCTIONS = new GeneralFunctions();
 
-    createA() {
+    createA(aButtonImgSize) {
         let aBtn = document.createElement("a");
-        this.setStyles(aBtn);
+        this.setStyles(aBtn, aButtonImgSize);
         return aBtn;
     }
 
-    setStyles(aBtnElement) {
+    setStyles(aBtnElement, aButtonImgSize) {
         let oldPadding = aBtnElement.style.padding;
         if (!oldPadding) {
-            oldPadding = this.#GENERAL_FUNCTIONS.calculatePadding(_A_BUTTON_IMG_SIZES.SIZE_16);
+            oldPadding = this.#GENERAL_FUNCTIONS.calculatePadding(aButtonImgSize);
         }
 
         aBtnElement.className = "";

@@ -113,6 +113,7 @@ div.content-center-standard {
     display: grid;
     justify-content: center;
     align-items: center;
+    text-align: center;
 }
 
 

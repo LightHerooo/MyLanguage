@@ -55,7 +55,7 @@ public class CustomerService {
         CustomerRole cr = CUSTOMER_ROLE_CRUD_REPOSITORY.find(CustomerRoles.CUSTOMER).orElse(null);
         newCustomer.setRole(cr);
 
-        newCustomer.setAuthCode(STRING_UTILS.getRandomStrEn(30));
+        newCustomer.setAuthCode(STRING_UTILS.getRandomStrEn(50));
         newCustomer.setDateOfCreate(LocalDateTime.now());
         newCustomer.setDateOfLastVisit(LocalDateTime.now());
 

@@ -295,7 +295,7 @@ async function register() {
     // Получаем код страны ---
     let cbCountries = document.getElementById(_CB_COUNTRIES_ID);
     if (cbCountries) {
-        dto.countryCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbCountries);
+        dto.countryCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBox(cbCountries);
     }
     //---
 

@@ -101,7 +101,7 @@ class WorkoutsPOSTRequests {
             'workout_type_code': workoutsRequestDTO.workoutTypeCode,
             'lang_in_code': workoutsRequestDTO.langInCode,
             'lang_out_code': workoutsRequestDTO.langOutCode,
-            'collection_key': workoutsRequestDTO.collectionKey
+            'collection_id': workoutsRequestDTO.collectionId
         });
 
         return await _XML_UTILS.getJSONResponseByPOSTXml(requestURL, jsonStr);

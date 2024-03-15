@@ -26,10 +26,11 @@ const _A_BUTTON_IMG_SIZES = new AButtonImgSizes();
 
 export class WordTableUtils {
     async changeToAddAction(aBtnActionElement, wordInCollectionRequestDTO) {
-        _A_BUTTONS.A_BUTTON_DISABLED.setStyles(aBtnActionElement);
+        let aButtonImgSize =  _A_BUTTON_IMG_SIZES.SIZE_16;
+        _A_BUTTONS.A_BUTTON_DISABLED.setStyles(aBtnActionElement, aButtonImgSize);
         aBtnActionElement.onclick = null;
 
-        _A_BUTTONS.A_BUTTON_ACCEPT.setStyles(aBtnActionElement, _A_BUTTON_IMG_SIZES.SIZE_16);
+        _A_BUTTONS.A_BUTTON_ACCEPT.setStyles(aBtnActionElement, aButtonImgSize);
         aBtnActionElement.title = "Добавить слово в коллекцию";
 
         aBtnActionElement.onclick = async function () {
@@ -38,22 +39,23 @@ export class WordTableUtils {
                 let wordInCollection = new WordInCollectionResponseDTO(JSONResponse.json);
                 wordInCollectionRequestDTO.id = wordInCollection.id;
                 wordInCollectionRequestDTO.wordId = wordInCollection.word.id;
-                wordInCollectionRequestDTO.collectionKey = wordInCollection.customerCollection.key;
+                wordInCollectionRequestDTO.collectionId = wordInCollection.customerCollection.id;
 
                 let wordTableUtils = new WordTableUtils();
                 await wordTableUtils.changeToRemoveAction(aBtnActionElement, wordInCollectionRequestDTO);
             } else {
-                _A_BUTTONS.A_BUTTON_DISABLED.setStyles(aBtnActionElement);
+                _A_BUTTONS.A_BUTTON_DISABLED.setStyles(aBtnActionElement, aButtonImgSize);
                 aBtnActionElement.onclick = null;
             }
         }
     }
 
     async changeToRemoveAction(aBtnActionElement, wordInCollectionRequestDTO) {
-        _A_BUTTONS.A_BUTTON_DISABLED.setStyles(aBtnActionElement);
+        let aButtonImgSize =  _A_BUTTON_IMG_SIZES.SIZE_16;
+        _A_BUTTONS.A_BUTTON_DISABLED.setStyles(aBtnActionElement, aButtonImgSize);
         aBtnActionElement.onclick = null;
 
-        _A_BUTTONS.A_BUTTON_DENY.setStyles(aBtnActionElement, _A_BUTTON_IMG_SIZES.SIZE_16);
+        _A_BUTTONS.A_BUTTON_DENY.setStyles(aBtnActionElement, aButtonImgSize);
         aBtnActionElement.title = "Удалить слово из коллекции";
 
         aBtnActionElement.onclick = async function() {
@@ -62,7 +64,7 @@ export class WordTableUtils {
                 let wordTableUtils = new WordTableUtils();
                 await wordTableUtils.changeToAddAction(aBtnActionElement, wordInCollectionRequestDTO);
             } else {
-                _A_BUTTONS.A_BUTTON_DISABLED.setStyles(aBtnActionElement);
+                _A_BUTTONS.A_BUTTON_DISABLED.setStyles(aBtnActionElement, aButtonImgSize);
                 aBtnActionElement.onclick = null;
             }
         }

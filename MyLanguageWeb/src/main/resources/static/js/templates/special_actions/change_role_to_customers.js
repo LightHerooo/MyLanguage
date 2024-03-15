@@ -157,7 +157,7 @@ async function tryToFillCustomersTable(doNeedToClearTable, doNeedToShowTableMess
     let roleCode;
     let cbRoles = document.getElementById(_CB_CUSTOMER_ROLES_ID);
     if (cbRoles) {
-        roleCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbRoles);
+        roleCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBox(cbRoles);
     }
     //---
 
@@ -260,7 +260,7 @@ async function createCustomersTableRow(customer) {
 
     await _CUSTOMER_ROLE_UTILS.CB_CUSTOMER_ROLES.prepare(cbCustomerRoles, null);
 
-    _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemId(
+    _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemValue(
         cbCustomerRoles, customer.role.code, true);
 
     let authId = BigInt(_GLOBAL_COOKIES.AUTH_ID.getValue());
@@ -273,7 +273,7 @@ async function createCustomersTableRow(customer) {
 
         let dto = new CustomerRequestDTO();
         dto.id = customer.id;
-        dto.roleCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(this);
+        dto.roleCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBox(this);
 
         let JSONResponse = await _CUSTOMERS_API.PATCH.changeRole(dto);
         if (JSONResponse.status === _HTTP_STATUSES.OK) {

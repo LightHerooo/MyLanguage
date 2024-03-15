@@ -46,7 +46,7 @@ export class LangUtils {
             let cbLangs = comboBoxWithFlagObj.comboBox;
             if (cbLangs) {
                 if (langCode) {
-                    _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemId(
+                    _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemValue(
                         cbLangs, langCode, false);
                 } else {
                     _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemIndex(
@@ -167,13 +167,14 @@ class CbLangsOut {
 }
 
 class CbLangsGeneralFunctions {
-    async #fillWithClear(comboBoxWithFlagObj, firstOption, JSONResponseByLangsAPI){
+    async #fillClear(comboBoxWithFlagObj, firstOption, JSONResponseByLangsAPI){
         if (comboBoxWithFlagObj) {
             let cbLangs = comboBoxWithFlagObj.comboBox;
             if (cbLangs) {
                 cbLangs.replaceChildren();
 
                 if (firstOption) {
+                    firstOption.value = "";
                     cbLangs.appendChild(firstOption);
                 }
 
@@ -184,7 +185,7 @@ class CbLangsGeneralFunctions {
                             let lang = new LangResponseDTO(json[i]);
 
                             let option = document.createElement("option");
-                            option.id = lang.code;
+                            option.value = lang.code;
                             option.textContent = lang.title;
 
                             cbLangs.appendChild(option);
@@ -201,7 +202,7 @@ class CbLangsGeneralFunctions {
             let divFlag = comboBoxWithFlagObj.divFlag;
             if (cbLangs && divFlag) {
                 let country;
-                let optionId = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbLangs);
+                let optionId = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBox(cbLangs);
                 let JSONResponse = await _LANGS_API.GET.findByCode(optionId);
                 if (JSONResponse.status === _HTTP_STATUSES.OK) {
                     let lang = new LangResponseDTO(JSONResponse.json);
@@ -222,7 +223,7 @@ class CbLangsGeneralFunctions {
             let divFlag = comboBoxWithFlagObj.divFlag;
             if (cbLangsContainer && cbLangs && divFlag) {
                 // Заполняем выпадающий список ---
-                await this.#fillWithClear(comboBoxWithFlagObj, firstOption, await getAllLangsAPIFunction());
+                await this.#fillClear(comboBoxWithFlagObj, firstOption, await getAllLangsAPIFunction());
                 //---
 
                 // Меняем флаг ---
@@ -253,13 +254,13 @@ class CbLangsGeneralFunctions {
             let divFlag = comboBoxWithFlagObj.divFlag;
             if (cbLangs && divFlag) {
                 // Запоминаем, какой элемент был выбран до очистки списка ---
-                let oldLangCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbLangs);
+                let oldLangCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBox(cbLangs);
                 //---
 
-                await this.#fillWithClear(comboBoxWithFlagObj, firstOption, await getAllLangsAPIFunction());
+                await this.#fillClear(comboBoxWithFlagObj, firstOption, await getAllLangsAPIFunction());
 
                 // Пытаемся установить старый элемент ---
-                _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemId(
+                _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemValue(
                     cbLangs, oldLangCode, false);
                 //---
 
@@ -278,7 +279,7 @@ class CbLangsGeneralFunctions {
             let divFlag = comboBoxWithFlagObj.divFlag;
             if (cbLangs && divFlag) {
                 // Запоминаем, какой элемент был выбран до очистки списка ---
-                let oldLangCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbLangs);
+                let oldLangCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBox(cbLangs);
                 //---
 
                 // Заполняем выпадающий список на основе пришедшего кода языка ---
@@ -287,13 +288,13 @@ class CbLangsGeneralFunctions {
                     let JSONResponse =  await getAllLangsByCodeAPIFunction(langCode);
                     if (JSONResponse.status === _HTTP_STATUSES.OK) {
                         isLangCodeCorrect = true;
-                        await this.#fillWithClear(comboBoxWithFlagObj, firstOption, JSONResponse);
+                        await this.#fillClear(comboBoxWithFlagObj, firstOption, JSONResponse);
                     }
                 }
 
                 if (isLangCodeCorrect === true) {
                     // Пытаемся установить старый элемент ---
-                    _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemId(
+                    _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemValue(
                         cbLangs, oldLangCode, false);
                     //---
 
@@ -318,7 +319,7 @@ class CbLangsGeneralFunctions {
             if (cbLangsContainer && cbLangs) {
                 let ruleElement = new RuleElement(cbLangs, cbLangsContainer);
 
-                let langCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbLangs);
+                let langCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBox(cbLangs);
                 if (langCode) {
                     // Ищем язык с указанным кодом ---
                     let JSONResponse = await _LANGS_API.GET.findByCode(langCode);

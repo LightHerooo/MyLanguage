@@ -36,58 +36,21 @@ import {
 } from "../../flag_elements.js";
 
 import {
-    CssMain
-} from "../../css/css_main.js";
-
-import {
-    CssRoot
-} from "../../css/css_root.js";
+    BigIntUtils
+} from "../bigint_utils.js";
 
 const _CUSTOMER_COLLECTIONS_API = new CustomerCollectionsAPI();
-
-const _CSS_MAIN = new CssMain();
-const _CSS_ROOT = new CssRoot();
 
 const _GLOBAL_COOKIES = new GlobalCookies();
 const _HTTP_STATUSES = new HttpStatuses();
 const _RULE_TYPES = new RuleTypes();
 const _COMBO_BOX_UTILS = new ComboBoxUtils();
 const _FLAG_ELEMENTS = new FlagElements();
+const _BIGINT_UTILS = new BigIntUtils();
 
 export class CustomerCollectionUtils {
     CB_CUSTOMER_COLLECTIONS = new CbCustomerCollections();
     TB_CUSTOMER_COLLECTION_TITLE = new TbCustomerCollectionTitle();
-
-    async createDivCollectionInfoAfterValidate(collectionKey) {
-        let customerCollection;
-        let message;
-
-        let authId = _GLOBAL_COOKIES.AUTH_ID.getValue();
-        let JSONResponse = await
-            _CUSTOMER_COLLECTIONS_API.GET.findByCustomerIdAndKey(authId, collectionKey);
-        if (JSONResponse.status === _HTTP_STATUSES.OK) {
-            customerCollection = new CustomerCollectionResponseDTO(JSONResponse.json);
-
-            JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.validateIsLangActiveInCollectionByKey(collectionKey);
-            if (JSONResponse.status !== _HTTP_STATUSES.OK) {
-                customerCollection = null;
-                message = new CustomResponseMessage(JSONResponse.json).text;
-            }
-        } else {
-            message = new CustomResponseMessage(JSONResponse.json).text;
-        }
-
-        if (customerCollection) {
-            return await customerCollection.createDivInfo();
-        } else {
-            let divMessage = document.createElement("div");
-            divMessage.classList.add(_CSS_MAIN.DIV_CONTENT_CENTER_STANDARD_STYLE_ID);
-            divMessage.style.fontSize = _CSS_ROOT.SECOND_FONT_SIZE;
-            divMessage.textContent = message;
-
-            return divMessage;
-        }
-    }
 }
 
 class CbCustomerCollections {
@@ -98,6 +61,7 @@ class CbCustomerCollections {
                 cbCustomerCollections.replaceChildren();
 
                 if (firstOption) {
+                    firstOption.value = "";
                     cbCustomerCollections.appendChild(firstOption);
                 }
 
@@ -108,8 +72,8 @@ class CbCustomerCollections {
                             let customerCollection = new CustomerCollectionResponseDTO(json[i]);
 
                             let option = document.createElement("option");
+                            option.value = customerCollection.id;
                             option.textContent = customerCollection.title;
-                            option.id = customerCollection.key;
 
                             cbCustomerCollections.appendChild(option);
                         }
@@ -125,8 +89,8 @@ class CbCustomerCollections {
             let divFlag = comboBoxWithFlagObj.divFlag;
             if (cbCustomerCollections && divFlag) {
                 let country;
-                let collectionKey = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbCustomerCollections);
-                let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.findByKey(collectionKey);
+                let collectionId = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBox(cbCustomerCollections);
+                let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.findById(collectionId);
                 if (JSONResponse.status === _HTTP_STATUSES.OK) {
                     let collection = new CustomerCollectionResponseDTO(JSONResponse.json);
                     country = collection.lang.country;
@@ -173,7 +137,7 @@ class CbCustomerCollections {
             let divFlag = comboBoxWithFlagObj.divFlag;
             if (cbCustomerCollections && divFlag) {
                 // Запоминаем, какой элемент был выбран до очистки списка ---
-                let oldCustomerCollection = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbCustomerCollections);
+                let oldCustomerCollection = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBox(cbCustomerCollections);
                 //---
 
                 let authId = _GLOBAL_COOKIES.AUTH_ID.getValue();
@@ -181,7 +145,7 @@ class CbCustomerCollections {
                 await this.#fillClear(comboBoxWithFlagObj, firstOption, JSONResponse);
 
                 // Пытаемся установить старый элемент ---
-                _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemId(
+                _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemValue(
                     cbCustomerCollections, oldCustomerCollection, false);
                 //---
 
@@ -198,7 +162,7 @@ class CbCustomerCollections {
             let divFlag = comboBoxWithFlagObj.divFlag;
             if (cbCustomerCollections && divFlag) {
                 // Запоминаем, какой элемент был выбран до очистки списка ---
-                let oldCustomerCollection = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbCustomerCollections);
+                let oldCustomerCollection = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBox(cbCustomerCollections);
                 //---
 
                 let isLangCodeCorrect = false;
@@ -214,7 +178,7 @@ class CbCustomerCollections {
 
                 if (isLangCodeCorrect === true) {
                     // Пытаемся установить старый элемент ---
-                    _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemId(
+                    _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemValue(
                         cbCustomerCollections, oldCustomerCollection, false);
                     //---
 
@@ -237,53 +201,68 @@ class CbCustomerCollections {
             let cbCollectionsContainer = comboBoxWithFlagObj.comboBoxWithFlagContainer;
             let cbCollections = comboBoxWithFlagObj.comboBox;
             if (cbCollectionsContainer && cbCollections) {
+                isCorrect = true;
                 let ruleElement = new RuleElement(cbCollections, cbCollectionsContainer);
 
-                let customerCollectionKey = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbCollections);
-                if (customerCollectionKey) {
-                    // Ищем коллекцию у пользователя ---
-                    let authId = _GLOBAL_COOKIES.AUTH_ID.getValue();
+                // Пользователь должен выбрать коллекцию с ключом ---
+                let collectionIdStr = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBox(cbCollections);
+                let collectionId = _BIGINT_UTILS.parse(collectionIdStr);
+                if (!collectionIdStr || !collectionId) {
+                    isCorrect = false;
+                    ruleElement.message = "Выберите коллекцию.";
+                    ruleElement.ruleType = _RULE_TYPES.ERROR;
+                }
+                //---
 
-                    let customerCollection;
+                // Ищем коллекцию ---
+                if (isCorrect === true) {
+                    let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.findById(collectionId);
+                    if (JSONResponse.status !== _HTTP_STATUSES.OK) {
+                        isCorrect = false;
+                        ruleElement.message = new CustomResponseMessage(JSONResponse.json).text;
+                        ruleElement.ruleType = _RULE_TYPES.ERROR;
+                    }
+                }
+                //---
+
+                // Проверяем принадлежность пользователя к искомой коллекции ---
+                if (isCorrect === true) {
+                    let authId = _GLOBAL_COOKIES.AUTH_ID.getValue();
                     let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET
-                        .findByCustomerIdAndKey(authId, customerCollectionKey);
+                        .validateIsCustomerCollectionAuthor(authId, collectionId);
+                    if (JSONResponse.status !== _HTTP_STATUSES.OK) {
+                        isCorrect = false;
+                        ruleElement.message = new CustomResponseMessage(JSONResponse.json).text;
+                        ruleElement.ruleType = _RULE_TYPES.ERROR;
+                    }
+                }
+                //---
+
+                // Проверяем активность языка у искомой коллекции ---
+                if (isCorrect === true) {
+                    let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET
+                        .validateIsLangActiveInCollectionByCollectionId(collectionId);
+                    if (JSONResponse.status !== _HTTP_STATUSES.OK) {
+                        isCorrect = false;
+                        ruleElement.message = new CustomResponseMessage(JSONResponse.json).text;
+                        ruleElement.ruleType = _RULE_TYPES.ERROR;
+                    }
+                }
+                //---
+
+                // Проверяем количество слов в искомой коллекции ---
+                if (isCorrect === true) {
+                    let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET
+                        .validateMinNumberOfWordsForWorkoutByCollectionId(collectionId);
                     if (JSONResponse.status !== _HTTP_STATUSES.OK) {
                         isCorrect = false;
                         ruleElement.message = new CustomResponseMessage(JSONResponse.json).text;
                         ruleElement.ruleType = _RULE_TYPES.ERROR;
                     } else {
-                        customerCollection = new CustomerCollectionResponseDTO(JSONResponse.json);
+                        isCorrect = true;
                     }
-                    //---
-
-                    if (customerCollection) {
-                        // Проверяем активность языка у найденной коллекции ---
-                        JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET
-                            .validateIsLangActiveInCollectionByKey(customerCollection.key);
-                        if (JSONResponse.status !== _HTTP_STATUSES.OK) {
-                            isCorrect = false;
-                            ruleElement.message = new CustomResponseMessage(JSONResponse.json).text;
-                            ruleElement.ruleType = _RULE_TYPES.ERROR;
-                        } else {
-                            // Проверяем количество слов в найденной коллекции ---
-                            JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET
-                                .validateMinNumberOfWordsForWorkoutByKey(customerCollection.key);
-                            if (JSONResponse.status !== _HTTP_STATUSES.OK) {
-                                isCorrect = false;
-                                ruleElement.message = new CustomResponseMessage(JSONResponse.json).text;
-                                ruleElement.ruleType = _RULE_TYPES.ERROR;
-                            } else {
-                                isCorrect = true;
-                            }
-                            //---
-                        }
-                        //---
-                    }
-                } else {
-                    isCorrect = false;
-                    ruleElement.message = "Выберите коллекцию.";
-                    ruleElement.ruleType = _RULE_TYPES.ERROR;
                 }
+                //---
 
                 if (isCorrect === false) {
                     ruleElement.showRule();

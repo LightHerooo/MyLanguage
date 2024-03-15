@@ -126,7 +126,7 @@ public class WorkoutMapping {
         }
 
         // Не проводим дополнительных проверок, т.к. поле может быть NULL
-        CustomerCollection collection = CUSTOMER_COLLECTION_CRUD_REPOSITORY.findByKey(dto.getCollectionKey())
+        CustomerCollection collection = CUSTOMER_COLLECTION_CRUD_REPOSITORY.findById(dto.getCollectionId())
                 .orElse(null);
         workout.setCustomerCollection(collection);
 

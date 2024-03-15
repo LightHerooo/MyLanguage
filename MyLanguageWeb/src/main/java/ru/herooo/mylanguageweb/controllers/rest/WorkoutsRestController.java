@@ -426,21 +426,22 @@ public class WorkoutsRestController {
 
         if (dto.getId() == 0) {
             // Если указана коллекция, мы должны изменить некоторые значения dto
-            if (STRING_UTILS.isNotStringVoid(dto.getCollectionKey())) {
+            if (dto.getCollectionId() != 0) {
                 // Проверяем, принадлежит ли коллекция пользователю
                 Customer customer = CUSTOMER_SERVICE.findByAuthCode(dto.getAuthCode());
-                response = CUSTOMER_COLLECTIONS_REST_CONTROLLER.find(customer.getId(), dto.getCollectionKey());
+                response = CUSTOMER_COLLECTIONS_REST_CONTROLLER.validateIsCustomerCollectionAuthor(
+                        customer.getId(), dto.getCollectionId());
                 if (response.getStatusCode() != HttpStatus.OK) {
                     return response;
                 }
 
-                CustomerCollection collection = CUSTOMER_COLLECTION_SERVICE.find(dto.getCollectionKey());
+                CustomerCollection collection = CUSTOMER_COLLECTION_SERVICE.find(dto.getCollectionId());
 
                 // Вносим в dto входной язык
                 dto.setLangInCode(collection.getLang().getCode());
 
                 // Вносим в dto количество слов
-                dto.setNumberOfWords(WORD_IN_COLLECTION_SERVICE.count(collection.getKey()));
+                dto.setNumberOfWords(WORD_IN_COLLECTION_SERVICE.count(collection.getId()));
             }
 
             // Проверяем начальный язык
@@ -640,7 +641,8 @@ public class WorkoutsRestController {
             isTypePrepared = true;
         } else if (workoutType.getId() == WorkoutTypes.COLLECTION_WORKOUT.ID) {
             // Проверяем принадлежность коллекции к пользователю, который создал тренировку
-            response = CUSTOMER_COLLECTIONS_REST_CONTROLLER.find(customer.getId(), dto.getCollectionKey());
+            response = CUSTOMER_COLLECTIONS_REST_CONTROLLER.validateIsCustomerCollectionAuthor(
+                    customer.getId(), dto.getCollectionId());
             if (response.getStatusCode() != HttpStatus.OK) {
                 return response;
             }
@@ -683,7 +685,7 @@ public class WorkoutsRestController {
         } else if (workout.getWorkoutType().getId() == WorkoutTypes.COLLECTION_WORKOUT.ID) {
             // Режим "Тренировка коллекции"
             List<WordInCollection> wordsInCollection = WORD_IN_COLLECTION_SERVICE.findAll(
-                    null, workout.getCustomerCollection().getKey());
+                    null, workout.getCustomerCollection().getId());
 
             if (wordsInCollection != null && wordsInCollection.size() > 0) {
                 for (WordInCollection wordInCollection: wordsInCollection) {

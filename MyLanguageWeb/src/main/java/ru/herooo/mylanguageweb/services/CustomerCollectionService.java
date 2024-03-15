@@ -19,19 +19,19 @@ public class CustomerCollectionService {
 
     private final CustomerCollectionMapping CUSTOMER_COLLECTION_MAPPING;
 
-    private final StringUtils STRING_UTILS;
-
     @Autowired
     public CustomerCollectionService(CustomerCollectionCrudRepository customerCollectionCrudRepository,
-                                     CustomerCollectionMapping customerCollectionMapping,
-                                     StringUtils stringUtils) {
+                                     CustomerCollectionMapping customerCollectionMapping) {
         this.CUSTOMER_COLLECTION_CRUD_REPOSITORY = customerCollectionCrudRepository;
         this.CUSTOMER_COLLECTION_MAPPING = customerCollectionMapping;
-        this.STRING_UTILS = stringUtils;
     }
 
     public List<CustomerCollection> findAll(Long customerId) {
         return CUSTOMER_COLLECTION_CRUD_REPOSITORY.findAll(customerId);
+    }
+
+    public long count(Long customerId) {
+        return CUSTOMER_COLLECTION_CRUD_REPOSITORY.count(customerId).orElse(0L);
     }
 
     public List<CustomerCollectionsWithLangStatistic> findCustomerCollectionsWithLangStatistics(Long customerId) {
@@ -42,16 +42,8 @@ public class CustomerCollectionService {
         return CUSTOMER_COLLECTION_CRUD_REPOSITORY.findById(id).orElse(null);
     }
 
-    public CustomerCollection find(String key) {
-        return CUSTOMER_COLLECTION_CRUD_REPOSITORY.findByKey(key).orElse(null);
-    }
-
     public CustomerCollection findByCustomerAndTitle(Customer customer, String title) {
         return CUSTOMER_COLLECTION_CRUD_REPOSITORY.findByCustomerAndTitleIgnoreCase(customer, title).orElse(null);
-    }
-
-    public CustomerCollection findByCustomerAndKey(Customer customer, String key) {
-        return CUSTOMER_COLLECTION_CRUD_REPOSITORY.findByCustomerAndKey(customer, key).orElse(null);
     }
 
     public CustomerCollection add(CustomerCollectionRequestDTO dto) {
@@ -64,7 +56,6 @@ public class CustomerCollectionService {
             collection.setTitle(collection.getTitle().trim());
         }
 
-        collection.setKey(STRING_UTILS.getRandomStrEn(20));
         collection.setDateOfCreate(LocalDateTime.now());
 
         return CUSTOMER_COLLECTION_CRUD_REPOSITORY.save(collection);

@@ -214,6 +214,6 @@ export class WorkoutRequestDTO {
     workoutTypeCode;
     langInCode;
     langOutCode;
-    collectionKey;
+    collectionId;
     currentMilliseconds;
 }

@@ -62,7 +62,7 @@ public class WordStatusHistoryMapping {
         WordStatusHistory wordStatusHistory = new WordStatusHistory();
 
         long wordId = dto.getWordId();
-        if (wordId > 0) {
+        if (wordId != 0) {
             Word word = WORD_SERVICE.findById(wordId);
             wordStatusHistory.setWord(word);
         }

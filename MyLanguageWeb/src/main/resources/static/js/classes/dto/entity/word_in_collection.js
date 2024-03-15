@@ -33,5 +33,5 @@ export class WordInCollectionResponseDTO {
 export class WordInCollectionRequestDTO {
     id;
     wordId;
-    collectionKey;
+    collectionId;
 }

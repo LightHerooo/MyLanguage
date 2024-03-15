@@ -394,8 +394,8 @@ async function tryToFillTableRows(doNeedToClearTable, doNeedToShowTableMessage) 
 
     let customerId = _GLOBAL_COOKIES.AUTH_ID.getValue();
     let title = document.getElementById(_TB_FINDER_ID).value;
-    let wordStatusCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_WORD_STATUSES);
-    let langCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_LANGS_ID);
+    let wordStatusCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBoxId(_CB_WORD_STATUSES);
+    let langCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBoxId(_CB_LANGS_ID);
 
     let JSONResponse = await _WORDS_API.GET.getAllCustomerWordsFilteredPagination(_NUMBER_OF_WORDS, customerId,
         title, wordStatusCode, langCode, _lastWordIdOnPreviousPage);
@@ -600,8 +600,9 @@ function createABtnHistoryAction(wordStatusHistoryObj, parentContainer) {
     if (wordStatusHistoryObj) {
         changeToShowHistoryAction(aBtnHistoryAction, parentContainer, wordStatusHistoryObj.word.id);
     } else {
-        _A_BUTTONS.A_BUTTON_ARROW_DOWN.setStyles(aBtnHistoryAction, _A_BUTTON_IMG_SIZES.SIZE_16);
-        _A_BUTTONS.A_BUTTON_DISABLED.setStyles(aBtnHistoryAction);
+        let aButtonImgSize = _A_BUTTON_IMG_SIZES.SIZE_16;
+        _A_BUTTONS.A_BUTTON_ARROW_DOWN.setStyles(aBtnHistoryAction, aButtonImgSize);
+        _A_BUTTONS.A_BUTTON_DISABLED.setStyles(aBtnHistoryAction, aButtonImgSize);
         aBtnHistoryAction.title = "Невозможно получить историю изменения статуса слова.";
     }
 

@@ -46,7 +46,7 @@ class CbCountries {
         let cbCountries = comboBoxWithFlagObj.comboBox;
         let divFlag = comboBoxWithFlagObj.divFlag;
         if (cbCountries && divFlag) {
-            let countryCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbCountries);
+            let countryCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBox(cbCountries);
 
             let country;
             let JSONResponse = await _COUNTRIES_API.GET.findByCode(countryCode);
@@ -67,6 +67,7 @@ class CbCountries {
                 cbCountries.replaceChildren();
 
                 if (firstOption) {
+                    firstOption.value = "";
                     cbCountries.appendChild(firstOption);
                 }
 
@@ -77,7 +78,7 @@ class CbCountries {
                         let country = new CountryResponseDTO(json[i]);
 
                         let option = document.createElement("option");
-                        option.id = country.code;
+                        option.value = country.code;
                         option.textContent = country.title;
 
                         cbCountries.appendChild(option);
@@ -112,7 +113,7 @@ class CbCountries {
             if (divCountryContainer && cbCountries) {
                 let ruleElement = new RuleElement(cbCountries, divCountryContainer);
 
-                let countryCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbCountries);
+                let countryCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBox(cbCountries);
                 if (countryCode) {
                     let JSONResponse = await _COUNTRIES_API.GET.findByCode(countryCode);
                     if (JSONResponse.status !== _HTTP_STATUSES.OK) {

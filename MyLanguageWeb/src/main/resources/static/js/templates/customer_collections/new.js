@@ -289,7 +289,7 @@ async function createNewCollectionRow() {
 }
 
 async function checkCorrectTitle(customerCollectionRow) {
-    let langCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(customerCollectionRow.cbLangsWithFlag.comboBox);
+    let langCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBox(customerCollectionRow.cbLangsWithFlag.comboBox);
     return await _CUSTOMER_COLLECITON_UTILS.TB_CUSTOMER_COLLECTION_TITLE.checkCorrectValue(
         customerCollectionRow.tbTitle, langCode, _CUSTOM_TIMER_CHECKER);
 }
@@ -365,7 +365,7 @@ async function sendNewCollections() {
                 let dto = new CustomerCollectionRequestDTO();
                 dto.title = tbTitle.value.trim();
                 dto.langCode =
-                    _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbLangs);
+                    _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBox(cbLangs);
 
                 let JSONResponse = await _CUSTOMER_COLLECTIONS_API.POST.add(dto);
                 if (JSONResponse.status === _HTTP_STATUSES.OK) {
@@ -456,10 +456,11 @@ function changeDisableStatusInImportantElements(isDisable) {
 
             let aBtnDelete = row.aBtnDelete;
             if (aBtnDelete) {
+                let aButtonImgSize = _A_BUTTON_IMG_SIZES.SIZE_32;
                 if (isDisable === true) {
-                    _A_BUTTONS.A_BUTTON_DISABLED.setStyles(aBtnDelete);
+                    _A_BUTTONS.A_BUTTON_DISABLED.setStyles(aBtnDelete, aButtonImgSize);
                 } else {
-                    _A_BUTTONS.A_BUTTON_DENY.setStyles(aBtnDelete, _A_BUTTON_IMG_SIZES.SIZE_32);
+                    _A_BUTTONS.A_BUTTON_DENY.setStyles(aBtnDelete, aButtonImgSize);
                 }
             }
         }

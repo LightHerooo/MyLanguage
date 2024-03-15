@@ -29,6 +29,7 @@ class CbCustomerRoles {
             cbCustomerRoles.replaceChildren();
 
             if (firstOption) {
+                firstOption.value = "";
                 cbCustomerRoles.appendChild(firstOption);
             }
 
@@ -43,8 +44,8 @@ class CbCustomerRoles {
                     if (color) {
                         option.style.color = "#" + color.hexCode;
                     }
+                    option.value = customerRole.code;
                     option.textContent = customerRole.title;
-                    option.id = customerRole.code;
 
                     cbCustomerRoles.appendChild(option);
                 }

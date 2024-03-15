@@ -140,7 +140,7 @@ async function prepareCbLangsIn() {
 
         // Меняем элемент списка на основе последней тренировки ---
         if (_lastWorkout && _lastWorkout.langIn) {
-            _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemId(
+            _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemValue(
                 cbLangsIn, _lastWorkout.langIn.code, true);
         }
         //---
@@ -167,7 +167,7 @@ async function fillCbLangsInByLangOutCode() {
             let firstOption = document.createElement("option");
             firstOption.textContent = "Выберите язык";
 
-            let langOutCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbLangsOut);
+            let langOutCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBox(cbLangsOut);
             await _LANG_UTILS.CB_LANGS_IN.fillByLangOutCode(cbLangsInWithFlag, firstOption, langOutCode);
         }
     }
@@ -189,7 +189,7 @@ async function prepareCbLangsOut() {
 
         // Меняем элемент списка на основе последней тренировки ---
         if (_lastWorkout && _lastWorkout.langOut) {
-            _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemId(
+            _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemValue(
                 cbLangsOut, _lastWorkout.langOut.code, true);
         }
         //---
@@ -216,7 +216,7 @@ async function fillCbLangsOutByLangInCode(){
             let firstOption = document.createElement("option");
             firstOption.textContent = "Выберите язык";
 
-            let langInCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbLangsIn);
+            let langInCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBox(cbLangsIn);
             await _LANG_UTILS.CB_LANGS_OUT.fillByLangInCode(cbLangsOutWithFlag, firstOption, langInCode);
         }
     }
@@ -346,8 +346,8 @@ async function checkAllLangs() {
     let cbLangsIn = document.getElementById(_CB_LANGS_IN_ID);
     let cbLangsOut = document.getElementById(_CB_LANGS_OUT_ID);
     if (cbLangsIn && cbLangsOut) {
-        let langInCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbLangsIn);
-        let langOutCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbLangsOut);
+        let langInCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBox(cbLangsIn);
+        let langOutCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBox(cbLangsOut);
 
         // Совпадение языков запрещено ---
         if (langInCode === langOutCode) {
@@ -450,8 +450,8 @@ async function checkBeforeWorkoutStart() {
 async function createWorkout() {
     let workoutRequestDTO = new WorkoutRequestDTO();
     workoutRequestDTO.workoutTypeCode = _CURRENT_WORKOUT_TYPE.CODE;
-    workoutRequestDTO.langInCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_LANGS_IN_ID);
-    workoutRequestDTO.langOutCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_LANGS_OUT_ID);
+    workoutRequestDTO.langInCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBoxId(_CB_LANGS_IN_ID);
+    workoutRequestDTO.langOutCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBoxId(_CB_LANGS_OUT_ID);
     workoutRequestDTO.numberOfWords =
         BigInt(_COMBO_BOX_UTILS.GET_SELECTED_ITEM.byComboBoxId(_CB_NUMBER_OF_WORDS_ID).value);
 

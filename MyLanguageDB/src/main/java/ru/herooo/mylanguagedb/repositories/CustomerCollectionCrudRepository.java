@@ -18,6 +18,10 @@ public interface CustomerCollectionCrudRepository extends CrudRepository<Custome
             "SELECT * " +
             "FROM get_customer_collections(:customer_id)")
     List<CustomerCollection> findAll(@Param("customer_id") Long customerId);
+    @Query(nativeQuery = true, value =
+            "SELECT COUNT(*) " +
+            "FROM get_customer_collections(:customer_id)")
+    Optional<Long> count(@Param("customer_id") Long customerId);
 
     @Query(nativeQuery = true, value =
             "SELECT ccwls.lang_code AS langCode, " +
@@ -26,7 +30,5 @@ public interface CustomerCollectionCrudRepository extends CrudRepository<Custome
     List<CustomerCollectionsWithLangStatistic> findCustomerCollectionsWithLangStatistics(
             @Param("customer_id") Long customerId);
 
-    Optional<CustomerCollection> findByKey(String key);
     Optional<CustomerCollection> findByCustomerAndTitleIgnoreCase(Customer customer, String title);
-    Optional<CustomerCollection> findByCustomerAndKey(Customer customer, String key);
 }

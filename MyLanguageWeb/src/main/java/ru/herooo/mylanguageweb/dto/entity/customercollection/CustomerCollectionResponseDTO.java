@@ -27,9 +27,6 @@ public class CustomerCollectionResponseDTO {
     @JsonProperty("lang")
     private LangResponseDTO lang;
 
-    @JsonProperty("key")
-    private String key;
-
     public long getId() {
         return id;
     }
@@ -68,13 +65,5 @@ public class CustomerCollectionResponseDTO {
 
     public void setLang(LangResponseDTO lang) {
         this.lang = lang;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
     }
 }

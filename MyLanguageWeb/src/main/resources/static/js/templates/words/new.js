@@ -288,7 +288,7 @@ async function createNewWordRow() {
 }
 
 async function checkCorrectTitle(wordRow) {
-    let langCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(wordRow.cbLangsWithFlag.comboBox);
+    let langCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBox(wordRow.cbLangsWithFlag.comboBox);
     return await _WORD_UTILS.TB_WORD_TITLE.checkCorrectValue(wordRow.tbTitle, langCode, _CUSTOM_TIMER_CHECKER);
 }
 
@@ -299,7 +299,7 @@ function checkAllTitles() {
 
         let iTbTitle = row.tbTitle;
         let iTitleValue = iTbTitle.value.toLowerCase().trim();
-        let iLangCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(row.cbLangsWithFlag.comboBox);
+        let iLangCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBox(row.cbLangsWithFlag.comboBox);
 
         let isCorrectOne = true;
         let ruleElement = new RuleElement(iTbTitle, iTbTitle.parentElement);
@@ -308,7 +308,7 @@ function checkAllTitles() {
             let jWordRow = _newWordRowsMap.get(jKey);
 
             let jTitleValue = jWordRow.tbTitle.value.toLowerCase().trim();
-            let jLangCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(jWordRow.cbLangsWithFlag.comboBox);
+            let jLangCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBox(jWordRow.cbLangsWithFlag.comboBox);
             if (iTitleValue === jTitleValue
                 && iLangCode === jLangCode) {
                 isCorrectAll = false;
@@ -363,7 +363,7 @@ async function sendNewWords() {
             if (tbTitle && cbLangs) {
                 let dto = new WordRequestDTO();
                 dto.title = tbTitle.value.trim();
-                dto.langCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbLangs);
+                dto.langCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBox(cbLangs);
 
                 let JSONResponse = await _WORDS_API.POST.add(dto);
                 if (JSONResponse.status === _HTTP_STATUSES.OK) {
@@ -431,13 +431,14 @@ function changeDisableStatusInImportantElements(isDisable) {
     // Кнопка "Добавить новое слово" ---
     let aBtnNewWord = document.getElementById(_A_BTN_NEW_WORD_ID);
     if (aBtnNewWord) {
+        let aButtonImgSize = _A_BUTTON_IMG_SIZES.SIZE_32;
         if (isDisable === true) {
             aBtnNewWord.className = "";
-            _A_BUTTONS.A_BUTTON_DISABLED.setStyles(aBtnNewWord);
+            _A_BUTTONS.A_BUTTON_DISABLED.setStyles(aBtnNewWord, aButtonImgSize);
             aBtnNewWord.classList.add(_A_BTN_NEW_WORD_STYLE_ID);
         } else {
             aBtnNewWord.className = "";
-            aBtnNewWord.classList.add(_CSS_MAIN.A_BUTTON_ACCEPT_STANDARD_STYLE_ID);
+            _A_BUTTONS.A_BUTTON_ACCEPT.setStyles(aBtnNewWord, aButtonImgSize);
             aBtnNewWord.classList.add(_A_BTN_NEW_WORD_STYLE_ID);
         }
     }
@@ -456,10 +457,11 @@ function changeDisableStatusInImportantElements(isDisable) {
 
             let aBtnDelete = row.aBtnDelete;
             if (aBtnDelete) {
+                let aButtonImgSize = _A_BUTTON_IMG_SIZES.SIZE_32;
                 if (isDisable === true) {
-                    _A_BUTTONS.A_BUTTON_DISABLED.setStyles(aBtnDelete);
+                    _A_BUTTONS.A_BUTTON_DISABLED.setStyles(aBtnDelete, aButtonImgSize);
                 } else {
-                    _A_BUTTONS.A_BUTTON_DENY.setStyles(aBtnDelete, _A_BUTTON_IMG_SIZES.SIZE_32);
+                    _A_BUTTONS.A_BUTTON_DENY.setStyles(aBtnDelete, aButtonImgSize);
                 }
             }
         }

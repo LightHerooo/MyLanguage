@@ -19,8 +19,10 @@ public class WordInCollectionRequestDTO implements Serializable {
     @JsonProperty("word_id")
     private long wordId;
 
-    @JsonProperty("customer_collection_key")
-    private String customerCollectionKey;
+    @JsonSerialize(using = LongSerializer.class)
+    @JsonDeserialize(using = LongDeserializer.class)
+    @JsonProperty("collection_id")
+    private long collectionId;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY, value = "auth_code")
     private String authCode;
@@ -50,11 +52,11 @@ public class WordInCollectionRequestDTO implements Serializable {
         this.wordId = wordId;
     }
 
-    public String getCustomerCollectionKey() {
-        return customerCollectionKey;
+    public long getCollectionId() {
+        return collectionId;
     }
 
-    public void setCustomerCollectionKey(String customerCollectionKey) {
-        this.customerCollectionKey = customerCollectionKey;
+    public void setCollectionId(long collectionId) {
+        this.collectionId = collectionId;
     }
 }

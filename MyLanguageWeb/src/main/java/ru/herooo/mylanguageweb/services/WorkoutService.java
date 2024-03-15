@@ -45,7 +45,7 @@ public class WorkoutService {
         workout.setActive(false);
         workout.setDateOfChangeActivity(LocalDateTime.now());
         workout.setCurrentMilliseconds(0);
-        workout.setSecurityKey(STRING_UTILS.getRandomStrEn(30));
+        workout.setSecurityKey(STRING_UTILS.getRandomStrEn(50));
 
         return WORKOUT_CRUD_REPOSITORY.save(workout);
     }

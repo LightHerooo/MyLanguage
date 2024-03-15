@@ -15,6 +15,7 @@ import ru.herooo.mylanguageweb.dto.other.CustomResponseMessage;
 import ru.herooo.mylanguageweb.dto.entity.customercollection.CustomerCollectionMapping;
 import ru.herooo.mylanguageweb.dto.entity.customercollection.CustomerCollectionRequestDTO;
 import ru.herooo.mylanguageweb.dto.entity.customercollection.CustomerCollectionResponseDTO;
+import ru.herooo.mylanguageweb.dto.other.LongResponse;
 import ru.herooo.mylanguageweb.dto.types.CustomerCollectionsWithLangStatisticResponseDTO;
 import ru.herooo.mylanguageweb.services.*;
 
@@ -85,6 +86,17 @@ public class CustomerCollectionsRestController {
             CustomResponseMessage message = new CustomResponseMessage(1, "У пользователя нет коллекций.");
             return ResponseEntity.badRequest().body(message);
         }
+    }
+
+    @GetMapping("/count_for_in_by_customer_id")
+    public ResponseEntity<?> getCountForIn(@RequestParam("customer_id") Long customerId) {
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.find(customerId);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        long numberOfCollections = CUSTOMER_COLLECTION_SERVICE.count(customerId);
+        return ResponseEntity.ok(new LongResponse(numberOfCollections));
     }
 
     @GetMapping("/for_in_by_customer_id_and_lang_out_code")
@@ -233,6 +245,45 @@ public class CustomerCollectionsRestController {
         }
     }
 
+    @DeleteMapping
+    public ResponseEntity<?> delete(HttpServletRequest request,
+                                    @RequestBody CustomerCollectionRequestDTO dto) {
+        String validateAuthCode = CUSTOMER_SERVICE.validateAuthCode(request, dto.getAuthCode());
+        dto.setAuthCode(validateAuthCode);
+
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.findExistsByAuthCode(dto.getAuthCode());
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        // Проверяем существование коллекции
+        response = find(dto.getId());
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        // Коллекцией должен владеть пользователь, который хочет её удалить
+        Customer customer = CUSTOMER_SERVICE.findByAuthCode(dto.getAuthCode());
+        response = validateIsCustomerCollectionAuthor(customer.getId(), dto.getId());
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        // Коллекция не должна быть единственной
+        long numberOfCollections = CUSTOMER_COLLECTION_SERVICE.count(customer.getId());
+        if (numberOfCollections <= 1) {
+            CustomResponseMessage message = new CustomResponseMessage(1,
+                    "Невозможно удалить коллекцию, так как она является единственной.");
+            return ResponseEntity.badRequest().body(message);
+        }
+
+        CustomerCollection collection = CUSTOMER_COLLECTION_SERVICE.find(dto.getId());
+        CUSTOMER_COLLECTION_SERVICE.delete(collection);
+
+        CustomResponseMessage message = new CustomResponseMessage(1, "Коллекция успешно удалена.");
+        return ResponseEntity.ok(message);
+    }
+
     @GetMapping("/find/by_id")
     public ResponseEntity<?> find(@RequestParam("id") Long id) {
         CustomerCollection collection = CUSTOMER_COLLECTION_SERVICE.find(id);
@@ -242,47 +293,6 @@ public class CustomerCollectionsRestController {
         } else {
             CustomResponseMessage message = new CustomResponseMessage(1,
                     String.format("Коллекция с id = '%d' не найдена.", id));
-            return ResponseEntity.badRequest().body(message);
-        }
-    }
-
-    @GetMapping("/find/by_key")
-    public ResponseEntity<?> find(
-            @RequestParam("key") String key) {
-        CustomerCollection collection = CUSTOMER_COLLECTION_SERVICE.find(key);
-
-        if (collection != null) {
-            CustomerCollectionResponseDTO collectionDTO =
-                    CUSTOMER_COLLECTION_MAPPING.mapToResponseDTO(collection);
-            return ResponseEntity.ok(collectionDTO);
-        } else {
-            CustomResponseMessage message = new CustomResponseMessage(1,
-                    "Коллекции с указанным ключом не существует.");
-            return ResponseEntity.badRequest().body(message);
-        }
-    }
-
-    @GetMapping("/find/by_customer_id_and_key")
-    public ResponseEntity<?> find(@RequestParam("customer_id") Long customerId,
-                                  @RequestParam("key") String key) {
-        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.find(customerId);
-        if (response.getStatusCode() != HttpStatus.OK) {
-            return response;
-        }
-
-        response = find(key);
-        if (response.getStatusCode() != HttpStatus.OK) {
-            return response;
-        }
-
-        Customer customer = CUSTOMER_SERVICE.find(customerId);
-        CustomerCollection collection = CUSTOMER_COLLECTION_SERVICE.findByCustomerAndKey(customer, key);
-        if (collection != null) {
-            CustomerCollectionResponseDTO dto = CUSTOMER_COLLECTION_MAPPING.mapToResponseDTO(collection);
-            return ResponseEntity.ok(dto);
-        } else {
-            CustomResponseMessage message =
-                    new CustomResponseMessage(1, "Коллекция не принадлежит пользователю.");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -339,14 +349,38 @@ public class CustomerCollectionsRestController {
         return ResponseEntity.ok(message);
     }
 
-    @GetMapping("/validate/is_lang_active_in_collection_by_key")
-    public ResponseEntity<?> validateIsLangActiveInCollection(@RequestParam("key") String key) {
-        ResponseEntity<?> response = find(key);
+    @GetMapping("/validate/is_customer_collection_author")
+    public ResponseEntity<?> validateIsCustomerCollectionAuthor(@RequestParam("customer_id") Long customerId,
+                                                                @RequestParam("collection_id") Long collectionId) {
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.find(customerId);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
 
-        CustomerCollection collection = CUSTOMER_COLLECTION_SERVICE.find(key);
+        response = find(collectionId);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        Customer customer = CUSTOMER_SERVICE.find(customerId);
+        CustomerCollection collection = CUSTOMER_COLLECTION_SERVICE.find(collectionId);
+        if (customer.equals(collection.getCustomer())) {
+            CustomResponseMessage message = new CustomResponseMessage(1, "Коллекция принадлежит пользователю.");
+            return ResponseEntity.ok(message);
+        } else {
+            CustomResponseMessage message = new CustomResponseMessage(1, "Коллекция не принадлежит пользователю.");
+            return ResponseEntity.badRequest().body(message);
+        }
+    }
+
+    @GetMapping("/validate/is_lang_active_in_collection_by_id")
+    public ResponseEntity<?> validateIsLangActiveInCollection(@RequestParam("id") Long id) {
+        ResponseEntity<?> response = find(id);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        CustomerCollection collection = CUSTOMER_COLLECTION_SERVICE.find(id);
         response = LANGS_REST_CONTROLLER.validateIsActiveForIn(collection.getLang().getCode());
         if (response.getStatusCode() != HttpStatus.OK) {
             CustomResponseMessage message = new CustomResponseMessage(1,
@@ -358,14 +392,14 @@ public class CustomerCollectionsRestController {
         }
     }
 
-    @GetMapping("/validate/min_number_of_words_for_workout_by_key")
-    public ResponseEntity<?> validateMinNumberOfWordsForWorkout(@RequestParam("key") String key) {
-        ResponseEntity<?> response = find(key);
+    @GetMapping("/validate/min_number_of_words_for_workout_by_id")
+    public ResponseEntity<?> validateMinNumberOfWordsForWorkout(@RequestParam("id") Long id) {
+        ResponseEntity<?> response = find(id);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
 
-        long numberOfWords = WORD_IN_COLLECTION_SERVICE.count(key);
+        long numberOfWords = WORD_IN_COLLECTION_SERVICE.count(id);
         if (numberOfWords < MIN_NUMBER_OF_WORDS_IN_COLLECTION_FOR_WORKOUT) {
             CustomResponseMessage message = new CustomResponseMessage(1,
                     String.format("Количество слов в коллекции для тренировки должно быть не менее %d.",

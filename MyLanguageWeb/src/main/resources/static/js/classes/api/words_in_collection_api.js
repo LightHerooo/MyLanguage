@@ -24,10 +24,10 @@ export class WordsInCollectionAPI {
 }
 
 class WordsInCollectionGETRequests {
-    async getAllInCollectionFilteredPagination(collectionKey, numberOfWords, title,
+    async getAllInCollectionFilteredPagination(collectionId, numberOfWords, title,
                                                lastWordInCollectionIdOnPreviousPage){
         let requestURL = new URL(URL_TO_API_WORDS_IN_COLLECTION + "/filtered_pagination");
-        requestURL.searchParams.set("collection_key", collectionKey);
+        requestURL.searchParams.set("collection_id", collectionId);
         requestURL.searchParams.set("number_of_words", numberOfWords);
         requestURL.searchParams.set("title", title);
 
@@ -39,25 +39,25 @@ class WordsInCollectionGETRequests {
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
     }
 
-    async findByWordIdAndCollectionKey(wordId, collectionKey) {
-        let requestURL = new URL(URL_TO_API_WORDS_IN_COLLECTION_FIND + "/by_word_id_and_collection_key");
+    async findByWordIdAndCollectionId(wordId, collectionId) {
+        let requestURL = new URL(URL_TO_API_WORDS_IN_COLLECTION_FIND + "/by_word_id_and_collection_id");
         requestURL.searchParams.set("word_id", wordId);
-        requestURL.searchParams.set("collection_key", collectionKey);
+        requestURL.searchParams.set("collection_id", collectionId);
 
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
     }
 
-    async validateLangsInWordAndCollection(wordId, collectionKey) {
+    async validateLangsInWordAndCollection(wordId, collectionId) {
         let requestURL = new URL(URL_TO_API_WORDS_IN_COLLECTION_VALIDATE + "/langs_in_word_and_collection");
         requestURL.searchParams.set("word_id", wordId);
-        requestURL.searchParams.set("collection_key", collectionKey);
+        requestURL.searchParams.set("collection_id", collectionId);
 
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
     }
 
-    async getCountByCollectionKey(collectionKey) {
-        let requestURL = new URL(URL_TO_API_WORDS_IN_COLLECTION + "/count_by_collection_key");
-        requestURL.searchParams.set("collection_key", collectionKey);
+    async getCountByCollectionId(collectionId) {
+        let requestURL = new URL(URL_TO_API_WORDS_IN_COLLECTION + "/count_by_collection_id");
+        requestURL.searchParams.set("collection_id", collectionId);
 
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
     }
@@ -68,7 +68,7 @@ class WordsInCollectionPOSTRequests {
         let requestURL = new URL(URL_TO_API_WORDS_IN_COLLECTION);
         let jsonStr = _JSON_UTILS.stringify({
             'word_id': wordInCollectionRequestDTO.wordId,
-            'customer_collection_key': wordInCollectionRequestDTO.collectionKey
+            'collection_id': wordInCollectionRequestDTO.collectionId
         });
 
         return await _XML_UTILS.getJSONResponseByPOSTXml(requestURL, jsonStr);

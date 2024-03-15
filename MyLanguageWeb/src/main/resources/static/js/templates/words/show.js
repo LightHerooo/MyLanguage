@@ -99,10 +99,24 @@ import {
     CssDynamicInfoBlock
 } from "../../classes/css/info_blocks/css_dynamic_info_block.js";
 
+import {
+    CssMain
+} from "../../classes/css/css_main.js";
+
+import {
+    CssRoot
+} from "../../classes/css/css_root.js";
+
+import {
+    BigIntUtils
+} from "../../classes/utils/bigint_utils.js";
+
 const _CUSTOMER_COLLECTIONS_API = new CustomerCollectionsAPI();
 const _WORDS_API = new WordsAPI();
 const _WORDS_IN_COLLECTION_API = new WordsInCollectionAPI();
 
+const _CSS_MAIN = new CssMain();
+const _CSS_ROOT = new CssRoot();
 const _CSS_DYNAMIC_INFO_BLOCK = new CssDynamicInfoBlock();
 
 const _HTTP_STATUSES = new HttpStatuses();
@@ -116,6 +130,7 @@ const _COMBO_BOX_UTILS = new ComboBoxUtils();
 const _WORD_TABLE_UTILS = new WordTableUtils();
 const _TEXT_BOX_UTILS = new TextBoxUtils();
 const _A_BUTTON_IMG_SIZES = new AButtonImgSizes();
+const _BIGINT_UTILS = new BigIntUtils();
 
 const _DIV_WORDS_STATISTICS_CONTAINER_ID = "words_statistics_container";
 const _TB_FINDER_ID = "tb_finder";
@@ -192,8 +207,8 @@ async function prepareCbCustomerCollections() {
 
         cbCustomerCollections.addEventListener("change", async function () {
             let langCode;
-            let collectionKey = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbCustomerCollections);
-            let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.findByKey(collectionKey);
+            let collectionId = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBox(cbCustomerCollections);
+            let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.findById(collectionId);
             if (JSONResponse.status === _HTTP_STATUSES.OK) {
                 let customerCollection = new CustomerCollectionResponseDTO(JSONResponse.json);
                 langCode = customerCollection.lang.code;
@@ -459,17 +474,51 @@ function startToFindCollectionInfo() {
 async function tryToFillCollectionInfo() {
     let currentFinder = _CUSTOM_TIMER_COLLECTION_INFO_FINDER;
 
-    let collectionKey = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_CUSTOMER_COLLECTIONS_ID);
-    let divCollectionInfo =
-        await _CUSTOMER_COLLECTION_UTILS.createDivCollectionInfoAfterValidate(collectionKey);
-
     let divCollectionInfoContainer = document.getElementById(_DIV_COLLECTION_INFO_ID);
-    if (divCollectionInfoContainer && currentFinder.getActive() === true) {
-        divCollectionInfoContainer.replaceChildren();
-        if (currentFinder.getActive() === true) {
-            divCollectionInfoContainer.appendChild(divCollectionInfo);
+    if (divCollectionInfoContainer) {
+        let isCorrect = true;
+        let message;
+
+        let collectionIdStr = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBoxId(_CB_CUSTOMER_COLLECTIONS_ID);
+        let collectionId = _BIGINT_UTILS.parse(collectionIdStr);
+        if (!collectionId) {
+            isCorrect = false;
+            message = "Выберите коллекцию.";
+        }
+
+        if (isCorrect === true) {
+            let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.findById(collectionId);
+            if (JSONResponse.status === _HTTP_STATUSES.OK) {
+                let customerCollection = new CustomerCollectionResponseDTO(JSONResponse.json);
+                let divCollectionInfo = await customerCollection.tryToCreateDivInfoAfterValidate();
+
+                if (currentFinder.getActive() === true) {
+                    divCollectionInfoContainer.replaceChildren();
+                    if (currentFinder.getActive() === true) {
+                        divCollectionInfoContainer.appendChild(divCollectionInfo);
+                    }
+                }
+            } else {
+                isCorrect = false;
+                message = new CustomResponseMessage(JSONResponse.json).text;
+            }
+        }
+
+        if (isCorrect === false) {
+            let divMessage = document.createElement("div");
+            divMessage.classList.add(_CSS_MAIN.DIV_CONTENT_CENTER_STANDARD_STYLE_ID);
+            divMessage.style.fontSize = _CSS_ROOT.SECOND_FONT_SIZE;
+            divMessage.textContent = message;
+
+            if (currentFinder.getActive() === true) {
+                divCollectionInfoContainer.replaceChildren();
+                if (currentFinder.getActive() === true) {
+                    divCollectionInfoContainer.appendChild(divMessage);
+                }
+            }
         }
     }
+
 }
 //---
 
@@ -496,11 +545,20 @@ function prepareWordsFinder() {
         // Коллекция должна принадлежать пользователю (проверка только при авторизации) ---
         let authId = _GLOBAL_COOKIES.AUTH_ID.getValue();
         if (authId) {
-            let collectionKey = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_CUSTOMER_COLLECTIONS_ID);
-            let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.findByCustomerIdAndKey(authId, collectionKey);
-            if (JSONResponse.status !== _HTTP_STATUSES.OK) {
+            let collectionIdStr = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBoxId(_CB_CUSTOMER_COLLECTIONS_ID);
+            let collectionId = _BIGINT_UTILS.parse(collectionIdStr);
+            if (!collectionId) {
                 readyToFill = false;
-                setMessageInsideTable(new CustomResponseMessage(JSONResponse.json).text);
+                setMessageInsideTable("Выберите коллекцию.");
+            }
+
+            if (readyToFill === true) {
+                let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET
+                    .validateIsCustomerCollectionAuthor(authId, collectionId);
+                if (JSONResponse.status !== _HTTP_STATUSES.OK) {
+                    readyToFill = false;
+                    setMessageInsideTable(new CustomResponseMessage(JSONResponse.json).text);
+                }
             }
         }
         //---
@@ -530,7 +588,7 @@ async function tryToFillTable(doNeedToClearTable, doNeedToShowTableMessage) {
     let currentFinder = _CUSTOM_TIMER_WORDS_FINDER;
 
     let title = document.getElementById(_TB_FINDER_ID).value;
-    let langCode =  _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_LANGS_ID);
+    let langCode =  _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBoxId(_CB_LANGS_ID);
 
     let JSONResponse = await _WORDS_API.GET.getAllFilteredPagination(_NUMBER_OF_WORDS, title,
         _WORD_STATUSES.ACTIVE.CODE, langCode, _lastWordIdOnPreviousPage);
@@ -615,8 +673,8 @@ async function createTableRow(wordResponseDTO) {
     if (authId) {
         let wordInCollectionRequestDTO = new WordInCollectionRequestDTO();
         wordInCollectionRequestDTO.wordId = wordResponseDTO.id;
-        wordInCollectionRequestDTO.collectionKey =
-            _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_CUSTOMER_COLLECTIONS_ID);
+        wordInCollectionRequestDTO.collectionId =
+            _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBoxId(_CB_CUSTOMER_COLLECTIONS_ID);
 
         let actionColumn = document.createElement("td");
         actionColumn.appendChild(await createBtnAction(wordInCollectionRequestDTO));
@@ -646,15 +704,16 @@ function setMessageInsideTable(message) {
 }
 
 async function createBtnAction(wordInCollectionRequestDTO) {
-    let aBtnAction = _A_BUTTONS.A_BUTTON_ACCEPT.createA(_A_BUTTON_IMG_SIZES.SIZE_16);
+    let aButtonImgSize = _A_BUTTON_IMG_SIZES.SIZE_16;
+    let aBtnAction = _A_BUTTONS.A_BUTTON_ACCEPT.createA(aButtonImgSize);
 
     let wordId = wordInCollectionRequestDTO.wordId;
-    let collectionKey = wordInCollectionRequestDTO.collectionKey;
+    let collectionId = wordInCollectionRequestDTO.collectionId;
     let JSONResponse = await _WORDS_IN_COLLECTION_API.GET.validateLangsInWordAndCollection(
-        wordId, collectionKey);
+        wordId, collectionId);
     if (JSONResponse.status === _HTTP_STATUSES.OK) {
         JSONResponse = await
-            _WORDS_IN_COLLECTION_API.GET.findByWordIdAndCollectionKey(wordId, collectionKey);
+            _WORDS_IN_COLLECTION_API.GET.findByWordIdAndCollectionId(wordId, collectionId);
         if (JSONResponse.status === _HTTP_STATUSES.OK) {
             let wordInCollection = new WordInCollectionResponseDTO(JSONResponse.json);
             wordInCollectionRequestDTO.id = wordInCollection.id;
@@ -668,7 +727,7 @@ async function createBtnAction(wordInCollectionRequestDTO) {
             startToFindCollectionInfo();
         })
     } else {
-        _A_BUTTONS.A_BUTTON_DISABLED.setStyles(aBtnAction);
+        _A_BUTTONS.A_BUTTON_DISABLED.setStyles(aBtnAction, aButtonImgSize);
 
         let message = new CustomResponseMessage(JSONResponse.json);
         aBtnAction.title = message.text;

@@ -25,8 +25,10 @@ public class WorkoutRequestDTO {
     @JsonProperty("lang_out_code")
     private String langOutCode;
 
-    @JsonProperty("collection_key")
-    private String collectionKey;
+    @JsonSerialize(using = LongSerializer.class)
+    @JsonDeserialize(using = LongDeserializer.class)
+    @JsonProperty("collection_id")
+    private long collectionId;
 
     @JsonSerialize(using = LongSerializer.class)
     @JsonDeserialize(using = LongDeserializer.class)
@@ -72,12 +74,12 @@ public class WorkoutRequestDTO {
         this.langOutCode = langOutCode;
     }
 
-    public String getCollectionKey() {
-        return collectionKey;
+    public long getCollectionId() {
+        return collectionId;
     }
 
-    public void setCollectionKey(String collectionKey) {
-        this.collectionKey = collectionKey;
+    public void setCollectionId(long collectionId) {
+        this.collectionId = collectionId;
     }
 
     public String getAuthCode() {

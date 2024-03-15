@@ -12,4 +12,9 @@ export class ButtonUtils {
 
         _HTML_ELEMENT_UTILS.addHotkey(btnElement, hotkey, hotkeyFunction);
     }
+
+    callClickEvent(btnElement) {
+        let event = new Event('click');
+        btnElement.dispatchEvent(event);
+    }
 }

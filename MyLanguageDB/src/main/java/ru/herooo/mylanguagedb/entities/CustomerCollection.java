@@ -22,9 +22,6 @@ public class CustomerCollection {
     @Column(name="date_of_create")
     private LocalDateTime dateOfCreate;
 
-    @Column(name="key")
-    private String key;
-
     @ManyToOne
     @JoinColumn(name="customer_id")
     private Customer customer;
@@ -69,14 +66,6 @@ public class CustomerCollection {
 
     public void setLang(Lang lang) {
         this.lang = lang;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
     }
 
     @Override

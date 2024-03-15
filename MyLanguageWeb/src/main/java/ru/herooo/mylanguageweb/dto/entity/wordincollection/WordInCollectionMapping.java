@@ -58,14 +58,14 @@ public class WordInCollectionMapping {
         WordInCollection wordInCollection = new WordInCollection();
 
         long wordId = dto.getWordId();
-        if (wordId > 0) {
+        if (wordId != 0) {
             Word word = WORD_CRUD_REPOSITORY.findById(wordId).orElse(null);
             wordInCollection.setWord(word);
         }
 
-        String customerCollectionKey = dto.getCustomerCollectionKey();
-        if (STRING_UTILS.isNotStringVoid(customerCollectionKey)) {
-            CustomerCollection collection = CUSTOMER_COLLECTION_CRUD_REPOSITORY.findByKey(customerCollectionKey)
+        long collectionId = dto.getCollectionId();
+        if (collectionId != 0) {
+            CustomerCollection collection = CUSTOMER_COLLECTION_CRUD_REPOSITORY.findById(collectionId)
                     .orElse(null);
             wordInCollection.setCustomerCollection(collection);
         }

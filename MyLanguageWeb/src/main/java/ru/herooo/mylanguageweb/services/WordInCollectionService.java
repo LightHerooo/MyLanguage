@@ -25,16 +25,16 @@ public class WordInCollectionService {
         this.WORD_IN_COLLECTION_MAPPING = wordInCollectionMapping;
     }
 
-    public List<WordInCollection> findAll(String title, String customerCollectionKey) {
-        return WORD_IN_COLLECTION_CRUD_REPOSITORY.findAll(title, customerCollectionKey);
+    public List<WordInCollection> findAll(String title, Long collectionId) {
+        return WORD_IN_COLLECTION_CRUD_REPOSITORY.findAll(title, collectionId);
     }
 
     public List<WordInCollection> findAll(String title,
-                                          String customerCollectionKey,
+                                          Long collectionId,
                                           Long numberOfWords,
                                           Long lastWordInCollectionIdOnPreviousPage) {
         return WORD_IN_COLLECTION_CRUD_REPOSITORY.findAll(
-                title, customerCollectionKey, numberOfWords, lastWordInCollectionIdOnPreviousPage);
+                title, collectionId, numberOfWords, lastWordInCollectionIdOnPreviousPage);
     }
 
     public WordInCollection add(WordInCollection wordInCollection) {
@@ -64,7 +64,7 @@ public class WordInCollectionService {
         WORD_IN_COLLECTION_CRUD_REPOSITORY.deleteInactiveWordsInCollections();
     }
 
-    public long count(String collectionKey) {
-        return WORD_IN_COLLECTION_CRUD_REPOSITORY.count(collectionKey).orElse(0L);
+    public long count(Long collectionId) {
+        return WORD_IN_COLLECTION_CRUD_REPOSITORY.count(collectionId).orElse(0L);
     }
 }

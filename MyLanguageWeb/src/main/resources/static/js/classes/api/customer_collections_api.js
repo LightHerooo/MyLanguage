@@ -20,11 +20,19 @@ const URL_TO_API_CUSTOMER_COLLECTIONS_VALIDATE = URL_TO_API_CUSTOMER_COLLECTIONS
 export class CustomerCollectionsAPI {
     GET = new CustomerCollectionsGETRequests();
     POST = new CustomerCollectionsPOSTRequests();
+    DELETE = new CustomerCollectionsDELETERequests();
 }
 
 class CustomerCollectionsGETRequests {
     async getAllForInByCustomerId(customerId) {
         let requestURL = new URL(URL_TO_API_CUSTOMER_COLLECTIONS + "/for_in_by_customer_id");
+        requestURL.searchParams.set("customer_id", customerId);
+
+        return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
+    }
+
+    async getCountForInByCustomerId(customerId) {
+        let requestURL = new URL(URL_TO_API_CUSTOMER_COLLECTIONS + "/count_for_in_by_customer_id");
         requestURL.searchParams.set("customer_id", customerId);
 
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
@@ -46,33 +54,33 @@ class CustomerCollectionsGETRequests {
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
     }
 
-    async findByKey(collectionKey) {
-        let requestURL = new URL(URL_TO_API_CUSTOMER_COLLECTIONS_FIND + "/by_key");
-        requestURL.searchParams.set("key", collectionKey);
+    async findById(collectionId) {
+        let requestURL = new URL(URL_TO_API_CUSTOMER_COLLECTIONS_FIND + "/by_id");
+        requestURL.searchParams.set("id", collectionId);
 
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
     }
 
-    async findByCustomerIdAndKey(customerId, key) {
-        let requestURL = new URL(URL_TO_API_CUSTOMER_COLLECTIONS_FIND + "/by_customer_id_and_key");
+    async validateIsCustomerCollectionAuthor(customerId, collectionId) {
+        let requestURL = new URL(URL_TO_API_CUSTOMER_COLLECTIONS_VALIDATE + "/is_customer_collection_author");
         requestURL.searchParams.set("customer_id", customerId);
-        requestURL.searchParams.set("key", key);
+        requestURL.searchParams.set("collection_id", collectionId);
 
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
     }
 
-    async validateIsLangActiveInCollectionByKey(key) {
+    async validateIsLangActiveInCollectionByCollectionId(collectionId) {
         let requestURL = new URL(
-            URL_TO_API_CUSTOMER_COLLECTIONS_VALIDATE + "/is_lang_active_in_collection_by_key");
-        requestURL.searchParams.set("key", key);
+            URL_TO_API_CUSTOMER_COLLECTIONS_VALIDATE + "/is_lang_active_in_collection_by_id");
+        requestURL.searchParams.set("id", collectionId);
 
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
     }
 
-    async validateMinNumberOfWordsForWorkoutByKey(key) {
+    async validateMinNumberOfWordsForWorkoutByCollectionId(collectionId) {
         let requestURL = new URL(
-            URL_TO_API_CUSTOMER_COLLECTIONS_VALIDATE + "/min_number_of_words_for_workout_by_key");
-        requestURL.searchParams.set("key", key);
+            URL_TO_API_CUSTOMER_COLLECTIONS_VALIDATE + "/min_number_of_words_for_workout_by_id");
+        requestURL.searchParams.set("id", collectionId);
 
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
     }
@@ -103,10 +111,20 @@ class CustomerCollectionsPOSTRequests {
         let jsonStr = _JSON_UTILS.stringify({
             'id': customerCollectionRequestDTO.id,
             'title': customerCollectionRequestDTO.title,
-            'lang_code': customerCollectionRequestDTO.langCode,
-            'key': customerCollectionRequestDTO.key
+            'lang_code': customerCollectionRequestDTO.langCode
         });
 
         return await _XML_UTILS.getJSONResponseByPOSTXml(requestURL, jsonStr);
+    }
+}
+
+class CustomerCollectionsDELETERequests {
+    async delete(customerCollectionRequestDTO) {
+        let requestURL = new URL(URL_TO_API_CUSTOMER_COLLECTIONS);
+        let jsonStr = _JSON_UTILS.stringify({
+            'id': customerCollectionRequestDTO.id,
+        });
+
+        return await _XML_UTILS.getJSONResponseByDELETEXml(requestURL, jsonStr);
     }
 }

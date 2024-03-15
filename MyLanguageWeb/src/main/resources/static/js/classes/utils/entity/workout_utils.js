@@ -23,12 +23,15 @@ class CbNumberOfWords {
         cbNumberOfWords.replaceChildren();
 
         let firstOption = document.createElement("option");
+        firstOption.value = "";
         firstOption.textContent = "Выберите количество слов";
         cbNumberOfWords.appendChild(firstOption);
 
-        for (let i = 0; i < this.#NUMBER_OF_WORDS_POSSIBLE_ARR.length; i++) {
+        let numberOfWordsArr = this.#NUMBER_OF_WORDS_POSSIBLE_ARR;
+        for (let i = 0; i < numberOfWordsArr.length; i++) {
             let optionNumberOfWords = document.createElement("option");
-            optionNumberOfWords.textContent = `${this.#NUMBER_OF_WORDS_POSSIBLE_ARR[i]}`;
+            optionNumberOfWords.value = `${numberOfWordsArr[i]}`;
+            optionNumberOfWords.textContent = `${numberOfWordsArr[i]}`;
 
             cbNumberOfWords.appendChild(optionNumberOfWords);
         }
@@ -45,15 +48,16 @@ class CbNumberOfWords {
         let isCorrect = true;
         let ruleElement = new RuleElement(cbNumberOfWords, cbNumberOfWords.parentElement);
 
-        let numberOfWords = _COMBO_BOX_UTILS.GET_SELECTED_ITEM.byComboBox(cbNumberOfWords).value;
+        let numberOfWords = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBox(cbNumberOfWords);
         if (!NUMBER_OF_WORDS_REGEXP.test(numberOfWords)) {
             isCorrect = false;
             ruleElement.message = "Выберите количество слов.";
             ruleElement.ruleType = _RULE_TYPES.ERROR;
         } else {
             let numberOfWordsArePossible = false;
-            for (let i = 0; i < this.#NUMBER_OF_WORDS_POSSIBLE_ARR.length; i++) {
-                if (numberOfWords === this.#NUMBER_OF_WORDS_POSSIBLE_ARR[i].toString()) {
+            let numberOfWordsArr = this.#NUMBER_OF_WORDS_POSSIBLE_ARR;
+            for (let i = 0; i < numberOfWordsArr.length; i++) {
+                if (String(numberOfWords) === String(numberOfWordsArr[i])) {
                     numberOfWordsArePossible = true;
                     break;
                 }

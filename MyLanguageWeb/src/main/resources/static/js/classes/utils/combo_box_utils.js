@@ -6,7 +6,7 @@ const _CSS_ROOT = new CssRoot();
 
 export class ComboBoxUtils {
     GET_SELECTED_ITEM = new SelectedItemFinder();
-    GET_SELECTED_ITEM_ID = new SelectedItemIdFinder();
+    GET_SELECTED_ITEM_VALUE = new SelectedItemValueFinder();
     CHANGE_SELECTED_ITEM = new SelectedItemChanger();
 
     callChangeEvent(comboBoxElement) {
@@ -62,7 +62,7 @@ class SelectedItemFinder {
     }
 }
 
-class SelectedItemIdFinder {
+class SelectedItemValueFinder {
     byComboBoxId(comboBoxId) {
         let comboBox = document.getElementById(comboBoxId);
         return this.byComboBox(comboBox);
@@ -74,7 +74,7 @@ class SelectedItemIdFinder {
         let selectedItemId;
         let selectedItem = selectedItemFinder.byComboBox(comboBoxElement);
         if (selectedItem) {
-            selectedItemId = selectedItem.id;
+            selectedItemId = selectedItem.value;
         }
 
         return selectedItemId;
@@ -82,15 +82,15 @@ class SelectedItemIdFinder {
 }
 
 class SelectedItemChanger {
-    byComboBoxIdAndItemId(comboBoxId, itemId, doNeedToCallChangeEvent) {
+    byComboBoxIdAndItemValue(comboBoxId, itemValue, doNeedToCallChangeEvent) {
         let comboBox = document.getElementById(comboBoxId);
-        this.byComboBoxAndItemId(comboBox, itemId, doNeedToCallChangeEvent);
+        this.byComboBoxAndItemValue(comboBox, itemValue, doNeedToCallChangeEvent);
     }
 
-    byComboBoxAndItemId(comboBoxElement, itemId, doNeedToCallChangeEvent) {
+    byComboBoxAndItemValue(comboBoxElement, itemValue, doNeedToCallChangeEvent) {
         if (comboBoxElement) {
             for (let i = 0; i < comboBoxElement.options.length; i++) {
-                if (comboBoxElement.options[i].id === itemId) {
+                if (String(comboBoxElement.options[i].value) === String(itemValue)) {
                     comboBoxElement.selectedIndex = i;
                     break;
                 }

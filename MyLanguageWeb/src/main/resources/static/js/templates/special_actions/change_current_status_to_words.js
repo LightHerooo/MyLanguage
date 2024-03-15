@@ -202,7 +202,7 @@ async function prepareCbWordStatuses() {
         firstOption.textContent = "Все";
         await _WORD_STATUS_UTILS.CB_WORD_STATUSES.prepare(cbWordStatuses, firstOption);
 
-        _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemId(
+        _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemValue(
             cbWordStatuses, _WORD_STATUSES.NEW.CODE, true);
 
         // Вешаем событие обновления списка при изменении элемента выпадающего списка
@@ -313,8 +313,8 @@ async function tryToFillTableRows(doNeedToClearTable, doNeedToShowTableMessage) 
     let currentFinder = _CUSTOM_TIMER_WORDS_FINDER;
 
     let title = document.getElementById(_TB_FINDER_ID).value;
-    let langCode =  _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_LANGS_ID);
-    let wordStatusCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_WORD_STATUSES);
+    let langCode =  _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBoxId(_CB_LANGS_ID);
+    let wordStatusCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBoxId(_CB_WORD_STATUSES);
 
     let JSONResponse = await _WORDS_API.GET.getAllFilteredPagination(_NUMBER_OF_WORDS, title,
         wordStatusCode, langCode, _lastWordIdOnPreviousPage);
@@ -429,7 +429,7 @@ async function createTableRow(wordResponseDTO) {
 
         await _WORD_STATUS_UTILS.CB_WORD_STATUSES.prepare(cbWordStatuses, null);
 
-        _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemId(
+        _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemValue(
             cbWordStatuses, wordStatusHistory.wordStatus.code, true);
 
         let wordStatusColumn = document.createElement("td");
@@ -444,7 +444,7 @@ async function createTableRow(wordResponseDTO) {
 
             let wordRequestDTO = new WordRequestDTO();
             wordRequestDTO.id = wordStatusHistory.word.id;
-            wordRequestDTO.wordStatusCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbWordStatuses);
+            wordRequestDTO.wordStatusCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBox(cbWordStatuses);
 
             let JSONResponse = await _WORDS_API.PATCH.changeWordStatus(wordRequestDTO);
             if (JSONResponse.status === _HTTP_STATUSES.OK) {

@@ -42,7 +42,6 @@ public class CustomerCollectionMapping {
         dto.setId(customerCollection.getId());
         dto.setTitle(customerCollection.getTitle());
         dto.setDateOfCreate(customerCollection.getDateOfCreate());
-        dto.setKey(customerCollection.getKey());
 
         if (customerCollection.getLang() != null) {
             LangResponseDTO lang = LANG_MAPPING.mapToResponseDTO(customerCollection.getLang());

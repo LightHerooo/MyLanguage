@@ -72,8 +72,36 @@ import {
     ComboBoxWithFlag
 } from "../../classes/element_with_flag/combo_box_with_flag.js";
 
+import {
+    CssMain
+} from "../../classes/css/css_main.js";
+
+import {
+    CssRoot
+} from "../../classes/css/css_root.js";
+
+import {
+    CustomerCollectionResponseDTO
+} from "../../classes/dto/entity/customer_collection.js";
+
+import {
+    BigIntUtils
+} from "../../classes/utils/bigint_utils.js";
+
+import {
+    ButtonUtils
+} from "../../classes/utils/button_utils.js";
+
+import {
+    CssCollectionInfo
+} from "../../classes/css/other/css_collection_info.js";
+
 const _CUSTOMER_COLLECTIONS_API = new CustomerCollectionsAPI();
 const _WORDS_IN_COLLECTION_API = new WordsInCollectionAPI();
+
+const _CSS_MAIN = new CssMain();
+const _CSS_ROOT = new CssRoot();
+const _CSS_COLLECTION_INFO = new CssCollectionInfo();
 
 const _HTTP_STATUSES = new HttpStatuses();
 const _GLOBAL_COOKIES = new GlobalCookies();
@@ -84,6 +112,8 @@ const _COMBO_BOX_UTILS = new ComboBoxUtils();
 const _WORD_TABLE_UTILS = new WordTableUtils();
 const _TEXT_BOX_UTILS = new TextBoxUtils();
 const _A_BUTTON_IMG_SIZES = new AButtonImgSizes();
+const _BIGINT_UTILS = new BigIntUtils();
+const _BUTTON_UTILS = new ButtonUtils();
 
 const _TB_FINDER_ID = "tb_finder";
 const _CB_CUSTOMER_COLLECTIONS_ID = "cb_customer_collections";
@@ -340,6 +370,11 @@ function showLoadingInCollectionInfo() {
     let divCollectionInfo = document.getElementById(_DIV_COLLECTION_INFO_ID);
     if (divCollectionInfo) {
         divCollectionInfo.replaceChildren();
+
+        divCollectionInfo.className = "";
+        divCollectionInfo.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
+        divCollectionInfo.classList.add(_CSS_COLLECTION_INFO.DIV_COLLECTION_INFO_STYLE_ID);
+
         divCollectionInfo.appendChild(new LoadingElement().createDiv());
     }
 }
@@ -366,15 +401,63 @@ function startToFindCollectionInfo() {
 async function tryToFillCollectionInfo() {
     let currentFinder = _CUSTOM_TIMER_COLLECTION_INFO_FINDER;
 
-    let collectionKey = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_CUSTOMER_COLLECTIONS_ID);
-    let divCollectionInfo =
-        await _CUSTOMER_COLLECTION_UTILS.createDivCollectionInfoAfterValidate(collectionKey);
-
     let divCollectionInfoContainer = document.getElementById(_DIV_COLLECTION_INFO_ID);
-    if (divCollectionInfoContainer && currentFinder.getActive() === true) {
-        divCollectionInfoContainer.replaceChildren();
-        if (currentFinder.getActive() === true) {
-            divCollectionInfoContainer.appendChild(divCollectionInfo);
+    if (divCollectionInfoContainer) {
+        let isCorrect = true;
+        let message;
+
+        let collectionIdStr = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBoxId(_CB_CUSTOMER_COLLECTIONS_ID);
+        let collectionId = _BIGINT_UTILS.parse(collectionIdStr);
+        if (!collectionId) {
+            isCorrect = false;
+            message = "Выберите коллекцию.";
+        }
+
+        if (isCorrect === true) {
+            let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.findById(collectionId);
+            if (JSONResponse.status === _HTTP_STATUSES.OK) {
+                let customerCollection = new CustomerCollectionResponseDTO(JSONResponse.json);
+                let divCollectionInfo = await customerCollection.tryToCreateDivInfoWithBtnDelete(
+                    function() {
+                        changeDisableStatusToFinderInstruments(true);
+                        showLoadingInTable();
+                    },
+                    function () {
+                        let btnRefresh = document.getElementById(_BTN_REFRESH_ID);
+                        if (btnRefresh) {
+                            _BUTTON_UTILS.callClickEvent(btnRefresh);
+                        }
+                    },
+                    function () {
+                        startToFindWordsInCollection();
+                    }
+                );
+
+                if (currentFinder.getActive() === true) {
+                    divCollectionInfoContainer.replaceChildren();
+                    divCollectionInfoContainer.style.alignItems = "normal";
+                    if (currentFinder.getActive() === true) {
+                        divCollectionInfoContainer.appendChild(divCollectionInfo);
+                    }
+                }
+            } else {
+                isCorrect = false;
+                message = new CustomResponseMessage(JSONResponse.json).text;
+            }
+        }
+
+        if (isCorrect === false) {
+            let divMessage = document.createElement("div");
+            divMessage.classList.add(_CSS_MAIN.DIV_CONTENT_CENTER_STANDARD_STYLE_ID);
+            divMessage.style.fontSize = _CSS_ROOT.SECOND_FONT_SIZE;
+            divMessage.textContent = message;
+
+            if (currentFinder.getActive() === true) {
+                divCollectionInfoContainer.replaceChildren();
+                if (currentFinder.getActive() === true) {
+                    divCollectionInfoContainer.appendChild(divMessage);
+                }
+            }
         }
     }
 }
@@ -401,14 +484,22 @@ function prepareWordsInCollectionFinder() {
     _CUSTOM_TIMER_WORDS_IN_COLLECTION_FINDER.setHandler(async function() {
         let readyToFill = true;
 
-        // Коллекция должна принадлежать пользователю ---
-        let authId = _GLOBAL_COOKIES.AUTH_ID.getValue();
-        let collectionKey = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_CUSTOMER_COLLECTIONS_ID);
-        let JSONResponse = await
-            _CUSTOMER_COLLECTIONS_API.GET.findByCustomerIdAndKey(authId, collectionKey);
-        if (JSONResponse.status !== _HTTP_STATUSES.OK) {
+        let collectionIdStr = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBoxId(_CB_CUSTOMER_COLLECTIONS_ID);
+        let collectionId = _BIGINT_UTILS.parse(collectionIdStr);
+        if (!collectionId) {
             readyToFill = false;
-            setMessageInsideTable(new CustomResponseMessage(JSONResponse.json).text);
+            setMessageInsideTable("Выберите коллекцию.");
+        }
+
+        // Коллекция должна принадлежать пользователю ---
+        if (readyToFill === true) {
+            let authId = _GLOBAL_COOKIES.AUTH_ID.getValue();
+            let JSONResponse = await
+                _CUSTOMER_COLLECTIONS_API.GET.validateIsCustomerCollectionAuthor(authId, collectionId);
+            if (JSONResponse.status !== _HTTP_STATUSES.OK) {
+                readyToFill = false;
+                setMessageInsideTable(new CustomResponseMessage(JSONResponse.json).text);
+            }
         }
         //---
 
@@ -436,9 +527,9 @@ function startToFindWordsInCollection() {
 async function tryToFillTableRows(doNeedToClearTable, doNeedToShowTableMessage) {
     let currentFinder = _CUSTOM_TIMER_WORDS_IN_COLLECTION_FINDER;
 
-    let collectionKey = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_CUSTOMER_COLLECTIONS_ID);
+    let collectionId = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBoxId(_CB_CUSTOMER_COLLECTIONS_ID);
     let title = document.getElementById(_TB_FINDER_ID).value;
-    let JSONResponse = await _WORDS_IN_COLLECTION_API.GET.getAllInCollectionFilteredPagination(collectionKey,
+    let JSONResponse = await _WORDS_IN_COLLECTION_API.GET.getAllInCollectionFilteredPagination(collectionId,
         _NUMBER_OF_WORDS, title, _lastWordInCollectionIdOnPreviousPage);
     if (JSONResponse.status === _HTTP_STATUSES.OK) {
         let tableRows = await createTableRows(JSONResponse.json);
@@ -523,7 +614,7 @@ async function createTableRow(wordInCollectionResponseDTO) {
     let wordInCollectionRequestDTO = new WordInCollectionRequestDTO();
     wordInCollectionRequestDTO.id = wordInCollectionResponseDTO.id;
     wordInCollectionRequestDTO.wordId = wordInCollectionResponseDTO.word.id;
-    wordInCollectionRequestDTO.collectionKey = wordInCollectionResponseDTO.customerCollection.key;
+    wordInCollectionRequestDTO.collectionId = wordInCollectionResponseDTO.customerCollection.id;
 
     actionColumn.appendChild(await createBtnAction(wordInCollectionRequestDTO));
     row.appendChild(actionColumn);

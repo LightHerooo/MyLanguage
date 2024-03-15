@@ -90,11 +90,20 @@ import {
     LangsAPI
 } from "../../../classes/api/langs_api.js";
 
+import {
+    CssMain
+} from "../../../classes/css/css_main.js";
+
+import {
+    BigIntUtils
+} from "../../../classes/utils/bigint_utils.js";
+
 const _CUSTOMER_COLLECTIONS_API = new CustomerCollectionsAPI();
 const _WORKOUTS_API = new WorkoutsAPI();
 const _WORDS_IN_COLLECTION_API = new WordsInCollectionAPI();
 const _LANGS_API = new LangsAPI();
 
+const _CSS_MAIN = new CssMain();
 const _CSS_ROOT = new CssRoot();
 
 const _CUSTOMER_COLLECTION_UTILS = new CustomerCollectionUtils();
@@ -105,6 +114,7 @@ const _RULE_TYPES = new RuleTypes();
 const _GLOBAL_COOKIES = new GlobalCookies();
 const _TEXT_BOX_UTILS = new TextBoxUtils();
 const _TABLE_UTILS = new TableUtils();
+const _BIGINT_UTILS = new BigIntUtils();
 
 const _DIV_CUSTOMER_COLLECTION_CONTAINER_ID = "div_customer_collection_container";
 const _CB_CUSTOMER_COLLECTIONS_ID = "cb_customer_collections";
@@ -198,8 +208,8 @@ async function prepareCbCustomerCollections() {
 
         // Меняем элемент списка на основе последней тренировки ---
         if (_lastWorkout && _lastWorkout.customerCollection) {
-            _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemId(
-                cbCustomerCollections, _lastWorkout.customerCollection.key, true);
+            _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemValue(
+                cbCustomerCollections, _lastWorkout.customerCollection.id, true);
         }
         //---
 
@@ -227,7 +237,7 @@ async function fillCbCustomerCollectionsByLangOutCode() {
             let firstOption = document.createElement("option");
             firstOption.textContent = "Выберите коллекцию";
 
-            let langOutCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbLangsOut);
+            let langOutCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBox(cbLangsOut);
             await _CUSTOMER_COLLECTION_UTILS.CB_CUSTOMER_COLLECTIONS.fillByLangOutCode(
                 cbCustomerCollectionsWithFlag, firstOption, langOutCode);
         }
@@ -250,7 +260,7 @@ async function prepareCbLangsOut() {
 
         // Меняем элемент списка на основе последней тренировки ---
         if (_lastWorkout && _lastWorkout.langOut) {
-            _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemId(
+            _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM.byComboBoxAndItemValue(
                 cbLangsOut, _lastWorkout.langOut.code, true);
         }
         //---
@@ -271,8 +281,8 @@ async function fillCbLangsOutByCustomerCollectionLangCode() {
     if (cbCustomerCollections) {
         let langInCode;
 
-        let collectionKey = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbCustomerCollections);
-        let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.findByKey(collectionKey);
+        let collectionId = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBox(cbCustomerCollections);
+        let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.findById(collectionId);
         if (JSONResponse.status === _HTTP_STATUSES.OK) {
             let customerCollection = new CustomerCollectionResponseDTO(JSONResponse.json);
             langInCode = customerCollection.lang.code;
@@ -412,8 +422,8 @@ async function checkAllLangs() {
     if (cbCustomerCollections) {
         // Найдём язык выбранной коллекции ---
 
-        let collectionKey = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbCustomerCollections);
-        let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.findByKey(collectionKey);
+        let collectionId = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBox(cbCustomerCollections);
+        let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.findById(collectionId);
         if (JSONResponse.status !== _HTTP_STATUSES.OK) {
             isCorrect = false;
 
@@ -435,7 +445,7 @@ async function checkAllLangs() {
     if (collectionLangCode) {
         let cbLangsOut = document.getElementById(_CB_LANGS_OUT_ID);
         if (cbLangsOut) {
-            let langOutCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbLangsOut);
+            let langOutCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBox(cbLangsOut);
 
             // Совпадение языков запрещено ---
             let message;
@@ -531,8 +541,8 @@ async function checkBeforeWorkoutStart() {
 async function createWorkout() {
     let workoutRequestDTO = new WorkoutRequestDTO();
     workoutRequestDTO.workoutTypeCode = _CURRENT_WORKOUT_TYPE.CODE;
-    workoutRequestDTO.langOutCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_LANGS_OUT_ID);
-    workoutRequestDTO.collectionKey = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_CUSTOMER_COLLECTIONS_ID);
+    workoutRequestDTO.langOutCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBoxId(_CB_LANGS_OUT_ID);
+    workoutRequestDTO.collectionId = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBoxId(_CB_CUSTOMER_COLLECTIONS_ID);
 
     let isCorrect = true;
     let JSONResponse = await _WORKOUTS_API.POST.add(workoutRequestDTO);
@@ -607,27 +617,45 @@ async function tryToFillCollectionInfo() {
     let currentFinder = _CUSTOM_TIMER_COLLECTION_INFO_FINDER;
 
     let divCollectionInfoContainer = document.getElementById(_DIV_COLLECTION_INFO_ID);
-    let collectionKey = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_CUSTOMER_COLLECTIONS_ID);
     if (divCollectionInfoContainer) {
-        if (collectionKey) {
-            let divCollectionInfo =
-                await _CUSTOMER_COLLECTION_UTILS.createDivCollectionInfoAfterValidate(collectionKey);
+        let isCorrect = true;
+        let message;
+
+        let collectionIdStr = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBoxId(_CB_CUSTOMER_COLLECTIONS_ID);
+        let collectionId = _BIGINT_UTILS.parse(collectionIdStr);
+        if (!collectionId) {
+            isCorrect = false;
+            message = "Выберите коллекцию, которую хотите тренировать, чтобы увидеть информацию о ней.";
+        }
+
+        if (isCorrect === true) {
+            let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.findById(collectionId);
+            if (JSONResponse.status === _HTTP_STATUSES.OK) {
+                isCorrect = true;
+
+                let customerCollection = new CustomerCollectionResponseDTO(JSONResponse.json);
+                let divCollectionInfo = await customerCollection.tryToCreateDivInfoAfterValidate();
+                if (currentFinder.getActive() === true) {
+                    divCollectionInfoContainer.replaceChildren();
+                    if (currentFinder.getActive() === true) {
+                        divCollectionInfoContainer.appendChild(divCollectionInfo);
+                    }
+                }
+            } else {
+                isCorrect = false;
+                message = new CustomResponseMessage(JSONResponse.json).text;
+            }
+        }
+
+        if (isCorrect === false) {
+            let divMessage = document.createElement("div");
+            divMessage.classList.add(_CSS_MAIN.DIV_CONTENT_CENTER_STANDARD_STYLE_ID);
+            divMessage.style.fontSize = _CSS_ROOT.SECOND_FONT_SIZE;
+            divMessage.textContent = message;
 
             if (currentFinder.getActive() === true) {
                 divCollectionInfoContainer.replaceChildren();
                 if (currentFinder.getActive() === true) {
-                    divCollectionInfoContainer.appendChild(divCollectionInfo);
-                }
-            }
-        } else {
-            if (currentFinder.getActive() === true) {
-                divCollectionInfoContainer.replaceChildren();
-                if (currentFinder.getActive() === true) {
-                    let divMessage = document.createElement("div");
-                    divMessage.style.fontSize = _CSS_ROOT.SECOND_FONT_SIZE;
-                    divMessage.style.textAlign = "center";
-                    divMessage.textContent =
-                        "Выберите коллекцию, которую хотите тренировать, чтобы увидеть информацию о ней.";
                     divCollectionInfoContainer.appendChild(divMessage);
                 }
             }
@@ -643,8 +671,9 @@ function prepareWordsInCollectionFinder() {
         let readyToFill = true;
 
         // Пользователь должен выбрать коллекцию в выпадающем списке ---
-        let collectionKey = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_CUSTOMER_COLLECTIONS_ID);
-        if (!collectionKey) {
+        let collectionIdStr = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBoxId(_CB_CUSTOMER_COLLECTIONS_ID);
+        let collectionId = _BIGINT_UTILS.parse(collectionIdStr);
+        if (!collectionId) {
             readyToFill = false;
             setMessageInsideTable("Выберите коллекцию, которую хотите тренировать, чтобы просмотреть слова в ней.");
         }
@@ -654,7 +683,7 @@ function prepareWordsInCollectionFinder() {
         if (readyToFill === true) {
             let authId = _GLOBAL_COOKIES.AUTH_ID.getValue();
             let JSONResponse = await
-                _CUSTOMER_COLLECTIONS_API.GET.findByCustomerIdAndKey(authId, collectionKey);
+                _CUSTOMER_COLLECTIONS_API.GET.validateIsCustomerCollectionAuthor(authId, collectionId);
             if (JSONResponse.status !== _HTTP_STATUSES.OK) {
                 readyToFill = false;
                 setMessageInsideTable(new CustomResponseMessage(JSONResponse.json).text);
@@ -697,25 +726,43 @@ function startToFindWordsInCollection() {
 async function tryToFillTableRows(doNeedToClearTable, doNeedToShowTableMessage) {
     let currentFinder = _CUSTOM_TIMER_WORDS_IN_COLLECTION_FINDER;
 
-    let collectionKey = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBoxId(_CB_CUSTOMER_COLLECTIONS_ID);
-    let title = document.getElementById(_TB_FINDER_ID).value;
-    let JSONResponse = await _WORDS_IN_COLLECTION_API.GET.getAllInCollectionFilteredPagination(collectionKey,
-        _NUMBER_OF_WORDS, title, _lastWordInCollectionIdOnPreviousPage);
-    if (JSONResponse.status === _HTTP_STATUSES.OK) {
-        let tableRows = await createTableRows(JSONResponse.json);
-        let tableBody = document.getElementById(_TBODY_WORDS_IN_COLLECTION);
-        if (tableRows && tableBody && currentFinder.getActive() === true) {
-            if (doNeedToClearTable === true) {
-                tableBody.replaceChildren();
-            }
+    let isCorrect = true;
+    let message;
 
-            for (let i = 0; i < tableRows.length; i++) {
-                if (currentFinder.getActive() !== true) break;
-                tableBody.appendChild(tableRows[i]);
+    let collectionIdStr = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_VALUE.byComboBoxId(_CB_CUSTOMER_COLLECTIONS_ID);
+    let collectionId = _BIGINT_UTILS.parse(collectionIdStr);
+    if (!collectionId) {
+        isCorrect = false;
+        message = "Выберите коллекцию";
+    }
+
+    if (isCorrect === true) {
+        let title = document.getElementById(_TB_FINDER_ID).value;
+        let JSONResponse = await _WORDS_IN_COLLECTION_API.GET.getAllInCollectionFilteredPagination(collectionId,
+            _NUMBER_OF_WORDS, title, _lastWordInCollectionIdOnPreviousPage);
+        if (JSONResponse.status === _HTTP_STATUSES.OK) {
+            isCorrect = true;
+
+            let tableRows = await createTableRows(JSONResponse.json);
+            let tableBody = document.getElementById(_TBODY_WORDS_IN_COLLECTION);
+            if (tableRows && tableBody && currentFinder.getActive() === true) {
+                if (doNeedToClearTable === true) {
+                    tableBody.replaceChildren();
+                }
+
+                for (let i = 0; i < tableRows.length; i++) {
+                    if (currentFinder.getActive() !== true) break;
+                    tableBody.appendChild(tableRows[i]);
+                }
             }
+        } else {
+            isCorrect = false;
+            message = new CustomResponseMessage(JSONResponse.json).text;
         }
-    } else if (doNeedToShowTableMessage === true) {
-        setMessageInsideTable(new CustomResponseMessage(JSONResponse.json).text);
+    }
+
+    if (isCorrect === false && doNeedToShowTableMessage === true) {
+        setMessageInsideTable(message);
     }
 }
 

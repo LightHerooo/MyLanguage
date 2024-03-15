@@ -29,6 +29,7 @@ class CbWordStatuses {
             cbWordStatuses.replaceChildren();
 
             if (firstOption) {
+                firstOption.value = "";
                 cbWordStatuses.appendChild(firstOption);
             }
 
@@ -39,12 +40,11 @@ class CbWordStatuses {
                     let wordStatus = new WordStatusResponseDTO(json[i]);
 
                     let option = document.createElement("option");
-                    option.id = wordStatus.code;
-
                     let color = wordStatus.color;
                     if (color) {
                         option.style.color = "#" + color.hexCode;
                     }
+                    option.value = wordStatus.code;
                     option.textContent = wordStatus.title;
 
                     cbWordStatuses.appendChild(option);
