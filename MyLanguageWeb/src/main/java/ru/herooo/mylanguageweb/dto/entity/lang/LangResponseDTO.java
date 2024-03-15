@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import ru.herooo.mylanguageweb.controllers.json.LongDeserializer;
 import ru.herooo.mylanguageweb.controllers.json.LongSerializer;
+import ru.herooo.mylanguageweb.dto.entity.country.CountryResponseDTO;
 
 public class LangResponseDTO {
     @JsonSerialize(using = LongSerializer.class)
@@ -25,6 +26,9 @@ public class LangResponseDTO {
 
     @JsonProperty("is_active_for_out")
     private boolean isActiveForOut;
+
+    @JsonProperty("country")
+    private CountryResponseDTO country;
 
     public long getId() {
         return id;
@@ -72,5 +76,13 @@ public class LangResponseDTO {
 
     public void setIsActiveForOut(boolean activeForOut) {
         isActiveForOut = activeForOut;
+    }
+
+    public CountryResponseDTO getCountry() {
+        return country;
+    }
+
+    public void setCountry(CountryResponseDTO country) {
+        this.country = country;
     }
 }

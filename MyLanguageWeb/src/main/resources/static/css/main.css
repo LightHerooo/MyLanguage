@@ -29,7 +29,9 @@ main {
 
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 10px;
+
+    overflow-wrap: break-word;
 }
 
 
@@ -232,7 +234,7 @@ table.table-standard tbody tr:nth-child(even){
 
 
 select.select-standard {
-    min-height: 40px;
+    min-height: 50px;
     cursor: pointer;
 
     background: var(--second-color);
@@ -246,6 +248,9 @@ select.select-standard option {
 
     background: var(--first-color);
 
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     font-family: inherit;
     font-size: var(--third-font-size);
 }

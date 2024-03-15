@@ -23,10 +23,6 @@ import {
 } from "../../api/words_in_collection_api.js";
 
 import {
-    CssCollectionInfo
-} from "../../css/entity/css_collection_info.js";
-
-import {
     FlagElements
 } from "../../flag_elements.js";
 
@@ -34,10 +30,15 @@ import {
     ImageSources
 } from "../../image_sources.js";
 
+import {
+    CssDynamicInfoBlock
+} from "../../css/info_blocks/css_dynamic_info_block.js";
+
 const _WORDS_IN_COLLECTION_API = new WordsInCollectionAPI();
 
+const _CSS_DYNAMIC_INFO_BLOCK = new CssDynamicInfoBlock();
+
 const _HTTP_STATUSES = new HttpStatuses();
-const _CSS_COLLECTION_INFO = new CssCollectionInfo();
 const _FLAG_ELEMENTS = new FlagElements();
 const _IMAGE_SOURCES = new ImageSources();
 
@@ -72,7 +73,7 @@ export class CustomerCollectionResponseDTO {
         let spanCollectionTitle = document.createElement("span");
         spanCollectionTitle.textContent = " " + this.title;
 
-        differentElement.appendChild(_FLAG_ELEMENTS.SPAN.create(this.lang.code, false));
+        differentElement.appendChild(_FLAG_ELEMENTS.SPAN.create(this.lang.country, false));
         differentElement.appendChild(spanCollectionTitle);
     }
 
@@ -93,113 +94,103 @@ export class CustomerCollectionResponseDTO {
     async createDivInfo() {
         let collectionInfoContainer = document.createElement("div");
         collectionInfoContainer.classList.add(
-            _CSS_COLLECTION_INFO.DIV_COLLECTION_INFO_CONTAINER_STYLE_ID);
+            _CSS_DYNAMIC_INFO_BLOCK.DIV_DYNAMIC_INFO_BLOCK_CONTAINER_STYLE_ID);
+
+        // Генерируем левый контейнер ---
+        let collectionInfoContainerLeft = document.createElement("div");
+        collectionInfoContainerLeft.classList.add(
+            _CSS_DYNAMIC_INFO_BLOCK.DIV_DYNAMIC_INFO_BLOCK_LEFT_CONTAINER_STYLE_ID);
+
+        let collectionInfoImg = document.createElement("img");
+        collectionInfoImg.classList.add(
+            _CSS_DYNAMIC_INFO_BLOCK.IMG_IMG_DYNAMIC_INFO_BLOCK_STYLE_ID);
+        collectionInfoImg.src = _IMAGE_SOURCES.CUSTOMER_COLLECTIONS.BOOKS;
+        collectionInfoContainerLeft.appendChild(collectionInfoImg);
+
+        collectionInfoContainer.appendChild(collectionInfoContainerLeft);
+        //---
 
         // Генерируем правый контейнер ---
         let collectionInfoContainerRight = document.createElement("div");
         collectionInfoContainerRight.classList.add(
-            _CSS_COLLECTION_INFO.DIV_COLLECTION_INFO_RIGHT_CONTAINER_STYLE_ID);
+            _CSS_DYNAMIC_INFO_BLOCK.DIV_DYNAMIC_INFO_BLOCK_RIGHT_CONTAINER);
         //---
 
         // Название коллекции (с флагом) ---
         let h1CollectionName = document.createElement("h1");
         h1CollectionName.classList.add(
-            _CSS_COLLECTION_INFO.H1_COLLECTION_INFO_HEADER_STYLE_ID);
+            _CSS_DYNAMIC_INFO_BLOCK.H1_H1_DYNAMIC_INFO_BLOCK_STYLE_ID);
         h1CollectionName.appendChild(this.createDiv());
 
         collectionInfoContainerRight.appendChild(h1CollectionName);
         //---
 
         // Дата создания ---
+        let divDataRow = document.createElement("div");
+        divDataRow.classList.add(_CSS_DYNAMIC_INFO_BLOCK.DIV_DYNAMIC_INFO_BLOCK_DATA_ROW_STYLE_ID);
+
+        let spanInfoAboutData = document.createElement("span");
+        spanInfoAboutData.classList.add(_CSS_DYNAMIC_INFO_BLOCK.SPAN_DATA_ROW_LEFT_TEXT_STYLE_ID);
+        spanInfoAboutData.textContent = "Дата создания:";
+        divDataRow.appendChild(spanInfoAboutData);
+
+        let spanData = document.createElement("span");
+        spanData.classList.add(_CSS_DYNAMIC_INFO_BLOCK.SPAN_DATA_ROW_RIGHT_TEXT_STYLE_ID);
+
         let dateOfCreate = new Date(this.dateOfCreate);
         let dateOfCreateParts = new DateParts(dateOfCreate);
+        spanData.textContent = dateOfCreateParts.getDateStr();
+        divDataRow.appendChild(spanData);
 
-        let spanCollectionDateOfCreateText = document.createElement("span")
-        spanCollectionDateOfCreateText.classList.add(_CSS_COLLECTION_INFO.SPAN_COLLECTION_INFO_LEFT_TEXT_STYLE_ID);
-        spanCollectionDateOfCreateText.textContent = "Дата создания: ";
-
-        let spanCollectionDateOfCreate = document.createElement("span");
-        spanCollectionDateOfCreate.classList.add(_CSS_COLLECTION_INFO.SPAN_COLLECTION_INFO_RIGHT_TEXT_STYLE_ID);
-        spanCollectionDateOfCreate.textContent = dateOfCreateParts.getDateStr();
-
-        let divCollectionDateOfCreate = document.createElement("div");
-        divCollectionDateOfCreate.appendChild(spanCollectionDateOfCreateText);
-        divCollectionDateOfCreate.appendChild(spanCollectionDateOfCreate);
-
-        collectionInfoContainerRight.appendChild(divCollectionDateOfCreate);
+        collectionInfoContainerRight.appendChild(divDataRow);
         //---
 
         // Язык ---
-        let spanLangText = document.createElement("span");
-        spanLangText.classList.add(_CSS_COLLECTION_INFO.SPAN_COLLECTION_INFO_LEFT_TEXT_STYLE_ID);
-        spanLangText.textContent = "Язык: ";
+        divDataRow = divDataRow.cloneNode(false);
 
-        let spanLangFlag = this.lang.createSpan();
-        spanLangFlag.classList.add(_CSS_COLLECTION_INFO.SPAN_COLLECTION_INFO_RIGHT_TEXT_STYLE_ID);
+        spanInfoAboutData = spanInfoAboutData.cloneNode(false);
+        spanInfoAboutData.textContent = "Язык:";
+        divDataRow.appendChild(spanInfoAboutData);
 
-        let divCollectionLang = document.createElement("div");
-        divCollectionLang.appendChild(spanLangText);
-        divCollectionLang.appendChild(spanLangFlag);
+        spanData = spanData.cloneNode(false);
+        spanData.appendChild(this.lang.createSpan());
+        divDataRow.appendChild(spanData);
 
-        collectionInfoContainerRight.appendChild(divCollectionLang);
+        collectionInfoContainerRight.appendChild(divDataRow);
         //---
 
         // Количество слов в коллекции ---
         let JSONResponse = await _WORDS_IN_COLLECTION_API.GET.getCountByCollectionKey(this.key);
         if (JSONResponse.status === _HTTP_STATUSES.OK) {
-            let longResponse = new LongResponse(JSONResponse.json);
+            divDataRow = divDataRow.cloneNode(false);
 
-            let spanCollectionNumberOfWordsText = document.createElement("span");
-            spanCollectionNumberOfWordsText.classList.add(_CSS_COLLECTION_INFO.SPAN_COLLECTION_INFO_LEFT_TEXT_STYLE_ID);
-            spanCollectionNumberOfWordsText.textContent = "Количество слов: ";
+            spanInfoAboutData = spanInfoAboutData.cloneNode(false);
+            spanInfoAboutData.textContent = "Количество слов:";
+            divDataRow.appendChild(spanInfoAboutData);
 
-            let spanCollectionNumberOfWords = document.createElement("span");
-            spanCollectionNumberOfWords.classList.add(_CSS_COLLECTION_INFO.SPAN_COLLECTION_INFO_RIGHT_TEXT_STYLE_ID);
-            spanCollectionNumberOfWords.textContent = longResponse.value;
+            spanData = spanData.cloneNode(false);
+            spanData.textContent = new LongResponse(JSONResponse.json).value;
+            divDataRow.appendChild(spanData);
 
-            let divCollectionNumberOfWords = document.createElement("div");
-            divCollectionNumberOfWords.appendChild(spanCollectionNumberOfWordsText);
-            divCollectionNumberOfWords.appendChild(spanCollectionNumberOfWords);
-
-            collectionInfoContainerRight.appendChild(divCollectionNumberOfWords);
+            collectionInfoContainerRight.appendChild(divDataRow);
         }
         //---
 
         // Ключ ---
-        let spanCollectionKeyText = document.createElement("span");
-        spanCollectionKeyText.classList.add(_CSS_COLLECTION_INFO.SPAN_COLLECTION_INFO_LEFT_TEXT_STYLE_ID);
-        spanCollectionKeyText.textContent = "Ключ: ";
+        divDataRow = divDataRow.cloneNode(false);
 
-        let spanCollectionKey = document.createElement("span");
-        spanCollectionKey.classList.add(_CSS_COLLECTION_INFO.SPAN_COLLECTION_INFO_RIGHT_TEXT_STYLE_ID);
-        spanCollectionKey.textContent = this.key;
+        spanInfoAboutData = spanInfoAboutData.cloneNode(false);
+        spanInfoAboutData.textContent = "Ключ:";
+        divDataRow.appendChild(spanInfoAboutData);
 
-        let divCollectionKey = document.createElement("div");
-        divCollectionKey.appendChild(spanCollectionKeyText);
-        divCollectionKey.appendChild(spanCollectionKey);
+        spanData = spanData.cloneNode(false);
+        spanData.textContent = this.key;
+        divDataRow.appendChild(spanData);
 
-        collectionInfoContainerRight.appendChild(divCollectionKey);
+        collectionInfoContainerRight.appendChild(divDataRow);
         //---
 
-        // Генерируем левый контейнер ---
-        let collectionInfoContainerLeft = document.createElement("div");
-        collectionInfoContainerLeft.classList.add(
-            _CSS_COLLECTION_INFO.DIV_COLLECTION_INFO_LEFT_CONTAINER_STYLE_ID);
-        //---
-
-        // Генерируем изображение ---
-        let collectionInfoImg = document.createElement("img");
-        collectionInfoImg.classList.add(
-            _CSS_COLLECTION_INFO.IMG_IMG_COLLECTION_INFO_STYLE_ID);
-        collectionInfoImg.src = _IMAGE_SOURCES.CUSTOMER_COLLECTIONS.BOOKS;
-
-        collectionInfoContainerLeft.appendChild(collectionInfoImg);
-        //---
-
-        // Добавляем элементы в основной контейнер ---
-        collectionInfoContainer.appendChild(collectionInfoContainerLeft);
         collectionInfoContainer.appendChild(collectionInfoContainerRight);
-        //---
 
         return collectionInfoContainer;
     }

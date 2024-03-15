@@ -8,6 +8,7 @@
       <link rel="stylesheet" type="text/css" href="/css/root.css">
       <link rel="stylesheet" type="text/css" href="/css/main.css">
       <link rel="stylesheet" type="text/css" href="/css/templates/layouts/header.css">
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
   </head>
   <body>
     <nav>
@@ -63,14 +64,18 @@
                      : ''}">Специальные возможности</div>
             </a>
             <div class="vertical-delimiter-margin"></div>
-            <a class="nav-item" th:href="@{/customers/{id}(id = ${AUTH_CUSTOMER.id})}">
+            <a class="nav-item" th:href="@{/customers/info/{id}(id = ${AUTH_CUSTOMER.id})}">
                 <img class="auth-customer-img" src="/images/customer_roles/customer.png" alt="customer.png"/>
                 <div class="auth-customer-info-container">
-                    <div class="customer-nickname"
-                         th:text="${AUTH_CUSTOMER.nickname}"
-                         th:style="${AUTH_CUSTOMER.role.color != null
-                         ? 'color: #' + AUTH_CUSTOMER.role.color.hexCode
-                         : ''}"></div>
+                    <div class="customer-nickname-container">
+                        <span th:class="'fi fi-' + ${AUTH_CUSTOMER.country.code}"
+                              th:title="${AUTH_CUSTOMER.country.title}"></span>
+                        <span class="customer-nickname"
+                              th:text="${AUTH_CUSTOMER.nickname}"
+                              th:style="${AUTH_CUSTOMER.role.color != null
+                              ? 'color: #' + AUTH_CUSTOMER.role.color.hexCode
+                              : ''}"></span>
+                    </div>
                     <div class="auth-customer-info-extra-container">
                         <div class="auth-customer-info-extra-item">
                             <img class="auth-customer-info-extra-item-img"

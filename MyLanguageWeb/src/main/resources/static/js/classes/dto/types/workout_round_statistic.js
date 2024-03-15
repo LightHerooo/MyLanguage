@@ -3,20 +3,11 @@ import {
 } from "../../css/css_main.js";
 
 import {
-    CssWorkoutRoundStatistic
-} from "../../css/types/css_workout_round_statistic.js";
-
-import {
     CssRoot
 } from "../../css/css_root.js";
 
 const _CSS_MAIN = new CssMain();
 const _CSS_ROOT = new CssRoot();
-const _CSS_WORKOUT_ROUND_STATISTIC = new CssWorkoutRoundStatistic();
-
-const _DIV_NUMBER_OF_FALSE_ANSWERS_ID = "div_number_of_false_answers";
-const _DIV_NUMBER_OF_QUESTIONS_WITHOUT_ANSWER_ID = "div_number_of_questions_without_answer";
-const _DIV_NUMBER_OF_TRUE_ANSWERS_ID = "div_number_of_true_answers";
 
 export class WorkoutRoundStatisticResponseDTO {
     numberOfQuestions;
@@ -24,9 +15,9 @@ export class WorkoutRoundStatisticResponseDTO {
     numberOfFalseAnswers;
     numberOfQuestionsWithoutAnswer;
 
-    #divNumberOfTrueAnswers;
-    #divNumberOfFalseAnswers;
-    #divNumberOfQuestionsWithoutAnswer;
+    #tdNumberOfTrueAnswers;
+    #tdNumberOfFalseAnswers;
+    #tdNumberOfQuestionsWithoutAnswer;
 
     constructor(workoutRoundStatisticJson) {
         if (workoutRoundStatisticJson) {
@@ -37,107 +28,172 @@ export class WorkoutRoundStatisticResponseDTO {
         }
     }
 
-    createDivNotOver() {
-        // Создаём основной контейнер ---
-        let div = document.createElement("div");
-        div.classList.add(_CSS_WORKOUT_ROUND_STATISTIC.DIV_WORKOUT_ROUND_STATISTIC_CONTAINER_STYLE_ID);
+    createTableNotOver() {
+        let table = document.createElement("table");
+        table.classList.add(_CSS_MAIN.TABLE_STANDARD_STYLE_ID);
+
+        // Создаём colgroup ---
+        let colgroup = document.createElement("colgroup");
+
+        let col = document.createElement("col");
+        col.style.width = "33%";
+        colgroup.appendChild(col);
+
+        col = document.createElement("col");
+        col.style.width = "33%";
+        colgroup.appendChild(col);
+
+        col = document.createElement("col");
+        col.style.width = "33%";
+        colgroup.appendChild(col);
+
+        table.appendChild(colgroup);
         //---
 
-        // Количество неправильных ответов ---
-        let divHeader = document.createElement("div");
-        divHeader.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
-        divHeader.classList.add(_CSS_WORKOUT_ROUND_STATISTIC.DIV_WORKOUT_ROUND_STATISTIC_ITEM_HEADER);
-        divHeader.textContent = "Неправильных ответов";
+        // Создаём tHead ---
+        let tr = document.createElement("tr");
 
-        let divAnswers = document.createElement("div");
-        divAnswers.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
-        divAnswers.classList.add(_CSS_WORKOUT_ROUND_STATISTIC.DIV_WORKOUT_ROUND_STATISTIC_ITEM_STYLE_ID);
-        divAnswers.style.color = _CSS_ROOT.DENY_FIRST_COLOR;
-        divAnswers.id = _DIV_NUMBER_OF_FALSE_ANSWERS_ID;
-        divAnswers.textContent = this.numberOfFalseAnswers;
+        let th = document.createElement("th");
+        th.style.fontSize = _CSS_ROOT.THIRD_FONT_SIZE;
+        th.textContent = "Осталось вопросов";
+        tr.appendChild(th);
 
-        div.appendChild(divHeader);
-        div.appendChild(divAnswers);
-        this.#divNumberOfFalseAnswers = divAnswers;
+        th = th.cloneNode(false);
+        th.style.background = _CSS_ROOT.DENY_FIRST_COLOR;
+        th.textContent = "Неправильных ответов";
+        tr.appendChild(th);
+
+        th = th.cloneNode(false);
+        th.style.background = _CSS_ROOT.ACCEPT_FIRST_COLOR;
+        th.textContent = "Правильных ответов";
+        tr.appendChild(th);
+
+        let tHead = document.createElement("thead");
+        tHead.appendChild(tr);
+
+        table.appendChild(tHead);
         //---
 
-        // Количество вопросов без ответа (оставшихся) ---
-        divHeader = divHeader.cloneNode(true);
-        divHeader.textContent = "Осталось вопросов";
+        // Осталось вопросов ---
+        tr = document.createElement("tr");
 
-        divAnswers = divAnswers.cloneNode(false);
-        divAnswers.style.color = "";
-        divAnswers.id = _DIV_NUMBER_OF_QUESTIONS_WITHOUT_ANSWER_ID;
-        divAnswers.textContent = this.numberOfQuestionsWithoutAnswer;
+        let td = document.createElement("td");
+        td.style.textAlign = "center";
+        td.style.fontWeight = "bold";
+        td.style.fontSize = _CSS_ROOT.SECOND_FONT_SIZE;
+        td.textContent = this.numberOfQuestionsWithoutAnswer;
+        tr.appendChild(td);
 
-        div.appendChild(divHeader);
-        div.appendChild(divAnswers);
-        this.#divNumberOfQuestionsWithoutAnswer = divAnswers;
+        this.#tdNumberOfQuestionsWithoutAnswer = td;
         //---
 
-        // Количество правильных ответов ---
-        divHeader = divHeader.cloneNode(false);
-        divHeader.textContent = "Правильных ответов";
+        // Неправильных ответов ---
+        td = td.cloneNode(false);
+        td.style.background = `rgba(${_CSS_ROOT.DENY_FIRST_COLOR_RGB}, ${_CSS_ROOT.OPACITY_STANDARD})`;
+        td.textContent = this.numberOfFalseAnswers;
+        tr.appendChild(td);
 
-        divAnswers = divAnswers.cloneNode(false);
-        divAnswers.style.color = _CSS_ROOT.ACCEPT_FIRST_COLOR;
-        divAnswers.id = _DIV_NUMBER_OF_TRUE_ANSWERS_ID;
-        divAnswers.textContent = this.numberOfTrueAnswers;
-
-        div.appendChild(divHeader);
-        div.appendChild(divAnswers);
-        this.#divNumberOfTrueAnswers = divAnswers;
+        this.#tdNumberOfFalseAnswers = td;
         //---
 
-        return div;
+        // Правильных ответов ---
+        td = td.cloneNode(false);
+        td.style.background = `rgba(${_CSS_ROOT.ACCEPT_FIRST_COLOR_RGB}, ${_CSS_ROOT.OPACITY_STANDARD})`;
+        td.textContent = this.numberOfTrueAnswers;
+        tr.appendChild(td);
+
+        this.#tdNumberOfTrueAnswers = td;
+        //---
+
+        // Создаём tBody ---
+        let tBody = document.createElement("tbody");
+        tBody.appendChild(tr);
+
+        table.appendChild(tBody);
+        //---
+
+        return table;
     }
 
-    createDivOver() {
-        // Создаём основной контейнер ---
-        let div = document.createElement("div");
-        div.classList.add(_CSS_WORKOUT_ROUND_STATISTIC.DIV_WORKOUT_ROUND_STATISTIC_CONTAINER_STYLE_ID);
+    createTableOver() {
+        let table = document.createElement("table");
+        table.classList.add(_CSS_MAIN.TABLE_STANDARD_STYLE_ID);
+
+        // Создаём colgroup ---
+        let colgroup = document.createElement("colgroup");
+
+        let col = document.createElement("col");
+        col.style.width = "33%";
+        colgroup.appendChild(col);
+
+        col = document.createElement("col");
+        col.style.width = "33%";
+        colgroup.appendChild(col);
+
+        col = document.createElement("col");
+        col.style.width = "33%";
+        colgroup.appendChild(col);
+
+        table.appendChild(colgroup);
         //---
 
-        // Общее количество вопросов ---
-        let divHeader = document.createElement("div");
-        divHeader.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
-        divHeader.classList.add(_CSS_WORKOUT_ROUND_STATISTIC.DIV_WORKOUT_ROUND_STATISTIC_ITEM_HEADER);
-        divHeader.textContent = "Количество вопросов";
+        // Создаём tHead ---
+        let tr = document.createElement("tr");
 
-        let divAnswers = document.createElement("div");
-        divAnswers.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
-        divAnswers.classList.add(_CSS_WORKOUT_ROUND_STATISTIC.DIV_WORKOUT_ROUND_STATISTIC_ITEM_STYLE_ID);
-        divAnswers.textContent = this.numberOfQuestions;
+        let th = document.createElement("th");
+        th.style.fontSize = _CSS_ROOT.THIRD_FONT_SIZE;
+        th.textContent = "Количество вопросов";
+        tr.appendChild(th);
 
-        div.appendChild(divHeader);
-        div.appendChild(divAnswers);
+        th = th.cloneNode(false);
+        th.style.background = _CSS_ROOT.DENY_FIRST_COLOR;
+        th.textContent = "Неправильных ответов";
+        tr.appendChild(th);
+
+        th = th.cloneNode(false);
+        th.style.background = _CSS_ROOT.ACCEPT_FIRST_COLOR;
+        th.textContent = "Правильных ответов";
+        tr.appendChild(th);
+
+        let tHead = document.createElement("thead");
+        tHead.appendChild(tr);
+
+        table.appendChild(tHead);
         //---
 
-        // Количество неправильных ответов ---
-        divHeader = divHeader.cloneNode(false);
-        divHeader.textContent = "Неправильных ответов";
+        // Количество вопросов ---
+        tr = document.createElement("tr");
 
-        divAnswers = divAnswers.cloneNode(false);
-        divAnswers.style.color = _CSS_ROOT.DENY_FIRST_COLOR;
-        divAnswers.textContent = this.numberOfFalseAnswers;
-
-        div.appendChild(divHeader);
-        div.appendChild(divAnswers);
+        let td = document.createElement("td");
+        td.style.textAlign = "center";
+        td.style.fontWeight = "bold";
+        td.style.fontSize = _CSS_ROOT.SECOND_FONT_SIZE;
+        td.textContent = this.numberOfQuestions;
+        tr.appendChild(td);
         //---
 
-        // Количество правильных ответов ---
-        divHeader = divHeader.cloneNode(false);
-        divHeader.textContent = "Правильных ответов";
-
-        divAnswers = divAnswers.cloneNode(false);
-        divAnswers.style.color = _CSS_ROOT.ACCEPT_FIRST_COLOR;
-        divAnswers.textContent = this.numberOfTrueAnswers;
-
-        div.appendChild(divHeader);
-        div.appendChild(divAnswers);
+        // Неправильных ответов ---
+        td = td.cloneNode(false);
+        td.style.background = `rgba(${_CSS_ROOT.DENY_FIRST_COLOR_RGB}, ${_CSS_ROOT.OPACITY_STANDARD})`;
+        td.textContent = this.numberOfFalseAnswers;
+        tr.appendChild(td);
         //---
 
-        return div;
+        // Правильных ответов ---
+        td = td.cloneNode(false);
+        td.style.background = `rgba(${_CSS_ROOT.ACCEPT_FIRST_COLOR_RGB}, ${_CSS_ROOT.OPACITY_STANDARD})`;
+        td.textContent = this.numberOfTrueAnswers;
+        tr.appendChild(td);
+        //---
+
+        // Создаём tBody ---
+        let tBody = document.createElement("tbody");
+        tBody.appendChild(tr);
+
+        table.appendChild(tBody);
+        //---
+
+        return table;
     }
 
     changeStatistic(isCorrect) {
@@ -149,19 +205,19 @@ export class WorkoutRoundStatisticResponseDTO {
             this.numberOfFalseAnswers++;
         }
 
-        let divNumberOfFalseAnswers = this.#divNumberOfFalseAnswers;
-        if (divNumberOfFalseAnswers) {
-            divNumberOfFalseAnswers.textContent = this.numberOfFalseAnswers;
+        let tdNumberOfFalseAnswers = this.#tdNumberOfFalseAnswers;
+        if (tdNumberOfFalseAnswers) {
+            tdNumberOfFalseAnswers.textContent = this.numberOfFalseAnswers;
         }
 
-        let divNumberOfQuestionsWithoutAnswer = this.#divNumberOfQuestionsWithoutAnswer;
-        if (divNumberOfQuestionsWithoutAnswer) {
-            divNumberOfQuestionsWithoutAnswer.textContent = this.numberOfQuestionsWithoutAnswer
+        let tdNumberOfQuestionsWithoutAnswer = this.#tdNumberOfQuestionsWithoutAnswer;
+        if (tdNumberOfQuestionsWithoutAnswer) {
+            tdNumberOfQuestionsWithoutAnswer.textContent = this.numberOfQuestionsWithoutAnswer
         }
 
-        let divNumberOfTrueAnswers = this.#divNumberOfTrueAnswers;
-        if (divNumberOfTrueAnswers) {
-            divNumberOfTrueAnswers.textContent = this.numberOfTrueAnswers;
+        let tdNumberOfTrueAnswers = this.#tdNumberOfTrueAnswers;
+        if (tdNumberOfTrueAnswers) {
+            tdNumberOfTrueAnswers.textContent = this.numberOfTrueAnswers;
         }
     }
 }

@@ -1,8 +1,4 @@
 import {
-    CssWorkoutStatistic
-} from "../../css/types/css_workout_statistic.js";
-
-import {
     CssMain
 } from "../../css/css_main.js";
 
@@ -16,7 +12,6 @@ import {
 
 const _CSS_MAIN = new CssMain();
 const _CSS_ROOT = new CssRoot();
-const _CSS_WORKOUT_STATISTIC = new CssWorkoutStatistic();
 
 export class WorkoutStatisticResponseDTO {
     numberOfMilliseconds;
@@ -35,76 +30,118 @@ export class WorkoutStatisticResponseDTO {
         }
     }
 
-    createDiv() {
-        let div = document.createElement("div");
-        div.classList.add(_CSS_WORKOUT_STATISTIC.DIV_WORKOUT_STATISTIC_STYLE_ID);
+    createTable() {
+        let table = document.createElement("table");
+        table.classList.add(_CSS_MAIN.TABLE_STANDARD_STYLE_ID);
+
+        // Создаём colgroup ---
+        let colgroup = document.createElement("colgroup");
+
+        let col = document.createElement("col");
+        col.style.width = "20%";
+        colgroup.appendChild(col);
+
+        col = document.createElement("col");
+        col.style.width = "20%";
+        colgroup.appendChild(col);
+
+        col = document.createElement("col");
+        col.style.width = "20%";
+        colgroup.appendChild(col);
+
+        col = document.createElement("col");
+        col.style.width = "20%";
+        colgroup.appendChild(col);
+
+        col = document.createElement("col");
+        col.style.width = "20%";
+        colgroup.appendChild(col);
+
+        table.appendChild(colgroup);
+        //---
+
+        // Создаём tHead ---
+        let tr = document.createElement("tr");
+
+        let th = document.createElement("th");
+        th.style.fontSize = _CSS_ROOT.THIRD_FONT_SIZE;
+        th.textContent = "Итоговое время";
+        tr.appendChild(th);
+
+        th = th.cloneNode(false);
+        th.textContent = "Количество раундов";
+        tr.appendChild(th);
+
+        th = th.cloneNode(false);
+        th.textContent = "Количество ответов";
+        tr.appendChild(th);
+
+        th = th.cloneNode(false);
+        th.style.background = _CSS_ROOT.DENY_FIRST_COLOR;
+        th.textContent = "Неправильных ответов";
+        tr.appendChild(th);
+
+        th = th.cloneNode(false);
+        th.style.background = _CSS_ROOT.ACCEPT_FIRST_COLOR;
+        th.textContent = "Правильных ответов";
+        tr.appendChild(th);
+
+        let tHead = document.createElement("thead");
+        tHead.appendChild(tr);
+
+        table.appendChild(tHead);
+        //---
 
         // Итоговое время ---
-        let divHeader = document.createElement("div");
-        divHeader.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
-        divHeader.classList.add(_CSS_WORKOUT_STATISTIC.DIV_WORKOUT_STATISTIC_ITEM_HEADER_STYLE_ID);
-        divHeader.textContent = "Итоговое время";
-        div.appendChild(divHeader);
+        tr = document.createElement("tr");
 
-        let divData = document.createElement("div");
-        divData.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
-        divData.classList.add(_CSS_WORKOUT_STATISTIC.DIV_WORKOUT_STATISTIC_ITEM_STYLE_ID);
-        divData.textContent = new TimeParts(this.numberOfMilliseconds)
+        let td = document.createElement("td");
+        td.style.textAlign = "center";
+        td.style.fontWeight = "bold";
+        td.style.fontSize = _CSS_ROOT.SECOND_FONT_SIZE;
+        td.textContent = new TimeParts(this.numberOfMilliseconds)
             .getTimeStr(false, true, true, false);
-        div.appendChild(divData);
+
+        tr.appendChild(td);
         //---
 
         // Количество раундов ---
-        divHeader = divHeader.cloneNode(false);
-        divHeader.textContent = "Количество раундов";
-        div.appendChild(divHeader);
+        td = td.cloneNode(false);
+        td.textContent = this.numberOfRounds;
 
-        divData = divData.cloneNode(false);
-        divData.textContent = this.numberOfRounds;
-        div.appendChild(divData);
+        tr.appendChild(td);
         //---
 
         // Количество ответов ---
-        divHeader = divHeader.cloneNode(false);
-        divHeader.textContent = "Количество ответов";
-        div.appendChild(divHeader);
+        td = td.cloneNode(false);
+        td.textContent = this.numberOfAnswers;
 
-        divData = divData.cloneNode(false);
-        divData.textContent = this.numberOfAnswers;
-        div.appendChild(divData);
-        //---
-
-        // Количество правильных ответов ---
-        divHeader = divHeader.cloneNode(false);
-        divHeader.textContent = "Правильных ответов";
-        div.appendChild(divHeader);
-
-        divData = divData.cloneNode(false);
-        divData.style.color = _CSS_ROOT.ACCEPT_FIRST_COLOR;
-        divData.textContent = this.numberOfTrueAnswers;
-        div.appendChild(divData);
+        tr.appendChild(td);
         //---
 
         // Количество неправильных ответов ---
-        divHeader = divHeader.cloneNode(false);
-        divHeader.textContent = "Неправильных ответов";
-        div.appendChild(divHeader);
+        td = td.cloneNode(false);
+        td.style.background = `rgba(${_CSS_ROOT.DENY_FIRST_COLOR_RGB}, ${_CSS_ROOT.OPACITY_STANDARD})`;
+        td.textContent = this.numberOfFalseAnswers;
 
-        divData = divData.cloneNode(false);
-        divData.style.color = _CSS_ROOT.DENY_FIRST_COLOR;
-        divData.textContent = this.numberOfFalseAnswers;
-        div.appendChild(divData);
+        tr.appendChild(td);
         //---
 
-        // Генерируем столько столбцов, сколько элементов ---
-        let gridColumnsStr = "";
-        for (let i = 0; i < div.childElementCount / 2; i++) {
-            gridColumnsStr += "1fr ";
-        }
+        // Количество правильных ответов ---
+        td = td.cloneNode(false);
+        td.style.background = `rgba(${_CSS_ROOT.ACCEPT_FIRST_COLOR_RGB}, ${_CSS_ROOT.OPACITY_STANDARD})`;
+        td.textContent = this.numberOfTrueAnswers;
 
-        div.style.gridTemplateColumns = gridColumnsStr.trim();
+        tr.appendChild(td);
         //---
 
-        return div;
+        // Создаём tBody ---
+        let tBody = document.createElement("tbody");
+        tBody.appendChild(tr);
+
+        table.appendChild(tBody);
+        //---
+
+        return table;
     }
 }

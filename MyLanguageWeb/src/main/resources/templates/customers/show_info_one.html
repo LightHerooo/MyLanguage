@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="|${WEB_APP_NAME} - ${CURRENT_CUSTOMER.nickname}|">Пользователь</title>
+    <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
+
+    <link rel="stylesheet" type="text/css" href="/css/root.css">
+    <link rel="stylesheet" type="text/css" href="/css/main.css">
+    <link rel="stylesheet" type="text/css" href="/css/info_blocks/dynamic_info_block.css">
+    <link rel="stylesheet" type="text/css" href="/css/templates/customers/show_one.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
+</head>
+<body>
+    <header>
+        <div th:insert="~{layouts/header}"></div>
+    </header>
+    <main>
+        <div class="customer-info-with-actions-container">
+            <div class="customer-info-container info-block-standard">
+                <div class="avatar-container">
+                    <img class="img-avatar"
+                         src="/images/customer_roles/customer.png"
+                         alt="customer.png"/>
+                </div>
+                <div class="info-container">
+                    <div class="dynamic-info-block-right-container">
+                        <h1 class="h1-dynamic-info-block">
+                            <span th:class="'fi fi-' + ${CURRENT_CUSTOMER.country.code}"
+                                  th:title="${CURRENT_CUSTOMER.country.title}"></span>
+                            <span th:text="${CURRENT_CUSTOMER.nickname}"
+                                  th:style="${CURRENT_CUSTOMER.role.color != null
+                          ? 'color: #' + CURRENT_CUSTOMER.role.color.hexCode
+                          : ''}"></span>
+                        </h1>
+                    </div>
+                    <div class="dynamic-info-block-right-container">
+                        <div class="dynamic-info-block-data-row">
+                            <span class="data-row-right-text">Информация отсутствует.</span>
+                        </div>
+                        <br>
+                    </div>
+                    <div class="dynamic-info-block-right-container">
+                        <div class="dynamic-info-block-data-row">
+                            <span class="data-row-left-text">ID:</span>
+                            <span class="data-row-right-text" th:text="${CURRENT_CUSTOMER.id}"></span>
+                        </div>
+                        <div class="dynamic-info-block-data-row">
+                            <span class="data-row-left-text">Дата регистрации:</span>
+                            <span class="data-row-right-text" th:text="${DATE_OF_CREATE}"></span>
+                        </div>
+                        <div class="dynamic-info-block-data-row">
+                            <span class="data-row-left-text">Был в сети:</span>
+                            <span class="data-row-right-text" th:text="${DATE_OF_LAST_VISIT}"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="actions-container">
+                <a class="a-button-disabled-standard">
+                    <div class="action">
+                        <img class="img-action"
+                             src="/images/other/pencil.png"
+                             alt="pencil.png"/>
+                        <span>Редактировать</span>
+                    </div>
+                </a>
+                <a class="a-button-deny-standard" href="/customers/exit">
+                    <div class="action">
+                        <img class="img-action"
+                             src="/images/customers/entry.png"
+                             alt="entry.png"/>
+                        <span>Выход</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="info-block-standard" style="height: 1000px"></div>
+    </main>
+</body>
+</html>

@@ -122,7 +122,13 @@ img.auth-customer-info-extra-item-img {
     height: 16px;
 }
 
-div.customer-nickname {
+div.customer-nickname-container {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+}
+
+span.customer-nickname {
     text-decoration: underline dotted;
     font-size: var(--third-font-size);
     font-weight: bold;

@@ -407,7 +407,7 @@ function startCollectionFinders() {
 async function checkAllLangs() {
     let isCorrect = true;
 
-    let collectionLang;
+    let collectionLangCode;
     let cbCustomerCollections = document.getElementById(_CB_CUSTOMER_COLLECTIONS_ID);
     if (cbCustomerCollections) {
         // Найдём язык выбранной коллекции ---
@@ -425,14 +425,14 @@ async function checkAllLangs() {
             ruleElement.showRule();
         } else {
             let collection = new CustomerCollectionResponseDTO(JSONResponse.json);
-            collectionLang = collection.lang.code;
+            collectionLangCode = collection.lang.code;
         }
         //---
     } else {
         isCorrect = false;
     }
 
-    if (collectionLang) {
+    if (collectionLangCode) {
         let cbLangsOut = document.getElementById(_CB_LANGS_OUT_ID);
         if (cbLangsOut) {
             let langOutCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbLangsOut);
@@ -441,7 +441,7 @@ async function checkAllLangs() {
             let message;
             let ruleType;
 
-            if (collectionLang === langOutCode) {
+            if (collectionLangCode === langOutCode) {
                 isCorrect = false;
                 message = "Языки не могут быть одинаковыми.";
                 ruleType = _RULE_TYPES.ERROR;
@@ -450,7 +450,7 @@ async function checkAllLangs() {
 
             if (isCorrect === true) {
                 // Пара языков должна поддерживаться ---
-                let JSONResponse = await _LANGS_API.GET.validateCoupleOfLanguages(collectionLang, langOutCode);
+                let JSONResponse = await _LANGS_API.GET.validateCoupleOfLanguages(collectionLangCode, langOutCode);
                 if (JSONResponse.status !== _HTTP_STATUSES.OK) {
                     isCorrect = false;
                     message = new CustomResponseMessage(JSONResponse.json).text;

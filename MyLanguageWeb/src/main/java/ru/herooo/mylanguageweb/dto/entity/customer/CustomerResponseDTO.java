@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import ru.herooo.mylanguageweb.controllers.json.LongDeserializer;
 import ru.herooo.mylanguageweb.controllers.json.LongSerializer;
+import ru.herooo.mylanguageweb.dto.entity.country.CountryResponseDTO;
 import ru.herooo.mylanguageweb.dto.entity.customerrole.CustomerRoleResponseDTO;
 
 import java.time.LocalDateTime;
@@ -26,6 +27,9 @@ public class CustomerResponseDTO {
 
     @JsonProperty("date_of_last_visit")
     private LocalDateTime dateOfLastVisit;
+
+    @JsonProperty("country")
+    private CountryResponseDTO country;
 
     public long getId() {
         return id;
@@ -65,5 +69,13 @@ public class CustomerResponseDTO {
 
     public void setDateOfLastVisit(LocalDateTime dateOfLastVisit) {
         this.dateOfLastVisit = dateOfLastVisit;
+    }
+
+    public CountryResponseDTO getCountry() {
+        return country;
+    }
+
+    public void setCountry(CountryResponseDTO country) {
+        this.country = country;
     }
 }

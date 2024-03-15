@@ -10,7 +10,49 @@ import {
     LoadingElement
 } from "../../classes/loading_element.js";
 
-let _CUSTOMER_UTILS = new CustomerUtils();
+import {
+    CustomersAPI
+} from "../../classes/api/customers_api.js";
+
+import {
+    CustomerRequestDTO
+} from "../../classes/dto/entity/customer.js";
+
+import {
+    HttpStatuses
+} from "../../classes/http_statuses.js";
+
+import {
+    RuleElement
+} from "../../classes/rule/rule_element.js";
+
+import {
+    CustomResponseMessage
+} from "../../classes/dto/other/custom_response_message.js";
+
+import {
+    RuleTypes
+} from "../../classes/rule/rule_types.js";
+
+import {
+    ComboBoxWithFlag
+} from "../../classes/element_with_flag/combo_box_with_flag.js";
+
+import {
+    CountryUtils
+} from "../../classes/utils/entity/country_utils.js";
+
+import {
+    ComboBoxUtils
+} from "../../classes/utils/combo_box_utils.js";
+
+const _CUSTOMERS_API = new CustomersAPI();
+
+const _CUSTOMER_UTILS = new CustomerUtils();
+const _HTTP_STATUSES = new HttpStatuses();
+const _RULE_TYPES = new RuleTypes();
+const _COUNTRY_UTILS = new CountryUtils();
+const _COMBO_BOX_UTILS = new ComboBoxUtils();
 
 const _TB_LOGIN_ID = "tb_login";
 const _TB_EMAIL_ID = "tb_email";
@@ -19,13 +61,21 @@ const _PB_PASSWORD_ID = "pb_password";
 const _PB_PASSWORD_REPEAT_ID = "pb_password_repeat";
 const _CHECK_SHOW_PASSWORD_ID = "check_show_password";
 const _A_CHECK_SHOW_PASSWORD_ID = "a_check_show_password";
+
+const _DIV_COUNTRY_CONTAINER_ID = "div_country_container";
+const _CB_COUNTRIES_ID = "cb_countries";
+const _DIV_COUNTRY_FLAG_ID = "country_id";
+
 const _FORM_REGISTER_ID = "form_register";
 const _BTN_REGISTER_ID = "btn_register";
-const _DIV_ERRORS_CONTAINER_ID = "errors_container";
+const _DIV_REGISTRATION_INFO_CONTAINER_ID = "registration_info_container";
 
 let _CUSTOM_TIMER_CHECKER = new CustomTimer();
 
-window.onload = function () {
+window.onload = async function () {
+    changeReadonlyStatusInImportantElements(true);
+
+    await prepareCbCountries();
     prepareTbNickname();
     prepareTbEmail();
     prepareTbLogin();
@@ -33,6 +83,8 @@ window.onload = function () {
     preparePbPasswordRepeat();
     prepareShowPasswordContainer();
     prepareSubmit();
+
+    changeReadonlyStatusInImportantElements(false);
 };
 
 window.onbeforeunload = async function () {
@@ -42,15 +94,34 @@ window.onbeforeunload = async function () {
 function prepareTbNickname() {
     let tbNickname = document.getElementById(_TB_NICKNAME_ID);
     tbNickname.addEventListener("input", async function () {
-        clearErrorsContainer();
+        clearRegistrationInfoContainer();
         await _CUSTOMER_UTILS.TB_CUSTOMER_NICKNAME.checkCorrectValue(this, this.parentElement, _CUSTOM_TIMER_CHECKER);
     })
+}
+
+async function prepareCbCountries() {
+    let divCountryContainer = document.getElementById(_DIV_COUNTRY_CONTAINER_ID);
+    let cbCountries = document.getElementById(_CB_COUNTRIES_ID);
+    let divCountryFlag = document.getElementById(_DIV_COUNTRY_FLAG_ID);
+    if (divCountryContainer && cbCountries && divCountryFlag) {
+        let cbCountryWithFlag = new ComboBoxWithFlag(
+            divCountryContainer, cbCountries, divCountryFlag);
+
+        let firstOption = document.createElement("option");
+        firstOption.textContent = "Выберите страну";
+
+        await _COUNTRY_UTILS.CB_COUNTRIES.prepare(cbCountryWithFlag, firstOption, true);
+
+        cbCountries.addEventListener("change", function () {
+            clearRegistrationInfoContainer();
+        });
+    }
 }
 
 function prepareTbEmail() {
     let tbEmail = document.getElementById(_TB_EMAIL_ID);
     tbEmail.addEventListener("input", async function () {
-        clearErrorsContainer();
+        clearRegistrationInfoContainer();
         await _CUSTOMER_UTILS.TB_CUSTOMER_EMAIL.checkCorrectValue(this, this.parentElement, _CUSTOM_TIMER_CHECKER);
     })
 }
@@ -58,7 +129,7 @@ function prepareTbEmail() {
 function prepareTbLogin() {
     let tbLogin = document.getElementById(_TB_LOGIN_ID);
     tbLogin.addEventListener("input", async function () {
-        clearErrorsContainer();
+        clearRegistrationInfoContainer();
         await _CUSTOMER_UTILS.TB_CUSTOMER_LOGIN.checkCorrectValue(this, this.parentElement, _CUSTOM_TIMER_CHECKER);
     })
 }
@@ -66,7 +137,7 @@ function prepareTbLogin() {
 function preparePbPassword() {
     let pbPassword = document.getElementById(_PB_PASSWORD_ID);
     pbPassword.addEventListener("input", function () {
-        clearErrorsContainer();
+        clearRegistrationInfoContainer();
         _CUSTOMER_UTILS.PB_CUSTOMER_PASSWORD.checkCorrectValue(this, this.parentElement);
     })
 }
@@ -74,7 +145,7 @@ function preparePbPassword() {
 function preparePbPasswordRepeat() {
     let pbPasswordRepeat = document.getElementById(_PB_PASSWORD_REPEAT_ID);
     pbPasswordRepeat.addEventListener("input", function () {
-        clearErrorsContainer();
+        clearRegistrationInfoContainer();
 
         let pbPassword = document.getElementById(_PB_PASSWORD_ID);
         if (pbPassword) {
@@ -86,13 +157,13 @@ function preparePbPasswordRepeat() {
 function prepareShowPasswordContainer() {
     let checkShowPassword = document.getElementById(_CHECK_SHOW_PASSWORD_ID);
     checkShowPassword.addEventListener("click", function () {
-        clearErrorsContainer();
+        clearRegistrationInfoContainer();
         showPassword();
     })
 
     let aCheckShowPassword = document.getElementById(_A_CHECK_SHOW_PASSWORD_ID);
     aCheckShowPassword.addEventListener("click", function () {
-        clearErrorsContainer();
+        clearRegistrationInfoContainer();
 
         let checkShowPassword = document.getElementById(_CHECK_SHOW_PASSWORD_ID);
         checkShowPassword.checked = !checkShowPassword.checked;
@@ -122,22 +193,22 @@ function prepareSubmit() {
         // Блокируем элементы, отображаем загрузку ---
         changeReadonlyStatusInImportantElements(true);
 
-        clearErrorsContainer();
-        let divErrorsContainer = document.getElementById(_DIV_ERRORS_CONTAINER_ID);
-        if (divErrorsContainer) {
-            divErrorsContainer.replaceChildren();
+        clearRegistrationInfoContainer();
+        let divRegistrationInfoContainer = document.getElementById(_DIV_REGISTRATION_INFO_CONTAINER_ID);
+        if (divRegistrationInfoContainer) {
+            divRegistrationInfoContainer.appendChild(new LoadingElement().createDiv());
         }
-
-        let divLoading = new LoadingElement().createDiv();
-        let form = document.getElementById(_FORM_REGISTER_ID);
-        form.appendChild(divLoading);
         //---
 
         if (await checkCorrectBeforeRegister() === true) {
-            window.onbeforeunload = null;
-            formRegister.submit();
+            if (await register() === true) {
+                window.onbeforeunload = null;
+                formRegister.submit();
+            } else {
+                changeReadonlyStatusInImportantElements(false);
+            }
         } else {
-            form.removeChild(divLoading);
+            clearRegistrationInfoContainer();
             changeReadonlyStatusInImportantElements(false);
         }
     });
@@ -151,6 +222,20 @@ async function checkCorrectBeforeRegister() {
     if (tbNickname) {
         isNicknameCorrect = await _CUSTOMER_UTILS.TB_CUSTOMER_NICKNAME.checkCorrectValue(
             tbNickname, tbNickname.parentElement, _CUSTOM_TIMER_CHECKER);
+    }
+    //---
+
+    // Проверяем страну ---
+    let isCountryCorrect = false;
+
+    let divCountryContainer = document.getElementById(_DIV_COUNTRY_CONTAINER_ID);
+    let cbCountries = document.getElementById(_CB_COUNTRIES_ID);
+    let divCountryFlag = document.getElementById(_DIV_COUNTRY_FLAG_ID);
+    if (divCountryContainer && cbCountries && divCountryFlag) {
+        let cbCountryWithFlag = new ComboBoxWithFlag(
+            divCountryContainer, cbCountries, divCountryFlag);
+
+        isCountryCorrect = await _COUNTRY_UTILS.CB_COUNTRIES.checkCorrectValue(cbCountryWithFlag);
     }
     //---
 
@@ -190,16 +275,80 @@ async function checkCorrectBeforeRegister() {
     //---
 
     return (isLoginCorrect === true
+        && isCountryCorrect === true
         && isEmailCorrect === true
         && isNicknameCorrect === true
         && isPasswordCorrect === true
         && isPasswordRepeatCorrect === true);
 }
 
-function clearErrorsContainer() {
-    let divErrorsContainer = document.getElementById(_DIV_ERRORS_CONTAINER_ID);
-    if (divErrorsContainer) {
-        divErrorsContainer.replaceChildren();
+async function register() {
+    let dto = new CustomerRequestDTO();
+
+    // Получаем никнейм ---
+    let tbNickname = document.getElementById(_TB_NICKNAME_ID);
+    if (tbNickname) {
+        dto.nickname = tbNickname.value.trim();
+    }
+    //---
+
+    // Получаем код страны ---
+    let cbCountries = document.getElementById(_CB_COUNTRIES_ID);
+    if (cbCountries) {
+        dto.countryCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbCountries);
+    }
+    //---
+
+    // Получаем email ---
+    let tbEmail = document.getElementById(_TB_EMAIL_ID);
+    if (tbEmail) {
+        dto.email = tbEmail.value.trim();
+    }
+    //---
+
+    // Получаем логин ---
+    let tbLogin = document.getElementById(_TB_LOGIN_ID);
+    if (tbLogin) {
+        dto.login = tbLogin.value.trim();
+    }
+    //---
+
+    // Получаем пароль ---
+    let pbPassword = document.getElementById(_PB_PASSWORD_ID);
+    if (pbPassword) {
+        dto.password = pbPassword.value;
+    }
+    //---
+
+    let isCorrect = true;
+
+    let divRegistrationInfoContainer = document.getElementById(_DIV_REGISTRATION_INFO_CONTAINER_ID);
+    if (divRegistrationInfoContainer) {
+        let ruleElement = new RuleElement(divRegistrationInfoContainer, divRegistrationInfoContainer);
+
+        let JSONResponse = await _CUSTOMERS_API.POST.register(dto);
+        if (JSONResponse.status !== _HTTP_STATUSES.OK) {
+            isCorrect = false;
+            ruleElement.message = new CustomResponseMessage(JSONResponse.json);
+            ruleElement.ruleType = _RULE_TYPES.ERROR;
+        }
+
+        if (isCorrect === false) {
+            ruleElement.showRule();
+        } else {
+            ruleElement.removeRule();
+        }
+    } else {
+        isCorrect = false;
+    }
+
+    return isCorrect;
+}
+
+function clearRegistrationInfoContainer() {
+    let registrationInfoContainer = document.getElementById(_DIV_REGISTRATION_INFO_CONTAINER_ID);
+    if (registrationInfoContainer) {
+        registrationInfoContainer.replaceChildren();
     }
 }
 
@@ -212,6 +361,11 @@ function changeReadonlyStatusInImportantElements(isReadonly) {
     let tbNickname = document.getElementById(_TB_NICKNAME_ID);
     if (tbNickname) {
         tbNickname.readOnly = isReadonly;
+    }
+
+    let cbCountries = document.getElementById(_CB_COUNTRIES_ID);
+    if (cbCountries) {
+        cbCountries.readOnly = isReadonly;
     }
 
     let tbEmail = document.getElementById(_TB_EMAIL_ID);

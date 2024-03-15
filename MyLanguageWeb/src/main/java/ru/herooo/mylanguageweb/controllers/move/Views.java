@@ -18,7 +18,7 @@ public enum Views {
 
     CUSTOMERS_NEW ("customers/new"),
     CUSTOMERS_ENTRY ("customers/entry"),
-    CUSTOMERS_SHOW_ONE ("customers/show_one"),
+    CUSTOMERS_SHOW_INFO_ONE("customers/show_info_one"),
 
     CUSTOMER_COLLECTIONS_SHOW("customer_collections/show"),
     CUSTOMER_COLLECTIONS_NEW("customer_collections/new"),

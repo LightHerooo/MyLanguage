@@ -11,9 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.herooo.mylanguagedb.entities.Customer;
 import ru.herooo.mylanguagedb.entities.CustomerCollection;
 import ru.herooo.mylanguagedb.entities.CustomerRole;
-import ru.herooo.mylanguagedb.repositories.lang.Langs;
+import ru.herooo.mylanguagedb.entities.Lang;
 import ru.herooo.mylanguageweb.dto.other.CustomResponseMessage;
-import ru.herooo.mylanguageweb.dto.entity.customer.CustomerEntryRequestDTO;
 import ru.herooo.mylanguageweb.dto.entity.customer.CustomerMapping;
 import ru.herooo.mylanguageweb.dto.entity.customer.CustomerRequestDTO;
 import ru.herooo.mylanguageweb.dto.entity.customer.CustomerResponseDTO;
@@ -28,6 +27,7 @@ import java.util.List;
 @RequestMapping("/api/customers")
 public class CustomersRestController {
     private final CustomerRolesRestController CUSTOMER_ROLES_REST_CONTROLLER;
+    private final CountriesRestController COUNTRIES_REST_CONTROLLER;
 
     private final CustomerService CUSTOMER_SERVICE;
     private final CustomerCollectionService CUSTOMER_COLLECTION_SERVICE;
@@ -39,6 +39,7 @@ public class CustomersRestController {
 
     @Autowired
     public CustomersRestController(CustomerRolesRestController customerRolesRestController,
+                                   CountriesRestController countriesRestController,
 
                                    CustomerService customerService,
                                    CustomerCollectionService customerCollectionService,
@@ -47,6 +48,7 @@ public class CustomersRestController {
 
                                    CustomerMapping customerMapping) {
         this.CUSTOMER_ROLES_REST_CONTROLLER = customerRolesRestController;
+        this.COUNTRIES_REST_CONTROLLER = countriesRestController;
 
         this.CUSTOMER_SERVICE = customerService;
         this.CUSTOMER_COLLECTION_SERVICE = customerCollectionService;
@@ -132,19 +134,26 @@ public class CustomersRestController {
             return ResponseEntity.badRequest().body(message);
         }
 
-        Customer customer = CUSTOMER_SERVICE.register(customerRequestDTO);
-        if (customer != null) {
-            CustomerCollection collection = new CustomerCollection();
-            collection.setTitle("Английские слова");
-            collection.setCustomer(customer);
-            collection.setLang(LANG_SERVICE.find(Langs.EN));
-            CUSTOMER_COLLECTION_SERVICE.add(collection);
+        // Проверяем существования страны
+        response = COUNTRIES_REST_CONTROLLER.find(customerRequestDTO.getCountryCode());
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
 
-            collection = new CustomerCollection();
-            collection.setTitle("Русские слова");
-            collection.setCustomer(customer);
-            collection.setLang(LANG_SERVICE.find(Langs.RU));
-            CUSTOMER_COLLECTION_SERVICE.add(collection);
+        Customer customer = CUSTOMER_SERVICE.add(customerRequestDTO);
+        if (customer != null) {
+            // Создаём коллекции активных языков
+            List<Lang> langs = LANG_SERVICE.findAllForIn(true);
+            if (langs != null && langs.size() > 0) {
+                for (Lang lang: langs) {
+                    CustomerCollection collection = new CustomerCollection();
+                    collection.setCustomer(customer);
+                    collection.setTitle(String.format("Коллекция (%s)", lang.getTitle()));
+                    collection.setLang(lang);
+
+                    CUSTOMER_COLLECTION_SERVICE.add(collection);
+                }
+            }
 
             CustomerResponseDTO dto = CUSTOMER_MAPPING.mapToResponseDTO(customer);
             return ResponseEntity.ok(dto);
@@ -156,23 +165,11 @@ public class CustomersRestController {
     }
 
     @PostMapping("/entry")
-    public ResponseEntity<?> entry(@RequestBody @Valid CustomerEntryRequestDTO customerEntryRequestDTO,
-                                   BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            StringBuilder builder = new StringBuilder();
-            for (ObjectError error: bindingResult.getAllErrors()) {
-                builder.append(error.getDefaultMessage());
-                break;
-            }
-
-            CustomResponseMessage message = new CustomResponseMessage(1, builder.toString());
-            return ResponseEntity.badRequest().body(message);
-        }
-
-        Customer customer = CUSTOMER_SERVICE.entry(customerEntryRequestDTO);
+    public ResponseEntity<?> entry(@RequestBody CustomerRequestDTO dto) {
+        Customer customer = CUSTOMER_SERVICE.find(dto);
         if (customer != null) {
-            CustomerResponseDTO dto = CUSTOMER_MAPPING.mapToResponseDTO(customer);
-            return ResponseEntity.ok(dto);
+            CustomerResponseDTO responseDTO = CUSTOMER_MAPPING.mapToResponseDTO(customer);
+            return ResponseEntity.ok(responseDTO);
         } else {
             CustomResponseMessage message = new CustomResponseMessage(2, "Неправильный логин или пароль.");
             return ResponseEntity.badRequest().body(message);

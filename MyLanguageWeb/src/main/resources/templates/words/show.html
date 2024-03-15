@@ -8,8 +8,9 @@
     <link rel="stylesheet" type="text/css" href="/css/root.css">
     <link rel="stylesheet" type="text/css" href="/css/main.css">
     <link rel="stylesheet" type="text/css" href="/css/info_blocks/big_info_block.css">
+    <link rel="stylesheet" type="text/css" href="/css/info_blocks/dynamic_info_block.css">
     <link rel="stylesheet" type="text/css" href="/css/other/instruments_for_table.css">
-    <link rel="stylesheet" type="text/css" href="/css/entity/collection_info.css">
+    <link rel="stylesheet" type="text/css" href="/css/other/collection_info.css">
     <link rel="stylesheet" type="text/css" href="/css/other/loading.css">
     <link rel="stylesheet" type="text/css" href="/css/other/element_with_flag.css">
     <link rel="stylesheet" type="text/css" href="/css/templates/words/show.css">
@@ -37,17 +38,9 @@
                        th:text="'&quot;' + ${ACTIVE_WORD_STATUS.title} + '&quot;'"
                        th:title="${ACTIVE_WORD_STATUS.message}"/>
                     ресурса <span th:text="${WEB_APP_NAME}"/>.
-
-                </div>
-                <div class="big-info-block-text" th:if="${AUTH_CUSTOMER == null}">
-                    <br>
-                    <span style="font-weight: bold">
-                        <a href="/customers/entry">Авторизуйтесь</a>, чтобы получить дополнительные возможности:
+                    <span style="font-weight: bold" th:if="${AUTH_CUSTOMER == null}">
+                        <a href="/customers/entry">Авторизуйтесь</a>, чтобы получить дополнительные возможности.
                     </span>
-                    <br>
-                    - Предложение новых слов.<br>
-                    - Добавление слов в коллекции.<br>
-                    - Просмотр истории ваших предложенных слов.<br>
                 </div>
                 <br>
                 <div class="big-info-block-text statistics-container"

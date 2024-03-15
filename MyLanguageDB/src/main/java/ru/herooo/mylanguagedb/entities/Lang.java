@@ -18,14 +18,15 @@ public class Lang {
     @Column(name="code")
     private String code;
 
-    @Column(name="code_for_translate")
-    private String codeForTranslate;
-
     @Column(name="is_active_for_in")
     private boolean isActiveForIn;
 
     @Column(name="is_active_for_out")
     private boolean isActiveForOut;
+
+    @ManyToOne
+    @JoinColumn(name="country_id")
+    private Country country;
 
     @Override
     public boolean equals(Object o) {
@@ -61,14 +62,6 @@ public class Lang {
         this.code = code;
     }
 
-    public String getCodeForTranslate() {
-        return codeForTranslate;
-    }
-
-    public void setCodeForTranslate(String codeForTranslate) {
-        this.codeForTranslate = codeForTranslate;
-    }
-
     public boolean isActiveForIn() {
         return isActiveForIn;
     }
@@ -83,5 +76,13 @@ public class Lang {
 
     public void setActiveForOut(boolean activeForOut) {
         isActiveForOut = activeForOut;
+    }
+
+    public Country getCountry() {
+        return country;
+    }
+
+    public void setCountry(Country country) {
+        this.country = country;
     }
 }

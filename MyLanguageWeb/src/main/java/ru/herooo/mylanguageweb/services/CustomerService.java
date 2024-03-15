@@ -2,7 +2,6 @@ package ru.herooo.mylanguageweb.services;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.herooo.mylanguagedb.entities.Customer;
@@ -11,7 +10,6 @@ import ru.herooo.mylanguagedb.repositories.CustomerCrudRepository;
 import ru.herooo.mylanguagedb.repositories.customerrole.CustomerRoleCrudRepository;
 import ru.herooo.mylanguagedb.repositories.customerrole.CustomerRoles;
 import ru.herooo.mylanguageutils.StringUtils;
-import ru.herooo.mylanguageweb.dto.entity.customer.CustomerEntryRequestDTO;
 import ru.herooo.mylanguageweb.dto.entity.customer.CustomerMapping;
 import ru.herooo.mylanguageweb.dto.entity.customer.CustomerRequestDTO;
 import ru.herooo.mylanguageweb.global.GlobalCookieUtils;
@@ -43,14 +41,16 @@ public class CustomerService {
         this.GLOBAL_COOKIE_UTILS = globalCookieUtils;
     }
 
-    public List<Customer> getAll(String nickname, String customerRoleCode, Long numberOfItems, Long lastCustomerIdOnPreviousPage) {
+    public List<Customer> getAll(String nickname,
+                                 String customerRoleCode,
+                                 Long numberOfItems,
+                                 Long lastCustomerIdOnPreviousPage) {
         return CUSTOMER_CRUD_REPOSITORY
                 .findAllAfterFilterWithPagination(nickname, customerRoleCode, numberOfItems, lastCustomerIdOnPreviousPage);
     }
 
-    // Регистрация пользователя
-    public Customer register(CustomerRequestDTO customerRequestDTO) {
-        Customer newCustomer = CUSTOMER_MAPPING.mapToCustomer(customerRequestDTO);
+    public Customer add(CustomerRequestDTO dto) {
+        Customer newCustomer = CUSTOMER_MAPPING.mapToCustomer(dto);
 
         CustomerRole cr = CUSTOMER_ROLE_CRUD_REPOSITORY.find(CustomerRoles.CUSTOMER).orElse(null);
         newCustomer.setRole(cr);
@@ -62,7 +62,6 @@ public class CustomerService {
         return CUSTOMER_CRUD_REPOSITORY.save(newCustomer);
     }
 
-    // Поиск авторизированного пользователя
     public Customer find(HttpServletRequest request) {
         Cookie authCookie = GLOBAL_COOKIE_UTILS.getCookieInHttpRequest(request, GlobalCookies.AUTH_CODE);
         Customer customer = null;
@@ -77,16 +76,9 @@ public class CustomerService {
         return customer;
     }
 
-    // Вход пользователя
-    public Customer entry(CustomerEntryRequestDTO dto) {
+    public Customer find(CustomerRequestDTO dto) {
         return CUSTOMER_CRUD_REPOSITORY.findByLoginAndPassword(
                 dto.getLogin(), dto.getPassword()).orElse(null);
-    }
-
-    // Выход пользователя
-    public void exit(HttpServletResponse response) {
-        GLOBAL_COOKIE_UTILS.deleteCookieInHttpResponse(response, GlobalCookies.AUTH_CODE);
-        GLOBAL_COOKIE_UTILS.deleteCookieInHttpResponse(response, GlobalCookies.AUTH_ID);
     }
 
     public Customer changeRole(Customer customer, CustomerRole customerRole) {
@@ -99,40 +91,38 @@ public class CustomerService {
         return result;
     }
 
-    // Поиск по Id
     public Customer find(long id) {
         return CUSTOMER_CRUD_REPOSITORY.findById(id).orElse(null);
     }
 
-    // Поиск по логину
     public Customer findByLogin(String login) {
         return CUSTOMER_CRUD_REPOSITORY.findByLogin(login).orElse(null);
     }
 
-    // Поиск по электронной почте
     public Customer findByEmail(String email) {
         return CUSTOMER_CRUD_REPOSITORY.findByEmail(email).orElse(null);
     }
 
-    // Поиск по никнейму
     public Customer findByNickname(String nickname) {
         return CUSTOMER_CRUD_REPOSITORY.findByNickname(nickname).orElse(null);
     }
 
-    // Поиск по ключу авторизации
     public Customer findByAuthCode(String authCode) {
         return CUSTOMER_CRUD_REPOSITORY.findByAuthCode(authCode).orElse(null);
     }
 
     public String validateAuthCode(HttpServletRequest request, String authCode) {
-        try {
-            if (STRING_UTILS.isStringVoid(authCode)) {
-                // Проверяем авторизацию пользователя через куки
-                authCode = GLOBAL_COOKIE_UTILS.getCookieInHttpRequest(request, GlobalCookies.AUTH_CODE).getValue();
-            }
-        } catch (Throwable e) { }
+        String result;
 
-        return authCode;
+        try {
+            result = STRING_UTILS.isStringVoid(authCode)
+                    ? GLOBAL_COOKIE_UTILS.getCookieInHttpRequest(request, GlobalCookies.AUTH_CODE).getValue()
+                    : authCode;
+        } catch (Throwable e) {
+            result = authCode;
+        }
+
+        return result;
     }
 
     public boolean isAdmin(Customer customer) {

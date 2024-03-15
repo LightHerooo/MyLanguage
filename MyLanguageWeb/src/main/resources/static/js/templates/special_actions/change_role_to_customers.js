@@ -247,13 +247,7 @@ async function createCustomersTableRow(customer) {
 
     // Никнейм ---
     let tdNickname = document.createElement("td");
-    tdNickname.textContent = customer.nickname;
-
-    let color = customer.role.color;
-    if (color) {
-        tdNickname.style.color = "#" + color.hexCode;
-        tdNickname.style.fontWeight = "bold";
-    }
+    tdNickname.appendChild(customer.createDiv());
 
     row.appendChild(tdNickname);
     //---
@@ -285,16 +279,9 @@ async function createCustomersTableRow(customer) {
         if (JSONResponse.status === _HTTP_STATUSES.OK) {
             this.disabled = false;
 
-            let selectedOption = _COMBO_BOX_UTILS.GET_SELECTED_ITEM.byComboBox(this);
-            if (selectedOption) {
-                let color = selectedOption.style.color;
-                if (color) {
-                    tdNickname.style.color = color;
-                    tdNickname.style.fontWeight = "bold";
-                } else {
-                    tdNickname.style.cssText = "";
-                }
-            }
+            let customer = new CustomerResponseDTO(JSONResponse.json);
+            tdNickname.replaceChildren();
+            tdNickname.appendChild(customer.createDiv());
         }
     })
 

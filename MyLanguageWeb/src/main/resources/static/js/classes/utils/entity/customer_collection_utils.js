@@ -28,10 +28,6 @@ import {
 } from "../../api/customer_collections_api.js";
 
 import {
-    CssCollectionInfo
-} from "../../css/entity/css_collection_info.js";
-
-import {
     ComboBoxUtils
 } from "../combo_box_utils.js";
 
@@ -39,9 +35,18 @@ import {
     FlagElements
 } from "../../flag_elements.js";
 
+import {
+    CssMain
+} from "../../css/css_main.js";
+
+import {
+    CssRoot
+} from "../../css/css_root.js";
+
 const _CUSTOMER_COLLECTIONS_API = new CustomerCollectionsAPI();
 
-const _CSS_COLLECTION_INFO = new CssCollectionInfo();
+const _CSS_MAIN = new CssMain();
+const _CSS_ROOT = new CssRoot();
 
 const _GLOBAL_COOKIES = new GlobalCookies();
 const _HTTP_STATUSES = new HttpStatuses();
@@ -76,7 +81,8 @@ export class CustomerCollectionUtils {
             return await customerCollection.createDivInfo();
         } else {
             let divMessage = document.createElement("div");
-            divMessage.classList.add(_CSS_COLLECTION_INFO.DIV_COLLECTION_INFO_ERROR_CONTAINER_STYLE_ID);
+            divMessage.classList.add(_CSS_MAIN.DIV_CONTENT_CENTER_STANDARD_STYLE_ID);
+            divMessage.style.fontSize = _CSS_ROOT.SECOND_FONT_SIZE;
             divMessage.textContent = message;
 
             return divMessage;
@@ -118,15 +124,15 @@ class CbCustomerCollections {
             let cbCustomerCollections = comboBoxWithFlagObj.comboBox;
             let divFlag = comboBoxWithFlagObj.divFlag;
             if (cbCustomerCollections && divFlag) {
-                let langCode;
+                let country;
                 let collectionKey = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbCustomerCollections);
                 let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.findByKey(collectionKey);
                 if (JSONResponse.status === _HTTP_STATUSES.OK) {
                     let collection = new CustomerCollectionResponseDTO(JSONResponse.json);
-                    langCode = collection.lang.code;
+                    country = collection.lang.country;
                 }
 
-                _FLAG_ELEMENTS.DIV.setStyles(divFlag, langCode, true);
+                _FLAG_ELEMENTS.DIV.setStyles(divFlag, country, true);
             }
         }
     }
@@ -230,8 +236,7 @@ class CbCustomerCollections {
         if (comboBoxWithFlagObj) {
             let cbCollectionsContainer = comboBoxWithFlagObj.comboBoxWithFlagContainer;
             let cbCollections = comboBoxWithFlagObj.comboBox;
-            let divFlag = comboBoxWithFlagObj.divFlag;
-            if (cbCollectionsContainer && cbCollections && divFlag) {
+            if (cbCollectionsContainer && cbCollections) {
                 let ruleElement = new RuleElement(cbCollections, cbCollectionsContainer);
 
                 let customerCollectionKey = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbCollections);

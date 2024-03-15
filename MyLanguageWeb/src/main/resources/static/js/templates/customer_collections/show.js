@@ -280,18 +280,21 @@ async function createStatisticItems() {
         }
 
         // Сумма всех коллекций пользователя ---
-        let spanSumOfCollectionsText = document.createElement("span");
-        spanSumOfCollectionsText.style.fontWeight = "bold";
-        spanSumOfCollectionsText.textContent = "Общее количество ваших коллекций";
+        let divDataRow = document.createElement("div");
+        divDataRow.style.display = "flex";
+        divDataRow.style.flexDirection = "row";
+        divDataRow.style.gap = "5px";
 
-        let spanSumOfCollections = document.createElement("span");
-        spanSumOfCollections.textContent = `: ${sumOfCollections}`;
+        let spanInfoAboutData = document.createElement("span");
+        spanInfoAboutData.style.fontWeight = "bold";
+        spanInfoAboutData.textContent = "Общее количество ваших коллекций:";
+        divDataRow.appendChild(spanInfoAboutData);
 
-        let divSumOfCollectionsContainer = document.createElement("div");
-        divSumOfCollectionsContainer.appendChild(spanSumOfCollectionsText);
-        divSumOfCollectionsContainer.appendChild(spanSumOfCollections);
+        let spanData = document.createElement("span");
+        spanData.textContent = `${sumOfCollections}`;
+        divDataRow.appendChild(spanData);
 
-        divStatistics.unshift(divSumOfCollectionsContainer);
+        divStatistics.unshift(divDataRow);
         //---
 
         // Дополнительное сообщение, если языков больше, чем максимум (при необходимости) ---

@@ -311,18 +311,21 @@ async function createStatisticItems() {
         }
 
         // Создаём контейнер с общим количеством слов ---
-        let spanNumberOfWordsText = document.createElement("span");
-        spanNumberOfWordsText.style.fontWeight = "bold";
-        spanNumberOfWordsText.textContent = "Общее количество предложенных вами слов";
+        let divDataRow = document.createElement("div");
+        divDataRow.style.display = "flex";
+        divDataRow.style.flexDirection = "row";
+        divDataRow.style.gap = "5px";
 
-        let spanSumOfWords = document.createElement("span");
-        spanSumOfWords.textContent = `: ${sumOfCustomerWords}`;
+        let spanInfoAboutData = document.createElement("span");
+        spanInfoAboutData.style.fontWeight = "bold";
+        spanInfoAboutData.textContent = "Общее количество предложенных вами слов:";
+        divDataRow.appendChild(spanInfoAboutData);
 
-        let divSumOfCustomerWordsContainer = document.createElement("div");
-        divSumOfCustomerWordsContainer.appendChild(spanNumberOfWordsText);
-        divSumOfCustomerWordsContainer.appendChild(spanSumOfWords);
+        let spanData = document.createElement("span");
+        spanData.textContent = `${sumOfCustomerWords}`;
+        divDataRow.appendChild(spanData);
 
-        divStatistics.unshift(divSumOfCustomerWordsContainer);
+        divStatistics.unshift(divDataRow);
         //---
 
         // Генерируем общий div, добавляем его в items ---

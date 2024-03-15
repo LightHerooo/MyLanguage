@@ -37,12 +37,14 @@ public class CustomerRequestDTO {
         @Pattern(regexp = "^.*[%$?~#]+.*$",
                 message = "Пароль должен содержать хотя бы один специальный символ (%, $, ?, ~, #).")
     })
-
     @JsonProperty("password")
     private String password;
 
     @JsonProperty("role_code")
     private String roleCode;
+
+    @JsonProperty("country_code")
+    private String countryCode;
 
     @JsonProperty("auth_code")
     private String authCode;
@@ -94,6 +96,14 @@ public class CustomerRequestDTO {
 
     public void setRoleCode(String roleCode) {
         this.roleCode = roleCode;
+    }
+
+    public String getCountryCode() {
+        return countryCode;
+    }
+
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
     }
 
     public String getAuthCode() {

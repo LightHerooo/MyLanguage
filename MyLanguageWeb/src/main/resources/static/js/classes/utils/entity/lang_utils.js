@@ -200,14 +200,15 @@ class CbLangsGeneralFunctions {
             let cbLangs = comboBoxWithFlagObj.comboBox;
             let divFlag = comboBoxWithFlagObj.divFlag;
             if (cbLangs && divFlag) {
-                let langCode;
+                let country;
                 let optionId = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbLangs);
                 let JSONResponse = await _LANGS_API.GET.findByCode(optionId);
                 if (JSONResponse.status === _HTTP_STATUSES.OK) {
-                    langCode = optionId;
+                    let lang = new LangResponseDTO(JSONResponse.json);
+                    country = lang.country;
                 }
 
-                _FLAG_ELEMENTS.DIV.setStyles(divFlag, langCode, true);
+                _FLAG_ELEMENTS.DIV.setStyles(divFlag, country, true);
             }
         }
     }
@@ -314,8 +315,7 @@ class CbLangsGeneralFunctions {
         if (comboBoxWithFlagObj) {
             let cbLangsContainer = comboBoxWithFlagObj.comboBoxWithFlagContainer;
             let cbLangs = comboBoxWithFlagObj.comboBox;
-            let divFlag = comboBoxWithFlagObj.divFlag;
-            if (cbLangsContainer && cbLangs && divFlag) {
+            if (cbLangsContainer && cbLangs) {
                 let ruleElement = new RuleElement(cbLangs, cbLangsContainer);
 
                 let langCode = _COMBO_BOX_UTILS.GET_SELECTED_ITEM_ID.byComboBox(cbLangs);

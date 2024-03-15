@@ -6,7 +6,7 @@ import ru.herooo.mylanguagedb.entities.Customer;
 import ru.herooo.mylanguagedb.entities.CustomerCollection;
 import ru.herooo.mylanguagedb.entities.Lang;
 import ru.herooo.mylanguagedb.repositories.CustomerCrudRepository;
-import ru.herooo.mylanguagedb.repositories.lang.LangCrudRepository;
+import ru.herooo.mylanguagedb.repositories.LangCrudRepository;
 import ru.herooo.mylanguageutils.StringUtils;
 import ru.herooo.mylanguageweb.dto.entity.customer.CustomerMapping;
 import ru.herooo.mylanguageweb.dto.entity.lang.LangMapping;

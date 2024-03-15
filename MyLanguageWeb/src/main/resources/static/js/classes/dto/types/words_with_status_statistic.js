@@ -10,7 +10,13 @@ import {
     WordStatusResponseDTO
 } from "../entity/word_status/word_status.js";
 
+import {
+    CssDynamicInfoBlock
+} from "../../css/info_blocks/css_dynamic_info_block.js";
+
 const _WORD_STATUSES_API = new WordStatusesAPI();
+
+const _CSS_DYNAMIC_INFO_BLOCK = new CssDynamicInfoBlock();
 
 const _HTTP_STATUSES = new HttpStatuses();
 
@@ -32,16 +38,26 @@ export class WordsWithStatusStatisticResponseDTO {
 
             // Создаём основной контейнер ---
             div = document.createElement("div");
+            div.classList.add(_CSS_DYNAMIC_INFO_BLOCK.DIV_DYNAMIC_INFO_BLOCK_DATA_ROW_STYLE_ID);
             //---
 
             // Добавляем название статуса слова в контейнер ---
-            div.appendChild(wordStatus.createA());
+            let spanInfoAboutData = document.createElement("span");
+            spanInfoAboutData.classList.add(_CSS_DYNAMIC_INFO_BLOCK.SPAN_DATA_ROW_LEFT_TEXT_STYLE_ID);
+
+            let aWordStatus = wordStatus.createA();
+            aWordStatus.textContent += ":";
+            spanInfoAboutData.appendChild(aWordStatus);
+
+            div.appendChild(spanInfoAboutData);
             //---
 
             // Создаём span количества ---
-            let spanNumberOfWords = document.createElement("span");
-            spanNumberOfWords.textContent = `: ${this.numberOfWords}`;
-            div.appendChild(spanNumberOfWords);
+            let spanData = document.createElement("span");
+            spanData.classList.add(_CSS_DYNAMIC_INFO_BLOCK.SPAN_DATA_ROW_RIGHT_TEXT_STYLE_ID);
+            spanData.textContent = `${this.numberOfWords}`;
+
+            div.appendChild(spanData);
             //---
         }
 

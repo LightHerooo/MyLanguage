@@ -1,6 +1,6 @@
 div.element-with-flag-container {
     display: grid;
-    grid: 1fr / 1fr 50px;
+    grid: 1fr / 1fr 60px;
 }
 
 div.flag-container {

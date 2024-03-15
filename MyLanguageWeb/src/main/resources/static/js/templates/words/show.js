@@ -95,9 +95,15 @@ import {
     ComboBoxWithFlag
 } from "../../classes/element_with_flag/combo_box_with_flag.js";
 
+import {
+    CssDynamicInfoBlock
+} from "../../classes/css/info_blocks/css_dynamic_info_block.js";
+
 const _CUSTOMER_COLLECTIONS_API = new CustomerCollectionsAPI();
 const _WORDS_API = new WordsAPI();
 const _WORDS_IN_COLLECTION_API = new WordsInCollectionAPI();
+
+const _CSS_DYNAMIC_INFO_BLOCK = new CssDynamicInfoBlock();
 
 const _HTTP_STATUSES = new HttpStatuses();
 const _GLOBAL_COOKIES = new GlobalCookies();
@@ -365,18 +371,20 @@ async function createStatisticItems() {
         }
 
         // Создаём контейнер с общим количеством слов ---
-        let spanNumberOfWordsText = document.createElement("span");
-        spanNumberOfWordsText.style.fontWeight = "bold";
-        spanNumberOfWordsText.textContent = "Общее количество слов";
+        let divDataRow = document.createElement("div");
+        divDataRow.classList.add(_CSS_DYNAMIC_INFO_BLOCK.DIV_DYNAMIC_INFO_BLOCK_DATA_ROW_STYLE_ID);
 
-        let spanSumOfWords = document.createElement("span");
-        spanSumOfWords.textContent = `: ${sumOfWords}`;
+        let spanInfoAboutData = document.createElement("span");
+        spanInfoAboutData.classList.add(_CSS_DYNAMIC_INFO_BLOCK.SPAN_DATA_ROW_LEFT_TEXT_STYLE_ID);
+        spanInfoAboutData.textContent = "Общее количество слов:";
+        divDataRow.appendChild(spanInfoAboutData);
 
-        let divSumOfWordsContainer = document.createElement("div");
-        divSumOfWordsContainer.appendChild(spanNumberOfWordsText);
-        divSumOfWordsContainer.appendChild(spanSumOfWords);
+        let spanData = document.createElement("span");
+        spanData.classList.add(_CSS_DYNAMIC_INFO_BLOCK.SPAN_DATA_ROW_RIGHT_TEXT_STYLE_ID);
+        spanData.textContent = `${sumOfWords}`;
+        divDataRow.appendChild(spanData);
 
-        divStatistics.unshift(divSumOfWordsContainer);
+        divStatistics.unshift(divDataRow);
         //---
 
         // Генерируем общий div, добавляем его в items ---
@@ -394,25 +402,24 @@ async function createStatisticItems() {
     let dateNow = new Date();
     JSONResponse = await _WORDS_API.GET.getCountByDateOfCreate(dateNow);
     if (JSONResponse.status === _HTTP_STATUSES.OK) {
-        let numberOfWordsToday = new LongResponse(JSONResponse.json);
-        let dateNowParts = new DateParts(dateNow);
+        let divDataRow = document.createElement("div");
+        divDataRow.classList.add(_CSS_DYNAMIC_INFO_BLOCK.DIV_DYNAMIC_INFO_BLOCK_DATA_ROW_STYLE_ID);
 
-        let spanNumberOfWordsTodayText = document.createElement("span");
-        spanNumberOfWordsTodayText.style.fontWeight = "bold";
-        spanNumberOfWordsTodayText.textContent = `За сегодня (${dateNowParts.getDateStr()}) предложено`;
+        let spanInfoAboutData = document.createElement("span");
+        spanInfoAboutData.classList.add(_CSS_DYNAMIC_INFO_BLOCK.SPAN_DATA_ROW_LEFT_TEXT_STYLE_ID);
+        spanInfoAboutData.textContent = `За сегодня (${new DateParts(dateNow).getDateStr()}) предложено слов:`;
+        divDataRow.appendChild(spanInfoAboutData);
 
-        let spanNumberOfWordsTodaySum = document.createElement("span");
-        spanNumberOfWordsTodaySum.textContent = `: ${numberOfWordsToday.value}`;
-
-        let divNumberOfWordsTodayContainer = document.createElement("div");
-        divNumberOfWordsTodayContainer.appendChild(spanNumberOfWordsTodayText);
-        divNumberOfWordsTodayContainer.appendChild(spanNumberOfWordsTodaySum);
+        let spanData = document.createElement("span");
+        spanData.classList.add(_CSS_DYNAMIC_INFO_BLOCK.SPAN_DATA_ROW_RIGHT_TEXT_STYLE_ID);
+        spanData.textContent = `${new LongResponse(JSONResponse.json).value}`;
+        divDataRow.appendChild(spanData);
 
         if (statisticItems.length > 0) {
             statisticItems.push(document.createElement("br"));
         }
 
-        statisticItems.push(divNumberOfWordsTodayContainer);
+        statisticItems.push(divDataRow);
     }
     //---
 

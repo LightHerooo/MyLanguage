@@ -10,6 +10,7 @@
         <link rel="stylesheet" type="text/css" href="/css/info_blocks/big_info_block.css">
         <link rel="stylesheet" type="text/css" href="/css/info_blocks/small_info_block.css">
         <link rel="stylesheet" type="text/css" href="/css/templates/special_actions/show.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
     </head>
     <body>
         <header>
@@ -78,7 +79,7 @@
                 </a>
             </div>
 
-            <div class="small-info-block-container">
+            <div class="small-info-block-container-margin">
                 <img class="img-small-info-block" src="/images/logo/logo.png" alt="logo.png"/>
                 <h1 class="h1-small-info-block">Языки</h1>
             </div>
@@ -111,7 +112,7 @@
                 </a>
             </div>
 
-            <div class="small-info-block-container">
+            <div class="small-info-block-container-margin">
                 <img class="img-small-info-block" src="/images/workouts/brain.png" alt="brain.png"/>
                 <h1 class="h1-small-info-block">Режимы тренировок</h1>
             </div>
@@ -144,7 +145,7 @@
                 </a>
             </div>
 
-            <div class="small-info-block-container" th:if="${IS_ADMIN == true}">
+            <div class="small-info-block-container-margin" th:if="${IS_ADMIN == true}">
                 <img class="img-small-info-block" src="/images/customer_roles/customer.png" alt="customer.png"/>
                 <h1 class="h1-small-info-block">Пользователи</h1>
             </div>

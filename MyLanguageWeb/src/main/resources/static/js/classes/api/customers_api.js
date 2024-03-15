@@ -19,6 +19,7 @@ const URL_TO_API_CUSTOMERS_FIND_EXISTS = URL_TO_API_CUSTOMERS_FIND + "/exists";
 
 export class CustomersAPI {
     GET = new CustomersGETRequests();
+    POST = new CustomersPOSTRequests();
     PATCH = new CustomersPATCHRequests();
 }
 
@@ -66,6 +67,21 @@ class CustomersGETRequests {
         requestURL.searchParams.set("nickname", nickname);
 
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
+    }
+}
+
+class CustomersPOSTRequests {
+    async register(customerRequestDTO) {
+        let requestURL = new URL(URL_TO_API_CUSTOMERS + "/register");
+        let jsonStr = _JSON_UTILS.stringify({
+            'nickname': customerRequestDTO.nickname,
+            'email': customerRequestDTO.email,
+            'login': customerRequestDTO.login,
+            'password': customerRequestDTO.password,
+            'country_code': customerRequestDTO.countryCode
+        });
+
+        return await _XML_UTILS.getJSONResponseByPOSTXml(requestURL, jsonStr);
     }
 }
 

@@ -106,12 +106,12 @@ public class CustomerCollectionsRestController {
 
             Lang langOut = LANG_SERVICE.find(langOutCode);
             List<String> yandexLangsIn = yandexLangsResult
-                    .getLangsIn(langOut.getCodeForTranslate());
+                    .getLangsIn(langOut.getCode());
 
             List<CustomerCollection> result = new ArrayList<>();
             for (CustomerCollection collection: collections) {
                 for (String langCode: yandexLangsIn) {
-                    if (collection.getLang().getCodeForTranslate().equals(langCode)) {
+                    if (collection.getLang().getCode().equals(langCode)) {
                         result.add(collection);
                         break;
                     }

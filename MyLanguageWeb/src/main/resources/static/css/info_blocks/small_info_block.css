@@ -1,4 +1,4 @@
-div.small-info-block-container {
+div.small-info-block-container, div.small-info-block-container-margin  {
     background: rgba(var(--first-color-rgb), var(--opacity-standard));
     padding: 10px;
 
@@ -7,6 +7,10 @@ div.small-info-block-container {
     justify-content: center;
     align-items: center;
     gap: 10px;
+}
+
+div.small-info-block-container-margin {
+    margin-top: 50px;
 }
 
 img.img-small-info-block {

@@ -310,8 +310,8 @@ public class WorkoutItemsRestController {
 
         WorkoutItem workoutItem = WORKOUT_ITEM_SERVICE.find(dto.getId());
         String word = workoutItem.getWordTitleQuestion();
-        String langInCode = workoutItem.getWorkout().getLangIn().getCodeForTranslate();
-        String langOutCode = workoutItem.getWorkout().getLangOut().getCodeForTranslate();
+        String langInCode = workoutItem.getWorkout().getLangIn().getCode();
+        String langOutCode = workoutItem.getWorkout().getLangOut().getCode();
 
         HttpJsonResponse jsonResponse = DIC_UTILS.getHttpJsonResponse(word, langInCode, langOutCode);
         if (jsonResponse != null) {

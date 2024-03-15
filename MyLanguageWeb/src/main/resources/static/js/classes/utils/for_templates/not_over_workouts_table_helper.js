@@ -176,6 +176,7 @@ export class NotOverWorkoutsTableHelper {
         if (isCorrect === true) {
             notOverWorkoutsTable = document.createElement("table");
             notOverWorkoutsTable.classList.add(_CSS_MAIN.TABLE_STANDARD_STYLE_ID);
+            notOverWorkoutsTable.style.margin = "-10px -5px";
 
             // Создаём colgroup + trHeader
             // В зависимости от наличия данных, мы должны наращивать колонки будущей таблицы ---

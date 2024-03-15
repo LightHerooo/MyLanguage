@@ -41,20 +41,13 @@ public class Customer {
     @Column(name="auth_code")
     private String authCode;
 
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name="customer_role_id")
     private CustomerRole role;
 
-
-    public Customer() {}
-
-    public Customer(String login, String password, String nickname, CustomerRole role) {
-        this.login = login;
-        this.password = password;
-        this.nickname = nickname;
-        this.role = role;
-    }
+    @ManyToOne
+    @JoinColumn(name="country_id")
+    private Country country;
 
     public long getId() {
         return id;
@@ -124,6 +117,14 @@ public class Customer {
         this.dateOfLastVisit = dateOfLastVisit;
     }
 
+    public Country getCountry() {
+        return country;
+    }
+
+    public void setCountry(Country country) {
+        this.country = country;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -137,11 +138,21 @@ public class Customer {
                 && Objects.equals(password, customer.password)
                 && Objects.equals(email, customer.email)
                 && Objects.equals(authCode, customer.authCode)
-                && Objects.equals(role, customer.role);
+                && Objects.equals(role, customer.role)
+                && Objects.equals(country, customer.country);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, nickname, dateOfCreate, dateOfLastVisit, login, password, email, authCode, role);
+        return Objects.hash(id,
+                nickname,
+                dateOfCreate,
+                dateOfLastVisit,
+                login,
+                password,
+                email,
+                authCode,
+                role,
+                country);
     }
 }

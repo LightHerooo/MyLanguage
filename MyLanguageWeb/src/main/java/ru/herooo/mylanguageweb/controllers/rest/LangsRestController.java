@@ -101,12 +101,12 @@ public class LangsRestController {
 
             Lang langOut = LANG_SERVICE.find(langOutCode);
             List<String> yandexLangsIn = yandexLangsResult
-                    .getLangsIn(langOut.getCodeForTranslate());
+                    .getLangsIn(langOut.getCode());
 
             List<Lang> result = new ArrayList<>();
             for (Lang lang: langs) {
                 for (String langCode: yandexLangsIn) {
-                    if (lang.getCodeForTranslate().equals(langCode)) {
+                    if (lang.getCode().equals(langCode)) {
                         result.add(lang);
                         break;
                     }
@@ -136,12 +136,12 @@ public class LangsRestController {
 
             Lang langIn = LANG_SERVICE.find(langInCode);
             List<String> yandexLangsOut = yandexLangsResult
-                    .getLangsOut(langIn.getCodeForTranslate());
+                    .getLangsOut(langIn.getCode());
 
             List<Lang> result = new ArrayList<>();
             for (Lang lang: langs) {
                 for (String langCode: yandexLangsOut) {
-                    if (lang.getCodeForTranslate().equals(langCode)) {
+                    if (lang.getCode().equals(langCode)) {
                         result.add(lang);
                         break;
                     }
@@ -238,7 +238,7 @@ public class LangsRestController {
             List<String> langsForIn = result.getLangsIn();
             for (Lang lang: langs) {
                 for (String langForIn: langsForIn) {
-                    if (lang.getCodeForTranslate().equals(langForIn)) {
+                    if (lang.getCode().equals(langForIn)) {
                         LANG_SERVICE.changeActivityForIn(lang, true);
                         break;
                     }
@@ -279,7 +279,7 @@ public class LangsRestController {
             List<String> langsForOut = result.getLangsOut();
             for (Lang lang: langs) {
                 for (String langForOut: langsForOut) {
-                    if (lang.getCodeForTranslate().equals(langForOut)) {
+                    if (lang.getCode().equals(langForOut)) {
                         LANG_SERVICE.changeActivityForOut(lang, true);
                         break;
                     }
@@ -321,7 +321,7 @@ public class LangsRestController {
             for (Lang lang: langs) {
                 boolean doesntSupported = true;
                 for (String langForIn: langsForIn) {
-                    if (lang.getCodeForTranslate().equals(langForIn)) {
+                    if (lang.getCode().equals(langForIn)) {
                         doesntSupported = false;
                         break;
                     }
@@ -367,7 +367,7 @@ public class LangsRestController {
             for (Lang lang: langs) {
                 boolean doesntSupported = true;
                 for (String langForOut: langsForOut) {
-                    if (lang.getCodeForTranslate().equals(langForOut)) {
+                    if (lang.getCode().equals(langForOut)) {
                         doesntSupported = false;
                         break;
                     }
@@ -490,7 +490,7 @@ public class LangsRestController {
         response = tryToGetYandexLangsResult();
         if (response.getBody() instanceof YandexLangsResult yandexLangsResult) {
             boolean isCorrect = yandexLangsResult.areCoupleLangsSupported(
-                    langIn.getCodeForTranslate(), langOut.getCodeForTranslate());
+                    langIn.getCode(), langOut.getCode());
             if (isCorrect) {
                 CustomResponseMessage message = new CustomResponseMessage(1,
                         String.format("Пара языков '%s' - '%s' поддерживается.",

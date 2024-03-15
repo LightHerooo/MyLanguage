@@ -1,0 +1,6 @@
+div.collection-info {
+    height: 200px;
+
+    display: grid;
+    align-items: center;
+}

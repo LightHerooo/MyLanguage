@@ -10,6 +10,7 @@
     <link rel="stylesheet" type="text/css" href="/css/other/rule.css">
     <link rel="stylesheet" type="text/css" href="/css/other/loading.css">
     <link rel="stylesheet" type="text/css" href="/css/templates/customers/entry.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
 
     <script type="module" src="/js/templates/customers/entry.js"></script>
 </head>
@@ -25,7 +26,7 @@
                     <p>Вход</p>
                 </div>
                 <div class="horizontal-delimiter-margin"></div>
-                <form id="form_entry" th:method="POST" th:action="@{/customers/entry}" th:object="${CUSTOMER_ENTRY_REQUEST_DTO}"
+                <form id="form_entry" th:method="POST" th:action="@{/customers/entry}" th:object="${CUSTOMER_REQUEST_DTO}"
                       class="form-standard">
                     <div id="div_login_container" class="form-item-standard">
                         <label for="tb_login" class="label-standard">Логин:</label>
@@ -47,7 +48,7 @@
                     <input type="submit" class="submit-standard" value="Войти" id="btn_entry">
                     <div class="form-item-standard error-container"
                          th:if="${#fields.hasAnyErrors()}">
-                        <div th:each="err: ${#fields.allErrors()}" class="rule-container" id="errors_container">
+                        <div th:each="err: ${#fields.allErrors()}" class="rule-container" id="entry_info_container">
                             <img class="img-rule" src="/images/rules/error.png" alt="error.png">
                             <span class="rule-error-text" th:text="${err}"/>
                         </div>

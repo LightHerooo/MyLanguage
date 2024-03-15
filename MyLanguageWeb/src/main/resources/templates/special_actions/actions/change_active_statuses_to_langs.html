@@ -8,6 +8,7 @@
         <link rel="stylesheet" type="text/css" href="/css/root.css">
         <link rel="stylesheet" type="text/css" href="/css/main.css">
         <link rel="stylesheet" type="text/css" href="/css/info_blocks/big_info_block.css">
+        <link rel="stylesheet" type="text/css" href="/css/info_blocks/small_info_block.css">
         <link rel="stylesheet" type="text/css" href="/css/other/instruments_for_table.css">
         <link rel="stylesheet" type="text/css" href="/css/other/loading.css">
         <link rel="stylesheet" type="text/css" href="/css/templates/special_actions/actions/general.css">
@@ -94,11 +95,9 @@
                 </a>
             </div>
 
-            <div class="info-block-standard header-container">
-                <div class="horizontal-flex-container-standard">
-                    <img class="img-header" src="/images/logo/logo.png" alt="logo.png"/>
-                    <span th:text="'Языки, присутствующие в базе ' + ${WEB_APP_NAME}"></span>
-                </div>
+            <div class="small-info-block-container-margin">
+                <img class="img-small-info-block" src="/images/logo/logo.png" alt="logo.png"/>
+                <h1 class="h1-small-info-block" th:text="'Языки, присутствующие в базе ' + ${WEB_APP_NAME}"></h1>
             </div>
             <div class="instruments-for-table-container instruments-for-find-langs-container">
                 <div class="label-for-input-container">
@@ -133,11 +132,9 @@
                 <tbody id="tbody_langs"></tbody>
             </table>
 
-            <div class="info-block-standard header-container">
-                <div class="horizontal-flex-container-standard">
-                    <img class="img-header" src="/images/logo/logo.png" alt="logo.png"/>
-                    <span th:text="'Языки, отсутствующие в базе ' + ${WEB_APP_NAME}"></span>
-                </div>
+            <div class="small-info-block-container-margin">
+                <img class="img-small-info-block" src="/images/logo/logo.png" alt="logo.png"/>
+                <h1 class="h1-small-info-block" th:text="'Языки, отсутствующие в базе ' + ${WEB_APP_NAME}"></h1>
             </div>
             <div class="instruments-for-table-container instruments-for-find-new-langs-container">
                 <div class="label-for-input-container"></div>

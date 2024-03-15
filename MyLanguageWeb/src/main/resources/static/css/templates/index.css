@@ -17,7 +17,7 @@ div.actions-container {
 
     display: grid;
     grid: 1fr / 1fr 1fr 1fr 1fr;
-    gap: 20px;
+    gap: 10px;
 }
 
 div.action {

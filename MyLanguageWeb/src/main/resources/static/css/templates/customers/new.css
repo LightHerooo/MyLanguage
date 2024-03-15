@@ -1,48 +1,43 @@
 main {
     display: flex;
-    flex-direction: row;
+    justify-content: center;
     align-items: center;
 }
 
 div.registration-container {
-    width: 1000px;
+    width: 1300px;
 
-    display: grid;
-    grid: 1fr / 1fr 1fr;
-    gap: 20px;
-}
-
-div.registration-info {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-div.registration-info-header {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
+div.registration-content-container {
+    display: grid;
+    grid: 1fr/ 1fr 1fr;
     gap: 10px;
+}
 
-    font-size: var(--second-font-size);
+div.registration-info-container {
+    display: grid;
+    grid: 100px 1fr / 1fr;
+    gap: 10px;
+}
+
+div.registration-advantages-container {
+    display: grid;
+    grid-auto-flow: row;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 10px;
+}
+
+div.advantage {
+    font-size: var(--third-font-size);
     font-weight: bold;
 }
 
-img.registration-img {
+img.img-advantage {
     width: 128px;
     height: 128px;
-}
-
-div.registration-info-text {
-    margin-left: 25px;
-    margin-right: 25px;
-
-    font-size: var(--third-font-size);
-}
-
-div.error-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
 }

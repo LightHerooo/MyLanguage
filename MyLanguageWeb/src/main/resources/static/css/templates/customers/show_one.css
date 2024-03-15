@@ -1,57 +1,52 @@
-div.customer-show-one-container {
+div.customer-info-with-actions-container {
     display: grid;
-    grid: 1fr / 300px 1fr;
-    gap: 20px;
+    grid: 1fr / 1fr 300px;
+    gap: 10px;
 }
 
 div.customer-info-container {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-
-    overflow-wrap: anywhere;
+    display: grid;
+    grid: 1fr / 200px 1fr;
+    gap: 20px;
 }
 
-div.customer-info-img-container {
+div.avatar-container {
     display: flex;
     justify-content: center;
-    align-items: center;
-    padding: 10px;
 }
 
-img.customer-info-img {
-    width: 256px;
-    height: 256px;
+img.img-avatar {
+    width: 200px;
+    height: 200px;
+
+    border: 2px solid black;
+    background: white;
 }
 
-div.customer-info {
-    display: flex;
-    flex-direction: column;
-}
-
-div.customer-info-extra-container {
+div.info-container {
     display: grid;
-    grid: 256px 1fr/ 1fr;
+    grid: 50px 1fr 80px / 1fr;
     gap: 10px;
 }
 
-div.customer-info-stats {
+div.actions-container {
     display: grid;
-    grid: 1fr / 1fr 1fr 1fr;
+    grid: 1fr 1fr / 1fr;
     gap: 10px;
 }
 
-a.a-customer-button {
-    height: 50px;
-
+div.action {
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    gap: 10px;
+    gap: 5px;
+
+    font-size: var(--third-font-size);
+    font-weight: bold;
 }
 
-img.a-customer-button-img {
+img.img-action {
     width: 32px;
     height: 32px;
 }

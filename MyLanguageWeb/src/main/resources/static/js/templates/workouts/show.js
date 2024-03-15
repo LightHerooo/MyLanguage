@@ -167,7 +167,7 @@ async function createDivWorkoutTypes(workoutTypesJson) {
     divWorkoutTypes.style.gridAutoFlow = "row";
     divWorkoutTypes.style.gridTemplateColumns = gridTemplateColumnsStr;
     divWorkoutTypes.style.gridTemplateRows = gridTemplateRowsStr;
-    divWorkoutTypes.style.gap = "20px";
+    divWorkoutTypes.style.gap = "10px";
     //---
 
     for (let i = 0; i < numberOfColumns * numberOfRows; i++) {

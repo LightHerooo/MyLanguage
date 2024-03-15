@@ -271,10 +271,10 @@ async function createLangsTableRows(langsJson, yandexDictionaryLangs) {
     for (let i = 0; i < langsJson.length; i++) {
         let lang = new LangResponseDTO(langsJson[i]);
 
-        let langInIndex = yandexDictionaryLangs.langsIn.indexOf(lang.codeForTranslate);
+        let langInIndex = yandexDictionaryLangs.langsIn.indexOf(lang.code);
         let doesSupportForIn = langInIndex !== -1;
 
-        let langOutIndex = yandexDictionaryLangs.langsOut.indexOf(lang.codeForTranslate);
+        let langOutIndex = yandexDictionaryLangs.langsOut.indexOf(lang.code);
         let doesSupportForOut = langOutIndex !== -1;
 
         let row = createLangsTableRow(lang, doesSupportForIn, doesSupportForOut, i + 1);
@@ -480,7 +480,7 @@ async function tryToFillNewLangsTable() {
             for (let i = 0; i < json.length; i++) {
                 let lang = new LangResponseDTO(json[i]);
 
-                let langIndex = newLangCodes.indexOf(lang.codeForTranslate);
+                let langIndex = newLangCodes.indexOf(lang.code);
                 if (langIndex !== -1) {
                     newLangCodes.splice(langIndex, 1);
                 }

@@ -442,7 +442,7 @@ async function tryToFillStatistic() {
                     if (currentFinder.getActive() === true) {
                         divWorkoutStatistics.className = "";
                         divWorkoutStatistics.classList.add(_DIV_WORKOUT_STATISTICS_CONTAINER_ID);
-                        divWorkoutStatistics.appendChild(workoutStatistic.createDiv());
+                        divWorkoutStatistics.appendChild(workoutStatistic.createTable());
                     }
                 }
             } else {
@@ -568,8 +568,8 @@ async function createWorkoutHistoryTableRows(workoutItemsJson) {
         // Создаём основной контейнер ---
         let divRoundStatisticContainer = document.createElement("div");
         divRoundStatisticContainer.style.display = "grid";
-        divRoundStatisticContainer.style.grid = "1fr / 1fr 600px";
-        divRoundStatisticContainer.style.gap = "10px";
+        divRoundStatisticContainer.style.grid = "1fr / 1fr 1fr";
+        divRoundStatisticContainer.style.gap = "5px";
         //---
 
         // Создаём левый контейнер с номером раунда ---
@@ -599,8 +599,8 @@ async function createWorkoutHistoryTableRows(workoutItemsJson) {
         //---
 
         // Создаём правый контейнер со статистикой раунда ---
-        let divRoundStatisticRightContainer = roundStatistic.createDivOver();
-        divRoundStatisticContainer.appendChild(divRoundStatisticRightContainer);
+        let tableRoundStatistic = roundStatistic.createTableOver();
+        divRoundStatisticContainer.appendChild(tableRoundStatistic);
         //---
 
         // Создаём строку с готовым контейнером ---

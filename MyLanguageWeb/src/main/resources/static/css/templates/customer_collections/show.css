@@ -31,10 +31,3 @@ div.instruments-for-find-words-in-collection-container {
     display: grid;
     grid-template-columns: 2fr 1fr 50px;
 }
-
-div.collection-info {
-    height: 250px;
-
-    display: grid;
-    align-items: center;
-}

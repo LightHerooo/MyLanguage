@@ -1,4 +1,4 @@
-package ru.herooo.mylanguagedb.repositories.lang;
+package ru.herooo.mylanguagedb.repositories;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -8,7 +8,7 @@ import ru.herooo.mylanguagedb.entities.Lang;
 import java.util.List;
 import java.util.Optional;
 
-public interface LangCrudRepository extends CrudRepository<Lang, Long>, LangRepository<Lang> {
+public interface LangCrudRepository extends CrudRepository<Lang, Long> {
     Optional<Lang> findByCode(String code);
 
     @Query(nativeQuery = true, value =

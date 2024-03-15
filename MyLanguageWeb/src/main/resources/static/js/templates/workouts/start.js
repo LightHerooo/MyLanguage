@@ -95,7 +95,7 @@ import {
 
 import {
     CssSmallInfoBlock
-} from "../../classes/css/css_small_info_block.js";
+} from "../../classes/css/info_blocks/css_small_info_block.js";
 
 const _WORKOUTS_API = new WorkoutsAPI();
 const _WORKOUT_ITEMS_API = new WorkoutItemsAPI();
@@ -386,7 +386,7 @@ async function showCurrentRoundInfo() {
                 //---
 
                 // Добавляем контейнер статистики раунда ---
-                divRoundInfo.appendChild(_workoutRoundStatistic.createDivNotOver());
+                divRoundInfo.appendChild(_workoutRoundStatistic.createTableNotOver());
                 //---
             }
         }
@@ -827,7 +827,7 @@ async function prepareInteractionContainerForSendAnswer(workoutItem) {
             divAnswerContainer.appendChild(tbAnswer);
 
             // Исходящий флаг
-            let divOutFlag = _FLAG_ELEMENTS.DIV.create(_currentWorkout.langOut.code, true);
+            let divOutFlag = _FLAG_ELEMENTS.DIV.create(_currentWorkout.langOut.country, true);
             let divOutFlagContainer = document.createElement("div");
             divOutFlagContainer.style.paddingBottom = "5px";
             divOutFlagContainer.style.paddingRight = "5px";

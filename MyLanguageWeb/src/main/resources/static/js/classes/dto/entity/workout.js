@@ -15,30 +15,14 @@ import {
 } from "./customer_collection.js";
 
 import {
-    CssWorkoutInfo
-} from "../../css/entity/css_workout_info.js";
-
-import {
     DateParts
 } from "../../date_parts.js";
 
 import {
-    CssMain
-} from "../../css/css_main.js";
+    CssDynamicInfoBlock
+} from "../../css/info_blocks/css_dynamic_info_block.js";
 
-import {
-    WorkoutsAPI
-} from "../../api/workouts_api.js";
-
-import {
-    HttpStatuses
-} from "../../http_statuses.js";
-
-import {
-    CssRoot
-} from "../../css/css_root.js";
-
-const _CSS_WORKOUT_INFO = new CssWorkoutInfo();
+const _CSS_DYNAMIC_INFO_BLOCK = new CssDynamicInfoBlock();
 
 export class WorkoutResponseDTO {
     id;
@@ -94,16 +78,16 @@ export class WorkoutResponseDTO {
     createDivInfo() {
         // Создаём основной контейнер ---
         let div = document.createElement("div");
-        div.classList.add(_CSS_WORKOUT_INFO.DIV_WORKOUT_INFO_CONTAINER_STYLE_ID);
+        div.classList.add(_CSS_DYNAMIC_INFO_BLOCK.DIV_DYNAMIC_INFO_BLOCK_CONTAINER_STYLE_ID);
         //---
 
         // Создаём левый контейнер с изображением ---
         let imgWorkoutType = document.createElement("img");
-        imgWorkoutType.classList.add(_CSS_WORKOUT_INFO.IMG_IMG_WORKOUT_INFO_STYLE_ID);
+        imgWorkoutType.classList.add(_CSS_DYNAMIC_INFO_BLOCK.IMG_IMG_DYNAMIC_INFO_BLOCK_STYLE_ID);
         imgWorkoutType.src = this.workoutType.pathToImage;
 
         let leftDiv = document.createElement("div");
-        leftDiv.classList.add(_CSS_WORKOUT_INFO.DIV_WORKOUT_INFO_LEFT_CONTAINER_STYLE_ID);
+        leftDiv.classList.add(_CSS_DYNAMIC_INFO_BLOCK.DIV_DYNAMIC_INFO_BLOCK_LEFT_CONTAINER_STYLE_ID);
         leftDiv.appendChild(imgWorkoutType);
 
         div.appendChild(leftDiv);
@@ -111,97 +95,110 @@ export class WorkoutResponseDTO {
 
         // Создаём правый контейнер с данными ---
         let divRightContainer = document.createElement("div");
-        divRightContainer.classList.add(_CSS_WORKOUT_INFO.DIV_WORKOUT_INFO_RIGHT_CONTAINER_STYLE_ID);
+        divRightContainer.classList.add(_CSS_DYNAMIC_INFO_BLOCK.DIV_DYNAMIC_INFO_BLOCK_RIGHT_CONTAINER);
+        //---
 
-        // Заголовок
+        // Заголовок ---
         let h1WorkoutType = document.createElement("h1");
-        h1WorkoutType.classList.add(_CSS_WORKOUT_INFO.H1_WORKOUT_INFO_HEADER_STYLE_ID);
+        h1WorkoutType.classList.add(_CSS_DYNAMIC_INFO_BLOCK.H1_H1_DYNAMIC_INFO_BLOCK_STYLE_ID);
         h1WorkoutType.textContent = this.workoutType.title;
+
         divRightContainer.appendChild(h1WorkoutType);
+        //---
 
-        // Id тренировки
-        let divWorkoutInfoRow = document.createElement("div");
-        let spanLeftText = document.createElement("span");
-        spanLeftText.classList.add(_CSS_WORKOUT_INFO.SPAN_WORKOUT_INFO_LEFT_TEXT_STYLE_ID);
-        spanLeftText.textContent = "ID: ";
-        divWorkoutInfoRow.appendChild(spanLeftText);
+        // Id тренировки ---
+        let divDataRow = document.createElement("div");
+        divDataRow.classList.add(_CSS_DYNAMIC_INFO_BLOCK.DIV_DYNAMIC_INFO_BLOCK_DATA_ROW_STYLE_ID);
 
-        let spanRightText = document.createElement("span");
-        spanRightText.classList.add(_CSS_WORKOUT_INFO.SPAN_WORKOUT_INFO_RIGHT_TEXT_STYLE_ID);
-        spanRightText.textContent = this.id;
-        divWorkoutInfoRow.appendChild(spanRightText);
-        divRightContainer.appendChild(divWorkoutInfoRow);
+        let spanInfoAboutData = document.createElement("span");
+        spanInfoAboutData.classList.add(_CSS_DYNAMIC_INFO_BLOCK.SPAN_DATA_ROW_LEFT_TEXT_STYLE_ID);
+        spanInfoAboutData.textContent = "ID:";
+        divDataRow.appendChild(spanInfoAboutData);
 
-        // Дата начала
+        let spanData = document.createElement("span");
+        spanData.classList.add(_CSS_DYNAMIC_INFO_BLOCK.SPAN_DATA_ROW_RIGHT_TEXT_STYLE_ID);
+        spanData.textContent = this.id;
+        divDataRow.appendChild(spanData);
+
+        divRightContainer.appendChild(divDataRow);
+        //---
+
+        // Дата начала ---
         let dateOfStartObj = new Date(this.dateOfStart);
-        divWorkoutInfoRow = document.createElement("div");
-        spanLeftText = document.createElement("span");
-        spanLeftText.classList.add(_CSS_WORKOUT_INFO.SPAN_WORKOUT_INFO_LEFT_TEXT_STYLE_ID);
-        spanLeftText.textContent = "Дата начала: ";
-        divWorkoutInfoRow.appendChild(spanLeftText);
 
-        let dateParts = new DateParts(dateOfStartObj);
-        spanRightText = document.createElement("span");
-        spanRightText.classList.add(_CSS_WORKOUT_INFO.SPAN_WORKOUT_INFO_RIGHT_TEXT_STYLE_ID);
-        spanRightText.textContent = dateParts.getDateWithTimeStr();
-        divWorkoutInfoRow.appendChild(spanRightText);
-        divRightContainer.appendChild(divWorkoutInfoRow);
+        divDataRow = divDataRow.cloneNode(false);
 
-        // Дата окончания (при наличии)
+        spanInfoAboutData = spanInfoAboutData.cloneNode(false);
+        spanInfoAboutData.textContent = "Дата начала:";
+        divDataRow.appendChild(spanInfoAboutData);
+
+        spanData = spanData.cloneNode(false);
+        spanData.textContent = new DateParts(dateOfStartObj).getDateWithTimeStr();
+        divDataRow.appendChild(spanData);
+
+        divRightContainer.appendChild(divDataRow);
+        //--
+
+        // Дата окончания (при наличии) ---
         if (this.dateOfEnd) {
             let dateOfEndObj = new Date(this.dateOfEnd);
 
-            divWorkoutInfoRow = document.createElement("div");
-            spanLeftText = document.createElement("span");
-            spanLeftText.classList.add(_CSS_WORKOUT_INFO.SPAN_WORKOUT_INFO_LEFT_TEXT_STYLE_ID);
-            spanLeftText.textContent = "Дата окончания: ";
-            divWorkoutInfoRow.appendChild(spanLeftText);
+            divDataRow = divDataRow.cloneNode(false);
 
-            dateParts = new DateParts(dateOfEndObj);
-            spanRightText = document.createElement("span");
-            spanRightText.classList.add(_CSS_WORKOUT_INFO.SPAN_WORKOUT_INFO_RIGHT_TEXT_STYLE_ID);
-            spanRightText.textContent = dateParts.getDateWithTimeStr();
-            divWorkoutInfoRow.appendChild(spanRightText);
-            divRightContainer.appendChild(divWorkoutInfoRow);
+            spanInfoAboutData = spanInfoAboutData.cloneNode(false);
+            spanInfoAboutData.textContent = "Дата окончания:";
+            divDataRow.appendChild(spanInfoAboutData);
+
+            spanData = spanData.cloneNode(false);
+            spanData.textContent = new DateParts(dateOfEndObj).getDateWithTimeStr();
+            divDataRow.appendChild(spanData);
+
+            divRightContainer.appendChild(divDataRow);
         }
+        //---
 
-        // Начальный язык
-        divWorkoutInfoRow = document.createElement("div");
-        spanLeftText = document.createElement("span");
-        spanLeftText.classList.add(_CSS_WORKOUT_INFO.SPAN_WORKOUT_INFO_LEFT_TEXT_STYLE_ID);
-        spanLeftText.textContent = "Начальный язык: ";
-        divWorkoutInfoRow.appendChild(spanLeftText);
+        // Начальный язык ---
+        divDataRow = divDataRow.cloneNode(false);
 
-        spanRightText = this.langIn.createSpan();
-        spanRightText.classList.add(_CSS_WORKOUT_INFO.SPAN_WORKOUT_INFO_RIGHT_TEXT_STYLE_ID);
-        divWorkoutInfoRow.appendChild(spanRightText);
-        divRightContainer.appendChild(divWorkoutInfoRow);
+        spanInfoAboutData = spanInfoAboutData.cloneNode(false);
+        spanInfoAboutData.textContent = "Начальный язык:";
+        divDataRow.appendChild(spanInfoAboutData);
 
-        // Конечный язык
-        divWorkoutInfoRow = document.createElement("div");
-        spanLeftText = document.createElement("span");
-        spanLeftText.classList.add(_CSS_WORKOUT_INFO.SPAN_WORKOUT_INFO_LEFT_TEXT_STYLE_ID);
-        spanLeftText.textContent = "Конечный язык: ";
-        divWorkoutInfoRow.appendChild(spanLeftText);
+        spanData = spanData.cloneNode(false);
+        spanData.appendChild(this.langIn.createSpan());
+        divDataRow.appendChild(spanData);
 
-        spanRightText = this.langOut.createSpan();
-        spanRightText.classList.add(_CSS_WORKOUT_INFO.SPAN_WORKOUT_INFO_RIGHT_TEXT_STYLE_ID);
-        divWorkoutInfoRow.appendChild(spanRightText);
-        divRightContainer.appendChild(divWorkoutInfoRow);
+        divRightContainer.appendChild(divDataRow);
+        //---
+
+        // Конечный язык ---
+        divDataRow = divDataRow.cloneNode(false);
+
+        spanInfoAboutData = spanInfoAboutData.cloneNode(false);
+        spanInfoAboutData.textContent = "Конечный язык:";
+        divDataRow.appendChild(spanInfoAboutData);
+
+        spanData = spanData.cloneNode(false);
+        spanData.appendChild(this.langOut.createSpan());
+        divDataRow.appendChild(spanData);
+
+        divRightContainer.appendChild(divDataRow);
+        //---
 
         // Коллекция (при наличии)
         let collection = this.customerCollection;
         if (collection) {
-            divWorkoutInfoRow = document.createElement("div");
-            spanLeftText = document.createElement("span");
-            spanLeftText.classList.add(_CSS_WORKOUT_INFO.SPAN_WORKOUT_INFO_LEFT_TEXT_STYLE_ID);
-            spanLeftText.textContent = "Коллекция: ";
-            divWorkoutInfoRow.appendChild(spanLeftText);
+            divDataRow = divDataRow.cloneNode(false);
 
-            spanRightText = collection.createSpan();
-            spanRightText.classList.add(_CSS_WORKOUT_INFO.SPAN_WORKOUT_INFO_RIGHT_TEXT_STYLE_ID);
-            divWorkoutInfoRow.appendChild(spanRightText);
-            divRightContainer.appendChild(divWorkoutInfoRow);
+            spanInfoAboutData = spanInfoAboutData.cloneNode(false);
+            spanInfoAboutData.textContent = "Коллекция:";
+            divDataRow.appendChild(spanInfoAboutData);
+
+            spanData = spanData.cloneNode(false);
+            spanData.appendChild(collection.createSpan());
+            divDataRow.appendChild(spanData);
+
+            divRightContainer.appendChild(divDataRow);
         }
 
         div.appendChild(divRightContainer);

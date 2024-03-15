@@ -2,27 +2,41 @@ package ru.herooo.mylanguageweb.dto.entity.customer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.herooo.mylanguagedb.entities.Country;
 import ru.herooo.mylanguagedb.entities.Customer;
 import ru.herooo.mylanguagedb.entities.CustomerRole;
 import ru.herooo.mylanguageutils.StringUtils;
+import ru.herooo.mylanguageweb.dto.entity.country.CountryMapping;
+import ru.herooo.mylanguageweb.dto.entity.country.CountryResponseDTO;
 import ru.herooo.mylanguageweb.dto.entity.customerrole.CustomerRoleMapping;
 import ru.herooo.mylanguageweb.dto.entity.customerrole.CustomerRoleResponseDTO;
+import ru.herooo.mylanguageweb.services.CountryService;
 import ru.herooo.mylanguageweb.services.CustomerRoleService;
 
 @Service
 public class CustomerMapping {
-
     private final CustomerRoleService CUSTOMER_ROLE_SERVICE;
+    private final CountryService COUNTRY_SERVICE;
+
     private final CustomerRoleMapping CUSTOMER_ROLE_MAPPING;
+    private final CountryMapping COUNTRY_MAPPING;
 
     private final StringUtils STRING_UTILS;
 
     @Autowired
     public CustomerMapping(CustomerRoleService customerRoleService,
+                           CountryService countryService,
+
                            CustomerRoleMapping customerRoleMapping,
+                           CountryMapping countryMapping,
+
                            StringUtils stringUtils) {
         this.CUSTOMER_ROLE_SERVICE = customerRoleService;
+        this.COUNTRY_SERVICE = countryService;
+
         this.CUSTOMER_ROLE_MAPPING = customerRoleMapping;
+        this.COUNTRY_MAPPING = countryMapping;
+
         this.STRING_UTILS = stringUtils;
     }
 
@@ -68,6 +82,14 @@ public class CustomerMapping {
             }
         }
 
+        String countryCode = dto.getCountryCode();
+        if (STRING_UTILS.isNotStringVoid(countryCode)) {
+            Country country = COUNTRY_SERVICE.find(countryCode);
+            if (country != null) {
+                oldCustomer.setCountry(country);
+            }
+        }
+
         return oldCustomer;
     }
 
@@ -81,6 +103,11 @@ public class CustomerMapping {
         if (customer.getRole() != null) {
             CustomerRoleResponseDTO role = CUSTOMER_ROLE_MAPPING.mapToResponseDTO(customer.getRole());
             dto.setRole(role);
+        }
+
+        if (customer.getCountry() != null) {
+            CountryResponseDTO country = COUNTRY_MAPPING.mapToResponseDTO(customer.getCountry());
+            dto.setCountry(country);
         }
 
         return dto;

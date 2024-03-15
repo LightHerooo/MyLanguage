@@ -19,7 +19,7 @@ const _CHECK_SHOW_PASSWORD_ID = "check_show_password";
 const _A_CHECK_SHOW_PASSWORD_ID = "a_check_show_password";
 const _FORM_ENTRY_ID = "form_entry";
 const _BTN_ENTRY_ID = "btn_entry";
-const _DIV_ERRORS_CONTAINER_ID = "errors_container";
+const _DIV_ENTRY_INFO_CONTAINER_ID = "entry_info_container";
 
 window.onload = function () {
     prepareTbLogin();
@@ -31,7 +31,7 @@ window.onload = function () {
 function prepareTbLogin() {
     let tbLogin = document.getElementById(_TB_LOGIN_ID);
     tbLogin.addEventListener("input", function () {
-        clearErrorsContainer();
+        clearEntryInfoContainer();
         checkCorrectLogin();
     });
 }
@@ -39,7 +39,7 @@ function prepareTbLogin() {
 function preparePbPassword() {
     let tbPassword = document.getElementById(_PB_PASSWORD_ID);
     tbPassword.addEventListener("input", function () {
-        clearErrorsContainer();
+        clearEntryInfoContainer();
         checkCorrectPassword();
     });
 }
@@ -47,13 +47,13 @@ function preparePbPassword() {
 function prepareShowPasswordContainer() {
     let checkShowPassword = document.getElementById(_CHECK_SHOW_PASSWORD_ID);
     checkShowPassword.addEventListener("click", function () {
-        clearErrorsContainer();
+        clearEntryInfoContainer();
         showPassword();
     });
 
     let aCheckShowPassword = document.getElementById(_A_CHECK_SHOW_PASSWORD_ID);
     aCheckShowPassword.addEventListener("click", function () {
-        clearErrorsContainer();
+        clearEntryInfoContainer();
 
         let checkShowPassword = document.getElementById(_CHECK_SHOW_PASSWORD_ID);
         checkShowPassword.checked = !checkShowPassword.checked;
@@ -83,15 +83,12 @@ function prepareSubmit() {
         // Блокируем элементы, отображаем загрузку ---
         changeReadonlyStatusInImportantElements(true);
 
-        clearErrorsContainer();
-        let divErrorsContainer = document.getElementById(_DIV_ERRORS_CONTAINER_ID);
-        if (divErrorsContainer) {
-            divErrorsContainer.replaceChildren();
-        }
-
+        clearEntryInfoContainer();
         let divLoading = new LoadingElement().createDiv();
         let form = document.getElementById(_FORM_ENTRY_ID);
-        form.appendChild(divLoading);
+        if (form) {
+            form.appendChild(divLoading);
+        }
         //---
 
         if (checkCorrectBeforeEntry() === true) {
@@ -160,10 +157,10 @@ function checkCorrectBeforeEntry() {
         && isPasswordCorrect === true);
 }
 
-function clearErrorsContainer() {
-    let divErrorsContainer = document.getElementById(_DIV_ERRORS_CONTAINER_ID);
-    if (divErrorsContainer) {
-        divErrorsContainer.replaceChildren();
+function clearEntryInfoContainer() {
+    let divEntryInfoContainer = document.getElementById(_DIV_ENTRY_INFO_CONTAINER_ID);
+    if (divEntryInfoContainer) {
+        divEntryInfoContainer.replaceChildren();
     }
 }
 

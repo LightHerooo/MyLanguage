@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.herooo.mylanguagedb.entities.*;
 import ru.herooo.mylanguagedb.repositories.CustomerCollectionCrudRepository;
 import ru.herooo.mylanguagedb.repositories.CustomerCrudRepository;
-import ru.herooo.mylanguagedb.repositories.lang.LangCrudRepository;
+import ru.herooo.mylanguagedb.repositories.LangCrudRepository;
 import ru.herooo.mylanguagedb.repositories.workouttype.WorkoutTypeCrudRepository;
 import ru.herooo.mylanguageutils.StringUtils;
 import ru.herooo.mylanguageweb.dto.entity.customer.CustomerMapping;
