@@ -21,6 +21,9 @@ public class CustomerCollectionResponseDTO {
     @JsonProperty("date_of_create")
     private LocalDateTime dateOfCreate;
 
+    @JsonProperty("is_active_for_author")
+    private boolean isActiveForAuthor;
+
     @JsonProperty("customer")
     private CustomerResponseDTO customer;
 
@@ -65,5 +68,13 @@ public class CustomerCollectionResponseDTO {
 
     public void setLang(LangResponseDTO lang) {
         this.lang = lang;
+    }
+
+    public boolean getIsActiveForAuthor() {
+        return isActiveForAuthor;
+    }
+
+    public void setIsActiveForAuthor(boolean activeForAuthor) {
+        isActiveForAuthor = activeForAuthor;
     }
 }

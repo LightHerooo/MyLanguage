@@ -11,11 +11,6 @@ import {
 } from "../../classes/global_cookies.js";
 
 import {
-    changeEndOfTheWordByNumberOfItems,
-    EndOfTheWord
-} from "../../classes/end_of_the_word.js";
-
-import {
     WordInCollectionRequestDTO,
     WordInCollectionResponseDTO
 } from "../../classes/dto/entity/word_in_collection.js";
@@ -61,10 +56,6 @@ import {
 } from "../../classes/utils/text_box_utils.js";
 
 import {
-    CustomerCollectionsWithLangStatisticResponseDTO
-} from "../../classes/dto/types/customer_collections_with_lang_statistic.js";
-
-import {
     AButtonImgSizes
 } from "../../classes/a_buttons/a_button_img_sizes.js";
 
@@ -92,16 +83,11 @@ import {
     ButtonUtils
 } from "../../classes/utils/button_utils.js";
 
-import {
-    CssCollectionInfo
-} from "../../classes/css/other/css_collection_info.js";
-
 const _CUSTOMER_COLLECTIONS_API = new CustomerCollectionsAPI();
 const _WORDS_IN_COLLECTION_API = new WordsInCollectionAPI();
 
 const _CSS_MAIN = new CssMain();
 const _CSS_ROOT = new CssRoot();
-const _CSS_COLLECTION_INFO = new CssCollectionInfo();
 
 const _HTTP_STATUSES = new HttpStatuses();
 const _GLOBAL_COOKIES = new GlobalCookies();
@@ -239,9 +225,9 @@ function showLoadingInStatistic() {
     let divStatistics = document.getElementById(_DIV_COLLECTIONS_STATISTICS_CONTAINER_ID);
     if (divStatistics) {
         divStatistics.replaceChildren();
+        divStatistics.className = "";
+        divStatistics.classList.add(_CSS_MAIN.DIV_CONTENT_CENTER_STANDARD_STYLE_ID);
 
-        divStatistics.style.display = "grid";
-        divStatistics.style.alignItems = "center";
         divStatistics.appendChild(new LoadingElement().createDiv());
     }
 }
@@ -266,102 +252,32 @@ function startToFindStatistic() {
 }
 
 async function tryToFillStatistic() {
-    let currentFinder = _CUSTOM_TIMER_COLLECTION_INFO_FINDER;
-    let statisticItems = await createStatisticItems();
+    let currentFinder = _CUSTOM_TIMER_STATISTIC_FINDER;
 
-    let divStatistics = document.getElementById(_DIV_COLLECTIONS_STATISTICS_CONTAINER_ID);
-    if (divStatistics && currentFinder.getActive() === true) {
-        divStatistics.replaceChildren();
-        divStatistics.style.cssText = "";
-        for (let i = 0; i < statisticItems.length; i++) {
-            if (currentFinder.getActive() !== true) break;
-            divStatistics.appendChild(statisticItems[i]);
-        }
-    }
-}
+    let divCollectionsStatisticsContainer =
+        document.getElementById(_DIV_COLLECTIONS_STATISTICS_CONTAINER_ID);
+    if (divCollectionsStatisticsContainer) {
+        let divStatistic = await _CUSTOMER_COLLECTION_UTILS.createDivStatistic();
+        if (divStatistic && currentFinder.getActive() === true) {
+            divCollectionsStatisticsContainer.replaceChildren();
+            divCollectionsStatisticsContainer.className = "";
+            if (currentFinder.getActive() === true) {
+                divCollectionsStatisticsContainer.appendChild(divStatistic);
+            }
+        } else {
+            let divMessage = document.createElement("div");
+            divMessage.style.fontSize = _CSS_ROOT.SECOND_FONT_SIZE;
+            divMessage.style.padding = "30px";
+            divMessage.textContent = "Не удалось отобразить статистику.";
 
-async function createStatisticItems() {
-    let statisticItems = [];
-
-    // Генерируем статистику по всем коллекциям слов с языком ---
-    let authId = _GLOBAL_COOKIES.AUTH_ID.getValue();
-    let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.getCustomerCollectionsWithLangStatisticsByCustomerId(authId);
-    if (JSONResponse.status === _HTTP_STATUSES.OK) {
-        let divStatistics = [];
-        let sumOfCollections = 0n;
-        let extraSumOfCollections = 0n;
-        let extraSumOfLangs = 0n;
-
-        let json = JSONResponse.json;
-        for (let i = 0; i < json.length; i++) {
-            let customerCollectionsWithLangStatistic =
-                new CustomerCollectionsWithLangStatisticResponseDTO(json[i]);
-
-            sumOfCollections += customerCollectionsWithLangStatistic.numberOfCollections;
-            if (divStatistics.length >= _MAX_NUMBER_OF_COLLECTIONS_FOR_STATISTICS) {
-                extraSumOfCollections += customerCollectionsWithLangStatistic.numberOfCollections;
-                extraSumOfLangs++;
-            } else {
-                let divStatistic = await customerCollectionsWithLangStatistic.createDiv();
-                if (divStatistic) {
-                    divStatistics.push(divStatistic);
+            if (currentFinder.getActive() === true) {
+                divCollectionsStatisticsContainer.replaceChildren();
+                if (currentFinder.getActive() === true) {
+                    divCollectionsStatisticsContainer.appendChild(divMessage);
                 }
             }
         }
-
-        // Сумма всех коллекций пользователя ---
-        let divDataRow = document.createElement("div");
-        divDataRow.style.display = "flex";
-        divDataRow.style.flexDirection = "row";
-        divDataRow.style.gap = "5px";
-
-        let spanInfoAboutData = document.createElement("span");
-        spanInfoAboutData.style.fontWeight = "bold";
-        spanInfoAboutData.textContent = "Общее количество ваших коллекций:";
-        divDataRow.appendChild(spanInfoAboutData);
-
-        let spanData = document.createElement("span");
-        spanData.textContent = `${sumOfCollections}`;
-        divDataRow.appendChild(spanData);
-
-        divStatistics.unshift(divDataRow);
-        //---
-
-        // Дополнительное сообщение, если языков больше, чем максимум (при необходимости) ---
-        if (extraSumOfCollections > 0n
-            && extraSumOfLangs > 0n) {
-            let collectionsWord = changeEndOfTheWordByNumberOfItems("коллекция", extraSumOfCollections,
-                new EndOfTheWord("й", 1),
-                new EndOfTheWord("и", 1),
-                null,
-                new EndOfTheWord("й", 1));
-
-            let langsWord = changeEndOfTheWordByNumberOfItems("язык", extraSumOfLangs,
-                new EndOfTheWord("ах", 0),
-                new EndOfTheWord("ах", 0),
-                new EndOfTheWord("е", 0),
-                new EndOfTheWord("ах", 0));
-
-            let divExtraStatistic = document.createElement("span");
-            divExtraStatistic.style.fontWeight = "bold";
-            divExtraStatistic.textContent = `...и ещё ${extraSumOfCollections} ${collectionsWord} на 
-                    ${extraSumOfLangs} ${langsWord}.`;
-
-            divStatistics.push(divExtraStatistic);
-        }
-        //---
-
-        let div = document.createElement("div");
-        for (let i = 0; i < divStatistics.length; i++) {
-            div.appendChild(divStatistics[i]);
-        }
-
-        statisticItems.push(div);
-        statisticItems.push(document.createElement("br"));
     }
-    //---
-
-    return statisticItems;
 }
 //---
 
@@ -370,11 +286,6 @@ function showLoadingInCollectionInfo() {
     let divCollectionInfo = document.getElementById(_DIV_COLLECTION_INFO_ID);
     if (divCollectionInfo) {
         divCollectionInfo.replaceChildren();
-
-        divCollectionInfo.className = "";
-        divCollectionInfo.classList.add(_CSS_MAIN.DIV_INFO_BLOCK_STANDARD_STYLE_ID);
-        divCollectionInfo.classList.add(_CSS_COLLECTION_INFO.DIV_COLLECTION_INFO_STYLE_ID);
-
         divCollectionInfo.appendChild(new LoadingElement().createDiv());
     }
 }
@@ -417,25 +328,10 @@ async function tryToFillCollectionInfo() {
             let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.findById(collectionId);
             if (JSONResponse.status === _HTTP_STATUSES.OK) {
                 let customerCollection = new CustomerCollectionResponseDTO(JSONResponse.json);
-                let divCollectionInfo = await customerCollection.tryToCreateDivInfoWithBtnDelete(
-                    function() {
-                        changeDisableStatusToFinderInstruments(true);
-                        showLoadingInTable();
-                    },
-                    function () {
-                        let btnRefresh = document.getElementById(_BTN_REFRESH_ID);
-                        if (btnRefresh) {
-                            _BUTTON_UTILS.callClickEvent(btnRefresh);
-                        }
-                    },
-                    function () {
-                        startToFindWordsInCollection();
-                    }
-                );
+                let divCollectionInfo = await customerCollection.tryToCreateDivInfoAfterValidate();
 
                 if (currentFinder.getActive() === true) {
                     divCollectionInfoContainer.replaceChildren();
-                    divCollectionInfoContainer.style.alignItems = "normal";
                     if (currentFinder.getActive() === true) {
                         divCollectionInfoContainer.appendChild(divCollectionInfo);
                     }
@@ -496,6 +392,16 @@ function prepareWordsInCollectionFinder() {
             let authId = _GLOBAL_COOKIES.AUTH_ID.getValue();
             let JSONResponse = await
                 _CUSTOMER_COLLECTIONS_API.GET.validateIsCustomerCollectionAuthor(authId, collectionId);
+            if (JSONResponse.status !== _HTTP_STATUSES.OK) {
+                readyToFill = false;
+                setMessageInsideTable(new CustomResponseMessage(JSONResponse.json).text);
+            }
+        }
+        //---
+
+        // Коллекция должна быть активна для автора ---
+        if (readyToFill === true) {
+            let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.validateIsActiveForAuthorByCollectionId(collectionId);
             if (JSONResponse.status !== _HTTP_STATUSES.OK) {
                 readyToFill = false;
                 setMessageInsideTable(new CustomResponseMessage(JSONResponse.json).text);

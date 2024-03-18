@@ -16,10 +16,20 @@ const _IMAGE_SOURCES = new ImageSources();
 export class AButtons {
     A_BUTTON_DISABLED = new AButtonDisabled();
     A_BUTTON_ACCEPT = new AButtonAccept();
+    A_BUTTON_ADD = new AButtonAdd();
+    A_BUTTON_WARNING = new AButtonWarning();
     A_BUTTON_DENY = new AButtonDeny();
+    A_BUTTON_DENY_DOUBLE_CLICK = new AButtonDenyDoubleClick();
     A_BUTTON_ARROW_DOWN = new AButtonArrowDown();
     A_BUTTON_ARROW_UP = new AButtonArrowUp();
     A_BUTTON_ARROW_RIGHT = new AButtonArrowRight();
+
+    callClickEvent(aButtonElement) {
+        if (aButtonElement) {
+            let event = new Event('click');
+            aButtonElement.dispatchEvent(event);
+        }
+    }
 }
 
 class GeneralFunctions {
@@ -27,10 +37,10 @@ class GeneralFunctions {
         let multiply = 1;
 
         let aButtonImgSizes = new AButtonImgSizes();
-        switch (aButtonImgSize) {
-            case aButtonImgSizes.SIZE_16: multiply = 1; break;
-            case aButtonImgSizes.SIZE_32: multiply = 2; break;
-            case aButtonImgSizes.SIZE_64: multiply = 3; break;
+        switch (aButtonImgSize.SIZE) {
+            case aButtonImgSizes.SIZE_16.SIZE: multiply = 1; break;
+            case aButtonImgSizes.SIZE_32.SIZE: multiply = 2; break;
+            case aButtonImgSizes.SIZE_64.SIZE: multiply = 3; break;
         }
 
         return multiply;
@@ -80,7 +90,57 @@ class AButtonAccept {
         aBtnElement.style.padding = this.#GENERAL_FUNCTIONS.calculatePadding(aButtonImgSize);
 
         let img = document.createElement("img");
+        img.src = _IMAGE_SOURCES.OTHER.ACCEPT;
+        img.width = aButtonImgSize.SIZE;
+        img.height = aButtonImgSize.SIZE;
+
+        aBtnElement.replaceChildren();
+        aBtnElement.appendChild(img);
+    }
+}
+
+class AButtonAdd {
+    #GENERAL_FUNCTIONS = new GeneralFunctions();
+
+    createA(aButtonImgSize) {
+        let aBtn = document.createElement("a");
+        this.setStyles(aBtn, aButtonImgSize);
+        return aBtn;
+    }
+
+    setStyles(aBtnElement, aButtonImgSize) {
+        aBtnElement.className = "";
+        aBtnElement.style.cssText = null;
+        aBtnElement.classList.add(_CSS_MAIN.A_BUTTON_ACCEPT_STANDARD_STYLE_ID);
+        aBtnElement.style.padding = this.#GENERAL_FUNCTIONS.calculatePadding(aButtonImgSize);
+
+        let img = document.createElement("img");
         img.src = _IMAGE_SOURCES.OTHER.ADD;
+        img.width = aButtonImgSize.SIZE;
+        img.height = aButtonImgSize.SIZE;
+
+        aBtnElement.replaceChildren();
+        aBtnElement.appendChild(img);
+    }
+}
+
+class AButtonWarning {
+    #GENERAL_FUNCTIONS = new GeneralFunctions();
+
+    createA(aButtonImgSize) {
+        let aBtn = document.createElement("a");
+        this.setStyles(aBtn, aButtonImgSize);
+        return aBtn;
+    }
+
+    setStyles(aBtnElement, aButtonImgSize) {
+        aBtnElement.className = "";
+        aBtnElement.style.cssText = null;
+        aBtnElement.classList.add(_CSS_MAIN.A_BUTTON_WARNING_STANDARD_STYLE_ID);
+        aBtnElement.style.padding = this.#GENERAL_FUNCTIONS.calculatePadding(aButtonImgSize);
+
+        let img = document.createElement("img");
+        img.src = _IMAGE_SOURCES.OTHER.QUESTION;
         img.width = aButtonImgSize.SIZE;
         img.height = aButtonImgSize.SIZE;
 
@@ -111,6 +171,30 @@ class AButtonDeny {
 
         aBtnElement.replaceChildren();
         aBtnElement.appendChild(img);
+    }
+}
+
+class AButtonDenyDoubleClick {
+    createA(aButtonImgSize, afterDoubleClickFunction) {
+        let aBtn = document.createElement("a");
+        this.setStyles(aBtn, aButtonImgSize, afterDoubleClickFunction);
+        return aBtn;
+    }
+
+    setStyles(aButtonElement, aButtonImgSize, afterDoubleClickFunction) {
+        const A_BUTTON_DENY = new AButtonDeny();
+        const A_BUTTON_WARNING = new AButtonWarning();
+
+        A_BUTTON_DENY.setStyles(aButtonElement, aButtonImgSize);
+        aButtonElement.onclick = function() {
+            A_BUTTON_WARNING.setStyles(this, aButtonImgSize);
+            this.title = "Нажмите на кнопку ещё раз, чтобы подтвердить удаление";
+
+            this.onclick = function() {
+                A_BUTTON_DENY.setStyles(aButtonElement, aButtonImgSize);
+                afterDoubleClickFunction();
+            }
+        }
     }
 }
 

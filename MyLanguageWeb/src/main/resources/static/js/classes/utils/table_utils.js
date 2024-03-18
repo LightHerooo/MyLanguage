@@ -104,11 +104,11 @@ export class TableUtils {
         return trShowMore;
     }
 
-    createElementBetweenTwoHorizontalDelimiters(differentElement) {
+    createElementBetweenTwoHorizontalDelimiters(tableElement) {
         let div = document.createElement("div");
         div.style.display = "grid";
-        div.style.grid = "30px 1fr 30px / 1fr";
-        div.style.marginBottom = "-15px";
+        div.style.grid = "20px 1fr 20px / 1fr";
+        div.style.marginBottom = "-5px";
 
         // Создаём разделитель ---
         let divDelimiter = document.createElement("div");
@@ -123,7 +123,7 @@ export class TableUtils {
         //---
 
         div.appendChild(divDelimiterContainer.cloneNode(true));
-        div.appendChild(differentElement);
+        div.appendChild(tableElement);
         div.appendChild(divDelimiterContainer.cloneNode(true));
 
         return div;

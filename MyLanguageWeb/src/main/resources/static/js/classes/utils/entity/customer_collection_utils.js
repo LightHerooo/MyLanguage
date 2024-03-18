@@ -38,8 +38,26 @@ import {
 import {
     BigIntUtils
 } from "../bigint_utils.js";
+import {
+    CustomerCollectionsWithLangStatisticResponseDTO
+} from "../../dto/types/customer_collections_with_lang_statistic.js";
+
+import {
+    changeEndOfTheWordByNumberOfItems,
+    EndOfTheWord
+} from "../../end_of_the_word.js";
+
+import {
+    CssDynamicInfoBlock
+} from "../../css/info_blocks/css_dynamic_info_block.js";
+
+import {
+    LongResponse
+} from "../../dto/other/long_response.js";
 
 const _CUSTOMER_COLLECTIONS_API = new CustomerCollectionsAPI();
+
+const _CSS_DYNAMIC_INFO_BLOCK = new CssDynamicInfoBlock();
 
 const _GLOBAL_COOKIES = new GlobalCookies();
 const _HTTP_STATUSES = new HttpStatuses();
@@ -48,9 +66,165 @@ const _COMBO_BOX_UTILS = new ComboBoxUtils();
 const _FLAG_ELEMENTS = new FlagElements();
 const _BIGINT_UTILS = new BigIntUtils();
 
+const _MAX_NUMBER_OF_COLLECTIONS_FOR_STATISTICS = 5;
+
 export class CustomerCollectionUtils {
     CB_CUSTOMER_COLLECTIONS = new CbCustomerCollections();
     TB_CUSTOMER_COLLECTION_TITLE = new TbCustomerCollectionTitle();
+
+    async createDivStatistic() {
+        let div;
+
+        let authId = _GLOBAL_COOKIES.AUTH_ID.getValue();
+        let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET
+            .getCustomerCollectionsWithLangStatisticsByCustomerId(authId);
+        if (JSONResponse.status === _HTTP_STATUSES.OK) {
+            div = document.createElement("div");
+
+            let sumOfCollections = 0n;
+            let extraSumOfCollections = 0n;
+            let extraSumOfLangs = 0n;
+
+            let json = JSONResponse.json;
+            let statisticsByAllLangs = [];
+            for (let i = 0; i < json.length; i++) {
+                let customerCollectionsWithLangStatistic =
+                    new CustomerCollectionsWithLangStatisticResponseDTO(json[i]);
+
+                sumOfCollections += customerCollectionsWithLangStatistic.numberOfCollections;
+
+                if (statisticsByAllLangs.length >= _MAX_NUMBER_OF_COLLECTIONS_FOR_STATISTICS) {
+                    extraSumOfCollections += customerCollectionsWithLangStatistic.numberOfCollections;
+                    extraSumOfLangs++;
+                } else {
+                    let divStatistic = await customerCollectionsWithLangStatistic.createDiv();
+                    if (divStatistic) {
+                        statisticsByAllLangs.push(divStatistic);
+                    }
+                }
+            }
+
+            // Сумма всех коллекций пользователя ---
+            let divDataRow = document.createElement("div");
+            divDataRow.classList.add(_CSS_DYNAMIC_INFO_BLOCK.DIV_DYNAMIC_INFO_BLOCK_DATA_ROW_STYLE_ID);
+
+            let spanInfoAboutData = document.createElement("span");
+            spanInfoAboutData.classList.add(_CSS_DYNAMIC_INFO_BLOCK.SPAN_DATA_ROW_LEFT_TEXT_STYLE_ID);
+            spanInfoAboutData.textContent = "Общее количество ваших коллекций:";
+            divDataRow.appendChild(spanInfoAboutData);
+
+            let spanData = document.createElement("span");
+            spanData.classList.add(_CSS_DYNAMIC_INFO_BLOCK.SPAN_DATA_ROW_RIGHT_TEXT_STYLE_ID);
+            spanData.textContent = `${sumOfCollections}`;
+            divDataRow.appendChild(spanData);
+
+            div.appendChild(divDataRow);
+            //---
+
+            // Заполняем статистику по каждому языку ---
+            for (let i = 0; i < statisticsByAllLangs.length; i++) {
+                div.appendChild(statisticsByAllLangs[i]);
+            }
+            //---
+
+            // Дополнительное сообщение, если языков больше, чем максимум (при необходимости) ---
+            if (extraSumOfCollections > 0n
+                && extraSumOfLangs > 0n) {
+                let collectionsWord = changeEndOfTheWordByNumberOfItems("коллекция", extraSumOfCollections,
+                    new EndOfTheWord("й", 1),
+                    new EndOfTheWord("и", 1),
+                    null,
+                    new EndOfTheWord("й", 1));
+
+                let langsWord = changeEndOfTheWordByNumberOfItems("язык", extraSumOfLangs,
+                    new EndOfTheWord("ах", 0),
+                    new EndOfTheWord("ах", 0),
+                    new EndOfTheWord("е", 0),
+                    new EndOfTheWord("ах", 0));
+
+                divDataRow = divDataRow.cloneNode(false);
+
+                spanInfoAboutData = spanInfoAboutData.cloneNode(false);
+                spanInfoAboutData.textContent =
+                    `...и ещё ${extraSumOfCollections} ${collectionsWord} на 
+                    ${extraSumOfLangs} ${langsWord}.`;
+                divDataRow.appendChild(spanInfoAboutData);
+
+                div.appendChild(divDataRow);
+            }
+            //---
+
+            div.appendChild(document.createElement("br"));
+
+            // Количество активных/неактивных коллекций ---
+            let sumOfActiveCollections = 0n;
+            JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.getCountForAuthor(authId, true);
+            if (JSONResponse.status === _HTTP_STATUSES.OK) {
+                sumOfActiveCollections = new LongResponse(JSONResponse.json).value;
+            }
+
+            let sumOfInactiveCollections = 0n;
+            JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.getCountForAuthor(authId, false);
+            if (JSONResponse.status === _HTTP_STATUSES.OK) {
+                sumOfInactiveCollections = new LongResponse(JSONResponse.json).value;
+            }
+            //---
+
+            // Отображаем сообщение(-я) в зависимости от количества активных/неактивных коллекций ---
+            if (sumOfActiveCollections > 0n && sumOfInactiveCollections === 0n) {
+                divDataRow = divDataRow.cloneNode(false);
+
+                spanInfoAboutData = spanInfoAboutData.cloneNode(false);
+                spanInfoAboutData.textContent = "Все коллекции активны!";
+                divDataRow.appendChild(spanInfoAboutData);
+
+                div.appendChild(divDataRow);
+                div.appendChild(document.createElement("br"));
+            } else if (sumOfInactiveCollections > 0n && sumOfActiveCollections === 0n) {
+                divDataRow = divDataRow.cloneNode(false);
+
+                spanInfoAboutData = spanInfoAboutData.cloneNode(false);
+                spanInfoAboutData.textContent = "Все коллекции неактивны!";
+                divDataRow.appendChild(spanInfoAboutData);
+
+                div.appendChild(divDataRow);
+                div.appendChild(document.createElement("br"));
+            } else if (sumOfActiveCollections > 0n && sumOfInactiveCollections > 0n) {
+                // Количество активных коллекций ---
+                divDataRow = divDataRow.cloneNode(false);
+
+                spanInfoAboutData = spanInfoAboutData.cloneNode(false);
+                spanInfoAboutData.textContent = "Активных коллекций:";
+                divDataRow.appendChild(spanInfoAboutData);
+
+                spanData = spanData.cloneNode(false);
+                spanData.textContent = `${sumOfActiveCollections}`;
+                divDataRow.appendChild(spanData);
+
+                div.appendChild(divDataRow);
+                //---
+
+                // Количество неактивных коллекций ---
+                divDataRow = divDataRow.cloneNode(false);
+
+                spanInfoAboutData = spanInfoAboutData.cloneNode(false);
+                spanInfoAboutData.textContent = "Неактивных коллекций:";
+                divDataRow.appendChild(spanInfoAboutData);
+
+                spanData = spanData.cloneNode(false);
+                spanData.textContent = `${sumOfInactiveCollections}`;
+                divDataRow.appendChild(spanData);
+
+                div.appendChild(divDataRow);
+                //---
+
+                div.appendChild(document.createElement("br"));
+            }
+            //---
+        }
+
+        return div;
+    }
 }
 
 class CbCustomerCollections {
@@ -108,7 +282,7 @@ class CbCustomerCollections {
             let divFlag = comboBoxWithFlagObj.divFlag;
             if (cbCollectionsContainer && cbCustomerCollections && divFlag) {
                 let authId = _GLOBAL_COOKIES.AUTH_ID.getValue();
-                let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.getAllForInByCustomerId(authId);
+                let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.getAllForAuthorFiltered(null, null, authId, true);
                 await this.#fillClear(comboBoxWithFlagObj, firstOption, JSONResponse);
 
                 // Меняем флаг ---
@@ -141,7 +315,7 @@ class CbCustomerCollections {
                 //---
 
                 let authId = _GLOBAL_COOKIES.AUTH_ID.getValue();
-                let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.getAllForInByCustomerId(authId);
+                let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.getAllForAuthorFiltered(null, null, authId, true);
                 await this.#fillClear(comboBoxWithFlagObj, firstOption, JSONResponse);
 
                 // Пытаемся установить старый элемент ---
@@ -169,7 +343,7 @@ class CbCustomerCollections {
                 let authId = _GLOBAL_COOKIES.AUTH_ID.getValue();
                 if (langOutCode) {
                     let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET
-                        .getAllForInByCustomerIdAndLangOutCode(authId, langOutCode);
+                        .getAllForAuthorByCustomerIdAndLangOutCode(authId, langOutCode);
                     if (JSONResponse.status === _HTTP_STATUSES.OK) {
                         isLangCodeCorrect = true;
                         await this.#fillClear(comboBoxWithFlagObj, firstOption, JSONResponse);
@@ -242,6 +416,18 @@ class CbCustomerCollections {
                 if (isCorrect === true) {
                     let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET
                         .validateIsLangActiveInCollectionByCollectionId(collectionId);
+                    if (JSONResponse.status !== _HTTP_STATUSES.OK) {
+                        isCorrect = false;
+                        ruleElement.message = new CustomResponseMessage(JSONResponse.json).text;
+                        ruleElement.ruleType = _RULE_TYPES.ERROR;
+                    }
+                }
+                //---
+
+                // Проверяем активность коллекции для автора ---
+                if (isCorrect === true) {
+                    let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET
+                        .validateIsActiveForAuthorByCollectionId(collectionId);
                     if (JSONResponse.status !== _HTTP_STATUSES.OK) {
                         isCorrect = false;
                         ruleElement.message = new CustomResponseMessage(JSONResponse.json).text;

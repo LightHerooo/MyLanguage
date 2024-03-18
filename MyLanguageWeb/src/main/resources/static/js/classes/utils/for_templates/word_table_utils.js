@@ -30,7 +30,7 @@ export class WordTableUtils {
         _A_BUTTONS.A_BUTTON_DISABLED.setStyles(aBtnActionElement, aButtonImgSize);
         aBtnActionElement.onclick = null;
 
-        _A_BUTTONS.A_BUTTON_ACCEPT.setStyles(aBtnActionElement, aButtonImgSize);
+        _A_BUTTONS.A_BUTTON_ADD.setStyles(aBtnActionElement, aButtonImgSize);
         aBtnActionElement.title = "Добавить слово в коллекцию";
 
         aBtnActionElement.onclick = async function () {

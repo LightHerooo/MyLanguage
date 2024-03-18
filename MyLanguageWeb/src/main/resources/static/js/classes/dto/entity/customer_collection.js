@@ -80,6 +80,7 @@ export class CustomerCollectionResponseDTO {
     id;
     title;
     dateOfCreate;
+    isActiveForAuthor;
     customer;
     lang;
 
@@ -88,6 +89,7 @@ export class CustomerCollectionResponseDTO {
             this.id = customerCollectionJson["id"];
             this.title = customerCollectionJson["title"];
             this.dateOfCreate = customerCollectionJson["date_of_create"];
+            this.isActiveForAuthor = customerCollectionJson["is_active_for_author"];
 
             let customer = customerCollectionJson["customer"];
             if (customer) {
@@ -157,17 +159,31 @@ export class CustomerCollectionResponseDTO {
         collectionInfoContainerRight.appendChild(h1CollectionName);
         //---
 
-        // Дата создания ---
+        // ID ---
         let divDataRow = document.createElement("div");
         divDataRow.classList.add(_CSS_DYNAMIC_INFO_BLOCK.DIV_DYNAMIC_INFO_BLOCK_DATA_ROW_STYLE_ID);
 
         let spanInfoAboutData = document.createElement("span");
         spanInfoAboutData.classList.add(_CSS_DYNAMIC_INFO_BLOCK.SPAN_DATA_ROW_LEFT_TEXT_STYLE_ID);
-        spanInfoAboutData.textContent = "Дата создания:";
+        spanInfoAboutData.textContent = "ID:";
         divDataRow.appendChild(spanInfoAboutData);
 
         let spanData = document.createElement("span");
         spanData.classList.add(_CSS_DYNAMIC_INFO_BLOCK.SPAN_DATA_ROW_RIGHT_TEXT_STYLE_ID);
+        spanData.textContent = `${this.id}`;
+        divDataRow.appendChild(spanData);
+
+        collectionInfoContainerRight.appendChild(divDataRow);
+        //---
+
+        // Дата создания ---
+        divDataRow = divDataRow.cloneNode(false);
+
+        spanInfoAboutData = spanInfoAboutData.cloneNode(false);
+        spanInfoAboutData.textContent = "Дата создания:";
+        divDataRow.appendChild(spanInfoAboutData);
+
+        spanData = spanData.cloneNode(false);
 
         let dateOfCreate = new Date(this.dateOfCreate);
         let dateOfCreateParts = new DateParts(dateOfCreate);
@@ -213,94 +229,42 @@ export class CustomerCollectionResponseDTO {
         return collectionInfoContainer;
     }
 
-    async #getMessageAfterValidate(){
+    async tryToCreateDivInfoAfterValidate() {
+        let isCorrect = true;
         let message;
 
+        // Проверяем авторство пользователя к коллекции ---
         let authId = _GLOBAL_COOKIES.AUTH_ID.getValue();
         let JSONResponse = await
             _CUSTOMER_COLLECTIONS_API.GET.validateIsCustomerCollectionAuthor(authId, this.id);
-        if (JSONResponse.status === _HTTP_STATUSES.OK) {
-            JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.validateIsLangActiveInCollectionByCollectionId(this.id);
-            if (JSONResponse.status !== _HTTP_STATUSES.OK) {
-                message = new CustomResponseMessage(JSONResponse.json).text;
-            } else {
-            }
-        } else {
+        if (JSONResponse.status !== _HTTP_STATUSES.OK) {
+            isCorrect = false;
             message = new CustomResponseMessage(JSONResponse.json).text;
         }
+        //---
 
-        return message;
-    }
-
-    async tryToCreateDivInfoAfterValidate() {
-        let message = await this.#getMessageAfterValidate();
-        if (!message) {
-            return await this.createDivInfo();
-        } else {
-            let divMessage = document.createElement("div");
-            divMessage.classList.add(_CSS_MAIN.DIV_CONTENT_CENTER_STANDARD_STYLE_ID);
-            divMessage.style.fontSize = _CSS_ROOT.SECOND_FONT_SIZE;
-            divMessage.textContent = message;
-
-            return divMessage;
-        }
-    }
-
-    async tryToCreateDivInfoWithBtnDelete(beforeDeleteFunction,
-                                          afterSuccessDeleteFunction,
-                                          afterFailureDeleteFunction) {
-        let message = await this.#getMessageAfterValidate();
-        if (!message) {
-            let divInfoWithBtnDelete = document.createElement("div");
-            divInfoWithBtnDelete.style.display = "grid";
-            divInfoWithBtnDelete.style.grid = "1fr / 1fr 100px";
-            divInfoWithBtnDelete.style.gap = "10px";
-
-            // Генерируем левый контейнер с информацией о коллекции ---
-            let divLeft = document.createElement("div");
-            divLeft.style.display = "grid";
-            divLeft.style.alignItems = "center";
-
-            let divInfo = await this.createDivInfo();
-            divLeft.appendChild(divInfo);
-
-            divInfoWithBtnDelete.appendChild(divLeft);
-            //---
-
-            // Генерируем кнопку удаления справа ---
-            let thisObj = this;
-
-            let aButtonImgSize = _A_BUTTON_IMG_SIZES.SIZE_64;
-            let aBtnDelete = _A_BUTTONS.A_BUTTON_DENY.createA(aButtonImgSize);
-            aBtnDelete.title = "Удалить коллекцию";
-
-            // Мы не должны вешать событие, если коллекция единственная
-            let authId = _GLOBAL_COOKIES.AUTH_ID.getValue();
-            let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.getCountForInByCustomerId(authId)
-            if (JSONResponse.status === _HTTP_STATUSES.OK) {
-                let numberOfCollections = new LongResponse(JSONResponse.json).value;
-                if (numberOfCollections > 1) {
-                    aBtnDelete.addEventListener("click", async function() {
-                        _A_BUTTONS.A_BUTTON_DISABLED.setStyles(aBtnDelete, aButtonImgSize);
-                        beforeDeleteFunction();
-
-                        let dto = new CustomerCollectionRequestDTO();
-                        dto.id = thisObj.id;
-                        let JSONResponse = await _CUSTOMER_COLLECTIONS_API.DELETE.delete(dto);
-                        JSONResponse.status === _HTTP_STATUSES.OK
-                            ? afterSuccessDeleteFunction()
-                            : afterFailureDeleteFunction();
-                    });
-                } else {
-                    _A_BUTTONS.A_BUTTON_DISABLED.setStyles(aBtnDelete, aButtonImgSize);
-                }
-            } else {
-                _A_BUTTONS.A_BUTTON_DISABLED.setStyles(aBtnDelete, aButtonImgSize);
+        // Проверяем активность языка коллекции ---
+        if (isCorrect === true) {
+            JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.validateIsLangActiveInCollectionByCollectionId(this.id);
+            if (JSONResponse.status !== _HTTP_STATUSES.OK) {
+                isCorrect = false;
+                message = new CustomResponseMessage(JSONResponse.json).text;
             }
+        }
+        //---
 
-            divInfoWithBtnDelete.appendChild(aBtnDelete);
-            return divInfoWithBtnDelete;
-            //---
+        // Проверяем активность коллекции для автора ---
+        if (isCorrect === true) {
+            JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.validateIsActiveForAuthorByCollectionId(this.id);
+            if (JSONResponse.status !== _HTTP_STATUSES.OK) {
+                isCorrect = false;
+                message = new CustomResponseMessage(JSONResponse.json).text;
+            }
+        }
+        //---
+
+        if (isCorrect === true) {
+            return await this.createDivInfo();
         } else {
             let divMessage = document.createElement("div");
             divMessage.classList.add(_CSS_MAIN.DIV_CONTENT_CENTER_STANDARD_STYLE_ID);
@@ -317,4 +281,5 @@ export class CustomerCollectionRequestDTO {
     title;
     langCode;
     workoutId;
+    isActiveForAuthor;
 }

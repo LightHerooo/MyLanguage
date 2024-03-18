@@ -1,5 +1,5 @@
 main {
-    min-height: 1300px;
+    min-height: 1500px;
 }
 
 div.statistics-container {
@@ -9,7 +9,7 @@ div.statistics-container {
     align-items: center;
 }
 
-div.instruments-for-find-word-histories-container {
+div.instruments-for-find-customer-collections-container {
     display: grid;
     grid-template-columns: 2fr 1fr 1fr 50px;
 }

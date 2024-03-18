@@ -176,7 +176,6 @@ export class NotOverWorkoutsTableHelper {
         if (isCorrect === true) {
             notOverWorkoutsTable = document.createElement("table");
             notOverWorkoutsTable.classList.add(_CSS_MAIN.TABLE_STANDARD_STYLE_ID);
-            notOverWorkoutsTable.style.margin = "-10px -5px";
 
             // Создаём colgroup + trHeader
             // В зависимости от наличия данных, мы должны наращивать колонки будущей таблицы ---
@@ -287,8 +286,8 @@ export class NotOverWorkoutsTableHelper {
                     divActions.style.gap = "5px";
 
                     let thisClass = this;
-
-                    let aContinue = _A_BUTTONS.A_BUTTON_ARROW_RIGHT.createA(_A_BUTTON_IMG_SIZES.SIZE_32);
+                    let aButtonImgSize = _A_BUTTON_IMG_SIZES.SIZE_32;
+                    let aContinue = _A_BUTTONS.A_BUTTON_ARROW_RIGHT.createA(aButtonImgSize);
                     aContinue.title = "Продолжить тренировку";
                     aContinue.addEventListener("click", async function () {
                         thisClass.#changeDisableStatusFunction(true);
@@ -306,7 +305,7 @@ export class NotOverWorkoutsTableHelper {
                     });
                     divActions.appendChild(aContinue);
 
-                    let aDelete = _A_BUTTONS.A_BUTTON_DENY.createA(_A_BUTTON_IMG_SIZES.SIZE_32);
+                    let aDelete = _A_BUTTONS.A_BUTTON_DENY.createA(aButtonImgSize);
                     aDelete.title = "Удалить тренировку";
                     aDelete.addEventListener("click", async function () {
                         thisClass.showLoading();
@@ -358,19 +357,23 @@ export class NotOverWorkoutsTableHelper {
                 }
             }
 
-            // Создаём tBody ---
-            let tHead = document.createElement("thead");
-            tHead.appendChild(trHeader);
+            // Добавляем colgroup + tHead, если он готов ---
+            if (isHeaderReady === true) {
+                notOverWorkoutsTable.appendChild(colgroup);
 
+                let tHead = document.createElement("thead");
+                tHead.appendChild(trHeader);
+
+                notOverWorkoutsTable.appendChild(tHead);
+            }
+            //---
+
+            // Добавляем tBody ---
             let tBody = document.createElement("tbody");
             for (let row of activeWorkoutRows) {
                 tBody.appendChild(row);
             }
-            //---
 
-            // Добавляем все сгенерированные элементы в table ---
-            notOverWorkoutsTable.appendChild(colgroup);
-            notOverWorkoutsTable.appendChild(tHead);
             notOverWorkoutsTable.appendChild(tBody);
             //---
         }

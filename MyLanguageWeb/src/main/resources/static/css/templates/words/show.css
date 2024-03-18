@@ -5,8 +5,8 @@ main {
 div.statistics-container {
     min-height: 150px;
 
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    align-items: center;
 }
 
 div.actions-container {

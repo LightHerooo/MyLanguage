@@ -68,40 +68,87 @@ public class CustomerCollectionsRestController {
 
         this.CUSTOMER_COLLECTION_MAPPING = customerCollectionMapping;
     }
-
-    @GetMapping("/for_in_by_customer_id")
-    public ResponseEntity<?> getAllForIn(
-            @RequestParam("customer_id") Long customerId) {
+    @GetMapping("/for_author_filtered")
+    public ResponseEntity<?> getForAuthorFiltered(
+            @RequestParam("customer_id") Long customerId,
+            @RequestParam("is_active_for_author") Boolean isActiveForAuthor,
+            @RequestParam(value = "title", required = false) String title,
+            @RequestParam(value = "lang_code", required = false) String langCode) {
         ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.find(customerId);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
 
-        List<CustomerCollection> collections = CUSTOMER_COLLECTION_SERVICE.findAll(customerId);
+        List<CustomerCollection> collections = CUSTOMER_COLLECTION_SERVICE.findAll(
+                title, langCode, customerId, isActiveForAuthor);
         if (collections != null && collections.size() > 0) {
             List<CustomerCollectionResponseDTO> collectionsDTO =
                     collections.stream().map(CUSTOMER_COLLECTION_MAPPING::mapToResponseDTO).toList();
             return ResponseEntity.ok(collectionsDTO);
         } else {
-            CustomResponseMessage message = new CustomResponseMessage(1, "У пользователя нет коллекций.");
+            CustomResponseMessage message = new CustomResponseMessage(1,
+                    "Коллекции по указанным фильтрам не найдены.");
             return ResponseEntity.badRequest().body(message);
         }
     }
 
-    @GetMapping("/count_for_in_by_customer_id")
-    public ResponseEntity<?> getCountForIn(@RequestParam("customer_id") Long customerId) {
+    @GetMapping("/count_for_author")
+    public ResponseEntity<?> getCountForAuthor(@RequestParam("customer_id") Long customerId,
+                                               @RequestParam("is_active_for_author") Boolean isActiveForAuthor) {
         ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.find(customerId);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
 
-        long numberOfCollections = CUSTOMER_COLLECTION_SERVICE.count(customerId);
+        long numberOfCollections = CUSTOMER_COLLECTION_SERVICE.count(customerId, isActiveForAuthor);
         return ResponseEntity.ok(new LongResponse(numberOfCollections));
     }
 
-    @GetMapping("/for_in_by_customer_id_and_lang_out_code")
-    public ResponseEntity<?> getAllForIn(@RequestParam("customer_id") Long customerId,
-                                         @RequestParam("lang_out_code") String langOutCode) {
+    @GetMapping("/for_author_filtered_pagination")
+    public ResponseEntity<?> getForAuthorFilteredPagination(
+            @RequestParam("customer_id") Long customerId,
+            @RequestParam("is_active_for_author") Boolean isActiveForAuthor,
+            @RequestParam("number_of_items") Long numberOfItems,
+            @RequestParam(value = "title", required = false) String title,
+            @RequestParam(value = "lang_code", required = false) String langCode,
+            @RequestParam(value = "last_collection_id_on_previous_page", required = false, defaultValue = "0")
+                Long lastCollectionIdOnPreviousPage) {
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.find(customerId);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        if (numberOfItems == null || numberOfItems <= 0) {
+            CustomResponseMessage message =
+                    new CustomResponseMessage(1, "Количество коллекций должно быть больше 0.");
+            return ResponseEntity.badRequest().body(message);
+        }
+
+
+        if (lastCollectionIdOnPreviousPage == null || lastCollectionIdOnPreviousPage < 0) {
+            CustomResponseMessage message =
+                    new CustomResponseMessage(2,
+                            "ID последней коллекции на предыдущей странице не должен быть отрицательным. " +
+                                    "Если вы хотите отобразить первую страницу, укажите ID = 0.");
+            return ResponseEntity.badRequest().body(message);
+        }
+
+        List<CustomerCollection> collections = CUSTOMER_COLLECTION_SERVICE.findAll(
+                title, langCode, customerId, isActiveForAuthor, numberOfItems, lastCollectionIdOnPreviousPage);
+        if (collections != null && collections.size() > 0) {
+            List<CustomerCollectionResponseDTO> collectionsDTO =
+                    collections.stream().map(CUSTOMER_COLLECTION_MAPPING::mapToResponseDTO).toList();
+            return ResponseEntity.ok(collectionsDTO);
+        } else {
+            CustomResponseMessage message = new CustomResponseMessage(1,
+                    "Коллекции по указанным фильтрам не найдены.");
+            return ResponseEntity.badRequest().body(message);
+        }
+    }
+
+    @GetMapping("/for_author_by_customer_id_and_lang_out_code")
+    public ResponseEntity<?> getForAuthorFiltered(@RequestParam("customer_id") Long customerId,
+                                                  @RequestParam("lang_out_code") String langOutCode) {
         ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.find(customerId);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
@@ -114,7 +161,8 @@ public class CustomerCollectionsRestController {
 
         response = LANGS_REST_CONTROLLER.tryToGetYandexLangsResult();
         if (response.getBody() instanceof YandexLangsResult yandexLangsResult) {
-            List<CustomerCollection> collections = CUSTOMER_COLLECTION_SERVICE.findAll(customerId);
+            List<CustomerCollection> collections = CUSTOMER_COLLECTION_SERVICE.findAll(
+                    null, null, customerId, true);
 
             Lang langOut = LANG_SERVICE.find(langOutCode);
             List<String> yandexLangsIn = yandexLangsResult
@@ -144,7 +192,7 @@ public class CustomerCollectionsRestController {
      }
 
     @GetMapping("/customer_collections_with_lang_statistics_by_customer_id")
-    public ResponseEntity<?> getCustomerCollectionsWithFlagStatistics(@RequestParam("customer_id") Long customerId) {
+    public ResponseEntity<?> getCustomerCollectionsWithLangStatistics(@RequestParam("customer_id") Long customerId) {
         List<CustomerCollectionsWithLangStatistic> statistics = CUSTOMER_COLLECTION_SERVICE
                 .findCustomerCollectionsWithLangStatistics(customerId);
         if (statistics != null && statistics.size() > 0) {
@@ -245,6 +293,42 @@ public class CustomerCollectionsRestController {
         }
     }
 
+    @PatchMapping("/change_activity_for_author")
+    public ResponseEntity<?> changeActivityForAuthor(HttpServletRequest request,
+                                                     @RequestBody CustomerCollectionRequestDTO dto) {
+        String validateAuthCode = CUSTOMER_SERVICE.validateAuthCode(request, dto.getAuthCode());
+        dto.setAuthCode(validateAuthCode);
+
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.findExistsByAuthCode(dto.getAuthCode());
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        // Проверяем существование коллекции
+        response = find(dto.getId());
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        // Коллекция должна принадлежать пользователю
+        Customer customer = CUSTOMER_SERVICE.findByAuthCode(dto.getAuthCode());
+        response = validateIsCustomerCollectionAuthor(customer.getId(), dto.getId());
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        CustomerCollection collection = CUSTOMER_COLLECTION_SERVICE.find(dto.getId());
+        collection = CUSTOMER_COLLECTION_SERVICE.changeActivityForAuthor(collection, dto.getIsActiveForAuthor());
+        if (collection != null) {
+            CustomerCollectionResponseDTO responseDTO = CUSTOMER_COLLECTION_MAPPING.mapToResponseDTO(collection);
+            return ResponseEntity.ok(responseDTO);
+        } else {
+            CustomResponseMessage message = new CustomResponseMessage(1,
+                    "Произошла ошибка изменения статуса активности для автора.");
+            return ResponseEntity.badRequest().body(message);
+        }
+    }
+
     @DeleteMapping
     public ResponseEntity<?> delete(HttpServletRequest request,
                                     @RequestBody CustomerCollectionRequestDTO dto) {
@@ -267,14 +351,6 @@ public class CustomerCollectionsRestController {
         response = validateIsCustomerCollectionAuthor(customer.getId(), dto.getId());
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
-        }
-
-        // Коллекция не должна быть единственной
-        long numberOfCollections = CUSTOMER_COLLECTION_SERVICE.count(customer.getId());
-        if (numberOfCollections <= 1) {
-            CustomResponseMessage message = new CustomResponseMessage(1,
-                    "Невозможно удалить коллекцию, так как она является единственной.");
-            return ResponseEntity.badRequest().body(message);
         }
 
         CustomerCollection collection = CUSTOMER_COLLECTION_SERVICE.find(dto.getId());
@@ -389,6 +465,23 @@ public class CustomerCollectionsRestController {
         } else {
             CustomResponseMessage message = new CustomResponseMessage(1, "Язык коллекции активен.");
             return ResponseEntity.ok(message);
+        }
+    }
+
+    @GetMapping("/validate/is_active_for_author_by_id")
+    public ResponseEntity<?> validateIsActiveForAuthor(@RequestParam("id") Long id) {
+        ResponseEntity<?> response = find(id);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        CustomerCollection collection = CUSTOMER_COLLECTION_SERVICE.find(id);
+        if (collection.isActiveForAuthor()) {
+            CustomResponseMessage message = new CustomResponseMessage(1, "Коллекция активна для автора.");
+            return ResponseEntity.ok(message);
+        } else {
+            CustomResponseMessage message = new CustomResponseMessage(1, "Коллекция неактивна для автора.");
+            return ResponseEntity.badRequest().body(message);
         }
     }
 

@@ -691,6 +691,16 @@ function prepareWordsInCollectionFinder() {
         }
         //---
 
+        // Коллекция должна быть активна для автора ---
+        if (readyToFill === true) {
+            let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.validateIsActiveForAuthorByCollectionId(collectionId);
+            if (JSONResponse.status !== _HTTP_STATUSES.OK) {
+                readyToFill = false;
+                setMessageInsideTable(new CustomResponseMessage(JSONResponse.json).text);
+            }
+        }
+        //---
+
         if (readyToFill === true) {
             _lastWordNumberInList = 0;
             _lastWordInCollectionIdOnPreviousPage = 0n;

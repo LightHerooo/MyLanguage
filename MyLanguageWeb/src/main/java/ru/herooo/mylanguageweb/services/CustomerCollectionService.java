@@ -26,12 +26,25 @@ public class CustomerCollectionService {
         this.CUSTOMER_COLLECTION_MAPPING = customerCollectionMapping;
     }
 
-    public List<CustomerCollection> findAll(Long customerId) {
-        return CUSTOMER_COLLECTION_CRUD_REPOSITORY.findAll(customerId);
+    public List<CustomerCollection> findAll(String title,
+                                            String langCode,
+                                            Long customerId,
+                                            Boolean isActiveForAuthor) {
+        return CUSTOMER_COLLECTION_CRUD_REPOSITORY.findAll(title, langCode, customerId, isActiveForAuthor);
     }
 
-    public long count(Long customerId) {
-        return CUSTOMER_COLLECTION_CRUD_REPOSITORY.count(customerId).orElse(0L);
+    public long count(Long customerId,
+                      Boolean isActiveForAuthor) {
+        return CUSTOMER_COLLECTION_CRUD_REPOSITORY.count(customerId, isActiveForAuthor).orElse(0L);
+    }
+
+    public List<CustomerCollection> findAll(String title,
+                                            String langCode,
+                                            Long customerId,
+                                            Boolean isActiveForAuthor,
+                                            Long numberOfItems,
+                                            Long lastCollectionIdOnPreviousPage) {
+        return CUSTOMER_COLLECTION_CRUD_REPOSITORY.findAll(title, langCode, customerId, isActiveForAuthor, numberOfItems, lastCollectionIdOnPreviousPage);
     }
 
     public List<CustomerCollectionsWithLangStatistic> findCustomerCollectionsWithLangStatistics(Long customerId) {
@@ -57,7 +70,13 @@ public class CustomerCollectionService {
         }
 
         collection.setDateOfCreate(LocalDateTime.now());
+        collection.setActiveForAuthor(true);
 
+        return CUSTOMER_COLLECTION_CRUD_REPOSITORY.save(collection);
+    }
+
+    public CustomerCollection changeActivityForAuthor(CustomerCollection collection, boolean isActiveForAuthor) {
+        collection.setActiveForAuthor(isActiveForAuthor);
         return CUSTOMER_COLLECTION_CRUD_REPOSITORY.save(collection);
     }
 

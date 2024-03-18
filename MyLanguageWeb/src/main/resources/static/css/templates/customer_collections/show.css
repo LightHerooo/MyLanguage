@@ -3,15 +3,15 @@ main {
 }
 
 div.statistics-container {
-    min-height: 100px;
+    min-height: 150px;
 
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    align-items: center;
 }
 
 div.actions-container {
     display: grid;
-    grid: 1fr / 1fr;
+    grid: 1fr / 1fr 1fr;
     gap: 10px;
 }
 

@@ -25,6 +25,9 @@ public class CustomerCollectionRequestDTO {
     @JsonProperty("lang_code")
     private String langCode;
 
+    @JsonProperty("is_active_for_author")
+    private boolean isActiveForAuthor;
+
     @JsonProperty("key")
     private String key;
 
@@ -84,5 +87,13 @@ public class CustomerCollectionRequestDTO {
 
     public void setWorkoutId(long workoutId) {
         this.workoutId = workoutId;
+    }
+
+    public boolean getIsActiveForAuthor() {
+        return isActiveForAuthor;
+    }
+
+    public void setIsActiveForAuthor(boolean activeForAuthor) {
+        isActiveForAuthor = activeForAuthor;
     }
 }

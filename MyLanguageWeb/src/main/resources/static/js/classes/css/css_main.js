@@ -1,6 +1,7 @@
 export class CssMain {
     A_BUTTON_STANDARD_STYLE_ID = "a-button-standard";
     A_BUTTON_ACCEPT_STANDARD_STYLE_ID = "a-button-accept-standard";
+    A_BUTTON_WARNING_STANDARD_STYLE_ID = "a-button-warning-standard";
     A_BUTTON_DENY_STANDARD_STYLE_ID = "a-button-deny-standard";
     A_BUTTON_DISABLED_STANDARD_STYLE_ID = "a-button-disabled-standard";
     A_SHOW_MORE_STANDARD_STYLE_ID = "a-show-more-standard";

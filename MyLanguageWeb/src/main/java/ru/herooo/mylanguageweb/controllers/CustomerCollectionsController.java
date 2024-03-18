@@ -22,7 +22,7 @@ public class CustomerCollectionsController {
         this.CONTROLLER_UTILS = controllerUtils;
     }
 
-    @GetMapping()
+    @GetMapping
     public String showCustomerCollectionsPage(HttpServletRequest request) {
         Customer authCustomer = CUSTOMER_SERVICE.find(request);
         if (authCustomer != null) {
@@ -43,6 +43,19 @@ public class CustomerCollectionsController {
             CONTROLLER_UTILS.changeDateLastVisitToAuthCustomer(request);
 
             return Views.CUSTOMER_COLLECTIONS_NEW.PATH_TO_FILE;
+        } else {
+            return Redirects.ENTRY.REDIRECT_URL;
+        }
+    }
+
+    @GetMapping("/collections_settings")
+    public String showCollectionsSettingsPage(HttpServletRequest request) {
+        Customer authCustomer = CUSTOMER_SERVICE.find(request);
+        if (authCustomer != null) {
+            CONTROLLER_UTILS.setGeneralAttributes(request);
+            CONTROLLER_UTILS.changeDateLastVisitToAuthCustomer(request);
+
+            return Views.CUSTOMER_COLLECTIONS_COLLECTIONS_SETTINGS.PATH_TO_FILE;
         } else {
             return Redirects.ENTRY.REDIRECT_URL;
         }

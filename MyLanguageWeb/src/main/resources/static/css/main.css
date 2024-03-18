@@ -119,6 +119,7 @@ div.content-center-standard {
 
 a.a-button-standard,
 a.a-button-accept-standard,
+a.a-button-warning-standard,
 a.a-button-deny-standard,
 a.a-button-disabled-standard {
     -webkit-appearance: button;
@@ -154,6 +155,19 @@ a.a-button-accept-standard {
 
 a.a-button-accept-standard:hover {
     background: rgba(var(--accept-second-color-rgb), var(--opacity-standard));
+}
+
+a.a-button-warning-standard {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border: 5px solid var(--warning-second-color);
+    background: rgba(var(--warning-first-color-rgb), var(--opacity-standard));
+}
+
+a.a-button-warning-standard:hover {
+    background: rgba(var(--warning-second-color-rgb), var(--opacity-standard));
 }
 
 a.a-button-deny-standard {

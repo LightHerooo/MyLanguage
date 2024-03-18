@@ -18,6 +18,7 @@ class OtherFolder {
     ARROW_RIGHT = this.#PATH_TO_OTHER_FOLDER + "/arrow_right.png";
     HISTORY = this.#PATH_TO_OTHER_FOLDER + "/history.png";
     ACCEPT = this.#PATH_TO_OTHER_FOLDER + "/accept.png";
+    QUESTION = this.#PATH_TO_OTHER_FOLDER + "/question.png";
 }
 
 class RulesFolder {

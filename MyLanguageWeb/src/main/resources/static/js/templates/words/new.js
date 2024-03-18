@@ -438,7 +438,7 @@ function changeDisableStatusInImportantElements(isDisable) {
             aBtnNewWord.classList.add(_A_BTN_NEW_WORD_STYLE_ID);
         } else {
             aBtnNewWord.className = "";
-            _A_BUTTONS.A_BUTTON_ACCEPT.setStyles(aBtnNewWord, aButtonImgSize);
+            _A_BUTTONS.A_BUTTON_ADD.setStyles(aBtnNewWord, aButtonImgSize);
             aBtnNewWord.classList.add(_A_BTN_NEW_WORD_STYLE_ID);
         }
     }

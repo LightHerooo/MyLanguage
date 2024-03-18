@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="|${WEB_APP_NAME} - Управление коллекциями|"></title>
+    <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
+
+    <link rel="stylesheet" type="text/css" href="/css/root.css">
+    <link rel="stylesheet" type="text/css" href="/css/main.css">
+    <link rel="stylesheet" type="text/css" href="/css/info_blocks/big_info_block.css">
+    <link rel="stylesheet" type="text/css" href="/css/info_blocks/dynamic_info_block.css">
+    <link rel="stylesheet" type="text/css" href="/css/other/instruments_for_table.css">
+    <link rel="stylesheet" type="text/css" href="/css/other/loading.css">
+    <link rel="stylesheet" type="text/css" href="/css/other/element_with_flag.css">
+    <link rel="stylesheet" type="text/css" href="/css/templates/customer_collections/collections_settings.css">
+
+    <script type="module" src="/js/templates/customer_collections/collections_settings.js"></script>
+</head>
+    <body>
+        <header>
+            <div th:insert="~{layouts/header}"></div>
+        </header>
+        <main>
+            <div class="big-info-block-container">
+                <div class="big-info-block-left-container">
+                    <img class="img-big-info-block"
+                         src="/images/customer_collections/collections_settings.png"
+                         alt="collections_settings.png"/>
+                </div>
+                <div class="big-info-block-right-container">
+                    <h1 class="h1-big-info-block">Управление коллекциями</h1>
+                    <div class="big-info-block-text">
+                        На этой странице вы можете управлять активностью коллекций или удалять их.
+                        У каждой коллекции можно просмотреть слова, которые в ней находятся, нажав на кнопку со стрелкой.
+                        Не бойтесь случайных нажатий на кнопки удаления, для запуска операции потребуется <span style="font-weight: bold">два нажатия</span>.
+                    </div>
+                    <br>
+                    <div class="big-info-block-text statistics-container">
+                        <div id="collections_statistics_container"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="instruments-for-table-container-margin instruments-for-find-customer-collections-container">
+                <div class="label-for-input-container">
+                    <label class="label-standard" for="tb_finder">Поиск:</label>
+                </div>
+                <input id="tb_finder" class="text-standard" type="text">
+
+                <div class="label-for-input-container">
+                    <label class="label-standard" for="cb_langs">Язык:</label>
+                </div>
+                <div class="element-with-flag-container">
+                    <select id="cb_langs" class="select-standard"></select>
+                    <div class="flag-container">
+                        <div id="lang_flag"></div>
+                    </div>
+                </div>
+
+                <div class="label-for-input-container">
+                    <label class="label-standard" for="cb_is_active">Активный:</label>
+                </div>
+                <select id="cb_is_active" class="select-standard"></select>
+
+                <div class="label-for-input-container"></div>
+                <button id="btn_refresh" class="button-with-img-standard" title="Обновить">
+                    <img class="img-btn-refresh" src="/images/other/refresh.png" alt="refresh.png"/>
+                </button>
+            </div>
+            <table class="table-standard">
+                <colgroup id="colgroup_collections">
+                    <col style="width: 5%;">
+                    <col style="width: 75%;">
+                    <col style="width: 20%;">
+                    <col style="width: 80px;">
+                </colgroup>
+                <thead id="thead_collections">
+                    <tr>
+                        <th>№</th>
+                        <th>Коллекция</th>
+                        <th>Активный</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="tbody_collections"></tbody>
+            </table>
+        </main>
+    </body>
+</html>

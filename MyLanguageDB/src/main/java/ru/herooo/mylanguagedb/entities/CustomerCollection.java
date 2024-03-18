@@ -22,6 +22,9 @@ public class CustomerCollection {
     @Column(name="date_of_create")
     private LocalDateTime dateOfCreate;
 
+    @Column(name="is_active_for_author")
+    private boolean isActiveForAuthor;
+
     @ManyToOne
     @JoinColumn(name="customer_id")
     private Customer customer;
@@ -50,6 +53,14 @@ public class CustomerCollection {
 
     public void setDateOfCreate(LocalDateTime dateOfCreate) {
         this.dateOfCreate = dateOfCreate;
+    }
+
+    public boolean isActiveForAuthor() {
+        return isActiveForAuthor;
+    }
+
+    public void setActiveForAuthor(boolean activeForAuthor) {
+        isActiveForAuthor = activeForAuthor;
     }
 
     public Customer getCustomer() {

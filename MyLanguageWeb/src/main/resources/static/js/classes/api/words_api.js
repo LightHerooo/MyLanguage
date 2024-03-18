@@ -47,8 +47,8 @@ class WordsGETRequests {
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
     }
 
-    async getAllCustomerWordsFilteredPagination(numberOfWords, customerId, title, wordStatusCode,
-                                                langCode, lastWordIdOnPreviousPage) {
+    async getAllCustomerFilteredPagination(numberOfWords, customerId, title, wordStatusCode,
+                                           langCode, lastWordIdOnPreviousPage) {
         let requestURL = new URL(URL_TO_API_WORDS + "/customer_filtered_pagination");
         requestURL.searchParams.set("number_of_words", numberOfWords);
         requestURL.searchParams.set("customer_id", customerId);

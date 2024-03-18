@@ -16,12 +16,30 @@ import java.util.Optional;
 public interface CustomerCollectionCrudRepository extends CrudRepository<CustomerCollection, Long> {
     @Query(nativeQuery = true, value =
             "SELECT * " +
-            "FROM get_customer_collections(:customer_id)")
-    List<CustomerCollection> findAll(@Param("customer_id") Long customerId);
+            "FROM get_customer_collections_for_author_after_filter(" +
+            ":title, :lang_code, :customer_id, :is_active_for_author)")
+    List<CustomerCollection> findAll(@Param("title") String title,
+                                     @Param("lang_code") String langCode,
+                                     @Param("customer_id") Long customerId,
+                                     @Param("is_active_for_author") Boolean isActiveForAuthor);
+
     @Query(nativeQuery = true, value =
             "SELECT COUNT(*) " +
-            "FROM get_customer_collections(:customer_id)")
-    Optional<Long> count(@Param("customer_id") Long customerId);
+            "FROM get_customer_collections_for_author_after_filter(NULL, NULL, :customer_id, :is_active_for_author)")
+    Optional<Long> count(@Param("customer_id") Long customerId,
+                         @Param("is_active_for_author") Boolean isActiveForAuthor);
+
+    @Query(nativeQuery = true, value =
+            "SELECT * " +
+                    "FROM get_customer_collections_for_author_after_filter_pagination(" +
+                    ":title, :lang_code, :customer_id, :is_active_for_author, " +
+                    ":number_of_items, :last_collection_id_on_previous_page)")
+    List<CustomerCollection> findAll(@Param("title") String title,
+                                     @Param("lang_code") String langCode,
+                                     @Param("customer_id") Long customerId,
+                                     @Param("is_active_for_author") Boolean isActiveForAuthor,
+                                     @Param("number_of_items") Long numberOfItems,
+                                     @Param("last_collection_id_on_previous_page") Long lastCollectionIdOnPreviousPage);
 
     @Query(nativeQuery = true, value =
             "SELECT ccwls.lang_code AS langCode, " +

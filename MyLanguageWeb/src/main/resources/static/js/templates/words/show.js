@@ -15,10 +15,6 @@ import {
 } from "../../classes/dto/entity/word_status/word_statuses.js";
 
 import {
-    DateParts
-} from "../../classes/date_parts.js";
-
-import {
     CustomResponseMessage
 } from "../../classes/dto/other/custom_response_message.js";
 
@@ -30,10 +26,6 @@ import {
     WordInCollectionRequestDTO,
     WordInCollectionResponseDTO
 } from "../../classes/dto/entity/word_in_collection.js";
-
-import {
-    LongResponse
-} from "../../classes/dto/other/long_response.js";
 
 import {
     LangUtils
@@ -84,20 +76,12 @@ import {
 } from "../../classes/utils/text_box_utils.js";
 
 import {
-    WordsWithStatusStatisticResponseDTO
-} from "../../classes/dto/types/words_with_status_statistic.js";
-
-import {
     AButtonImgSizes
 } from "../../classes/a_buttons/a_button_img_sizes.js";
 
 import {
     ComboBoxWithFlag
 } from "../../classes/element_with_flag/combo_box_with_flag.js";
-
-import {
-    CssDynamicInfoBlock
-} from "../../classes/css/info_blocks/css_dynamic_info_block.js";
 
 import {
     CssMain
@@ -111,13 +95,16 @@ import {
     BigIntUtils
 } from "../../classes/utils/bigint_utils.js";
 
+import {
+    WordUtils
+} from "../../classes/utils/entity/word_utils.js";
+
 const _CUSTOMER_COLLECTIONS_API = new CustomerCollectionsAPI();
 const _WORDS_API = new WordsAPI();
 const _WORDS_IN_COLLECTION_API = new WordsInCollectionAPI();
 
 const _CSS_MAIN = new CssMain();
 const _CSS_ROOT = new CssRoot();
-const _CSS_DYNAMIC_INFO_BLOCK = new CssDynamicInfoBlock();
 
 const _HTTP_STATUSES = new HttpStatuses();
 const _GLOBAL_COOKIES = new GlobalCookies();
@@ -131,6 +118,7 @@ const _WORD_TABLE_UTILS = new WordTableUtils();
 const _TEXT_BOX_UTILS = new TextBoxUtils();
 const _A_BUTTON_IMG_SIZES = new AButtonImgSizes();
 const _BIGINT_UTILS = new BigIntUtils();
+const _WORD_UTILS = new WordUtils();
 
 const _DIV_WORDS_STATISTICS_CONTAINER_ID = "words_statistics_container";
 const _TB_FINDER_ID = "tb_finder";
@@ -322,13 +310,13 @@ function changeDisableStatusToFinderInstruments(isDisable) {
 
 // Статистика ---
 function showLoadingInStatistic() {
-    let divStatistic = document.getElementById(_DIV_WORDS_STATISTICS_CONTAINER_ID);
-    if (divStatistic) {
-        divStatistic.replaceChildren();
+    let divStatistics = document.getElementById(_DIV_WORDS_STATISTICS_CONTAINER_ID);
+    if (divStatistics) {
+        divStatistics.replaceChildren();
+        divStatistics.className = "";
+        divStatistics.classList.add(_CSS_MAIN.DIV_CONTENT_CENTER_STANDARD_STYLE_ID);
 
-        divStatistic.style.display = "grid";
-        divStatistic.style.alignItems = "center";
-        divStatistic.appendChild(new LoadingElement().createDiv());
+        divStatistics.appendChild(new LoadingElement().createDiv());
     }
 }
 
@@ -354,92 +342,29 @@ function startToFindStatistic() {
 async function tryToFillStatistic() {
     let currentFinder = _CUSTOM_TIMER_STATISTIC_FINDER;
 
-    let statisticItems = await createStatisticItems();
-    let divStatistic = document.getElementById(_DIV_WORDS_STATISTICS_CONTAINER_ID);
-    if (statisticItems && divStatistic && currentFinder.getActive() === true) {
-        divStatistic.replaceChildren();
-        divStatistic.style.cssText = "";
-        for (let i = 0; i < statisticItems.length; i++) {
-            if (currentFinder.getActive() !== true) break;
-            divStatistic.appendChild(statisticItems[i]);
-        }
-    }
-}
+    let divWordsStatisticsContainer = document.getElementById(_DIV_WORDS_STATISTICS_CONTAINER_ID);
+    if (divWordsStatisticsContainer) {
+        let divStatistic = await _WORD_UTILS.createDivStatistic();
+        if (divStatistic && currentFinder.getActive() === true) {
+            divWordsStatisticsContainer.replaceChildren();
+            divWordsStatisticsContainer.className = "";
+            if (currentFinder.getActive() === true) {
+                divWordsStatisticsContainer.appendChild(divStatistic);
+            }
+        } else {
+            let divMessage = document.createElement("div");
+            divMessage.style.fontSize = _CSS_ROOT.SECOND_FONT_SIZE;
+            divMessage.style.padding = "30px";
+            divMessage.textContent = "Не удалось отобразить статистику.";
 
-async function createStatisticItems() {
-    let statisticItems = [];
-
-    // Генерируем статистику по всем статусам слов ---
-    let JSONResponse = await _WORDS_API.GET.getWordsWithStatusStatistics();
-    if (JSONResponse.status === _HTTP_STATUSES.OK) {
-        let divStatistics = [];
-        let sumOfWords = 0n;
-
-        let json = JSONResponse.json;
-        for (let i = 0; i < json.length; i++) {
-            let wordsWithStatusStatistic = new WordsWithStatusStatisticResponseDTO(json[i]);
-            let divStatistic = await wordsWithStatusStatistic.createDiv();
-            if (divStatistic) {
-                divStatistics.push(divStatistic);
-                sumOfWords += wordsWithStatusStatistic.numberOfWords;
+            if (currentFinder.getActive() === true) {
+                divWordsStatisticsContainer.replaceChildren();
+                if (currentFinder.getActive() === true) {
+                    divWordsStatisticsContainer.appendChild(divMessage);
+                }
             }
         }
-
-        // Создаём контейнер с общим количеством слов ---
-        let divDataRow = document.createElement("div");
-        divDataRow.classList.add(_CSS_DYNAMIC_INFO_BLOCK.DIV_DYNAMIC_INFO_BLOCK_DATA_ROW_STYLE_ID);
-
-        let spanInfoAboutData = document.createElement("span");
-        spanInfoAboutData.classList.add(_CSS_DYNAMIC_INFO_BLOCK.SPAN_DATA_ROW_LEFT_TEXT_STYLE_ID);
-        spanInfoAboutData.textContent = "Общее количество слов:";
-        divDataRow.appendChild(spanInfoAboutData);
-
-        let spanData = document.createElement("span");
-        spanData.classList.add(_CSS_DYNAMIC_INFO_BLOCK.SPAN_DATA_ROW_RIGHT_TEXT_STYLE_ID);
-        spanData.textContent = `${sumOfWords}`;
-        divDataRow.appendChild(spanData);
-
-        divStatistics.unshift(divDataRow);
-        //---
-
-        // Генерируем общий div, добавляем его в items ---
-        let divStatisticResult = document.createElement("div");
-        for (let i = 0; i < divStatistics.length; i++) {
-            divStatisticResult.appendChild(divStatistics[i]);
-        }
-
-        statisticItems.push(divStatisticResult);
-        //---
     }
-    //---
-
-    // Создаём контейнер с количеством слов за сегодняшний день ---
-    let dateNow = new Date();
-    JSONResponse = await _WORDS_API.GET.getCountByDateOfCreate(dateNow);
-    if (JSONResponse.status === _HTTP_STATUSES.OK) {
-        let divDataRow = document.createElement("div");
-        divDataRow.classList.add(_CSS_DYNAMIC_INFO_BLOCK.DIV_DYNAMIC_INFO_BLOCK_DATA_ROW_STYLE_ID);
-
-        let spanInfoAboutData = document.createElement("span");
-        spanInfoAboutData.classList.add(_CSS_DYNAMIC_INFO_BLOCK.SPAN_DATA_ROW_LEFT_TEXT_STYLE_ID);
-        spanInfoAboutData.textContent = `За сегодня (${new DateParts(dateNow).getDateStr()}) предложено слов:`;
-        divDataRow.appendChild(spanInfoAboutData);
-
-        let spanData = document.createElement("span");
-        spanData.classList.add(_CSS_DYNAMIC_INFO_BLOCK.SPAN_DATA_ROW_RIGHT_TEXT_STYLE_ID);
-        spanData.textContent = `${new LongResponse(JSONResponse.json).value}`;
-        divDataRow.appendChild(spanData);
-
-        if (statisticItems.length > 0) {
-            statisticItems.push(document.createElement("br"));
-        }
-
-        statisticItems.push(divDataRow);
-    }
-    //---
-
-    statisticItems.push(document.createElement("br"));
-    return statisticItems;
 }
 //---
 
@@ -552,6 +477,7 @@ function prepareWordsFinder() {
                 setMessageInsideTable("Выберите коллекцию.");
             }
 
+            // Коллекция должна принадлежать пользователю ---
             if (readyToFill === true) {
                 let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET
                     .validateIsCustomerCollectionAuthor(authId, collectionId);
@@ -560,6 +486,17 @@ function prepareWordsFinder() {
                     setMessageInsideTable(new CustomResponseMessage(JSONResponse.json).text);
                 }
             }
+            //---
+
+            // Коллекция должна быть активна для автора ---
+            if (readyToFill === true) {
+                let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.validateIsActiveForAuthorByCollectionId(collectionId);
+                if (JSONResponse.status !== _HTTP_STATUSES.OK) {
+                    readyToFill = false;
+                    setMessageInsideTable(new CustomResponseMessage(JSONResponse.json).text);
+                }
+            }
+            //---
         }
         //---
 
@@ -705,7 +642,7 @@ function setMessageInsideTable(message) {
 
 async function createBtnAction(wordInCollectionRequestDTO) {
     let aButtonImgSize = _A_BUTTON_IMG_SIZES.SIZE_16;
-    let aBtnAction = _A_BUTTONS.A_BUTTON_ACCEPT.createA(aButtonImgSize);
+    let aBtnAction = _A_BUTTONS.A_BUTTON_ADD.createA(aButtonImgSize);
 
     let wordId = wordInCollectionRequestDTO.wordId;
     let collectionId = wordInCollectionRequestDTO.collectionId;
