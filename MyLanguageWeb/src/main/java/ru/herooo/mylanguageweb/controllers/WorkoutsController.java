@@ -106,7 +106,7 @@ public class WorkoutsController {
     public String showStartPage(HttpServletRequest request, HttpServletResponse response) {
         Customer authCustomer = CUSTOMER_SERVICE.find(request);
         if (authCustomer != null) {
-            Workout workout = WORKOUT_SERVICE.findLastInactive(authCustomer.getId());
+            Workout workout = WORKOUT_SERVICE.findLastNotOverInactive(authCustomer.getId());
             if (workout != null) {
                 CONTROLLER_UTILS.setGeneralAttributes(request);
                 CONTROLLER_UTILS.changeDateLastVisitToAuthCustomer(request);

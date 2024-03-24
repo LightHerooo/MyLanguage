@@ -27,6 +27,9 @@ public class WorkoutTypeResponseDTO {
     @JsonProperty("is_active")
     private Boolean isActive;
 
+    @JsonProperty("is_prepared")
+    private Boolean isPrepared;
+
     public long getId() {
         return id;
     }
@@ -73,5 +76,13 @@ public class WorkoutTypeResponseDTO {
 
     public void setIsActive(Boolean active) {
         isActive = active;
+    }
+
+    public Boolean getIsPrepared() {
+        return isPrepared;
+    }
+
+    public void setIsPrepared(Boolean prepared) {
+        isPrepared = prepared;
     }
 }

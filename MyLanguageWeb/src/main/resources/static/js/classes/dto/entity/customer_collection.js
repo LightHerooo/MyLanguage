@@ -236,7 +236,7 @@ export class CustomerCollectionResponseDTO {
         // Проверяем авторство пользователя к коллекции ---
         let authId = _GLOBAL_COOKIES.AUTH_ID.getValue();
         let JSONResponse = await
-            _CUSTOMER_COLLECTIONS_API.GET.validateIsCustomerCollectionAuthor(authId, this.id);
+            _CUSTOMER_COLLECTIONS_API.GET.validateIsAuthor(authId, this.id);
         if (JSONResponse.status !== _HTTP_STATUSES.OK) {
             isCorrect = false;
             message = new CustomResponseMessage(JSONResponse.json).text;
@@ -245,7 +245,7 @@ export class CustomerCollectionResponseDTO {
 
         // Проверяем активность языка коллекции ---
         if (isCorrect === true) {
-            JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.validateIsLangActiveInCollectionByCollectionId(this.id);
+            JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET.validateIsLangActiveById(this.id);
             if (JSONResponse.status !== _HTTP_STATUSES.OK) {
                 isCorrect = false;
                 message = new CustomResponseMessage(JSONResponse.json).text;

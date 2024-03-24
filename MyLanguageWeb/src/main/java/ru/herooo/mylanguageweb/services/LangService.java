@@ -18,7 +18,7 @@ public class LangService {
 
     // Получение всех языков
     public List<Lang> findAll(String title) {
-        return LANG_CRUD_REPOSITORY.findAllAfterFilter(title);
+        return LANG_CRUD_REPOSITORY.findAll(title);
     }
 
     public List<Lang> findAllForIn(Boolean isActiveForIn) {

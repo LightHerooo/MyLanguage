@@ -5,6 +5,7 @@ export class WorkoutTypeResponseDTO {
     message;
     pathToImage;
     isActive;
+    isPrepared;
 
     constructor(workoutTypeJson) {
         this.id = workoutTypeJson["id"];
@@ -13,6 +14,7 @@ export class WorkoutTypeResponseDTO {
         this.message = workoutTypeJson["message"];
         this.pathToImage = workoutTypeJson["path_to_image"];
         this.isActive = workoutTypeJson["is_active"];
+        this.isPrepared = workoutTypeJson["is_prepared"];
     }
 }
 

@@ -13,6 +13,7 @@ public class WorkoutTypeMapping {
         dto.setMessage(workoutType.getMessage());
         dto.setPathToImage(workoutType.getPathToImage());
         dto.setIsActive(workoutType.getActive());
+        dto.setIsPrepared(workoutType.getPrepared());
 
         return dto;
     }

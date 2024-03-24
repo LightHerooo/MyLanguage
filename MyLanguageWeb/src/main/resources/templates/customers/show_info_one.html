@@ -7,16 +7,21 @@
 
     <link rel="stylesheet" type="text/css" href="/css/root.css">
     <link rel="stylesheet" type="text/css" href="/css/main.css">
+    <link rel="stylesheet" type="text/css" href="/css/info_blocks/small_info_block.css">
     <link rel="stylesheet" type="text/css" href="/css/info_blocks/dynamic_info_block.css">
-    <link rel="stylesheet" type="text/css" href="/css/templates/customers/show_one.css">
+    <link rel="stylesheet" type="text/css" href="/css/other/instruments_for_table.css">
+    <link rel="stylesheet" type="text/css" href="/css/other/loading.css">
+    <link rel="stylesheet" type="text/css" href="/css/templates/customers/show_info_one.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
+
+    <script type="module" src="/js/templates/customers/show_info_one.js"></script>
 </head>
 <body>
     <header>
         <div th:insert="~{layouts/header}"></div>
     </header>
     <main>
-        <div class="customer-info-with-actions-container">
+        <div th:class="${IS_CUSTOMER_OWNER == true ? 'customer-info-with-actions-container-owner' : ''}">
             <div class="customer-info-container info-block-standard">
                 <div class="avatar-container">
                     <img class="img-avatar"
@@ -56,26 +61,78 @@
                     </div>
                 </div>
             </div>
-            <div class="actions-container">
+            <div class="actions-container" th:if="${IS_CUSTOMER_OWNER == true}">
                 <a class="a-button-disabled-standard">
-                    <div class="action">
+                    <div class="content-center-standard">
                         <img class="img-action"
                              src="/images/other/pencil.png"
                              alt="pencil.png"/>
-                        <span>Редактировать</span>
                     </div>
                 </a>
                 <a class="a-button-deny-standard" href="/customers/exit">
-                    <div class="action">
+                    <div class="content-center-standard">
                         <img class="img-action"
                              src="/images/customers/entry.png"
                              alt="entry.png"/>
-                        <span>Выход</span>
                     </div>
                 </a>
             </div>
         </div>
-        <div class="info-block-standard" style="height: 1000px"></div>
+
+        <div class="small-info-block-container-margin">
+            <img class="img-small-info-block" src="/images/other/statistic.png" alt="statistic.png"/>
+            <h1 class="h1-small-info-block">Статистика</h1>
+        </div>
+        <div class="instruments-for-table-container instruments-for-find-statistic">
+            <div class="label-for-input-container">
+                <label class="label-standard" for="cb_workout_types_for_statistic">Режим тренировки:</label>
+            </div>
+            <select id="cb_workout_types_for_statistic" class="select-standard"></select>
+
+            <div class="label-for-input-container">
+                <label class="label-standard" for="cb_periods_for_statistic">Период:</label>
+            </div>
+            <select id="cb_periods_for_statistic" class="select-standard"></select>
+
+            <div class="label-for-input-container"></div>
+            <button id="btn_refresh_for_statistic" class="button-with-img-standard" title="Обновить">
+                <img class="img-btn-refresh" src="/images/other/refresh.png" alt="refresh.png"/>
+            </button>
+        </div>
+        <div id="div_statistic" class="info-block-standard statistic-container"></div>
+
+        <div class="small-info-block-container-margin">
+            <img class="img-small-info-block" src="/images/other/history.png" alt="history.png"/>
+            <h1 class="h1-small-info-block">История тренировок</h1>
+        </div>
+        <div class="instruments-for-table-container instruments-for-find-workouts">
+            <div class="label-for-input-container">
+                <label class="label-standard" for="cb_workout_types_for_workouts">Режим тренировки:</label>
+            </div>
+            <select id="cb_workout_types_for_workouts" class="select-standard"></select>
+
+            <div class="label-for-input-container"></div>
+            <button id="btn_refresh_for_workouts" class="button-with-img-standard" title="Обновить">
+                <img class="img-btn-refresh" src="/images/other/refresh.png" alt="refresh.png"/>
+            </button>
+        </div>
+        <table class="table-standard">
+            <colgroup>
+                <col style="width: 5%"/>
+                <col style="width: 75%"/>
+                <col style="width: 20%"/>
+                <col style="width: 80px"/>
+            </colgroup>
+            <thead id="thead_workouts">
+                <tr>
+                    <th>№</th>
+                    <th>Тренировка</th>
+                    <th>Время</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="tbody_workouts"></tbody>
+        </table>
     </main>
 </body>
 </html>

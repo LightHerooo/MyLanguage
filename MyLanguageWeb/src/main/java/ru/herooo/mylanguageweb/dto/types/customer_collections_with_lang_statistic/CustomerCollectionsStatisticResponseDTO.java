@@ -1,33 +1,20 @@
-package ru.herooo.mylanguageweb.dto.types;
+package ru.herooo.mylanguageweb.dto.types.customer_collections_with_lang_statistic;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import ru.herooo.mylanguagedb.types.CustomerCollectionsWithLangStatistic;
 import ru.herooo.mylanguageweb.controllers.json.LongDeserializer;
 import ru.herooo.mylanguageweb.controllers.json.LongSerializer;
+import ru.herooo.mylanguageweb.dto.entity.lang.LangResponseDTO;
 
-public class CustomerCollectionsWithLangStatisticResponseDTO {
-    @JsonProperty("lang_code")
-    private String langCode;
-
+public class CustomerCollectionsStatisticResponseDTO {
     @JsonSerialize(using = LongSerializer.class)
     @JsonDeserialize(using = LongDeserializer.class)
     @JsonProperty("number_of_collections")
     private long numberOfCollections;
 
-    public CustomerCollectionsWithLangStatisticResponseDTO(CustomerCollectionsWithLangStatistic statistic) {
-        this.langCode = statistic.getLangCode().orElse(null);
-        this.numberOfCollections = statistic.getNumberOfCollections().orElse(0L);
-    }
-
-    public String getLangCode() {
-        return langCode;
-    }
-
-    public void setLangCode(String langCode) {
-        this.langCode = langCode;
-    }
+    @JsonProperty("lang")
+    private LangResponseDTO lang;
 
     public long getNumberOfCollections() {
         return numberOfCollections;
@@ -35,5 +22,13 @@ public class CustomerCollectionsWithLangStatisticResponseDTO {
 
     public void setNumberOfCollections(long numberOfCollections) {
         this.numberOfCollections = numberOfCollections;
+    }
+
+    public LangResponseDTO getLang() {
+        return lang;
+    }
+
+    public void setLang(LangResponseDTO lang) {
+        this.lang = lang;
     }
 }

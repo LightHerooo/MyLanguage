@@ -42,6 +42,22 @@ public class WorkoutTypesRestController {
         this.WORKOUT_TYPE_MAPPING = workoutTypeMapping;
     }
 
+    @GetMapping
+    public ResponseEntity<?> getAll() {
+        List<WorkoutType> workoutTypes = WORKOUT_TYPE_SERVICE.findAll();
+        if (workoutTypes != null && workoutTypes.size() > 0) {
+            List<WorkoutTypeResponseDTO> workoutTypeDTOs = workoutTypes
+                    .stream()
+                    .map(WORKOUT_TYPE_MAPPING::mapToResponseDTO)
+                    .toList();
+            return ResponseEntity.ok(workoutTypeDTOs);
+        } else {
+            CustomResponseMessage message = new CustomResponseMessage(1,
+                    "Типы тренировок не найдены.");
+            return ResponseEntity.badRequest().body(message);
+        }
+    }
+
     @GetMapping("/filtered")
     public ResponseEntity<?> getAll(@RequestParam(value = "title", required = false) String title) {
         List<WorkoutType> workoutTypes = WORKOUT_TYPE_SERVICE.findAll(title);

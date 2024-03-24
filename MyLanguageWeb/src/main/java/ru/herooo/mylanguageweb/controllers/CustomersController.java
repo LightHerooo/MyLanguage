@@ -30,6 +30,7 @@ public class CustomersController {
     private final String CURRENT_CUSTOMER_ATTRIBUTE_NAME = "CURRENT_CUSTOMER";
     private final String DATE_OF_CREATE_ATTRIBUTE_NAME = "DATE_OF_CREATE";
     private final String DATE_OF_LAST_VISIT_ATTRIBUTE_NAME = "DATE_OF_LAST_VISIT";
+    private final String IS_CUSTOMER_OWNER_ATTRIBUTE_NAME = "IS_CUSTOMER_OWNER";
 
     private final CustomersRestController CUSTOMERS_REST_CONTROLLER;
 
@@ -135,6 +136,10 @@ public class CustomersController {
             // Генерируем строку последнего визита
             String dateOfLastVisit = customer.getDateOfLastVisit().format(formatter);
             request.setAttribute(DATE_OF_LAST_VISIT_ATTRIBUTE_NAME, dateOfLastVisit);
+
+            // Проверяем, является ли пользователь владельцем профиля
+            Customer authCustomer = CUSTOMER_SERVICE.find(request);
+            request.setAttribute(IS_CUSTOMER_OWNER_ATTRIBUTE_NAME, customer.equals(authCustomer));
 
             return Views.CUSTOMERS_SHOW_INFO_ONE.PATH_TO_FILE;
         } else {

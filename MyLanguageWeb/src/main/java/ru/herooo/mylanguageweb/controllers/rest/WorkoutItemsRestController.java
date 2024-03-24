@@ -3,7 +3,6 @@ package ru.herooo.mylanguageweb.controllers.rest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -63,7 +62,7 @@ public class WorkoutItemsRestController {
         this.DIC_UTILS = yandexDicUtils;
     }
 
-    @GetMapping("/with_answer_by_workout_id_and_round_number")
+    @GetMapping("/with_answer_in_round")
     public ResponseEntity<?> getListWithAnswer(@RequestParam("workout_id") Long workoutId,
                                                @RequestParam("round_number") Long roundNumber) {
         ResponseEntity<?> response = WORKOUTS_REST_CONTROLLER.find(workoutId);
@@ -77,7 +76,7 @@ public class WorkoutItemsRestController {
         }
 
         List<WorkoutItem> workoutItems = WORKOUT_ITEM_SERVICE
-                .findListWithAnswer(workoutId, roundNumber);
+                .findListWithAnswerInRound(workoutId, roundNumber);
         if (workoutItems != null) {
             if (workoutItems.size() > 0) {
                 List<WorkoutItemResponseDTO> responseDTOs = workoutItems
@@ -95,6 +94,24 @@ public class WorkoutItemsRestController {
                             workoutId, roundNumber));
             return ResponseEntity.badRequest().body(message);
         }
+    }
+
+    @GetMapping("/count_with_answer_in_round")
+    public ResponseEntity<?> getCountWithAnswer(
+            @RequestParam("workout_id") Long workoutId,
+            @RequestParam("round_number") Long roundNumber) {
+        ResponseEntity<?> response = WORKOUTS_REST_CONTROLLER.find(workoutId);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        response = WORKOUTS_REST_CONTROLLER.validateRoundNumberValue(workoutId, roundNumber);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        long numberOfItems = WORKOUT_ITEM_SERVICE.countWithAnswerInRound(workoutId, roundNumber);
+        return ResponseEntity.ok(new LongResponse(numberOfItems));
     }
 
     @PostMapping("/add_to_next_round")
@@ -197,24 +214,6 @@ public class WorkoutItemsRestController {
         }
     }
 
-    @GetMapping("/count_with_answer_by_workout_id_and_round_number")
-    public ResponseEntity<?> getCountWithAnswer(
-            @RequestParam("workout_id") Long workoutId,
-            @RequestParam("round_number") Long roundNumber) {
-        ResponseEntity<?> response = WORKOUTS_REST_CONTROLLER.find(workoutId);
-        if (response.getStatusCode() != HttpStatus.OK) {
-            return response;
-        }
-
-        response = WORKOUTS_REST_CONTROLLER.validateRoundNumberValue(workoutId, roundNumber);
-        if (response.getStatusCode() != HttpStatus.OK) {
-            return response;
-        }
-
-        long numberOfItems = WORKOUT_ITEM_SERVICE.countWithAnswer(workoutId, roundNumber);
-        return ResponseEntity.ok(new LongResponse(numberOfItems));
-    }
-
     @GetMapping("/find/by_id")
     public ResponseEntity<?> find(@RequestParam("id") Long id) {
         WorkoutItem workoutItem = WORKOUT_ITEM_SERVICE.find(id);
@@ -228,8 +227,8 @@ public class WorkoutItemsRestController {
         }
     }
 
-    @GetMapping("/find/random_without_answer_by_workout_id_and_round_number")
-    public ResponseEntity<?> findRandomWithoutAnswer(
+    @GetMapping("/find/random_without_answer_in_round")
+    public ResponseEntity<?> findRandomWithoutAnswerInRound(
             @RequestParam("workout_id") Long workoutId,
             @RequestParam("round_number") Long roundNumber) {
         ResponseEntity<?> response = WORKOUTS_REST_CONTROLLER.find(workoutId);
@@ -243,7 +242,7 @@ public class WorkoutItemsRestController {
         }
 
         WorkoutItem workoutItem = WORKOUT_ITEM_SERVICE
-                .findRandomWithoutAnswer(workoutId, roundNumber);
+                .findRandomWithoutAnswerInRound(workoutId, roundNumber);
         if (workoutItem != null) {
             WorkoutItemResponseDTO dto = WORKOUT_ITEM_MAPPING.mapToResponseDTO(workoutItem);
             return ResponseEntity.ok(dto);

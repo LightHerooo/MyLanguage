@@ -39,8 +39,8 @@ class WordsInCollectionGETRequests {
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
     }
 
-    async findByWordIdAndCollectionId(wordId, collectionId) {
-        let requestURL = new URL(URL_TO_API_WORDS_IN_COLLECTION_FIND + "/by_word_id_and_collection_id");
+    async findWordInCollection(wordId, collectionId) {
+        let requestURL = new URL(URL_TO_API_WORDS_IN_COLLECTION_FIND + "/word_in_collection");
         requestURL.searchParams.set("word_id", wordId);
         requestURL.searchParams.set("collection_id", collectionId);
 

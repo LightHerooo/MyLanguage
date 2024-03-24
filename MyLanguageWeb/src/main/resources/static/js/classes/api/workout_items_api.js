@@ -23,24 +23,24 @@ export class WorkoutItemsAPI {
 }
 
 class WorkoutItemsGETRequests {
-    async getWithAnswerByWorkoutIdAndRoundNumber(workoutId, roundNumber) {
-        let requestURL = new URL(URL_TO_API_WORKOUT_ITEMS + "/with_answer_by_workout_id_and_round_number");
+    async getWithAnswerInRound(workoutId, roundNumber) {
+        let requestURL = new URL(URL_TO_API_WORKOUT_ITEMS + "/with_answer_in_round");
         requestURL.searchParams.set("workout_id", workoutId);
         requestURL.searchParams.set("round_number", roundNumber);
 
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
     }
-    async getCountWithAnswerByWorkoutIdAndRoundNumber(workoutId, roundNumber) {
-        let requestURL = new URL(URL_TO_API_WORKOUT_ITEMS + "/count_with_answer_by_workout_id_and_round_number");
+    async getCountWithAnswerInRound(workoutId, roundNumber) {
+        let requestURL = new URL(URL_TO_API_WORKOUT_ITEMS + "/count_with_answer_in_round");
         requestURL.searchParams.set("workout_id", workoutId);
         requestURL.searchParams.set("round_number", roundNumber);
 
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
     }
 
-    async getRandomWithoutAnswerByWorkoutIdAndRoundNumber(workoutId, roundNumber){
+    async getRandomWithoutAnswerInRound(workoutId, roundNumber){
         let requestURL = new URL(URL_TO_API_WORKOUT_ITEMS_FIND
-            + "/random_without_answer_by_workout_id_and_round_number");
+            + "/random_without_answer_in_round");
         requestURL.searchParams.set("workout_id", workoutId);
         requestURL.searchParams.set("round_number", roundNumber);
 

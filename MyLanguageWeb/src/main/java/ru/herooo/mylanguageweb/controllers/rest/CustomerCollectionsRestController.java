@@ -9,14 +9,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.herooo.mylanguagedb.entities.*;
-import ru.herooo.mylanguagedb.types.CustomerCollectionsWithLangStatistic;
+import ru.herooo.mylanguagedb.types.CustomerCollectionsStatistic;
 import ru.herooo.mylanguageutils.yandexdictionary.yandexlangs.YandexLangsResult;
 import ru.herooo.mylanguageweb.dto.other.CustomResponseMessage;
 import ru.herooo.mylanguageweb.dto.entity.customercollection.CustomerCollectionMapping;
 import ru.herooo.mylanguageweb.dto.entity.customercollection.CustomerCollectionRequestDTO;
 import ru.herooo.mylanguageweb.dto.entity.customercollection.CustomerCollectionResponseDTO;
 import ru.herooo.mylanguageweb.dto.other.LongResponse;
-import ru.herooo.mylanguageweb.dto.types.CustomerCollectionsWithLangStatisticResponseDTO;
+import ru.herooo.mylanguageweb.dto.types.customer_collections_with_lang_statistic.CustomerCollectionsStatisticMapping;
+import ru.herooo.mylanguageweb.dto.types.customer_collections_with_lang_statistic.CustomerCollectionsStatisticResponseDTO;
 import ru.herooo.mylanguageweb.services.*;
 
 import java.util.*;
@@ -39,6 +40,7 @@ public class CustomerCollectionsRestController {
     private final LangService LANG_SERVICE;
 
     private final CustomerCollectionMapping CUSTOMER_COLLECTION_MAPPING;
+    private final CustomerCollectionsStatisticMapping CUSTOMER_COLLECTIONS_WITH_LANG_STATISTIC_MAPPING;
 
     @Autowired
     public CustomerCollectionsRestController(CustomersRestController customersRestController,
@@ -53,7 +55,8 @@ public class CustomerCollectionsRestController {
                                              WordService wordService,
                                              LangService langService,
 
-                                             CustomerCollectionMapping customerCollectionMapping) {
+                                             CustomerCollectionMapping customerCollectionMapping,
+                                             CustomerCollectionsStatisticMapping customerCollectionsStatisticMapping) {
         this.CUSTOMERS_REST_CONTROLLER = customersRestController;
         this.LANGS_REST_CONTROLLER = langsRestController;
         this.WORKOUTS_REST_CONTROLLER = workoutsRestController;
@@ -67,6 +70,7 @@ public class CustomerCollectionsRestController {
         this.LANG_SERVICE = langService;
 
         this.CUSTOMER_COLLECTION_MAPPING = customerCollectionMapping;
+        this.CUSTOMER_COLLECTIONS_WITH_LANG_STATISTIC_MAPPING = customerCollectionsStatisticMapping;
     }
     @GetMapping("/for_author_filtered")
     public ResponseEntity<?> getForAuthorFiltered(
@@ -79,7 +83,7 @@ public class CustomerCollectionsRestController {
             return response;
         }
 
-        List<CustomerCollection> collections = CUSTOMER_COLLECTION_SERVICE.findAll(
+        List<CustomerCollection> collections = CUSTOMER_COLLECTION_SERVICE.findAllForAuthor(
                 title, langCode, customerId, isActiveForAuthor);
         if (collections != null && collections.size() > 0) {
             List<CustomerCollectionResponseDTO> collectionsDTO =
@@ -133,7 +137,7 @@ public class CustomerCollectionsRestController {
             return ResponseEntity.badRequest().body(message);
         }
 
-        List<CustomerCollection> collections = CUSTOMER_COLLECTION_SERVICE.findAll(
+        List<CustomerCollection> collections = CUSTOMER_COLLECTION_SERVICE.findAllForAuthor(
                 title, langCode, customerId, isActiveForAuthor, numberOfItems, lastCollectionIdOnPreviousPage);
         if (collections != null && collections.size() > 0) {
             List<CustomerCollectionResponseDTO> collectionsDTO =
@@ -146,9 +150,9 @@ public class CustomerCollectionsRestController {
         }
     }
 
-    @GetMapping("/for_author_by_customer_id_and_lang_out_code")
-    public ResponseEntity<?> getForAuthorFiltered(@RequestParam("customer_id") Long customerId,
-                                                  @RequestParam("lang_out_code") String langOutCode) {
+    @GetMapping("/for_author_by_lang_out_code")
+    public ResponseEntity<?> getForAuthorByLangOutCode(@RequestParam("customer_id") Long customerId,
+                                                       @RequestParam("lang_out_code") String langOutCode) {
         ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.find(customerId);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
@@ -161,7 +165,7 @@ public class CustomerCollectionsRestController {
 
         response = LANGS_REST_CONTROLLER.tryToGetYandexLangsResult();
         if (response.getBody() instanceof YandexLangsResult yandexLangsResult) {
-            List<CustomerCollection> collections = CUSTOMER_COLLECTION_SERVICE.findAll(
+            List<CustomerCollection> collections = CUSTOMER_COLLECTION_SERVICE.findAllForAuthor(
                     null, null, customerId, true);
 
             Lang langOut = LANG_SERVICE.find(langOutCode);
@@ -190,15 +194,13 @@ public class CustomerCollectionsRestController {
             return ResponseEntity.badRequest().body(message);
         }
      }
-
-    @GetMapping("/customer_collections_with_lang_statistics_by_customer_id")
-    public ResponseEntity<?> getCustomerCollectionsWithLangStatistics(@RequestParam("customer_id") Long customerId) {
-        List<CustomerCollectionsWithLangStatistic> statistics = CUSTOMER_COLLECTION_SERVICE
-                .findCustomerCollectionsWithLangStatistics(customerId);
+    @GetMapping("/statistics_by_customer_id")
+    public ResponseEntity<?> getStatistics(@RequestParam("customer_id") Long customerId) {
+        List<CustomerCollectionsStatistic> statistics = CUSTOMER_COLLECTION_SERVICE.findStatistics(customerId);
         if (statistics != null && statistics.size() > 0) {
-            List<CustomerCollectionsWithLangStatisticResponseDTO> responseDTOs = statistics
+            List<CustomerCollectionsStatisticResponseDTO> responseDTOs = statistics
                     .stream()
-                    .map(CustomerCollectionsWithLangStatisticResponseDTO::new)
+                    .map(CUSTOMER_COLLECTIONS_WITH_LANG_STATISTIC_MAPPING::mapToResponse)
                     .toList();
             return ResponseEntity.ok(responseDTOs);
         } else {
@@ -244,7 +246,7 @@ public class CustomerCollectionsRestController {
             CustomerCollection collection = CUSTOMER_COLLECTION_SERVICE.find(responseDTO.getId());
 
             // Ищем слова в тренировке в первом раунде
-            List<WorkoutItem> workoutItems = WORKOUT_ITEM_SERVICE.findListWithAnswer(workout.getId(), 1L);
+            List<WorkoutItem> workoutItems = WORKOUT_ITEM_SERVICE.findListWithAnswerInRound(workout.getId(), 1L);
             if (workoutItems != null && workoutItems.size() > 0) {
                 for (WorkoutItem workoutItem: workoutItems) {
                     Word word = WORD_SERVICE.findFirstByTitleIgnoreCaseAndLang(
@@ -312,7 +314,7 @@ public class CustomerCollectionsRestController {
 
         // Коллекция должна принадлежать пользователю
         Customer customer = CUSTOMER_SERVICE.findByAuthCode(dto.getAuthCode());
-        response = validateIsCustomerCollectionAuthor(customer.getId(), dto.getId());
+        response = validateIsAuthor(customer.getId(), dto.getId());
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
@@ -348,7 +350,7 @@ public class CustomerCollectionsRestController {
 
         // Коллекцией должен владеть пользователь, который хочет её удалить
         Customer customer = CUSTOMER_SERVICE.findByAuthCode(dto.getAuthCode());
-        response = validateIsCustomerCollectionAuthor(customer.getId(), dto.getId());
+        response = validateIsAuthor(customer.getId(), dto.getId());
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
@@ -425,9 +427,9 @@ public class CustomerCollectionsRestController {
         return ResponseEntity.ok(message);
     }
 
-    @GetMapping("/validate/is_customer_collection_author")
-    public ResponseEntity<?> validateIsCustomerCollectionAuthor(@RequestParam("customer_id") Long customerId,
-                                                                @RequestParam("collection_id") Long collectionId) {
+    @GetMapping("/validate/is_author")
+    public ResponseEntity<?> validateIsAuthor(@RequestParam("customer_id") Long customerId,
+                                              @RequestParam("collection_id") Long collectionId) {
         ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.find(customerId);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
@@ -449,8 +451,8 @@ public class CustomerCollectionsRestController {
         }
     }
 
-    @GetMapping("/validate/is_lang_active_in_collection_by_id")
-    public ResponseEntity<?> validateIsLangActiveInCollection(@RequestParam("id") Long id) {
+    @GetMapping("/validate/is_lang_active_by_id")
+    public ResponseEntity<?> validateIsLangActiveById(@RequestParam("id") Long id) {
         ResponseEntity<?> response = find(id);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
@@ -485,8 +487,8 @@ public class CustomerCollectionsRestController {
         }
     }
 
-    @GetMapping("/validate/min_number_of_words_for_workout_by_id")
-    public ResponseEntity<?> validateMinNumberOfWordsForWorkout(@RequestParam("id") Long id) {
+    @GetMapping("/validate/number_of_words_for_workout_by_id")
+    public ResponseEntity<?> validateNumberOfWordsForWorkoutById(@RequestParam("id") Long id) {
         ResponseEntity<?> response = find(id);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;

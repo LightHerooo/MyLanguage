@@ -17,4 +17,38 @@ export class ButtonUtils {
         let event = new Event('click');
         btnElement.dispatchEvent(event);
     }
+
+    prepareBtnRefreshWithPromise(btnRefresh,
+                                 beforeRefreshFunction,
+                                 refreshFunction,
+                                 afterRefreshFunction,
+                                 customTimerObj) {
+        if (btnRefresh && customTimerObj) {
+            btnRefresh.addEventListener("click", async function() {
+                if (beforeRefreshFunction) {
+                    await beforeRefreshFunction();
+                }
+
+                let refreshPromise = new Promise(resolve => {
+                    customTimerObj.stop();
+
+                    customTimerObj.setTimeout(500);
+                    customTimerObj.setHandler(async function() {
+                        if (refreshFunction) {
+                            await refreshFunction();
+                        }
+
+                        resolve();
+                    })
+
+                    customTimerObj.start();
+                });
+                await refreshPromise;
+
+                if (afterRefreshFunction) {
+                    await afterRefreshFunction();
+                }
+            });
+        }
+    }
 }

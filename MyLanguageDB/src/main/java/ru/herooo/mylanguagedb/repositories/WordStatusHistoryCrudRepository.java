@@ -30,8 +30,4 @@ public interface WordStatusHistoryCrudRepository extends CrudRepository<WordStat
             "WHERE wsh.word.id = :word_id " +
             "AND wsh.dateOfEnd IS NULL")
     Optional<WordStatusHistory> findCurrent(@Param("word_id") Long wordId);
-
-    @Query(nativeQuery = true,
-            value = "SELECT * FROM get_current_word_status_history_to_word(:word_id)")
-    Optional<WordStatusHistory> getCurrentWordStatusHistoryToWord(@Param("word_id") Long wordId);
 }

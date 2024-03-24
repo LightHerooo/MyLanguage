@@ -1,6 +1,5 @@
 div.small-info-block-container, div.small-info-block-container-margin  {
     background: rgba(var(--first-color-rgb), var(--opacity-standard));
-    padding: 10px;
 
     display: flex;
     flex-direction: row;

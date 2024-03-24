@@ -35,6 +35,37 @@ export class ComboBoxUtils {
             });
         }
     }
+
+    prepareCbPeriods(cbPeriods) {
+        if (cbPeriods) {
+            cbPeriods.replaceChildren();
+
+            let option = document.createElement("option");
+            option.value = "1";
+            option.textContent = "Сегодня";
+            cbPeriods.appendChild(option);
+
+            option = option.cloneNode(false);
+            option.value = "7";
+            option.textContent = "За последние 7 дней";
+            cbPeriods.appendChild(option);
+
+            option = option.cloneNode(false);
+            option.value = "30";
+            option.textContent = "За последние 30 дней";
+            cbPeriods.appendChild(option);
+
+            option = option.cloneNode(false);
+            option.value = "365";
+            option.textContent = "За последние 365 дней";
+            cbPeriods.appendChild(option);
+
+            option = option.cloneNode(false);
+            option.value = "";
+            option.textContent = "За всё время";
+            cbPeriods.appendChild(option);
+        }
+    }
 }
 
 class GeneralFunctions {

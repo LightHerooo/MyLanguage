@@ -113,7 +113,7 @@ function startToFindWorkoutTypes() {
 async function tryToFillWorkoutTypes() {
     let divWorkoutTypesContainer = document.getElementById(_DIV_WORKOUT_TYPES_CONTAINER_ID);
     if (divWorkoutTypesContainer) {
-        let JSONResponse = await _WORKOUT_TYPES_API.GET.getAllFiltered(null);
+        let JSONResponse = await _WORKOUT_TYPES_API.GET.getAll();
         if (JSONResponse.status === _HTTP_STATUSES.OK) {
             let divWorkoutTypes = await createDivWorkoutTypes(JSONResponse.json);
 
@@ -216,19 +216,17 @@ async function createDivWorkoutTypes(workoutTypesJson) {
         //---
 
         // Создаём кнопку ---
-        let isActive;
+        let isActive = false;
         if (workoutType) {
-            if (customer &&
-                (customer.role.id === _CUSTOMER_ROLES.ADMIN.ID
-                    || customer.role.id === _CUSTOMER_ROLES.MODERATOR.ID)) {
-                isActive = true;
-            } else {
-                isActive = workoutType.isActive;
+            if (workoutType.isPrepared === true) {
+                if (customer &&
+                    (customer.role.id === _CUSTOMER_ROLES.ADMIN.ID
+                        || customer.role.id === _CUSTOMER_ROLES.MODERATOR.ID)) {
+                    isActive = true;
+                } else {
+                    isActive = workoutType.isActive;
+                }
             }
-        }
-
-        if (!isActive) {
-            isActive = false;
         }
 
         let aBtnAction = document.createElement("a");

@@ -7,15 +7,17 @@ import ru.herooo.mylanguagedb.entities.Workout;
 import ru.herooo.mylanguagedb.repositories.WorkoutCrudRepository;
 import ru.herooo.mylanguagedb.types.WorkoutRoundStatistic;
 import ru.herooo.mylanguagedb.types.WorkoutStatistic;
+import ru.herooo.mylanguagedb.types.WorkoutsCustomerExtraStatistic;
 import ru.herooo.mylanguageutils.StringUtils;
 import ru.herooo.mylanguageweb.dto.entity.workout.WorkoutMapping;
 import ru.herooo.mylanguageweb.dto.entity.workout.WorkoutRequestDTO;
 import ru.herooo.mylanguageweb.global.GlobalCookieUtils;
 import ru.herooo.mylanguageweb.global.GlobalCookies;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class WorkoutService {
@@ -37,6 +39,17 @@ public class WorkoutService {
 
         this.STRING_UTILS = stringUtils;
         this.GLOBAL_COOKIE_UTILS = globalCookieUtils;
+    }
+    public List<Workout> findAll(Long customerId, String workoutTypeCode, LocalDate dateOfEnd) {
+        return WORKOUT_CRUD_REPOSITORY.findAll(customerId, workoutTypeCode, dateOfEnd);
+    }
+
+    public List<Workout> findListNotOver(Long customerId, String workoutTypeCode, Boolean isActive) {
+        return WORKOUT_CRUD_REPOSITORY.findListNotOver(customerId, workoutTypeCode, isActive);
+    }
+
+    public long countNotOver(Long customerId, String workoutTypeCode, Boolean isActive) {
+        return WORKOUT_CRUD_REPOSITORY.countNotOver(customerId, workoutTypeCode, isActive);
     }
 
     public Workout add(Workout workout) {
@@ -103,20 +116,27 @@ public class WorkoutService {
                 customerId, workoutTypeCode).orElse(null);
     }
 
-    public Workout findLastInactive(Long customerId) {
-        return WORKOUT_CRUD_REPOSITORY.findLastInactive(customerId).orElse(null);
+    public Workout findLastNotOverInactive(Long customerId) {
+        return WORKOUT_CRUD_REPOSITORY.findLastNotOverInactive(customerId).orElse(null);
     }
 
-    public WorkoutStatistic findWorkoutStatistic(Long workoutId) {
-        return WORKOUT_CRUD_REPOSITORY.findWorkoutStatistic(workoutId).orElse(null);
+    public LocalDate findMaxDateOfEnd(Long customerId, String workoutTypeCode) {
+        return WORKOUT_CRUD_REPOSITORY.findMaxDateOfEnd(customerId, workoutTypeCode).orElse(null);
+    }
+    public LocalDate findNextDateOfEnd(Long customerId, String workoutTypeCode, LocalDate dateOfEnd) {
+        return WORKOUT_CRUD_REPOSITORY.findNextDateOfEnd(customerId, workoutTypeCode, dateOfEnd).orElse(null);
+    }
+
+    public WorkoutsCustomerExtraStatistic findCustomerExtraStatistic(Long customerId, String workoutTypeCode, Integer days) {
+        return WORKOUT_CRUD_REPOSITORY.findCustomerExtraStatistic(customerId, workoutTypeCode, days).orElse(null);
+    }
+
+    public WorkoutStatistic findStatistic(Long workoutId) {
+        return WORKOUT_CRUD_REPOSITORY.findStatistic(workoutId).orElse(null);
     }
 
     public WorkoutRoundStatistic findRoundStatistic(Long workoutId, Long roundNumber) {
         return WORKOUT_CRUD_REPOSITORY.findRoundStatistic(workoutId, roundNumber).orElse(null);
-    }
-
-    public List<Workout> findListNotOver(Long customerId, String workoutTypeCode, Boolean isActive) {
-        return WORKOUT_CRUD_REPOSITORY.findListNotOver(customerId, workoutTypeCode, isActive);
     }
 
     public String validateSecurityKey(HttpServletRequest request, String securityKey) {
@@ -134,10 +154,6 @@ public class WorkoutService {
     }
 
     public void repairNotOver(Long customerId, String workoutTypeCode) {
-        WORKOUT_CRUD_REPOSITORY.repairNotOverWorkouts(customerId, workoutTypeCode);
-    }
-
-    public long countNotOver(Long customerId, String workoutTypeCode, Boolean isActive) {
-        return WORKOUT_CRUD_REPOSITORY.countNotOver(customerId, workoutTypeCode, isActive);
+        WORKOUT_CRUD_REPOSITORY.repairNotOver(customerId, workoutTypeCode);
     }
 }

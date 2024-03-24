@@ -10,17 +10,25 @@ import ru.herooo.mylanguagedb.entities.*;
 import ru.herooo.mylanguagedb.repositories.workouttype.WorkoutTypes;
 import ru.herooo.mylanguagedb.types.WorkoutRoundStatistic;
 import ru.herooo.mylanguagedb.types.WorkoutStatistic;
+import ru.herooo.mylanguagedb.types.WorkoutsCustomerExtraStatistic;
 import ru.herooo.mylanguageutils.StringUtils;
 import ru.herooo.mylanguageweb.dto.other.CustomResponseMessage;
+import ru.herooo.mylanguageweb.dto.other.LocalDateResponse;
 import ru.herooo.mylanguageweb.dto.other.LongResponse;
 import ru.herooo.mylanguageweb.dto.entity.workout.WorkoutMapping;
 import ru.herooo.mylanguageweb.dto.entity.workout.WorkoutRequestDTO;
 import ru.herooo.mylanguageweb.dto.entity.workout.WorkoutResponseDTO;
-import ru.herooo.mylanguageweb.dto.types.WorkoutRoundStatisticResponseDTO;
-import ru.herooo.mylanguageweb.dto.types.WorkoutStatisticResponseDTO;
+import ru.herooo.mylanguageweb.dto.types.workout.workout_round_statistic.WorkoutRoundStatisticMapping;
+import ru.herooo.mylanguageweb.dto.types.workout.workout_round_statistic.WorkoutRoundStatisticResponseDTO;
+import ru.herooo.mylanguageweb.dto.types.workout.workout_statistic.WorkoutStatisticMapping;
+import ru.herooo.mylanguageweb.dto.types.workout.workout_statistic.WorkoutStatisticResponseDTO;
+import ru.herooo.mylanguageweb.dto.types.workout.workouts_customer_extra_statistic.WorkoutsCustomerExtraStatisticMapping;
+import ru.herooo.mylanguageweb.dto.types.workout.workouts_customer_extra_statistic.WorkoutsCustomerExtraStatisticResponseDTO;
 import ru.herooo.mylanguageweb.services.*;
 
+import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -28,6 +36,8 @@ import java.util.List;
 public class WorkoutsRestController {
     private final long MAX_NUMBER_OF_NOT_OVER_WORKOUTS = 3;
     private final long MIN_NUMBER_OF_WORDS = 10;
+
+    private final int[] POSSIBLE_DAYS = new int[] {0, 1, 7, 30, 365};
 
     private final CustomersRestController CUSTOMERS_REST_CONTROLLER;
     private final WorkoutTypesRestController WORKOUT_TYPES_REST_CONTROLLER;
@@ -44,6 +54,9 @@ public class WorkoutsRestController {
     private final WordInCollectionService WORD_IN_COLLECTION_SERVICE;
 
     private final WorkoutMapping WORKOUT_MAPPING;
+    private final WorkoutsCustomerExtraStatisticMapping WORKOUTS_CUSTOMER_EXTRA_STATISTIC_MAPPING;
+    private final WorkoutRoundStatisticMapping WORKOUT_ROUND_STATISTIC_MAPPING;
+    private final WorkoutStatisticMapping WORKOUT_STATISTIC_MAPPING;
 
     private final StringUtils STRING_UTILS;
 
@@ -63,6 +76,9 @@ public class WorkoutsRestController {
                                   WordInCollectionService wordInCollectionService,
 
                                   WorkoutMapping workoutMapping,
+                                  WorkoutsCustomerExtraStatisticMapping workoutsCustomerExtraStatisticMapping,
+                                  WorkoutRoundStatisticMapping workoutRoundStatisticMapping,
+                                  WorkoutStatisticMapping workoutStatisticMapping,
 
                                   StringUtils stringUtils) {
         this.WORKOUT_TYPES_REST_CONTROLLER = workoutTypesRestController;
@@ -80,8 +96,63 @@ public class WorkoutsRestController {
         this.WORD_IN_COLLECTION_SERVICE = wordInCollectionService;
 
         this.WORKOUT_MAPPING = workoutMapping;
+        this.WORKOUTS_CUSTOMER_EXTRA_STATISTIC_MAPPING = workoutsCustomerExtraStatisticMapping;
+        this.WORKOUT_ROUND_STATISTIC_MAPPING = workoutRoundStatisticMapping;
+        this.WORKOUT_STATISTIC_MAPPING = workoutStatisticMapping;
 
         this.STRING_UTILS = stringUtils;
+    }
+
+    @GetMapping("/filtered")
+    public ResponseEntity<?> getAll(@RequestParam("customer_id") Long customerId,
+                                    @RequestParam(value = "workout_type_code", required = false)
+                                        String workoutTypeCode,
+                                    @RequestParam(value = "date_of_end", required = false)
+                                        String dateOfEnd) {
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.find(customerId);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        if (workoutTypeCode != null) {
+            response = WORKOUT_TYPES_REST_CONTROLLER.find(workoutTypeCode);
+            if (response.getStatusCode() != HttpStatus.OK) {
+                return response;
+            }
+        }
+
+        LocalDate date = null;
+        if (dateOfEnd != null) {
+            try {
+                date = LocalDate.parse(dateOfEnd);
+            } catch (Throwable e ){
+                CustomResponseMessage message = new CustomResponseMessage(1,
+                        "Введена некорректная дата. Введите дату в формате 'yyyy-MM-dd'.");
+                return ResponseEntity.badRequest().body(message);
+            }
+        }
+
+        List<Workout> workouts = WORKOUT_SERVICE.findAll(customerId, workoutTypeCode, date);
+        if (workouts != null && workouts.size() > 0) {
+            List<WorkoutResponseDTO> workoutResponseDTOs = workouts
+                    .stream()
+                    .map(WORKOUT_MAPPING::mapToResponseDTO)
+                    .toList();
+            return ResponseEntity.ok(workoutResponseDTOs);
+        } else {
+            CustomResponseMessage message;
+            if (workoutTypeCode != null) {
+                WorkoutType workoutType = WORKOUT_TYPE_SERVICE.find(workoutTypeCode);
+                message = new CustomResponseMessage(1,
+                        String.format("Пользователь не провёл ни одной тренировки в режиме '%s'.",
+                                workoutType.getTitle()));
+            } else {
+                message = new CustomResponseMessage(1,
+                        "Пользователь не провёл ни одной тренировки.");
+            }
+
+            return ResponseEntity.badRequest().body(message);
+        }
     }
 
     @GetMapping("/not_over")
@@ -288,7 +359,7 @@ public class WorkoutsRestController {
         }
     }
 
-    @GetMapping("/find/last_by_customer_id_and_workout_type_code")
+    @GetMapping("/find/last")
     public ResponseEntity<?> findLast(@RequestParam("customer_id") Long customerId,
                                       @RequestParam("workout_type_code")
                                                                         String workoutTypeCode) {
@@ -314,14 +385,14 @@ public class WorkoutsRestController {
         }
     }
 
-    @GetMapping("/find/last_inactive_by_customer_id")
+    @GetMapping("/find/last_not_over_inactive_by_customer_id")
     public ResponseEntity<?> findLastInactive(@RequestParam("customer_id") Long customerId) {
         ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.find(customerId);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
 
-        Workout workout = WORKOUT_SERVICE.findLastInactive(customerId);
+        Workout workout = WORKOUT_SERVICE.findLastNotOverInactive(customerId);
         if (workout != null) {
             WorkoutResponseDTO dto = WORKOUT_MAPPING.mapToResponseDTO(workout);
             return ResponseEntity.ok(dto);
@@ -350,7 +421,146 @@ public class WorkoutsRestController {
         }
     }
 
-    @GetMapping("/find/statistic_by_workout_id")
+    @GetMapping("/find/max_date_of_end")
+    public ResponseEntity<?> findMaxDateOfEnd(@RequestParam("customer_id") Long customerId,
+                                               @RequestParam(value = "workout_type_code", required = false)
+                                               String workoutTypeCode) {
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.find(customerId);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        if (workoutTypeCode != null) {
+            response = WORKOUT_TYPES_REST_CONTROLLER.find(workoutTypeCode);
+            if (response.getStatusCode() != HttpStatus.OK) {
+                return response;
+            }
+        }
+
+        LocalDate maxDate = WORKOUT_SERVICE.findMaxDateOfEnd(customerId, workoutTypeCode);
+        if (maxDate != null) {
+            LocalDateResponse localDateResponse = new LocalDateResponse(maxDate);
+            return ResponseEntity.ok(localDateResponse);
+        } else {
+            CustomResponseMessage message = new CustomResponseMessage(1,
+                    "Не удалось найти максимальную дату окончания тренировки.");
+            return ResponseEntity.badRequest().body(message);
+        }
+    }
+
+    @GetMapping("/find/next_date_of_end")
+    public ResponseEntity<?> findNextDateOfEnd(@RequestParam("customer_id") Long customerId,
+                                               @RequestParam("date_of_end") String dateOfEnd,
+                                               @RequestParam(value = "workout_type_code", required = false)
+                                                    String workoutTypeCode) {
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.find(customerId);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        if (workoutTypeCode != null) {
+            response = WORKOUT_TYPES_REST_CONTROLLER.find(workoutTypeCode);
+            if (response.getStatusCode() != HttpStatus.OK) {
+                return response;
+            }
+        }
+
+        LocalDate date = null;
+        try {
+            date = LocalDate.parse(dateOfEnd);
+        } catch (Throwable e ){
+            CustomResponseMessage message = new CustomResponseMessage(1,
+                    "Введена некорректная дата. Введите дату в формате 'yyyy-MM-dd'.");
+            return ResponseEntity.badRequest().body(message);
+        }
+
+        LocalDate nextDate = WORKOUT_SERVICE.findNextDateOfEnd(customerId, workoutTypeCode, date);
+        if (nextDate != null) {
+            LocalDateResponse localDateResponse = new LocalDateResponse(nextDate);
+            return ResponseEntity.ok(localDateResponse);
+        } else {
+            CustomResponseMessage message = new CustomResponseMessage(1,
+                    "Не удалось найти следующую дату окончания тренировки.");
+            return ResponseEntity.badRequest().body(message);
+        }
+    }
+
+    @GetMapping("/find/customer_extra_statistic")
+    public ResponseEntity<?> findCustomerExtraStatistic(@RequestParam("customer_id") Long customerId,
+                                                        @RequestParam(value = "workout_type_code", required = false)
+                                                            String workoutTypeCode,
+                                                        @RequestParam(value = "days", required = false, defaultValue = "0")
+                                                            Integer days) {
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.find(customerId);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        WorkoutType workoutType = null;
+        if (workoutTypeCode != null) {
+            response = WORKOUT_TYPES_REST_CONTROLLER.find(workoutTypeCode);
+            if (response.getStatusCode() != HttpStatus.OK) {
+                return response;
+            }
+
+            workoutType = WORKOUT_TYPE_SERVICE.find(workoutTypeCode);
+            if (!workoutType.getPrepared()) {
+                CustomResponseMessage message = new CustomResponseMessage(1,
+                        "Не удалось получить статистику, так как режим тренировки не подготовлен.");
+                return ResponseEntity.badRequest().body(message);
+            }
+        }
+
+        if (Arrays.stream(POSSIBLE_DAYS).noneMatch(pd -> pd == days)) {
+            StringBuilder possibleDaysStr = new StringBuilder();
+            for (int i = 0 ; i < POSSIBLE_DAYS.length; i++) {
+                possibleDaysStr.append(POSSIBLE_DAYS[i]);
+                if (i < POSSIBLE_DAYS.length - 1) {
+                    possibleDaysStr.append(", ");
+                }
+            }
+
+            CustomResponseMessage message = new CustomResponseMessage(1,
+                    String.format("Не удалось получить статистику. Разрешенные значения дней: [%s].",
+                            possibleDaysStr));
+            return ResponseEntity.badRequest().body(message);
+        }
+
+        WorkoutsCustomerExtraStatistic workoutsCustomerExtraStatistic = WORKOUT_SERVICE.findCustomerExtraStatistic(
+                customerId, workoutTypeCode, days);
+        if (workoutsCustomerExtraStatistic != null) {
+            if (workoutsCustomerExtraStatistic.getNumberOfWorkouts().orElse(0L) > 0) {
+                WorkoutsCustomerExtraStatisticResponseDTO dto =
+                        WORKOUTS_CUSTOMER_EXTRA_STATISTIC_MAPPING.mapToResponse(workoutsCustomerExtraStatistic);
+                return ResponseEntity.ok(dto);
+            } else {
+                // Генерируем сообщение об ошибке в зависимости от пришедшего количества дней
+                StringBuilder messageBuilder = new StringBuilder();
+                if (days <= 0) {
+                    messageBuilder.append("Пользователь не провёл ни одной тренировки");
+                } else if (days == 1) {
+                    messageBuilder.append("Пользователь за сегодня не провёл ни одной тренировки");
+                } else {
+                    messageBuilder.append(String.format(
+                            "Пользователь не провёл ни одной тренировки за последние %d дней", days));
+                }
+
+                // Добавляем к сообщению название режима тренировки, если он не пустой
+                if (workoutType != null) {
+                    messageBuilder.append(String.format(" в режиме '%s'", workoutType.getTitle()));
+                }
+
+                messageBuilder.append(".");
+                CustomResponseMessage message = new CustomResponseMessage(1, messageBuilder.toString());
+                return ResponseEntity.badRequest().body(message);
+            }
+        } else {
+            CustomResponseMessage message = new CustomResponseMessage(2, "Не удалось получить статистику.");
+            return ResponseEntity.badRequest().body(message);
+        }
+    }
+
+    @GetMapping("/find/statistic")
     public ResponseEntity<?> findStatistic(@RequestParam("workout_id") Long workoutId) {
         ResponseEntity<?> response = find(workoutId);
         if (response.getStatusCode() != HttpStatus.OK) {
@@ -363,9 +573,9 @@ public class WorkoutsRestController {
             return response;
         }
 
-        WorkoutStatistic workoutStatistic = WORKOUT_SERVICE.findWorkoutStatistic(workoutId);
+        WorkoutStatistic workoutStatistic = WORKOUT_SERVICE.findStatistic(workoutId);
         if (workoutStatistic != null) {
-            WorkoutStatisticResponseDTO dto = new WorkoutStatisticResponseDTO(workoutStatistic);
+            WorkoutStatisticResponseDTO dto = WORKOUT_STATISTIC_MAPPING.mapToResponse(workoutStatistic);
             return ResponseEntity.ok(dto);
         } else {
             CustomResponseMessage message = new CustomResponseMessage(1,
@@ -374,7 +584,7 @@ public class WorkoutsRestController {
         }
     }
 
-    @GetMapping("/find/round_statistic_by_workout_id_and_round_number")
+    @GetMapping("/find/round_statistic")
     public ResponseEntity<?> findRoundStatistic(
             @RequestParam("workout_id") Long workoutId,
             @RequestParam("round_number") Long roundNumber) {
@@ -391,7 +601,7 @@ public class WorkoutsRestController {
         WorkoutRoundStatistic workoutRoundStatistic =
                 WORKOUT_SERVICE.findRoundStatistic(workoutId, roundNumber);
         if (workoutRoundStatistic != null) {
-            WorkoutRoundStatisticResponseDTO dto = new WorkoutRoundStatisticResponseDTO(workoutRoundStatistic);
+            WorkoutRoundStatisticResponseDTO dto = WORKOUT_ROUND_STATISTIC_MAPPING.mapToResponse(workoutRoundStatistic);
             return ResponseEntity.ok(dto);
         } else {
             CustomResponseMessage message = new CustomResponseMessage(3,
@@ -429,7 +639,7 @@ public class WorkoutsRestController {
             if (dto.getCollectionId() != 0) {
                 // Проверяем, принадлежит ли коллекция пользователю
                 Customer customer = CUSTOMER_SERVICE.findByAuthCode(dto.getAuthCode());
-                response = CUSTOMER_COLLECTIONS_REST_CONTROLLER.validateIsCustomerCollectionAuthor(
+                response = CUSTOMER_COLLECTIONS_REST_CONTROLLER.validateIsAuthor(
                         customer.getId(), dto.getCollectionId());
                 if (response.getStatusCode() != HttpStatus.OK) {
                     return response;
@@ -596,7 +806,8 @@ public class WorkoutsRestController {
 
         Customer customer = CUSTOMER_SERVICE.findByAuthCode(dto.getAuthCode());
         WorkoutType workoutType = WORKOUT_TYPE_SERVICE.find(dto.getWorkoutTypeCode());
-        if (!workoutType.getActive() && !CUSTOMER_SERVICE.isSuperUser(customer)) {
+        if (!workoutType.getPrepared()
+                || (!workoutType.getActive() && !CUSTOMER_SERVICE.isSuperUser(customer))) {
             CustomResponseMessage message = new CustomResponseMessage(1,
                     String.format("Режим тренировки '%s' недоступен.", workoutType.getTitle()));
             return ResponseEntity.badRequest().body(message);
@@ -641,7 +852,7 @@ public class WorkoutsRestController {
             isTypePrepared = true;
         } else if (workoutType.getId() == WorkoutTypes.COLLECTION_WORKOUT.ID) {
             // Проверяем принадлежность коллекции к пользователю, который создал тренировку
-            response = CUSTOMER_COLLECTIONS_REST_CONTROLLER.validateIsCustomerCollectionAuthor(
+            response = CUSTOMER_COLLECTIONS_REST_CONTROLLER.validateIsAuthor(
                     customer.getId(), dto.getCollectionId());
             if (response.getStatusCode() != HttpStatus.OK) {
                 return response;

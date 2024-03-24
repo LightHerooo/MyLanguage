@@ -41,7 +41,7 @@ import {
 
 import {
     WorkoutRoundStatisticResponseDTO
-} from "../../classes/dto/types/workout_round_statistic.js";
+} from "../../classes/dto/types/workout/workout_round_statistic.js";
 
 import {
     CssMain
@@ -223,7 +223,7 @@ async function tryToFindCurrentWorkout() {
     let currentWorkout;
 
     let authId = _GLOBAL_COOKIES.AUTH_ID.getValue();
-    let JSONResponse = await _WORKOUTS_API.GET.findLastInactiveByCustomerId(authId);
+    let JSONResponse = await _WORKOUTS_API.GET.findLastNotOverInactiveByCustomerId(authId);
     if (JSONResponse.status === _HTTP_STATUSES.OK) {
         currentWorkout = new WorkoutResponseDTO(JSONResponse.json);
 
@@ -350,7 +350,7 @@ async function showCurrentRoundInfo() {
             let message;
 
             let JSONResponse = await _WORKOUTS_API.GET
-                .findRoundStatisticByWorkoutIdAndRoundNumber(_currentWorkout.id, _currentRound);
+                .findRoundStatistic(_currentWorkout.id, _currentRound);
             if (JSONResponse.status === _HTTP_STATUSES.OK) {
                 _workoutRoundStatistic =
                     new WorkoutRoundStatisticResponseDTO(JSONResponse.json);
@@ -431,7 +431,7 @@ async function showCurrentRoundAnswersHistory() {
         if (isCorrect === true) {
             let notFoundText;
             let JSONResponse = await _WORKOUT_ITEMS_API.GET
-                .getWithAnswerByWorkoutIdAndRoundNumber(_currentWorkout.id, _currentRound);
+                .getWithAnswerInRound(_currentWorkout.id, _currentRound);
             if (JSONResponse.status !== _HTTP_STATUSES.OK) {
                 let badRequest = new CustomResponseMessage(JSONResponse.json);
                 if (badRequest.id === 999) {
@@ -635,7 +635,7 @@ async function prepareNextQuestion() {
     showLoadingInInteractionContainer();
 
     let JSONResponse = await _WORKOUT_ITEMS_API.GET
-        .getRandomWithoutAnswerByWorkoutIdAndRoundNumber(_currentWorkout.id, _currentRound);
+        .getRandomWithoutAnswerInRound(_currentWorkout.id, _currentRound);
     if (JSONResponse.status === _HTTP_STATUSES.OK) {
         let workoutItem = new WorkoutItemResponseDTO(JSONResponse.json);
 
@@ -660,7 +660,7 @@ async function prepareInteractionContainerForStartRound() {
             // Проверяем новизну раунда ---
             let isNewRound = true;
             let JSONResponse = await _WORKOUT_ITEMS_API.GET
-                .getCountWithAnswerByWorkoutIdAndRoundNumber(_currentWorkout.id, _currentRound);
+                .getCountWithAnswerInRound(_currentWorkout.id, _currentRound);
             if (JSONResponse.status === _HTTP_STATUSES.OK) {
                 isNewRound = new LongResponse(JSONResponse.json).value === 0n;
             }

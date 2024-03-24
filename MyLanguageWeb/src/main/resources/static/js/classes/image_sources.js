@@ -19,6 +19,7 @@ class OtherFolder {
     HISTORY = this.#PATH_TO_OTHER_FOLDER + "/history.png";
     ACCEPT = this.#PATH_TO_OTHER_FOLDER + "/accept.png";
     QUESTION = this.#PATH_TO_OTHER_FOLDER + "/question.png";
+    INFO = this.#PATH_TO_OTHER_FOLDER + "/info.png";
 }
 
 class RulesFolder {

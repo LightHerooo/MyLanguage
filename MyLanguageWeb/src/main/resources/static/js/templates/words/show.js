@@ -99,6 +99,10 @@ import {
     WordUtils
 } from "../../classes/utils/entity/word_utils.js";
 
+import {
+    ButtonUtils
+} from "../../classes/utils/button_utils.js";
+
 const _CUSTOMER_COLLECTIONS_API = new CustomerCollectionsAPI();
 const _WORDS_API = new WordsAPI();
 const _WORDS_IN_COLLECTION_API = new WordsInCollectionAPI();
@@ -119,6 +123,7 @@ const _TEXT_BOX_UTILS = new TextBoxUtils();
 const _A_BUTTON_IMG_SIZES = new AButtonImgSizes();
 const _BIGINT_UTILS = new BigIntUtils();
 const _WORD_UTILS = new WordUtils();
+const _BUTTON_UTILS = new ButtonUtils();
 
 const _DIV_WORDS_STATISTICS_CONTAINER_ID = "words_statistics_container";
 const _TB_FINDER_ID = "tb_finder";
@@ -144,7 +149,7 @@ const _CUSTOM_TIMER_COLLECTION_INFO_FINDER = new CustomTimer();
 const _CUSTOM_TIMER_WORDS_FINDER = new CustomTimer();
 const _TIMEOUT_FOR_FINDERS = 1000;
 
-const _CUSTOM_TIMER_TB_FINDER = new CustomTimer();
+const _CUSTOM_TIMER_FOR_TB_FINDER = new CustomTimer();
 const _CUSTOM_TIMER_FOR_REFRESH = new CustomTimer();
 
 window.onload = async function () {
@@ -165,7 +170,7 @@ window.onload = async function () {
 function prepareTbFinder() {
     let tbFinder = document.getElementById(_TB_FINDER_ID);
     if (tbFinder) {
-        _TEXT_BOX_UTILS.prepareTbFinder(tbFinder, startAllFinders, _CUSTOM_TIMER_TB_FINDER);
+        _TEXT_BOX_UTILS.prepareTbFinder(tbFinder, startAllFinders, _CUSTOM_TIMER_FOR_TB_FINDER);
     }
 }
 
@@ -223,55 +228,44 @@ async function prepareCbCustomerCollections() {
 function prepareBtnRefresh() {
     let btnRefresh = document.getElementById(_BTN_REFRESH_ID);
     if (btnRefresh) {
-        btnRefresh.addEventListener("click", async function() {
-            changeDisableStatusToFinderInstruments(true);
+        _BUTTON_UTILS.prepareBtnRefreshWithPromise(btnRefresh,
+            function() {
+                changeDisableStatusToFinderInstruments(true);
 
-            // Отображаем загрузки на момент перезагрузки ---
-            showLoadingInStatistic();
-            showLoadingInCollectionInfo();
-            showLoadingInTable();
-            //---
+                // Отображаем загрузки на момент перезагрузки ---
+                showLoadingInStatistic();
+                showLoadingInCollectionInfo();
+                showLoadingInTable();
+                //---
+            }, async function() {
+                let cbLangs = document.getElementById(_CB_LANGS_ID);
+                let divLangFlag = document.getElementById(_DIV_LANG_FLAG_ID);
+                if (cbLangs && divLangFlag) {
+                    let firstOption = document.createElement("option");
+                    firstOption.textContent = "Все";
 
-            let refreshPromise = new Promise(resolve => {
-                _CUSTOM_TIMER_FOR_REFRESH.stop();
+                    let cbLangsWithFlag = new ComboBoxWithFlag(cbLangs.parentElement, cbLangs, divLangFlag);
+                    await _LANG_UTILS.CB_LANGS_IN.fill(cbLangsWithFlag, firstOption);
+                }
 
-                _CUSTOM_TIMER_FOR_REFRESH.setTimeout(500);
-                _CUSTOM_TIMER_FOR_REFRESH.setHandler(async function() {
-                    let cbLangs = document.getElementById(_CB_LANGS_ID);
-                    let divLangFlag = document.getElementById(_DIV_LANG_FLAG_ID);
-                    if (cbLangs && divLangFlag) {
-                        let firstOption = document.createElement("option");
-                        firstOption.textContent = "Все";
+                let cbCustomerCollections = document.getElementById(_CB_CUSTOMER_COLLECTIONS_ID);
+                let divCollectionFlag = document.getElementById(_DIV_COLLECTION_FLAG_ID);
+                if (cbCustomerCollections && divCollectionFlag) {
+                    let comboBoxWithFlag =
+                        new ComboBoxWithFlag(cbCustomerCollections.parentElement, cbCustomerCollections, divCollectionFlag);
 
-                        let cbLangsWithFlag = new ComboBoxWithFlag(cbLangs.parentElement, cbLangs, divLangFlag);
-                        await _LANG_UTILS.CB_LANGS_IN.fill(cbLangsWithFlag, firstOption);
-                    }
+                    await _CUSTOMER_COLLECTION_UTILS.CB_CUSTOMER_COLLECTIONS.fill(comboBoxWithFlag, null);
 
-                    let cbCustomerCollections = document.getElementById(_CB_CUSTOMER_COLLECTIONS_ID);
-                    let divCollectionFlag = document.getElementById(_DIV_COLLECTION_FLAG_ID);
-                    if (cbCustomerCollections && divCollectionFlag) {
-                        let comboBoxWithFlag =
-                            new ComboBoxWithFlag(cbCustomerCollections.parentElement, cbCustomerCollections, divCollectionFlag);
-
-                        await _CUSTOMER_COLLECTION_UTILS.CB_CUSTOMER_COLLECTIONS.fill(comboBoxWithFlag, null);
-
-                        // Мы должны вызвать change событие без запуска таймеров ---
-                        cbCustomerCollections.removeEventListener("change", startAllFinders);
-                        _COMBO_BOX_UTILS.callChangeEvent(cbCustomerCollections);
-                        cbCustomerCollections.addEventListener("change", startAllFinders);
-                        //---
-                    }
-
-                    resolve();
-                });
-
-                _CUSTOM_TIMER_FOR_REFRESH.start();
-            });
-            await refreshPromise;
-
-            startAllFinders();
-            changeDisableStatusToFinderInstruments(false);
-        })
+                    // Мы должны вызвать change событие без запуска таймеров ---
+                    cbCustomerCollections.removeEventListener("change", startAllFinders);
+                    _COMBO_BOX_UTILS.callChangeEvent(cbCustomerCollections);
+                    cbCustomerCollections.addEventListener("change", startAllFinders);
+                    //---
+                }
+            }, function() {
+                startAllFinders();
+                changeDisableStatusToFinderInstruments(false);
+            }, _CUSTOM_TIMER_FOR_REFRESH);
     }
 }
 
@@ -480,7 +474,7 @@ function prepareWordsFinder() {
             // Коллекция должна принадлежать пользователю ---
             if (readyToFill === true) {
                 let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET
-                    .validateIsCustomerCollectionAuthor(authId, collectionId);
+                    .validateIsAuthor(authId, collectionId);
                 if (JSONResponse.status !== _HTTP_STATUSES.OK) {
                     readyToFill = false;
                     setMessageInsideTable(new CustomResponseMessage(JSONResponse.json).text);
@@ -650,7 +644,7 @@ async function createBtnAction(wordInCollectionRequestDTO) {
         wordId, collectionId);
     if (JSONResponse.status === _HTTP_STATUSES.OK) {
         JSONResponse = await
-            _WORDS_IN_COLLECTION_API.GET.findByWordIdAndCollectionId(wordId, collectionId);
+            _WORDS_IN_COLLECTION_API.GET.findWordInCollection(wordId, collectionId);
         if (JSONResponse.status === _HTTP_STATUSES.OK) {
             let wordInCollection = new WordInCollectionResponseDTO(JSONResponse.json);
             wordInCollectionRequestDTO.id = wordInCollection.id;

@@ -25,6 +25,9 @@ public class WorkoutType {
     @Column(name = "is_active")
     private Boolean isActive;
 
+    @Column(name = "is_prepared")
+    private Boolean isPrepared;
+
     public long getId() {
         return id;
     }
@@ -67,5 +70,13 @@ public class WorkoutType {
 
     public void setActive(Boolean active) {
         isActive = active;
+    }
+
+    public Boolean getPrepared() {
+        return isPrepared;
+    }
+
+    public void setPrepared(Boolean prepared) {
+        isPrepared = prepared;
     }
 }

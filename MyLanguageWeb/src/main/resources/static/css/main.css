@@ -121,6 +121,7 @@ a.a-button-standard,
 a.a-button-accept-standard,
 a.a-button-warning-standard,
 a.a-button-deny-standard,
+a.a-button-info-standard,
 a.a-button-disabled-standard {
     -webkit-appearance: button;
     -moz-appearance: button;
@@ -181,6 +182,19 @@ a.a-button-deny-standard {
 
 a.a-button-deny-standard:hover {
     background: rgba(var(--deny-second-color-rgb), var(--opacity-standard));
+}
+
+a.a-button-info-standard {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border: 5px solid var(--info-second-color);
+    background: rgba(var(--info-first-color-rgb), var(--opacity-standard));
+}
+
+a.a-button-info-standard:hover {
+    background: rgba(var(--info-second-color-rgb), var(--opacity-standard));
 }
 
 a.a-button-disabled-standard {

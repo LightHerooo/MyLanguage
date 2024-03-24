@@ -13,35 +13,31 @@ import java.util.Optional;
 public interface WorkoutItemCrudRepository extends CrudRepository<WorkoutItem, Long> {
     @Query(nativeQuery = true, value =
             "SELECT * " +
-            "FROM get_workout_items_with_answer(:workout_id)")
-    List<WorkoutItem> findListWithAnswer(@Param("workout_id") Long workoutId);
+            "FROM get_workout_items_with_answer_in_round(:workout_id, :round_number)")
+    List<WorkoutItem> findListWithAnswerInRound(@Param("workout_id") Long workoutId,
+                                                @Param("round_number") Long roundNumber);
 
     @Query(nativeQuery = true, value =
-            "SELECT * " +
-            "FROM get_workout_items_with_answer(:workout_id, :round_number)")
-    List<WorkoutItem> findListWithAnswer(@Param("workout_id") Long workoutId,
-                                         @Param("round_number") Long roundNumber);
+            "SELECT COUNT(*) " +
+            "FROM get_workout_items_with_answer_in_round(:workout_id, :round_number)")
+    Optional<Long> countWithAnswerInRound(@Param("workout_id") Long workoutId,
+                                          @Param("round_number") Long roundNumber);
 
     @Query(nativeQuery = true, value =
             "SELECT * " +
             "FROM get_workout_items_without_answer(:workout_id)")
     List<WorkoutItem> findListWithoutAnswer(@Param("workout_id") Long workoutId);
 
-    @Query(nativeQuery = true, value =
-            "SELECT COUNT(*) " +
-            "FROM get_workout_items_with_answer(:workout_id, :round_number)")
-    Optional<Long> countWithAnswer(@Param("workout_id") Long workoutId,
-                             @Param("round_number") Long roundNumber);
 
     @Query(nativeQuery = true, value =
             "SELECT * " +
-            "FROM get_random_workout_item_without_answer(:workout_id, :round_number)")
-    Optional<WorkoutItem> findRandomWithoutAnswer(@Param("workout_id") Long workoutId,
-                                        @Param("round_number") Long roundNumber);
+            "FROM get_workout_item_without_answer_in_round_random(:workout_id, :round_number)")
+    Optional<WorkoutItem> findRandomWithoutAnswerInRound(@Param("workout_id") Long workoutId,
+                                                         @Param("round_number") Long roundNumber);
 
     @Query(nativeQuery = true, value =
             "SELECT * " +
-            "FROM get_first_workout_item_without_answer(:workout_id, :round_number)")
+            "FROM get_workout_item_without_answer_first(:workout_id, :round_number)")
     Optional<WorkoutItem> findFirstWithoutAnswer(@Param("workout_id") Long workoutId,
                                                  @Param("round_number") Integer roundNumber);
 }

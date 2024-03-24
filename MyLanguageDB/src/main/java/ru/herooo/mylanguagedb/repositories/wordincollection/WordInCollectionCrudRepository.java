@@ -16,18 +16,18 @@ import java.util.Optional;
 public interface WordInCollectionCrudRepository extends CrudRepository<WordInCollection, Long>, WordInCollectionRepository<WordInCollection> {
     Optional<WordInCollection> findByWordAndCustomerCollection(Word word, CustomerCollection customerCollection);
 
-    @Procedure("delete_inactive_words_in_collections")
-    void deleteInactiveWordsInCollections();
+    @Procedure("delete_words_in_collections_without_active_status")
+    void deleteAllWithoutActiveStatus();
 
     @Query(nativeQuery = true,
-        value = "SELECT * FROM get_words_in_collection_after_filter" +
+        value = "SELECT * FROM get_words_in_collection" +
                 "(:title, :collection_id)")
     List<WordInCollection> findAll(
             @Param("title") String title,
             @Param("collection_id") Long collectionId);
 
     @Query(nativeQuery = true,
-            value = "SELECT * FROM get_words_in_collection_after_filter_pagination" +
+            value = "SELECT * FROM get_words_in_collection" +
                     "(:title, :collection_id, :number_of_words," +
                     ":last_word_in_collection_id_on_previous_page)")
     List<WordInCollection> findAll(
@@ -37,6 +37,6 @@ public interface WordInCollectionCrudRepository extends CrudRepository<WordInCol
             @Param("last_word_in_collection_id_on_previous_page") Long lastWordInCollectionIdOnPreviousPage);
 
     @Query(nativeQuery = true,
-            value = "SELECT COUNT(*) FROM get_words_in_collection_after_filter(NULL, :collection_id)")
+            value = "SELECT COUNT(*) FROM get_words_in_collection(NULL, :collection_id)")
     Optional<Long> count(@Param("collection_id") Long collectionId);
 }

@@ -75,6 +75,10 @@ import {
     WordInCollectionResponseDTO
 } from "../../classes/dto/entity/word_in_collection.js";
 
+import {
+    ButtonUtils
+} from "../../classes/utils/button_utils.js";
+
 class WordsInCollectionItemsForFind {
     table;
     tHead;
@@ -107,6 +111,7 @@ const _GLOBAL_COOKIES = new GlobalCookies();
 const _HTTP_STATUSES = new HttpStatuses();
 const _A_BUTTONS = new AButtons();
 const _A_BUTTON_IMG_SIZES = new AButtonImgSizes();
+const _BUTTON_UTILS = new ButtonUtils();
 
 const _DIV_COLLECTIONS_STATISTICS_CONTAINER_ID = "collections_statistics_container";
 const _TB_FINDER_ID = "tb_finder";
@@ -184,41 +189,30 @@ function prepareCbIsActive() {
 function prepareBtnRefresh() {
     let btnRefresh = document.getElementById(_BTN_REFRESH_ID);
     if (btnRefresh) {
-        btnRefresh.addEventListener("click", async function() {
-            changeDisableStatusToFinderInstruments(true);
+        _BUTTON_UTILS.prepareBtnRefreshWithPromise(btnRefresh,
+            function() {
+                changeDisableStatusToFinderInstruments(true);
 
-            // Отображаем загрузки ---
-            showLoadingInStatistic();
-            showLoadingInCollectionsTable();
-            //---
+                // Отображаем загрузки ---
+                showLoadingInStatistic();
+                showLoadingInCollectionsTable();
+                //---
+            }, async function() {
+                let cbLangs = document.getElementById(_CB_LANGS_ID);
+                let divLangFlag = document.getElementById(_DIV_LANG_FLAG_ID);
+                if (cbLangs && divLangFlag) {
+                    let cbLangsWithFlag =
+                        new ComboBoxWithFlag(cbLangs.parentElement, cbLangs, divLangFlag);
 
-            let refreshPromise = new Promise(resolve => {
-                _CUSTOM_TIMER_FOR_REFRESH.stop();
+                    let firstOption = document.createElement("option");
+                    firstOption.textContent = "Все";
 
-                _CUSTOM_TIMER_FOR_REFRESH.setTimeout(500);
-                _CUSTOM_TIMER_FOR_REFRESH.setHandler(async function() {
-                    let cbLangs = document.getElementById(_CB_LANGS_ID);
-                    let divLangFlag = document.getElementById(_DIV_LANG_FLAG_ID);
-                    if (cbLangs && divLangFlag) {
-                        let cbLangsWithFlag =
-                            new ComboBoxWithFlag(cbLangs.parentElement, cbLangs, divLangFlag);
-
-                        let firstOption = document.createElement("option");
-                        firstOption.textContent = "Все";
-
-                        await _LANG_UTILS.CB_LANGS_IN.fill(cbLangsWithFlag, firstOption);
-                    }
-
-                    resolve();
-                });
-
-                _CUSTOM_TIMER_FOR_REFRESH.start();
-            });
-            await refreshPromise;
-
-            startAllFinders();
-            changeDisableStatusToFinderInstruments(false);
-        })
+                    await _LANG_UTILS.CB_LANGS_IN.fill(cbLangsWithFlag, firstOption);
+                }
+            }, function() {
+                startAllFinders();
+                changeDisableStatusToFinderInstruments(false);
+            }, _CUSTOM_TIMER_FOR_REFRESH);
     }
 
 }

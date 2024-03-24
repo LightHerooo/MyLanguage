@@ -5,6 +5,8 @@ export class CssRoot {
 
     ACCEPT_FIRST_COLOR = this.#getValueInRootCssFile("--accept-first-color");
     ACCEPT_FIRST_COLOR_RGB = this.#getValueInRootCssFile("--accept-first-color-rgb");
+    WARNING_FIRST_COLOR = this.#getValueInRootCssFile("--warning-first-color");
+    WARNING_FIRST_COLOR_RGB = this.#getValueInRootCssFile("--warning-first-color-rgb");
     DENY_FIRST_COLOR = this.#getValueInRootCssFile("--deny-first-color");
     DENY_FIRST_COLOR_RGB = this.#getValueInRootCssFile("--deny-first-color-rgb");
 

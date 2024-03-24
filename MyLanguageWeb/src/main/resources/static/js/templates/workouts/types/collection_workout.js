@@ -98,6 +98,10 @@ import {
     BigIntUtils
 } from "../../../classes/utils/bigint_utils.js";
 
+import {
+    ButtonUtils
+} from "../../../classes/utils/button_utils.js";
+
 const _CUSTOMER_COLLECTIONS_API = new CustomerCollectionsAPI();
 const _WORKOUTS_API = new WorkoutsAPI();
 const _WORDS_IN_COLLECTION_API = new WordsInCollectionAPI();
@@ -115,6 +119,7 @@ const _GLOBAL_COOKIES = new GlobalCookies();
 const _TEXT_BOX_UTILS = new TextBoxUtils();
 const _TABLE_UTILS = new TableUtils();
 const _BIGINT_UTILS = new BigIntUtils();
+const _BUTTON_UTILS = new ButtonUtils();
 
 const _DIV_CUSTOMER_COLLECTION_CONTAINER_ID = "div_customer_collection_container";
 const _CB_CUSTOMER_COLLECTIONS_ID = "cb_customer_collections";
@@ -138,16 +143,16 @@ const _THEAD_WORDS_IN_COLLECTION = "words_in_collection_head";
 const _TBODY_WORDS_IN_COLLECTION = "words_in_collection_body";
 
 const _CUSTOM_TIMER_COLLECTION_INFO_FINDER = new CustomTimer();
-
-const _CUSTOM_TIMER_TB_FINDER = new CustomTimer();
 const _CUSTOM_TIMER_WORDS_IN_COLLECTION_FINDER = new CustomTimer();
 const _TIMEOUT_FOR_FINDERS = 1000;
 
+const _CUSTOM_TIMER_FOR_TB_FINDER = new CustomTimer();
+const _CUSTOM_TIMER_FOR_DROP_WORKOUT_SETTINGS = new CustomTimer();
+
+const _CURRENT_WORKOUT_TYPE = new WorkoutTypes().COLLECTION_WORKOUT;
 const _NUMBER_OF_WORDS = 20;
 let _lastWordNumberInList = 0;
 let _lastWordInCollectionIdOnPreviousPage = 0n;
-
-const _CURRENT_WORKOUT_TYPE = new WorkoutTypes().COLLECTION_WORKOUT;
 
 let _lastWorkout;
 let _notOverWorkoutsTableHelper;
@@ -158,7 +163,7 @@ window.onload = async function() {
     // Ищем последнюю тренировку в данном режиме, чтобы установить последние настройки ---
     let authId = _GLOBAL_COOKIES.AUTH_ID.getValue();
     let workoutTypeCode = _CURRENT_WORKOUT_TYPE.CODE;
-    let JSONResponse = await _WORKOUTS_API.GET.findLastByCustomerIdAndWorkoutTypeCode(authId, workoutTypeCode);
+    let JSONResponse = await _WORKOUTS_API.GET.findLast(authId, workoutTypeCode);
     if (JSONResponse.status === _HTTP_STATUSES.OK) {
         _lastWorkout = new WorkoutResponseDTO(JSONResponse.json);
     }
@@ -345,57 +350,48 @@ function prepareFormSubmitSend() {
 }
 
 function prepareBtnDropWorkoutSettings() {
-    let customTimerDropWorkoutSettings = new CustomTimer();
-    customTimerDropWorkoutSettings.setTimeout(500);
-    customTimerDropWorkoutSettings.setHandler(async function() {
-        let divCustomerCollectionContainer = document.getElementById(_DIV_CUSTOMER_COLLECTION_CONTAINER_ID);
-        let cbCustomerCollections = document.getElementById(_CB_CUSTOMER_COLLECTIONS_ID);
-        if (divCustomerCollectionContainer && cbCustomerCollections) {
-            _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM
-                .byComboBoxAndItemIndex(cbCustomerCollections, 0, false);
-
-            let ruleElement = new RuleElement(cbCustomerCollections, divCustomerCollectionContainer);
-            ruleElement.removeRule();
-        }
-
-        let divLangOutContainer = document.getElementById(_DIV_LANG_OUT_CONTAINER_ID);
-        let cbLangsOut = document.getElementById(_CB_LANGS_OUT_ID);
-        if (divLangOutContainer && cbLangsOut) {
-            _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM
-                .byComboBoxAndItemIndex(cbLangsOut, 0, false);
-
-            let ruleElement = new RuleElement(cbLangsOut, cbCustomerCollections);
-            ruleElement.removeRule();
-        }
-
-        // Заполняем списки поддерживающими языками ---
-        await fillCbCustomerCollectionsByLangOutCode();
-        await fillCbLangsOutByCustomerCollectionLangCode();
-        //---
-
-        // Запускаем таймеры с информацией о коллекции ---
-        startCollectionFinders();
-        //---
-
-        changeDisableStatusInImportantElements(false);
-    });
-
     let btnDropWorkoutSettings = document.getElementById(_BTN_DROP_WORKOUT_SETTINGS_ID);
     if (btnDropWorkoutSettings) {
-        btnDropWorkoutSettings.addEventListener("click", async function() {
-            clearDivWorkoutStartInfoContainer();
-            changeDisableStatusInImportantElements(true);
+        _BUTTON_UTILS.prepareBtnRefreshWithPromise(btnDropWorkoutSettings,
+            function() {
+                clearDivWorkoutStartInfoContainer();
+                changeDisableStatusInImportantElements(true);
+            }, async function() {
+                let divCustomerCollectionContainer = document.getElementById(_DIV_CUSTOMER_COLLECTION_CONTAINER_ID);
+                let cbCustomerCollections = document.getElementById(_CB_CUSTOMER_COLLECTIONS_ID);
+                if (divCustomerCollectionContainer && cbCustomerCollections) {
+                    _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM
+                        .byComboBoxAndItemIndex(cbCustomerCollections, 0, false);
 
-            customTimerDropWorkoutSettings.stop();
-            customTimerDropWorkoutSettings.start();
-        });
+                    let ruleElement = new RuleElement(cbCustomerCollections, divCustomerCollectionContainer);
+                    ruleElement.removeRule();
+                }
+
+                let divLangOutContainer = document.getElementById(_DIV_LANG_OUT_CONTAINER_ID);
+                let cbLangsOut = document.getElementById(_CB_LANGS_OUT_ID);
+                if (divLangOutContainer && cbLangsOut) {
+                    _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM
+                        .byComboBoxAndItemIndex(cbLangsOut, 0, false);
+
+                    let ruleElement = new RuleElement(cbLangsOut, cbCustomerCollections);
+                    ruleElement.removeRule();
+                }
+
+                // Заполняем списки поддерживающими языками ---
+                await fillCbCustomerCollectionsByLangOutCode();
+                await fillCbLangsOutByCustomerCollectionLangCode();
+                //---
+            }, function () {
+                startCollectionFinders();
+                changeDisableStatusInImportantElements(false);
+            }, _CUSTOM_TIMER_FOR_DROP_WORKOUT_SETTINGS);
     }
 }
 
 function prepareTbFinder() {
     let tbFinder = document.getElementById(_TB_FINDER_ID);
     if (tbFinder) {
-        _TEXT_BOX_UTILS.prepareTbFinder(tbFinder, startCollectionFinders, _CUSTOM_TIMER_TB_FINDER);
+        _TEXT_BOX_UTILS.prepareTbFinder(tbFinder, startCollectionFinders, _CUSTOM_TIMER_FOR_TB_FINDER);
     }
 }
 
@@ -683,7 +679,7 @@ function prepareWordsInCollectionFinder() {
         if (readyToFill === true) {
             let authId = _GLOBAL_COOKIES.AUTH_ID.getValue();
             let JSONResponse = await
-                _CUSTOMER_COLLECTIONS_API.GET.validateIsCustomerCollectionAuthor(authId, collectionId);
+                _CUSTOMER_COLLECTIONS_API.GET.validateIsAuthor(authId, collectionId);
             if (JSONResponse.status !== _HTTP_STATUSES.OK) {
                 readyToFill = false;
                 setMessageInsideTable(new CustomResponseMessage(JSONResponse.json).text);

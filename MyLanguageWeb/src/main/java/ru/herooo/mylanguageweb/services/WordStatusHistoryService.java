@@ -54,10 +54,6 @@ public class WordStatusHistoryService {
         WORD_STATUS_HISTORY_CRUD_REPOSITORY.addWordStatusToWord(wordId, wordStatusCode);
     }
 
-    public WordStatusHistory getCurrentWordStatusHistoryToWord(Word word) {
-        return WORD_STATUS_HISTORY_CRUD_REPOSITORY.getCurrentWordStatusHistoryToWord(word.getId()).orElse(null);
-    }
-
     public void addWordStatusToWordsWithoutStatus(String wordStatusCode) {
         WORD_STATUS_HISTORY_CRUD_REPOSITORY.addWordStatusToWordsWithoutStatus(wordStatusCode);
     }

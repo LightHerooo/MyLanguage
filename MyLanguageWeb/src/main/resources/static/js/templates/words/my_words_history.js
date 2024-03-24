@@ -67,10 +67,6 @@ import {
 } from "../../classes/utils/text_box_utils.js";
 
 import {
-    WordsWithStatusStatisticResponseDTO
-} from "../../classes/dto/types/words_with_status_statistic.js";
-
-import {
     AButtonImgSizes
 } from "../../classes/a_buttons/a_button_img_sizes.js";
 
@@ -85,6 +81,10 @@ import {
 import {
     CssRoot
 } from "../../classes/css/css_root.js";
+
+import {
+    ButtonUtils
+} from "../../classes/utils/button_utils.js";
 
 class WordStatusHistoryItemsForFind {
     tableHistory;
@@ -116,6 +116,7 @@ const _COMBO_BOX_UTILS = new ComboBoxUtils();
 const _TEXT_BOX_UTILS = new TextBoxUtils();
 const _A_BUTTON_IMG_SIZES = new AButtonImgSizes();
 const _WORD_UTILS = new WordUtils();
+const _BUTTON_UTILS = new ButtonUtils();
 
 const _DIV_MY_WORDS_HISTORY_STATISTICS_CONTAINER_ID = "my_words_history_statistics_container";
 const _TB_FINDER_ID = "tb_finder";
@@ -135,7 +136,7 @@ const _CUSTOM_TIMER_STATISTIC_FINDER = new CustomTimer();
 const _CUSTOM_TIMER_WORDS_FINDER = new CustomTimer();
 const _TIMEOUT_FOR_FINDERS = 1000;
 
-const _CUSTOM_TIMER_TB_FINDER = new CustomTimer();
+const _CUSTOM_TIMER_FOR_TB_FINDER = new CustomTimer();
 const _CUSTOM_TIMER_FOR_REFRESH = new CustomTimer();
 
 let _wordStatusHistoryItemsForFindMap = new Map();
@@ -156,7 +157,7 @@ function prepareTbFinder() {
     let tbFinder = document.getElementById(_TB_FINDER_ID);
 
     if (tbFinder) {
-        _TEXT_BOX_UTILS.prepareTbFinder(tbFinder, startAllFinders, _CUSTOM_TIMER_TB_FINDER);
+        _TEXT_BOX_UTILS.prepareTbFinder(tbFinder, startAllFinders, _CUSTOM_TIMER_FOR_TB_FINDER);
     }
 }
 
@@ -192,39 +193,28 @@ async function prepareCbWordStatuses() {
 function prepareBtnRefresh() {
     let btnRefresh = document.getElementById(_BTN_REFRESH_ID);
     if (btnRefresh) {
-        btnRefresh.addEventListener("click", async function() {
-            changeDisableStatusToFinderInstruments(true);
+        _BUTTON_UTILS.prepareBtnRefreshWithPromise(btnRefresh,
+            function() {
+                changeDisableStatusToFinderInstruments(true);
 
-            // Отображаем загрузки на момент перезагрузки ---
-            showLoadingInStatistic();
-            showLoadingInTable();
-            //---
+                // Отображаем загрузки на момент перезагрузки ---
+                showLoadingInStatistic();
+                showLoadingInTable();
+                //---
+            }, async function() {
+                let cbLangs = document.getElementById(_CB_LANGS_ID);
+                let divLangFlag = document.getElementById(_DIV_LANG_FLAG_ID);
+                if (cbLangs && divLangFlag) {
+                    let firstOption = document.createElement("option");
+                    firstOption.textContent = "Все";
 
-            let refreshPromise = new Promise(resolve => {
-                _CUSTOM_TIMER_FOR_REFRESH.stop();
-
-                _CUSTOM_TIMER_FOR_REFRESH.setTimeout(500);
-                _CUSTOM_TIMER_FOR_REFRESH.setHandler(async function() {
-                    let cbLangs = document.getElementById(_CB_LANGS_ID);
-                    let divLangFlag = document.getElementById(_DIV_LANG_FLAG_ID);
-                    if (cbLangs && divLangFlag) {
-                        let firstOption = document.createElement("option");
-                        firstOption.textContent = "Все";
-
-                        let cbLangsWithFlag = new ComboBoxWithFlag(cbLangs.parentElement, cbLangs, divLangFlag);
-                        await _LANG_UTILS.CB_LANGS_IN.fill(cbLangsWithFlag, firstOption);
-                    }
-
-                    resolve();
-                });
-
-                _CUSTOM_TIMER_FOR_REFRESH.start();
-            });
-            await refreshPromise;
-
-            startAllFinders();
-            changeDisableStatusToFinderInstruments(false);
-        })
+                    let cbLangsWithFlag = new ComboBoxWithFlag(cbLangs.parentElement, cbLangs, divLangFlag);
+                    await _LANG_UTILS.CB_LANGS_IN.fill(cbLangsWithFlag, firstOption);
+                }
+            }, function() {
+                startAllFinders();
+                changeDisableStatusToFinderInstruments(false);
+            }, _CUSTOM_TIMER_FOR_REFRESH);
     }
 }
 

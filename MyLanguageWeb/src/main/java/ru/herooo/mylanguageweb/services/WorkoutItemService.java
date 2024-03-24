@@ -23,8 +23,8 @@ public class WorkoutItemService {
         this.WORKOUT_ITEM_MAPPING = workoutItemMapping;
     }
 
-    public List<WorkoutItem> findListWithAnswer(Long workoutId, Long roundNumber) {
-        return WORKOUT_ITEM_CRUD_REPOSITORY.findListWithAnswer(workoutId, roundNumber);
+    public List<WorkoutItem> findListWithAnswerInRound(Long workoutId, Long roundNumber) {
+        return WORKOUT_ITEM_CRUD_REPOSITORY.findListWithAnswerInRound(workoutId, roundNumber);
     }
 
     public List<WorkoutItem> findListWithoutAnswer(Long workoutId) {
@@ -56,16 +56,16 @@ public class WorkoutItemService {
         return WORKOUT_ITEM_CRUD_REPOSITORY.findById(id).orElse(null);
     }
 
-    public WorkoutItem findRandomWithoutAnswer(Long workoutId, Long roundNumber) {
+    public WorkoutItem findRandomWithoutAnswerInRound(Long workoutId, Long roundNumber) {
         return WORKOUT_ITEM_CRUD_REPOSITORY
-                .findRandomWithoutAnswer(workoutId, roundNumber).orElse(null);
+                .findRandomWithoutAnswerInRound(workoutId, roundNumber).orElse(null);
     }
 
     public WorkoutItem findFirstWithoutAnswer(Long workoutId, Integer roundNumber) {
         return WORKOUT_ITEM_CRUD_REPOSITORY.findFirstWithoutAnswer(workoutId, roundNumber).orElse(null);
     }
 
-    public long countWithAnswer(Long workoutId, Long roundNumber) {
-        return WORKOUT_ITEM_CRUD_REPOSITORY.countWithAnswer(workoutId, roundNumber).orElse(0L);
+    public long countWithAnswerInRound(Long workoutId, Long roundNumber) {
+        return WORKOUT_ITEM_CRUD_REPOSITORY.countWithAnswerInRound(workoutId, roundNumber).orElse(0L);
     }
 }

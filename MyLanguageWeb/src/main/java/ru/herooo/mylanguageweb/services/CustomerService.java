@@ -46,7 +46,7 @@ public class CustomerService {
                                  Long numberOfItems,
                                  Long lastCustomerIdOnPreviousPage) {
         return CUSTOMER_CRUD_REPOSITORY
-                .findAllAfterFilterWithPagination(nickname, customerRoleCode, numberOfItems, lastCustomerIdOnPreviousPage);
+                .findAll(nickname, customerRoleCode, numberOfItems, lastCustomerIdOnPreviousPage);
     }
 
     public Customer add(CustomerRequestDTO dto) {

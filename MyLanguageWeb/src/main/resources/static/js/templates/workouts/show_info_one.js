@@ -60,7 +60,7 @@ import {
 
 import {
     WorkoutStatisticResponseDTO
-} from "../../classes/dto/types/workout_statistic.js";
+} from "../../classes/dto/types/workout/workout_statistic.js";
 
 import {
     WorkoutItemResponseDTO
@@ -76,7 +76,7 @@ import {
 
 import {
     WorkoutRoundStatisticResponseDTO
-} from "../../classes/dto/types/workout_round_statistic.js";
+} from "../../classes/dto/types/workout/workout_round_statistic.js";
 
 const _WORKOUTS_API = new WorkoutsAPI();
 const _WORKOUT_ITEMS_API = new WorkoutItemsAPI();
@@ -432,17 +432,22 @@ async function tryToFillStatistic() {
 
     if (_currentWorkout) {
         if (_isWorkoutEnded === true) {
-            let JSONResponse = await _WORKOUTS_API.GET.findStatisticByWorkoutId(_currentWorkout.id);
+            let JSONResponse = await _WORKOUTS_API.GET.findStatistic(_currentWorkout.id);
             if (JSONResponse.status === _HTTP_STATUSES.OK) {
                 let workoutStatistic = new WorkoutStatisticResponseDTO(JSONResponse.json);
 
                 let divWorkoutStatistics = document.getElementById(_DIV_WORKOUT_STATISTICS_ID);
                 if (divWorkoutStatistics && currentFinder.getActive() === true) {
                     divWorkoutStatistics.replaceChildren();
+                    divWorkoutStatistics.className = "";
+                    divWorkoutStatistics.classList.add(_DIV_WORKOUT_STATISTICS_CONTAINER_ID);
                     if (currentFinder.getActive() === true) {
-                        divWorkoutStatistics.className = "";
-                        divWorkoutStatistics.classList.add(_DIV_WORKOUT_STATISTICS_CONTAINER_ID);
                         divWorkoutStatistics.appendChild(workoutStatistic.createTable());
+
+                        let workoutAnswersStatistic = workoutStatistic.workoutAnswersStatistic;
+                        if (workoutAnswersStatistic) {
+                            divWorkoutStatistics.appendChild(workoutAnswersStatistic.createTable());
+                        }
                     }
                 }
             } else {
@@ -521,7 +526,7 @@ async function tryToFillWorkoutHistoryTable(doNeedToClearTable, doNeedToShowTabl
             //---
 
             JSONResponse = await _WORKOUT_ITEMS_API.GET
-                .getWithAnswerByWorkoutIdAndRoundNumber(_currentWorkout.id, _currentRoundNumber);
+                .getWithAnswerInRound(_currentWorkout.id, _currentRoundNumber);
             if (JSONResponse.status === _HTTP_STATUSES.OK) {
                 let tableRows = await createWorkoutHistoryTableRows(JSONResponse.json);
 
@@ -561,7 +566,7 @@ async function createWorkoutHistoryTableRows(workoutItemsJson) {
     // Создаём строку со статистикой по текущему раунду ---
     let trRoundStatistic;
     let JSONResponse = await _WORKOUTS_API.GET
-        .findRoundStatisticByWorkoutIdAndRoundNumber(_currentWorkout.id, _currentRoundNumber);
+        .findRoundStatistic(_currentWorkout.id, _currentRoundNumber);
     if (JSONResponse.status === _HTTP_STATUSES.OK) {
         let roundStatistic = new WorkoutRoundStatisticResponseDTO(JSONResponse.json);
 

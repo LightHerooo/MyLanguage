@@ -39,8 +39,8 @@ import {
     BigIntUtils
 } from "../bigint_utils.js";
 import {
-    CustomerCollectionsWithLangStatisticResponseDTO
-} from "../../dto/types/customer_collections_with_lang_statistic.js";
+    CustomerCollectionsStatisticResponseDTO
+} from "../../dto/types/customer_collections_statistic.js";
 
 import {
     changeEndOfTheWordByNumberOfItems,
@@ -77,7 +77,7 @@ export class CustomerCollectionUtils {
 
         let authId = _GLOBAL_COOKIES.AUTH_ID.getValue();
         let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET
-            .getCustomerCollectionsWithLangStatisticsByCustomerId(authId);
+            .getStatisticsByCustomerId(authId);
         if (JSONResponse.status === _HTTP_STATUSES.OK) {
             div = document.createElement("div");
 
@@ -88,16 +88,16 @@ export class CustomerCollectionUtils {
             let json = JSONResponse.json;
             let statisticsByAllLangs = [];
             for (let i = 0; i < json.length; i++) {
-                let customerCollectionsWithLangStatistic =
-                    new CustomerCollectionsWithLangStatisticResponseDTO(json[i]);
+                let customerCollectionsStatistic =
+                    new CustomerCollectionsStatisticResponseDTO(json[i]);
 
-                sumOfCollections += customerCollectionsWithLangStatistic.numberOfCollections;
+                sumOfCollections += customerCollectionsStatistic.numberOfCollections;
 
                 if (statisticsByAllLangs.length >= _MAX_NUMBER_OF_COLLECTIONS_FOR_STATISTICS) {
-                    extraSumOfCollections += customerCollectionsWithLangStatistic.numberOfCollections;
+                    extraSumOfCollections += customerCollectionsStatistic.numberOfCollections;
                     extraSumOfLangs++;
                 } else {
-                    let divStatistic = await customerCollectionsWithLangStatistic.createDiv();
+                    let divStatistic = await customerCollectionsStatistic.createDiv();
                     if (divStatistic) {
                         statisticsByAllLangs.push(divStatistic);
                     }
@@ -343,7 +343,7 @@ class CbCustomerCollections {
                 let authId = _GLOBAL_COOKIES.AUTH_ID.getValue();
                 if (langOutCode) {
                     let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET
-                        .getAllForAuthorByCustomerIdAndLangOutCode(authId, langOutCode);
+                        .getAllForAuthorByLangOutCode(authId, langOutCode);
                     if (JSONResponse.status === _HTTP_STATUSES.OK) {
                         isLangCodeCorrect = true;
                         await this.#fillClear(comboBoxWithFlagObj, firstOption, JSONResponse);
@@ -403,7 +403,7 @@ class CbCustomerCollections {
                 if (isCorrect === true) {
                     let authId = _GLOBAL_COOKIES.AUTH_ID.getValue();
                     let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET
-                        .validateIsCustomerCollectionAuthor(authId, collectionId);
+                        .validateIsAuthor(authId, collectionId);
                     if (JSONResponse.status !== _HTTP_STATUSES.OK) {
                         isCorrect = false;
                         ruleElement.message = new CustomResponseMessage(JSONResponse.json).text;
@@ -415,7 +415,7 @@ class CbCustomerCollections {
                 // Проверяем активность языка у искомой коллекции ---
                 if (isCorrect === true) {
                     let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET
-                        .validateIsLangActiveInCollectionByCollectionId(collectionId);
+                        .validateIsLangActiveById(collectionId);
                     if (JSONResponse.status !== _HTTP_STATUSES.OK) {
                         isCorrect = false;
                         ruleElement.message = new CustomResponseMessage(JSONResponse.json).text;
@@ -439,7 +439,7 @@ class CbCustomerCollections {
                 // Проверяем количество слов в искомой коллекции ---
                 if (isCorrect === true) {
                     let JSONResponse = await _CUSTOMER_COLLECTIONS_API.GET
-                        .validateMinNumberOfWordsForWorkoutByCollectionId(collectionId);
+                        .validateNumberOfWordsForWorkoutById(collectionId);
                     if (JSONResponse.status !== _HTTP_STATUSES.OK) {
                         isCorrect = false;
                         ruleElement.message = new CustomResponseMessage(JSONResponse.json).text;

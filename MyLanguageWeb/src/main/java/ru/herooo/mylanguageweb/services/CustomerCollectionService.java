@@ -5,8 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.herooo.mylanguagedb.entities.Customer;
 import ru.herooo.mylanguagedb.entities.CustomerCollection;
 import ru.herooo.mylanguagedb.repositories.CustomerCollectionCrudRepository;
-import ru.herooo.mylanguagedb.types.CustomerCollectionsWithLangStatistic;
-import ru.herooo.mylanguageutils.StringUtils;
+import ru.herooo.mylanguagedb.types.CustomerCollectionsStatistic;
 import ru.herooo.mylanguageweb.dto.entity.customercollection.CustomerCollectionMapping;
 import ru.herooo.mylanguageweb.dto.entity.customercollection.CustomerCollectionRequestDTO;
 
@@ -26,11 +25,11 @@ public class CustomerCollectionService {
         this.CUSTOMER_COLLECTION_MAPPING = customerCollectionMapping;
     }
 
-    public List<CustomerCollection> findAll(String title,
-                                            String langCode,
-                                            Long customerId,
-                                            Boolean isActiveForAuthor) {
-        return CUSTOMER_COLLECTION_CRUD_REPOSITORY.findAll(title, langCode, customerId, isActiveForAuthor);
+    public List<CustomerCollection> findAllForAuthor(String title,
+                                                     String langCode,
+                                                     Long customerId,
+                                                     Boolean isActiveForAuthor) {
+        return CUSTOMER_COLLECTION_CRUD_REPOSITORY.findAllForAuthor(title, langCode, customerId, isActiveForAuthor);
     }
 
     public long count(Long customerId,
@@ -38,17 +37,17 @@ public class CustomerCollectionService {
         return CUSTOMER_COLLECTION_CRUD_REPOSITORY.count(customerId, isActiveForAuthor).orElse(0L);
     }
 
-    public List<CustomerCollection> findAll(String title,
-                                            String langCode,
-                                            Long customerId,
-                                            Boolean isActiveForAuthor,
-                                            Long numberOfItems,
-                                            Long lastCollectionIdOnPreviousPage) {
-        return CUSTOMER_COLLECTION_CRUD_REPOSITORY.findAll(title, langCode, customerId, isActiveForAuthor, numberOfItems, lastCollectionIdOnPreviousPage);
+    public List<CustomerCollection> findAllForAuthor(String title,
+                                                     String langCode,
+                                                     Long customerId,
+                                                     Boolean isActiveForAuthor,
+                                                     Long numberOfItems,
+                                                     Long lastCollectionIdOnPreviousPage) {
+        return CUSTOMER_COLLECTION_CRUD_REPOSITORY.findAllForAuthor(title, langCode, customerId, isActiveForAuthor, numberOfItems, lastCollectionIdOnPreviousPage);
     }
 
-    public List<CustomerCollectionsWithLangStatistic> findCustomerCollectionsWithLangStatistics(Long customerId) {
-        return CUSTOMER_COLLECTION_CRUD_REPOSITORY.findCustomerCollectionsWithLangStatistics(customerId);
+    public List<CustomerCollectionsStatistic> findStatistics(Long customerId) {
+        return CUSTOMER_COLLECTION_CRUD_REPOSITORY.findStatistics(customerId);
     }
 
     public CustomerCollection find(long id) {

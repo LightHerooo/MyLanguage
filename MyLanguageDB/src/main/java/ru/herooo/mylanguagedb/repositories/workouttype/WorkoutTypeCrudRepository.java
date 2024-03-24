@@ -11,9 +11,14 @@ import java.util.Optional;
 
 @Repository
 public interface WorkoutTypeCrudRepository extends CrudRepository<WorkoutType, Long>, WorkoutTypeRepository<WorkoutType> {
-    Optional<WorkoutType> findByCode(String code);
+    @Query(value =
+            "FROM WorkoutType wt " +
+            "ORDER BY wt.isActive DESC, wt.title")
+    List<WorkoutType> findAll();
 
     @Query(nativeQuery = true, value =
-            "SELECT * FROM get_workout_types_after_filter(:title)")
-    List<WorkoutType> findAllAfterFilter(@Param("title") String title);
+            "SELECT * FROM get_workout_types(:title)")
+    List<WorkoutType> findAll(@Param("title") String title);
+
+    Optional<WorkoutType> findByCode(String code);
 }

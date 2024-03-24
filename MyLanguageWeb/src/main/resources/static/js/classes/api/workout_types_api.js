@@ -21,6 +21,12 @@ export class WorkoutTypesAPI {
 }
 
 class WorkoutTypesGETRequests {
+    async getAll() {
+        let requestURL = new URL(URL_TO_API_WORKOUT_TYPES);
+
+        return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
+    }
+
     async getAllFiltered(title) {
         let requestURL = new URL(URL_TO_API_WORKOUT_TYPES + "/filtered");
 

@@ -9,14 +9,15 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.herooo.mylanguagedb.entities.*;
 import ru.herooo.mylanguagedb.repositories.wordstatus.WordStatuses;
-import ru.herooo.mylanguagedb.types.WordsWithStatusStatistic;
+import ru.herooo.mylanguagedb.types.WordsStatistic;
 import ru.herooo.mylanguageweb.dto.other.CustomResponseMessage;
 import ru.herooo.mylanguageweb.dto.other.LongResponse;
 import ru.herooo.mylanguageweb.dto.entity.word.WordRequestDTO;
 import ru.herooo.mylanguageweb.dto.entity.word.WordResponseDTO;
 import ru.herooo.mylanguageweb.dto.entity.word.WordMapping;
 import ru.herooo.mylanguageweb.dto.entity.wordstatushistory.WordStatusHistoryRequestDTO;
-import ru.herooo.mylanguageweb.dto.types.WordsWithStatusStatisticResponseDTO;
+import ru.herooo.mylanguageweb.dto.types.words_with_status_statistic.WordsStatisticMapping;
+import ru.herooo.mylanguageweb.dto.types.words_with_status_statistic.WordsStatisticResponseDTO;
 import ru.herooo.mylanguageweb.services.*;
 
 import java.time.LocalDate;
@@ -36,6 +37,7 @@ public class WordsRestController {
     private WordService WORD_SERVICE;
 
     private final WordMapping WORD_MAPPING;
+    private final WordsStatisticMapping WORDS_STATISTIC_MAPPING;
 
     @Autowired
     public WordsRestController(
@@ -49,7 +51,8 @@ public class WordsRestController {
             WordStatusService wordStatusService,
             LangService langService,
 
-            WordMapping wordMapping) {
+            WordMapping wordMapping,
+            WordsStatisticMapping wordsStatisticMapping) {
         this.WORD_STATUSES_REST_CONTROLLER = wordStatusesRestController;
         this.LANGS_REST_CONTROLLER = langsRestController;
         this.CUSTOMERS_REST_CONTROLLER = customersRestController;
@@ -61,6 +64,7 @@ public class WordsRestController {
         this.LANG_SERVICE = langService;
 
         this.WORD_MAPPING = wordMapping;
+        this.WORDS_STATISTIC_MAPPING = wordsStatisticMapping;
     }
     @GetMapping("/filtered_pagination")
     public ResponseEntity<?> getAll(
@@ -103,7 +107,7 @@ public class WordsRestController {
             return response;
         }
 
-        List<Word> words = WORD_SERVICE.findAll(title, wordStatusCode, langCode,
+        List<Word> words = WORD_SERVICE.findAllCustomer(title, wordStatusCode, langCode,
                 customerId, numberOfWords, lastWordIdOnPreviousPage);
         if (words != null && words.size() > 0) {
             List<WordResponseDTO> wordDTOs = words.stream().map(WORD_MAPPING::mapToResponseDTO).toList();
@@ -114,13 +118,13 @@ public class WordsRestController {
         }
     }
 
-    @GetMapping("/words_with_status_statistics")
-    public ResponseEntity<?> getWordsWithStatusStatistics() {
-        List<WordsWithStatusStatistic> wordsWithStatusStatistics = WORD_SERVICE.findWordsWithStatusStatistics();
-        if (wordsWithStatusStatistics != null && wordsWithStatusStatistics.size() > 0) {
-            List<WordsWithStatusStatisticResponseDTO> responseDTOs = wordsWithStatusStatistics
+    @GetMapping("/statistics")
+    public ResponseEntity<?> getStatistics() {
+        List<WordsStatistic> wordsStatistics = WORD_SERVICE.findWordsStatistics();
+        if (wordsStatistics != null && wordsStatistics.size() > 0) {
+            List<WordsStatisticResponseDTO> responseDTOs = wordsStatistics
                     .stream()
-                    .map(WordsWithStatusStatisticResponseDTO::new)
+                    .map(WORDS_STATISTIC_MAPPING::mapToResponse)
                     .toList();
             return ResponseEntity.ok(responseDTOs);
         } else {
@@ -130,14 +134,14 @@ public class WordsRestController {
         }
     }
 
-    @GetMapping("/words_with_status_statistics_by_customer_id")
-    public ResponseEntity<?> getWordsWithStatusStatistics(@RequestParam("customer_id") Long customerId) {
-        List<WordsWithStatusStatistic> wordsWithStatusStatistics =
-                WORD_SERVICE.findWordsWithStatusStatistics(customerId);
-        if (wordsWithStatusStatistics != null && wordsWithStatusStatistics.size() > 0) {
-            List<WordsWithStatusStatisticResponseDTO> responseDTOs = wordsWithStatusStatistics
+    @GetMapping("/statistics_by_customer_id")
+    public ResponseEntity<?> getStatistics(@RequestParam("customer_id") Long customerId) {
+        List<WordsStatistic> wordsStatistics =
+                WORD_SERVICE.findWordsStatistics(customerId);
+        if (wordsStatistics != null && wordsStatistics.size() > 0) {
+            List<WordsStatisticResponseDTO> responseDTOs = wordsStatistics
                     .stream()
-                    .map(WordsWithStatusStatisticResponseDTO::new)
+                    .map(WORDS_STATISTIC_MAPPING::mapToResponse)
                     .toList();
             return ResponseEntity.ok(responseDTOs);
         } else {
@@ -224,7 +228,7 @@ public class WordsRestController {
 
         // Если слово уже запрещено, то статус можно установить только "Невостребованный"
         Word word = WORD_SERVICE.findById(dto.getId());
-        List<Word> blockedWords = WORD_SERVICE.findListByTitle(word.getTitle(),
+        List<Word> blockedWords = WORD_SERVICE.findListByTitleInDifferentLangs(word.getTitle(),
                 WordStatuses.BLOCKED.CODE);
 
         blockedWords = blockedWords
@@ -242,7 +246,7 @@ public class WordsRestController {
         }
 
         // Устанавливаем новый статус слова (если предыдущее != новому)
-        WordStatusHistory oldWordStatusHistory = WORD_STATUS_HISTORY_SERVICE.getCurrentWordStatusHistoryToWord(word);
+        WordStatusHistory oldWordStatusHistory = WORD_STATUS_HISTORY_SERVICE.findCurrent(dto.getId());
         WordStatus newWordStatus = WORD_STATUS_SERVICE.find(dto.getWordStatusCode());
         if (!newWordStatus.equals(oldWordStatusHistory.getWordStatus())) {
             WORD_STATUS_HISTORY_SERVICE.addWordStatusToWord(word.getId(), newWordStatus.getCode());
@@ -269,7 +273,7 @@ public class WordsRestController {
 
         Customer customer = CUSTOMER_SERVICE.findByAuthCode(validateAuthCode);
         if (CUSTOMER_SERVICE.isSuperUser(customer)) {
-            WORD_SERVICE.deleteAllUnclaimedWords();
+            WORD_SERVICE.deleteAllUnclaimed();
             CustomResponseMessage message = new CustomResponseMessage(1,
                     "Все невостребованные слова успешно удалены.");
             return ResponseEntity.ok(message);
@@ -391,7 +395,7 @@ public class WordsRestController {
         }
 
         // Проверяем, не запрещено ли слово
-        List<Word> blockedWords = WORD_SERVICE.findListByTitle(dto.getTitle(),
+        List<Word> blockedWords = WORD_SERVICE.findListByTitleInDifferentLangs(dto.getTitle(),
                 WordStatuses.BLOCKED.CODE);
         if (blockedWords.size() > 0) {
             CustomResponseMessage message = new CustomResponseMessage(4, "Это слово запрещено.");

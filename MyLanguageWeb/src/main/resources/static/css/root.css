@@ -21,15 +21,21 @@
     --accept-second-color: #489148;
     --accept-second-color-rgb: 72, 145, 72;
 
-    --warning-first-color: #E5BF00;
-    --warning-first-color-rgb: 229, 191, 0;
+    --warning-first-color: #D8B400;
+    --warning-first-color-rgb: 216, 180, 0;
 
-    --warning-second-color: #D3B000;
-    --warning-second-color-rgb: 211, 176, 0;
+    --warning-second-color: #AD9000;
+    --warning-second-color-rgb: 173, 144, 0;
 
     --deny-first-color: #B54848;
     --deny-first-color-rgb: 181, 72, 72;
 
     --deny-second-color: #913C3C;
     --deny-second-color-rgb: 145, 60, 60;
+
+    --info-first-color: #3049D3;
+    --info-first-color-rgb: 48, 73, 211;
+
+    --info-second-color: #263BA5;
+    --info-second-color-rgb: 38, 59, 165;
 }

@@ -53,7 +53,7 @@ import {
 
 import {
     WorkoutRoundStatisticResponseDTO
-} from "../../dto/types/workout_round_statistic.js";
+} from "../../dto/types/workout/workout_round_statistic.js";
 
 import {
     TimeParts
@@ -156,7 +156,7 @@ export class NotOverWorkoutsTableHelper {
         // Ищем активные тренировки ---
         let authId = _GLOBAL_COOKIES.AUTH_ID.getValue();
         let JSONResponse = await _WORKOUTS_API.GET
-            .getNotOverByCustomerIdAndWorkoutTypeCode(authId, this.#workoutTypeCode);
+            .getNotOver(authId, this.#workoutTypeCode);
         //---
 
         // Если мы не нашли ни одной тренировки, мы должны отобразить три пустых слота ---
@@ -242,7 +242,7 @@ export class NotOverWorkoutsTableHelper {
                     // Осталось вопросов ---
                     if (currentRoundNumber) {
                         JSONResponse = await _WORKOUTS_API.GET
-                            .findRoundStatisticByWorkoutIdAndRoundNumber(workout.id, currentRoundNumber);
+                            .findRoundStatistic(workout.id, currentRoundNumber);
                         if (JSONResponse.status === _HTTP_STATUSES.OK) {
                             let currentRoundStatistic =
                                 new WorkoutRoundStatisticResponseDTO(JSONResponse.json);

@@ -63,6 +63,10 @@ import {
     CustomTimer
 } from "../../../classes/custom_timer/custom_timer.js";
 
+import {
+    ButtonUtils
+} from "../../../classes/utils/button_utils.js";
+
 const _WORKOUTS_API = new WorkoutsAPI();
 const _LANGS_API = new LangsAPI();
 
@@ -72,6 +76,7 @@ const _RULE_TYPES = new RuleTypes();
 const _LANG_UTILS = new LangUtils();
 const _COMBO_BOX_UTILS = new ComboBoxUtils();
 const _WORKOUT_UTILS = new WorkoutUtils();
+const _BUTTON_UTILS = new ButtonUtils();
 
 const _DIV_LANG_IN_CONTAINER_ID = "div_lang_in_container";
 const _CB_LANGS_IN_ID = "cb_langs_in";
@@ -89,8 +94,9 @@ const _DIV_WORKOUT_START_INFO_CONTAINER_ID = "workout_start_info_container";
 
 const _DIV_NOT_OVER_WORKOUTS_CONTAINER_ID = "not_over_workouts_container";
 
-const _CURRENT_WORKOUT_TYPE = new WorkoutTypes().RANDOM_WORDS;
+const _CUSTOM_TIMER_FOR_DROP_WORKOUT_SETTINGS = new CustomTimer();
 
+const _CURRENT_WORKOUT_TYPE = new WorkoutTypes().RANDOM_WORDS;
 let _lastWorkout;
 let _notOverWorkoutsTableHelper;
 
@@ -100,7 +106,7 @@ window.onload = async function() {
     // Ищем последнюю тренировку в данном режиме, чтобы установить последние настройки ---
     let authId = _GLOBAL_COOKIES.AUTH_ID.getValue();
     let workoutTypeCode = _CURRENT_WORKOUT_TYPE.CODE;
-    let JSONResponse = await _WORKOUTS_API.GET.findLastByCustomerIdAndWorkoutTypeCode(authId, workoutTypeCode);
+    let JSONResponse = await _WORKOUTS_API.GET.findLast(authId, workoutTypeCode);
     if (JSONResponse.status === _HTTP_STATUSES.OK) {
         _lastWorkout = new WorkoutResponseDTO(JSONResponse.json);
     }
@@ -285,55 +291,49 @@ function prepareSubmitSend() {
 }
 
 function prepareBtnDropWorkoutSettings() {
-    let customTimerDropWorkoutSettings = new CustomTimer();
-    customTimerDropWorkoutSettings.setTimeout(500);
-    customTimerDropWorkoutSettings.setHandler(async function() {
-        let divLangInContainer = document.getElementById(_DIV_LANG_IN_CONTAINER_ID);
-        let cbLangsIn = document.getElementById(_CB_LANGS_IN_ID);
-        if (divLangInContainer && cbLangsIn) {
-            _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM
-                .byComboBoxAndItemIndex(cbLangsIn, 0, false);
-
-            let ruleElement = new RuleElement(cbLangsIn, divLangInContainer);
-            ruleElement.removeRule();
-        }
-
-        let divLangOutContainer = document.getElementById(_DIV_LANG_OUT_CONTAINER_ID);
-        let cbLangsOut = document.getElementById(_CB_LANGS_OUT_ID);
-        if (divLangOutContainer && cbLangsOut) {
-            _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM
-                .byComboBoxAndItemIndex(cbLangsOut, 0, false);
-
-            let ruleElement = new RuleElement(cbLangsOut, divLangOutContainer);
-            ruleElement.removeRule();
-        }
-
-        let cbNumberOfWords = document.getElementById(_CB_NUMBER_OF_WORDS_ID);
-        if (cbNumberOfWords) {
-            _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM
-                .byComboBoxAndItemIndex(cbNumberOfWords, 0, false);
-
-            let ruleElement = new RuleElement(cbNumberOfWords, cbNumberOfWords.parentElement);
-            ruleElement.removeRule();
-        }
-
-        // Заполняем списки поддерживающими языками ---
-        await fillCbLangsInByLangOutCode();
-        await fillCbLangsOutByLangInCode();
-        //---
-
-        changeDisableStatusInImportantElements(false);
-    });
-
     let btnDropWorkoutSettings = document.getElementById(_BTN_DROP_WORKOUT_SETTINGS_ID);
     if (btnDropWorkoutSettings) {
-        btnDropWorkoutSettings.addEventListener("click", async function() {
-            clearWorkoutStartInfoContainer();
-            changeDisableStatusInImportantElements(true);
+        _BUTTON_UTILS.prepareBtnRefreshWithPromise(btnDropWorkoutSettings,
+            function() {
+                clearWorkoutStartInfoContainer();
+                changeDisableStatusInImportantElements(true);
+            }, async function() {
+                let divLangInContainer = document.getElementById(_DIV_LANG_IN_CONTAINER_ID);
+                let cbLangsIn = document.getElementById(_CB_LANGS_IN_ID);
+                if (divLangInContainer && cbLangsIn) {
+                    _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM
+                        .byComboBoxAndItemIndex(cbLangsIn, 0, false);
 
-            customTimerDropWorkoutSettings.stop();
-            customTimerDropWorkoutSettings.start();
-        });
+                    let ruleElement = new RuleElement(cbLangsIn, divLangInContainer);
+                    ruleElement.removeRule();
+                }
+
+                let divLangOutContainer = document.getElementById(_DIV_LANG_OUT_CONTAINER_ID);
+                let cbLangsOut = document.getElementById(_CB_LANGS_OUT_ID);
+                if (divLangOutContainer && cbLangsOut) {
+                    _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM
+                        .byComboBoxAndItemIndex(cbLangsOut, 0, false);
+
+                    let ruleElement = new RuleElement(cbLangsOut, divLangOutContainer);
+                    ruleElement.removeRule();
+                }
+
+                let cbNumberOfWords = document.getElementById(_CB_NUMBER_OF_WORDS_ID);
+                if (cbNumberOfWords) {
+                    _COMBO_BOX_UTILS.CHANGE_SELECTED_ITEM
+                        .byComboBoxAndItemIndex(cbNumberOfWords, 0, false);
+
+                    let ruleElement = new RuleElement(cbNumberOfWords, cbNumberOfWords.parentElement);
+                    ruleElement.removeRule();
+                }
+
+                // Заполняем списки поддерживающими языками ---
+                await fillCbLangsInByLangOutCode();
+                await fillCbLangsOutByLangInCode();
+                //---
+            }, function() {
+                changeDisableStatusInImportantElements(false);
+            }, _CUSTOM_TIMER_FOR_DROP_WORKOUT_SETTINGS);
     }
 }
 

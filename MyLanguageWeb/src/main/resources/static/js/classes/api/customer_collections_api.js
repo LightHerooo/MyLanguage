@@ -69,17 +69,17 @@ class CustomerCollectionsGETRequests {
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
     }
 
-    async getAllForAuthorByCustomerIdAndLangOutCode(customerId, langOutCode) {
-        let requestURL = new URL(URL_TO_API_CUSTOMER_COLLECTIONS + "/for_author_by_customer_id_and_lang_out_code");
+    async getAllForAuthorByLangOutCode(customerId, langOutCode) {
+        let requestURL = new URL(URL_TO_API_CUSTOMER_COLLECTIONS + "/for_author_by_lang_out_code");
         requestURL.searchParams.set("customer_id", customerId);
         requestURL.searchParams.set("lang_out_code", langOutCode);
 
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
     }
 
-    async getCustomerCollectionsWithLangStatisticsByCustomerId(customerId) {
+    async getStatisticsByCustomerId(customerId) {
         let requestURL = new URL(URL_TO_API_CUSTOMER_COLLECTIONS +
-            "/customer_collections_with_lang_statistics_by_customer_id");
+            "/statistics_by_customer_id");
         requestURL.searchParams.set("customer_id", customerId);
 
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
@@ -92,18 +92,18 @@ class CustomerCollectionsGETRequests {
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
     }
 
-    async validateIsCustomerCollectionAuthor(customerId, collectionId) {
-        let requestURL = new URL(URL_TO_API_CUSTOMER_COLLECTIONS_VALIDATE + "/is_customer_collection_author");
+    async validateIsAuthor(customerId, collectionId) {
+        let requestURL = new URL(URL_TO_API_CUSTOMER_COLLECTIONS_VALIDATE + "/is_author");
         requestURL.searchParams.set("customer_id", customerId);
         requestURL.searchParams.set("collection_id", collectionId);
 
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
     }
 
-    async validateIsLangActiveInCollectionByCollectionId(collectionId) {
+    async validateIsLangActiveById(id) {
         let requestURL = new URL(
-            URL_TO_API_CUSTOMER_COLLECTIONS_VALIDATE + "/is_lang_active_in_collection_by_id");
-        requestURL.searchParams.set("id", collectionId);
+            URL_TO_API_CUSTOMER_COLLECTIONS_VALIDATE + "/is_lang_active_by_id");
+        requestURL.searchParams.set("id", id);
 
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
     }
@@ -116,10 +116,10 @@ class CustomerCollectionsGETRequests {
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
     }
 
-    async validateMinNumberOfWordsForWorkoutByCollectionId(collectionId) {
+    async validateNumberOfWordsForWorkoutById(id) {
         let requestURL = new URL(
-            URL_TO_API_CUSTOMER_COLLECTIONS_VALIDATE + "/min_number_of_words_for_workout_by_id");
-        requestURL.searchParams.set("id", collectionId);
+            URL_TO_API_CUSTOMER_COLLECTIONS_VALIDATE + "/number_of_words_for_workout_by_id");
+        requestURL.searchParams.set("id", id);
 
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
     }

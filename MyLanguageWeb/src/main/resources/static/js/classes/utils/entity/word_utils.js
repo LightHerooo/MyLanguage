@@ -23,8 +23,8 @@ import {
 } from "../../api/words_api.js";
 
 import {
-    WordsWithStatusStatisticResponseDTO
-} from "../../dto/types/words_with_status_statistic.js";
+    WordsStatisticResponseDTO
+} from "../../dto/types/words_statistic.js";
 
 import {
     DateParts
@@ -64,11 +64,11 @@ export class WordUtils {
             let json = JSONResponse.json;
             let statisticsByAllLangs = [];
             for (let i = 0; i < json.length; i++) {
-                let wordsWithStatusStatistic = new WordsWithStatusStatisticResponseDTO(json[i]);
-                let divStatistic = await wordsWithStatusStatistic.createDiv();
+                let wordsStatistic = new WordsStatisticResponseDTO(json[i]);
+                let divStatistic = await wordsStatistic.createDiv();
                 if (divStatistic) {
                     statisticsByAllLangs.push(divStatistic);
-                    sumOfWords += wordsWithStatusStatistic.numberOfWords;
+                    sumOfWords += wordsStatistic.numberOfWords;
                 }
             }
 
@@ -102,7 +102,7 @@ export class WordUtils {
     }
 
     async createDivStatistic() {
-        let JSONResponse = await _WORDS_API.GET.getWordsWithStatusStatistics();
+        let JSONResponse = await _WORDS_API.GET.getStatistics();
         let div = await this.#createDivStatisticByAllLangs(JSONResponse);
 
         // Создаём контейнер с количеством слов за сегодняшний день ---
@@ -136,7 +136,7 @@ export class WordUtils {
 
     async createDivStatisticForCustomer() {
         let authId = _GLOBAL_COOKIES.AUTH_ID.getValue();
-        let JSONResponse = await _WORDS_API.GET.getWordsWithStatusStatisticsByCustomerId(authId);
+        let JSONResponse = await _WORDS_API.GET.getStatisticsByCustomerId(authId);
 
         return await this.#createDivStatisticByAllLangs(JSONResponse);
     }

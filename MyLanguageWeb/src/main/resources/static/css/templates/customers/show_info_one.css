@@ -1,6 +1,10 @@
-div.customer-info-with-actions-container {
+main {
+    min-height: 1500px;
+}
+
+div.customer-info-with-actions-container-owner {
     display: grid;
-    grid: 1fr / 1fr 300px;
+    grid: 1fr / 1fr 80px;
     gap: 10px;
 }
 
@@ -35,18 +39,19 @@ div.actions-container {
     gap: 10px;
 }
 
-div.action {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    gap: 5px;
-
-    font-size: var(--third-font-size);
-    font-weight: bold;
+img.img-action {
+    width: 64px;
+    height: 64px;
 }
 
-img.img-action {
-    width: 32px;
-    height: 32px;
+div.statistic-container {
+    min-height: 200px;
+}
+
+div.instruments-for-find-statistic {
+    grid-template-columns: 2fr 1fr 50px;
+}
+
+div.instruments-for-find-workouts {
+    grid-template-columns: 1fr 50px;
 }

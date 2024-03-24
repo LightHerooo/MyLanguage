@@ -197,9 +197,9 @@ public class WordsInCollectionRestController {
 
         Customer customer = CUSTOMER_SERVICE.findByAuthCode(validateAuthCode);
         if (CUSTOMER_SERVICE.isSuperUser(customer)) {
-            WORD_IN_COLLECTION_SERVICE.deleteInactiveWordsInCollection();
+            WORD_IN_COLLECTION_SERVICE.deleteAllWithoutActiveStatus();
             CustomResponseMessage message = new CustomResponseMessage(1,
-                    "Неактивные слова успешно удалены из коллекций пользователей.");
+                    "Неактивные слова в коллекциях пользователей успешно удалены.");
             return ResponseEntity.ok(message);
         } else {
             CustomResponseMessage message = new CustomResponseMessage(1, "У вас недостаточно прав.");
@@ -220,7 +220,7 @@ public class WordsInCollectionRestController {
         }
     }
 
-    @GetMapping("/find/by_word_id_and_collection_id")
+    @GetMapping("/find/word_in_collection")
     public ResponseEntity<?> find(@RequestParam("word_id") Long wordId,
                                   @RequestParam("collection_id") Long collectionId) {
         ResponseEntity<?> response = WORDS_REST_CONTROLLER.find(wordId);
@@ -256,7 +256,7 @@ public class WordsInCollectionRestController {
             return response;
         }
 
-        response = CUSTOMER_COLLECTIONS_REST_CONTROLLER.validateIsLangActiveInCollection(collectionId);
+        response = CUSTOMER_COLLECTIONS_REST_CONTROLLER.validateIsLangActiveById(collectionId);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
@@ -323,7 +323,7 @@ public class WordsInCollectionRestController {
 
         // Проверяем принадлежность пользователя к коллекции, с которой он хочет взаимодействовать
         response = CUSTOMER_COLLECTIONS_REST_CONTROLLER.
-                validateIsCustomerCollectionAuthor(authCustomer.getId(), collectionId);
+                validateIsAuthor(authCustomer.getId(), collectionId);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }

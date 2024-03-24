@@ -17,8 +17,12 @@ public class WorkoutTypeService {
         this.WORKOUT_TYPE_CRUD_REPOSITORY = workoutTypeCrudRepository;
     }
 
+    public List<WorkoutType> findAll() {
+        return WORKOUT_TYPE_CRUD_REPOSITORY.findAll();
+    }
+
     public List<WorkoutType> findAll(String title) {
-        return WORKOUT_TYPE_CRUD_REPOSITORY.findAllAfterFilter(title);
+        return WORKOUT_TYPE_CRUD_REPOSITORY.findAll(title);
     }
 
     public WorkoutType find(WorkoutTypes workoutTypes) {

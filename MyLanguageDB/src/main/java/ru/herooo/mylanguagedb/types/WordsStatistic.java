@@ -2,7 +2,7 @@ package ru.herooo.mylanguagedb.types;
 
 import java.util.Optional;
 
-public interface WordsWithStatusStatistic {
+public interface WordsStatistic {
     Optional<String> getWordStatusCode();
     Optional<Long> getNumberOfWords();
 }

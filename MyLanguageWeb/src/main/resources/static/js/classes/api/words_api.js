@@ -67,14 +67,14 @@ class WordsGETRequests {
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
     }
 
-    async getWordsWithStatusStatistics() {
-        let requestURL = new URL(URL_TO_API_WORDS + "/words_with_status_statistics");
+    async getStatistics() {
+        let requestURL = new URL(URL_TO_API_WORDS + "/statistics");
 
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
     }
 
-    async getWordsWithStatusStatisticsByCustomerId(customerId) {
-        let requestURL = new URL(URL_TO_API_WORDS + "/words_with_status_statistics_by_customer_id");
+    async getStatisticsByCustomerId(customerId) {
+        let requestURL = new URL(URL_TO_API_WORDS + "/statistics_by_customer_id");
         requestURL.searchParams.set("customer_id", customerId);
 
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
@@ -96,7 +96,6 @@ class WordsPOSTRequests {
 
         let jsonStr = _JSON_UTILS.stringify({
             'title': wordRequestDTO.title,
-            'customer_id': wordRequestDTO.customerId,
             'lang_code': wordRequestDTO.langCode
         });
 

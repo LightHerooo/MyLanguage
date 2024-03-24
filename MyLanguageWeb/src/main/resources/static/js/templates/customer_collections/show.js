@@ -110,7 +110,6 @@ const _DIV_COLLECTIONS_STATISTICS_CONTAINER_ID = "collections_statistics_contain
 const _BTN_REFRESH_ID = "btn_refresh";
 const _DIV_COLLECTION_FLAG_ID = "collection_flag";
 
-const _MAX_NUMBER_OF_COLLECTIONS_FOR_STATISTICS = 5;
 const _NUMBER_OF_WORDS = 20;
 let _lastWordNumberInList = 0;
 let _lastWordInCollectionIdOnPreviousPage = 0n;
@@ -120,7 +119,7 @@ const _CUSTOM_TIMER_COLLECTION_INFO_FINDER = new CustomTimer();
 const _CUSTOM_TIMER_WORDS_IN_COLLECTION_FINDER = new CustomTimer();
 const _TIMEOUT_FOR_FINDERS = 1000;
 
-const _CUSTOM_TIMER_TB_FINDER = new CustomTimer();
+const _CUSTOM_TIMER_FOR_TB_FINDER = new CustomTimer();
 const _CUSTOM_TIMER_FOR_REFRESH = new CustomTimer();
 
 window.onload = async function () {
@@ -141,7 +140,7 @@ function prepareTbFinder() {
     let tbFinder = document.getElementById(_TB_FINDER_ID);
 
     if (tbFinder) {
-        _TEXT_BOX_UTILS.prepareTbFinder(tbFinder, startAllFinders, _CUSTOM_TIMER_TB_FINDER);
+        _TEXT_BOX_UTILS.prepareTbFinder(tbFinder, startAllFinders, _CUSTOM_TIMER_FOR_TB_FINDER);
     }
 }
 
@@ -161,39 +160,28 @@ async function prepareCbCustomerCollections() {
 function prepareBtnRefresh() {
     let btnRefresh = document.getElementById(_BTN_REFRESH_ID);
     if (btnRefresh) {
-        btnRefresh.addEventListener("click", async function() {
-            changeDisableStatusToFinderInstruments(true);
+        _BUTTON_UTILS.prepareBtnRefreshWithPromise(btnRefresh,
+            function() {
+                changeDisableStatusToFinderInstruments(true);
 
-            // Отображаем загрузки на момент перезагрузки ---
-            showLoadingInStatistic();
-            showLoadingInCollectionInfo();
-            showLoadingInTable();
-            //---
+                // Отображаем загрузки на момент перезагрузки ---
+                showLoadingInStatistic();
+                showLoadingInCollectionInfo();
+                showLoadingInTable();
+                //---
+            }, async function() {
+                let cbCustomerCollections = document.getElementById(_CB_CUSTOMER_COLLECTIONS_ID);
+                let divCollectionFlag = document.getElementById(_DIV_COLLECTION_FLAG_ID);
+                if (cbCustomerCollections && divCollectionFlag) {
+                    let comboBoxWithFlag =
+                        new ComboBoxWithFlag(cbCustomerCollections.parentElement, cbCustomerCollections, divCollectionFlag);
 
-            let refreshPromise = new Promise(resolve => {
-                _CUSTOM_TIMER_FOR_REFRESH.stop();
-
-                _CUSTOM_TIMER_FOR_REFRESH.setTimeout(500);
-                _CUSTOM_TIMER_FOR_REFRESH.setHandler(async function() {
-                    let cbCustomerCollections = document.getElementById(_CB_CUSTOMER_COLLECTIONS_ID);
-                    let divCollectionFlag = document.getElementById(_DIV_COLLECTION_FLAG_ID);
-                    if (cbCustomerCollections && divCollectionFlag) {
-                        let comboBoxWithFlag =
-                            new ComboBoxWithFlag(cbCustomerCollections.parentElement, cbCustomerCollections, divCollectionFlag);
-
-                        await _CUSTOMER_COLLECTION_UTILS.CB_CUSTOMER_COLLECTIONS.fill(comboBoxWithFlag, null);
-                    }
-
-                    resolve();
-                });
-
-                _CUSTOM_TIMER_FOR_REFRESH.start();
-            });
-            await refreshPromise;
-
-            startAllFinders();
-            changeDisableStatusToFinderInstruments(false);
-        });
+                    await _CUSTOMER_COLLECTION_UTILS.CB_CUSTOMER_COLLECTIONS.fill(comboBoxWithFlag, null);
+                }
+            }, function() {
+                startAllFinders();
+                changeDisableStatusToFinderInstruments(false);
+            }, _CUSTOM_TIMER_FOR_REFRESH);
     }
 }
 
@@ -391,7 +379,7 @@ function prepareWordsInCollectionFinder() {
         if (readyToFill === true) {
             let authId = _GLOBAL_COOKIES.AUTH_ID.getValue();
             let JSONResponse = await
-                _CUSTOMER_COLLECTIONS_API.GET.validateIsCustomerCollectionAuthor(authId, collectionId);
+                _CUSTOMER_COLLECTIONS_API.GET.validateIsAuthor(authId, collectionId);
             if (JSONResponse.status !== _HTTP_STATUSES.OK) {
                 readyToFill = false;
                 setMessageInsideTable(new CustomResponseMessage(JSONResponse.json).text);

@@ -61,8 +61,9 @@ const _THEAD_WORKOUT_TYPES_ID = "thead_workout_types";
 const _TBODY_WORKOUT_TYPES_ID = "tbody_workout_types";
 
 const _CUSTOM_TIMER_WORKOUT_TYPES_FINDER = new CustomTimer();
-const _CUSTOM_TIMER_TB_FINDER = new CustomTimer();
 const _TIMEOUT_FOR_FINDERS = 1000;
+
+const _CUSTOM_TIMER_FOR_TB_FINDER = new CustomTimer();
 
 window.onload = async function() {
     // Подготавливаем таймеры ---
@@ -80,7 +81,7 @@ window.onload = async function() {
 function prepareTbFinder() {
     let tbFinder = document.getElementById(_TB_FINDER_ID);
     if (tbFinder) {
-        _TEXT_BOX_UTILS.prepareTbFinder(tbFinder, startToFindWorkoutTypes, _CUSTOM_TIMER_TB_FINDER);
+        _TEXT_BOX_UTILS.prepareTbFinder(tbFinder, startToFindWorkoutTypes, _CUSTOM_TIMER_FOR_TB_FINDER);
     }
 }
 

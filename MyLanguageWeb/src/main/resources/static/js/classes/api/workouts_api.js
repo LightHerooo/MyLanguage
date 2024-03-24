@@ -10,6 +10,10 @@ import {
     JSONUtils
 } from "../utils/json/json_utils.js";
 
+import {
+    DateParts
+} from "../date_parts.js";
+
 const _JSON_UTILS = new JSONUtils();
 const _XML_UTILS = new XmlUtils();
 
@@ -25,7 +29,21 @@ export class WorkoutsAPI {
 }
 
 class WorkoutsGETRequests {
-    async getNotOverByCustomerIdAndWorkoutTypeCode(customerId, workoutTypeCode){
+    async getAllFiltered(customerId, workoutTypeCode, dateOfEnd) {
+        let requestURL = new URL(URL_TO_API_WORKOUTS + "/filtered");
+        requestURL.searchParams.set("customer_id", customerId);
+
+        if (workoutTypeCode) {
+            requestURL.searchParams.set("workout_type_code", workoutTypeCode);
+        }
+        if (dateOfEnd) {
+            requestURL.searchParams.set("date_of_end", new DateParts(dateOfEnd).getDatabaseDateStr());
+        }
+
+        return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
+    }
+
+    async getNotOver(customerId, workoutTypeCode){
         let requestURL = new URL(URL_TO_API_WORKOUTS + "/not_over");
         requestURL.searchParams.set("customer_id", customerId);
         requestURL.searchParams.set("workout_type_code", workoutTypeCode);
@@ -34,16 +52,16 @@ class WorkoutsGETRequests {
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
     }
 
-    async findLastByCustomerIdAndWorkoutTypeCode(customerId, workoutTypeCode) {
-        let requestURL = new URL(URL_TO_API_WORKOUTS_FIND + "/last_by_customer_id_and_workout_type_code");
+    async findLast(customerId, workoutTypeCode) {
+        let requestURL = new URL(URL_TO_API_WORKOUTS_FIND + "/last");
         requestURL.searchParams.set("customer_id", customerId);
         requestURL.searchParams.set("workout_type_code", workoutTypeCode);
 
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
     }
 
-    async findLastInactiveByCustomerId(customerId) {
-        let requestURL = new URL(URL_TO_API_WORKOUTS_FIND + "/last_inactive_by_customer_id");
+    async findLastNotOverInactiveByCustomerId(customerId) {
+        let requestURL = new URL(URL_TO_API_WORKOUTS_FIND + "/last_not_over_inactive_by_customer_id");
         requestURL.searchParams.set("customer_id", customerId);
 
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
@@ -56,15 +74,50 @@ class WorkoutsGETRequests {
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
     }
 
-    async findStatisticByWorkoutId(workoutId) {
-        let requestURL = new URL(URL_TO_API_WORKOUTS_FIND + "/statistic_by_workout_id");
+    async findMaxDateOfEnd(customerId, workoutTypeCode){
+        let requestURL = new URL(URL_TO_API_WORKOUTS_FIND + "/max_date_of_end");
+        requestURL.searchParams.set("customer_id", customerId);
+        if (workoutTypeCode) {
+            requestURL.searchParams.set("workout_type_code", workoutTypeCode);
+        }
+
+        return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
+    }
+
+    async findNextDateOfEnd(customerId, workoutTypeCode, dateOfEnd) {
+        let requestURL = new URL(URL_TO_API_WORKOUTS_FIND + "/next_date_of_end");
+        requestURL.searchParams.set("customer_id", customerId);
+        requestURL.searchParams.set("date_of_end", new DateParts(dateOfEnd).getDatabaseDateStr());
+        if (workoutTypeCode) {
+            requestURL.searchParams.set("workout_type_code", workoutTypeCode);
+        }
+
+        return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
+    }
+
+    async findCustomerExtraStatistic(customerId, workoutTypeCode, days) {
+        let requestURL = new URL(URL_TO_API_WORKOUTS_FIND + "/customer_extra_statistic");
+        requestURL.searchParams.set("customer_id", customerId);
+
+        if (workoutTypeCode) {
+            requestURL.searchParams.set("workout_type_code", workoutTypeCode);
+        }
+        if (days) {
+            requestURL.searchParams.set("days", days);
+        }
+
+        return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
+    }
+
+    async findStatistic(workoutId) {
+        let requestURL = new URL(URL_TO_API_WORKOUTS_FIND + "/statistic");
         requestURL.searchParams.set("workout_id", workoutId);
 
         return await _XML_UTILS.getJSONResponseByGETXml(requestURL);
     }
 
-    async findRoundStatisticByWorkoutIdAndRoundNumber(workoutId, roundNumber) {
-        let requestURL = new URL(URL_TO_API_WORKOUTS_FIND + "/round_statistic_by_workout_id_and_round_number");
+    async findRoundStatistic(workoutId, roundNumber) {
+        let requestURL = new URL(URL_TO_API_WORKOUTS_FIND + "/round_statistic");
         requestURL.searchParams.set("workout_id", workoutId);
         requestURL.searchParams.set("round_number", roundNumber);
 

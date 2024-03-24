@@ -74,8 +74,9 @@ const _TBODY_NEW_LANGS = "tbody_new_langs";
 
 const _CUSTOM_TIMER_LANGS_FINDER = new CustomTimer();
 const _CUSTOM_TIMER_NEW_LANGS_FINDER = new CustomTimer();
-const _CUSTOM_TIMER_TB_FINDER = new CustomTimer();
 const _TIMEOUT_FOR_FINDERS = 1000;
+
+const _CUSTOM_TIMER_FOR_TB_FINDER = new CustomTimer();
 
 window.onload = async function() {
     // Подготавливаем таймеры ---
@@ -175,7 +176,7 @@ function prepareABtnOffLangsDoesntSupportedForOut() {
 function prepareTbFinder() {
     let tbFinder = document.getElementById(_TB_FINDER_ID);
     if (tbFinder) {
-        _TEXT_BOX_UTILS.prepareTbFinder(tbFinder, startToFindLangs, _CUSTOM_TIMER_TB_FINDER);
+        _TEXT_BOX_UTILS.prepareTbFinder(tbFinder, startToFindLangs, _CUSTOM_TIMER_FOR_TB_FINDER);
     }
 }
 

@@ -11,13 +11,12 @@ import java.util.Optional;
 public interface CustomerCrudRepository extends CrudRepository<Customer, Long> {
     @Query(nativeQuery = true, value =
             "SELECT *" +
-            "FROM get_customers_after_filter_pagination(" +
+            "FROM get_customers(" +
                     ":nickname, :customer_role_code, :number_of_items, :last_customer_id_on_previous_page)")
-    List<Customer> findAllAfterFilterWithPagination(@Param("nickname") String nickname,
-                                                    @Param("customer_role_code") String customerRoleCode,
-                                                    @Param("number_of_items") Long numberOfItems,
-                                                    @Param("last_customer_id_on_previous_page")
-                                                        Long lastCustomerIdOnPreviousPage);
+    List<Customer> findAll(@Param("nickname") String nickname,
+                           @Param("customer_role_code") String customerRoleCode,
+                           @Param("number_of_items") Long numberOfItems,
+                           @Param("last_customer_id_on_previous_page") Long lastCustomerIdOnPreviousPage);
 
     Optional<Customer> findByLogin(String login);
     Optional<Customer> findByEmail(String email);
