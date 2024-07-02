@@ -4,7 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.herooo.mylanguagedb.entities.Lang;
 import ru.herooo.mylanguageweb.dto.entity.country.CountryMapping;
-import ru.herooo.mylanguageweb.dto.entity.country.CountryResponseDTO;
+import ru.herooo.mylanguageweb.dto.entity.country.response.CountryResponseDTO;
+import ru.herooo.mylanguageweb.dto.entity.lang.response.LangResponseDTO;
 
 @Service
 public class LangMapping {

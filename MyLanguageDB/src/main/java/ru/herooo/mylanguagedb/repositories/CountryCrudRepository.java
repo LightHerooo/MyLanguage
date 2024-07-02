@@ -13,7 +13,10 @@ public interface CountryCrudRepository extends CrudRepository<Country, Long> {
 
     @Query(value =
             "FROM Country c " +
-            "ORDER BY c.title ASC")
+            "ORDER BY c.title")
     List<Country> findAll();
+
+
+
     Optional<Country> findByCode(String code);
 }

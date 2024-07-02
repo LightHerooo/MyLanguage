@@ -1,0 +1,6 @@
+div.div-info-block-container {
+    display: grid;
+
+    background: rgba(var(--main-first-color-rgb), var(--opacity-standard));
+    padding: 10px;
+}

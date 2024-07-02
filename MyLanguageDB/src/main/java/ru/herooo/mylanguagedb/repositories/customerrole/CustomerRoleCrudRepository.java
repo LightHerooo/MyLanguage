@@ -8,5 +8,8 @@ import java.util.Optional;
 
 public interface CustomerRoleCrudRepository extends CrudRepository<CustomerRole, Long>, CustomerRoleRepository<CustomerRole> {
     List<CustomerRole> findAll();
+
+
+
     Optional<CustomerRole> findByCode(String code);
 }

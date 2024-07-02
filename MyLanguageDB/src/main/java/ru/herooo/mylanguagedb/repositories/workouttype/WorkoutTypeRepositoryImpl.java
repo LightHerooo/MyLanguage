@@ -14,8 +14,8 @@ public class WorkoutTypeRepositoryImpl implements WorkoutTypeRepository<WorkoutT
     @Override
     public Optional<WorkoutType> find(WorkoutTypes workoutTypes) {
         return em.createQuery("FROM WorkoutType wt " +
-                                 "WHERE wt.id = :workoutTypeId", WorkoutType.class)
-                .setParameter("workoutTypeId", workoutTypes.ID)
+                                 "WHERE wt.id = :id", WorkoutType.class)
+                .setParameter("id", workoutTypes.ID)
                 .getResultStream()
                 .findAny();
     }

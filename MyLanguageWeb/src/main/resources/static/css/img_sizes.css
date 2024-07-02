@@ -1,0 +1,19 @@
+img.img-size-16 {
+    width: 16px;
+    height: 16px;
+}
+
+img.img-size-32 {
+    width: 32px;
+    height: 32px;
+}
+
+img.img-size-64 {
+    width: 64px;
+    height: 64px;
+}
+
+img.img-size-128 {
+    width: 128px;
+    height: 128px;
+}

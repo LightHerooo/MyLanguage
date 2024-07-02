@@ -13,8 +13,8 @@ public class WordStatusRepositoryImpl implements WordStatusRepository<WordStatus
 
     @Override
     public Optional<WordStatus> find(WordStatuses wordStatuses) {
-        return em.createQuery("from WordStatus ws where ws.id = :wordStatusId", WordStatus.class)
-                .setParameter("wordStatusId", wordStatuses.ID).
+        return em.createQuery("from WordStatus ws where ws.id = :id", WordStatus.class)
+                .setParameter("id", wordStatuses.ID).
                 getResultStream().findAny();
     }
 }

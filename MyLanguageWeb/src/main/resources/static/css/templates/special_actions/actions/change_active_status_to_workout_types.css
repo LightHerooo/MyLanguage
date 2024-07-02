@@ -1,8 +1,0 @@
-main {
-    min-height: 1300px;
-}
-
-div.instruments-for-find-workout-types-container {
-    display: grid;
-    grid-template-columns: 1fr 50px;
-}

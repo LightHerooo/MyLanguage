@@ -1,56 +1,26 @@
-main.start-workout {
-    display: grid;
+main.main-workout-start {
     padding: 20px;
-}
 
-div.start-workout-container {
-    display: grid;
-    grid: 250px 1fr / 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 10px;
 }
 
-div.start-workout-info-container {
+div.div-workout-start-container {
     display: grid;
-    grid: 1fr / 1fr 250px 1fr;
+    grid-auto-flow: column;
+    grid-template-columns: 3fr 1fr;
+    grid-template-rows: 1fr 3fr;
     gap: 10px;
 }
 
-div.start-workout-info-item-with-header-container {
+div.div-workout-interaction-container {
     display: grid;
-    grid: 90px 1fr / 1fr;
-    gap: 10px;
+    min-height: 600px;
 }
 
-div.start-workout-info {
+div.div-workout-timer-container {
     display: grid;
-    justify-content: left;
-    align-items: center;
-}
-
-div.start-workout-info-timer {
-    display: grid;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-
-    font-weight: bold;
-    font-size: var(--second-font-size);
-}
-
-div.start-workout-interaction-container {
-    display: grid;
-    grid: 600px / 3fr 1fr;
-    gap: 10px;
-}
-
-div.start-workout-interaction-with-answer-area {
-    display: grid;
-    grid: 1fr 90px / 1fr;
-    gap: 10px;
-}
-
-div.answer-container {
-    display: grid;
-    grid: 1fr / 1fr 50px 180px;
+    grid: 60px 1fr / 1fr;
     gap: 10px;
 }

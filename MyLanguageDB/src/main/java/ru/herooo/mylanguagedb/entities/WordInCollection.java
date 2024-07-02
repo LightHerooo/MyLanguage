@@ -2,8 +2,9 @@ package ru.herooo.mylanguagedb.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import ru.herooo.mylanguagedb.entities.customer_collection.CustomerCollection;
+import ru.herooo.mylanguagedb.entities.word.Word;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity

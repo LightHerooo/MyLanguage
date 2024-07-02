@@ -1,0 +1,31 @@
+input.input-text-element {
+    min-height: 40px;
+
+    font-family: inherit;
+    font-size: var(--small-font-size);
+}
+
+div.div-input-text-with-flag-element-container {
+    display: grid;
+    grid: 1fr / 1fr 45px;
+    gap: 5px;
+}
+
+div.div-input-text-with-flag-element-container > div {
+    display: grid;
+    align-items: center;
+}
+
+div.div-input-text-with-flag-element-container > div > div {
+    display: grid;
+    min-width: 41px;
+    min-height: 41px;
+
+    border: 2px solid black;
+    background-color: white;
+}
+
+div.div-input-text-with-flag-element-container > div > div > span {
+    width: 100% !important;
+    height: 100% !important;
+}

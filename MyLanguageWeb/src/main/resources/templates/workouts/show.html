@@ -4,10 +4,20 @@
     <meta charset="UTF-8">
     <title th:text="|${WEB_APP_NAME} - Тренироваться|">Тренироваться</title>
     <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
+
     <link rel="stylesheet" type="text/css" href="/css/root.css">
     <link rel="stylesheet" type="text/css" href="/css/main.css">
-    <link rel="stylesheet" type="text/css" href="/css/info_blocks/big_info_block.css">
-    <link rel="stylesheet" type="text/css" href="/css/other/loading.css">
+    <link rel="stylesheet" type="text/css" href="/css/img_sizes.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/span/span_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/span/span_loading_element.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/div/div_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/a/a_button_element.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/info_block/info_block.css">
+    <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_big_header.css">
+
     <link rel="stylesheet" type="text/css" href="/css/templates/workouts/show.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
 
@@ -18,23 +28,28 @@
             <div th:insert="~{layouts/header}"></div>
         </header>
         <main>
-            <div class="big-info-block-container">
-                <div class="big-info-block-left-container">
-                    <img class="img-big-info-block" src="/images/workouts/brain.png" alt="workout.png"/>
+            <div class="div-info-block-big-header-container">
+                <div class="div-info-block-big-header-img-container">
+                    <img src="/images/other/brain.png"
+                         alt="workout.png"/>
                 </div>
-                <div class="big-info-block-right-container">
-                    <h1 class="h1-big-info-block">Тренироваться</h1>
-                    <div class="big-info-block-text">
-                        Тренировки созданы с целью повысить ваш словарный запас.
-                        Каждую тренировку можно прервать и продолжить в любой момент.
-                    </div>
-                    <div class="big-info-block-text">
-                        Наведите на интересующий вас режим тренировки, чтобы увидеть дополнительную информацию.
+                <div class="div-info-block-big-header-data-container">
+                    <h1>Тренироваться</h1>
+                    <div>
+                        <span>
+                            Тренировки созданы с целью повысить ваш словарный запас.
+                            Каждую тренировку можно прервать и продолжить в любой момент.
+                        </span>
+                        <span>
+                            Наведите на интересующий вас режим тренировки, чтобы увидеть дополнительную информацию.
+                        </span>
                     </div>
                     <br>
                 </div>
             </div>
-            <div class="info-block-standard" id="workout_types_container"></div>
+            <div id="div_workout_types"
+                 class="div div-info-block-container"
+                 style="min-height: 250px"></div>
         </main>
     </body>
 </html>

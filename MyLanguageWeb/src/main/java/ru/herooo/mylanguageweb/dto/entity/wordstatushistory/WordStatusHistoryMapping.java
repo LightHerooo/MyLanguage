@@ -2,14 +2,16 @@ package ru.herooo.mylanguageweb.dto.entity.wordstatushistory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.herooo.mylanguagedb.entities.Word;
+import ru.herooo.mylanguagedb.entities.word.Word;
 import ru.herooo.mylanguagedb.entities.WordStatus;
 import ru.herooo.mylanguagedb.entities.WordStatusHistory;
 import ru.herooo.mylanguageutils.StringUtils;
 import ru.herooo.mylanguageweb.dto.entity.word.WordMapping;
-import ru.herooo.mylanguageweb.dto.entity.word.WordResponseDTO;
+import ru.herooo.mylanguageweb.dto.entity.word.response.WordResponseDTO;
 import ru.herooo.mylanguageweb.dto.entity.wordstatus.WordStatusMapping;
-import ru.herooo.mylanguageweb.dto.entity.wordstatus.WordStatusResponseDTO;
+import ru.herooo.mylanguageweb.dto.entity.wordstatus.response.WordStatusResponseDTO;
+import ru.herooo.mylanguageweb.dto.entity.wordstatushistory.request.WordStatusHistoryAddRequestDTO;
+import ru.herooo.mylanguageweb.dto.entity.wordstatushistory.response.WordStatusHistoryResponseDTO;
 import ru.herooo.mylanguageweb.services.WordService;
 import ru.herooo.mylanguageweb.services.WordStatusService;
 
@@ -58,17 +60,17 @@ public class WordStatusHistoryMapping {
         return dto;
     }
 
-    public WordStatusHistory mapToWordStatusHistory(WordStatusHistoryRequestDTO dto) {
+    public WordStatusHistory mapToWordStatusHistory(WordStatusHistoryAddRequestDTO dto) {
         WordStatusHistory wordStatusHistory = new WordStatusHistory();
 
         long wordId = dto.getWordId();
         if (wordId != 0) {
-            Word word = WORD_SERVICE.findById(wordId);
+            Word word = WORD_SERVICE.find(wordId);
             wordStatusHistory.setWord(word);
         }
 
         String wordStatusCode = dto.getWordStatusCode();
-        if (STRING_UTILS.isNotStringVoid(wordStatusCode)) {
+        if (!STRING_UTILS.isStringVoid(wordStatusCode)) {
             WordStatus wordStatus = WORD_STATUS_SERVICE.find(wordStatusCode);
             wordStatusHistory.setWordStatus(wordStatus);
         }

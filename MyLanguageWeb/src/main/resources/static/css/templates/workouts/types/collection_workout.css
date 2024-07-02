@@ -1,4 +1,8 @@
-div.instruments-for-find-words-in-collection-container {
+main {
+    min-height: 1500px;
+}
+
+div.div-instruments-for-find-words-in-collection-container {
     display: grid;
-    grid-template-columns: 1fr 50px;
+    grid-template-columns: 1fr 60px;
 }

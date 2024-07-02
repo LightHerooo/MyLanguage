@@ -2,9 +2,6 @@ package ru.herooo.mylanguagedb.entities;
 
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Entity
 @Table(name="customer_role")
 public class CustomerRole {
@@ -22,8 +19,8 @@ public class CustomerRole {
     @Column(name="code")
     private String code;
 
-    @Column(name="message")
-    private String message;
+    @Column(name="description")
+    private String description;
 
     @ManyToOne
     @JoinColumn(name = "color_id")
@@ -67,12 +64,12 @@ public class CustomerRole {
         this.color = color;
     }
 
-    public String getMessage() {
-        return message;
+    public String getDescription() {
+        return description;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setDescription(String message) {
+        this.description = message;
     }
 
     @Override
@@ -83,4 +80,6 @@ public class CustomerRole {
 
         return this.id == customerRole.getId();
     }
+
+
 }

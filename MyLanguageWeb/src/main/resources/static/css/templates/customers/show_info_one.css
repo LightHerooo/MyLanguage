@@ -2,21 +2,58 @@ main {
     min-height: 1500px;
 }
 
-div.customer-info-with-actions-container-owner {
+div.div-customer-info-with-actions-container-owner {
     display: grid;
     grid: 1fr / 1fr 80px;
     gap: 10px;
 }
 
-div.customer-info-container {
+div.div-customer-info-container {
     display: grid;
     grid: 1fr / 200px 1fr;
     gap: 20px;
 }
 
-div.avatar-container {
-    display: flex;
-    justify-content: center;
+div.div-customer-data-container {
+    display: grid;
+    grid: 60px 1px 1fr 1px 80px / 1fr;
+    gap: 10px;
+}
+
+div.div-nickname-container {
+    display: grid;
+    grid: 1fr / 50px 1fr;
+    align-items: center;
+    gap: 10px;
+
+    font-size: var(--big-font-size);
+    font-weight: bold;
+}
+
+div.div-customer-actions-container {
+    display: grid;
+    grid: 1fr 1fr / 1fr;
+    gap: 10px;
+}
+
+div.div-instruments-for-find-statistic-container {
+    grid-template-columns: 2fr 1fr 60px;
+}
+
+div.div-instruments-for-find-workouts-container {
+    grid-template-columns: 1fr 60px;
+}
+
+
+div.div-description-container {
+    display: grid;
+    justify-content: left;
+    align-items: center;
+}
+
+div.div-description-container > span {
+    font-size: var(--small-font-size);
+    white-space: pre-wrap;
 }
 
 img.img-avatar {
@@ -25,33 +62,4 @@ img.img-avatar {
 
     border: 2px solid black;
     background: white;
-}
-
-div.info-container {
-    display: grid;
-    grid: 50px 1fr 80px / 1fr;
-    gap: 10px;
-}
-
-div.actions-container {
-    display: grid;
-    grid: 1fr 1fr / 1fr;
-    gap: 10px;
-}
-
-img.img-action {
-    width: 64px;
-    height: 64px;
-}
-
-div.statistic-container {
-    min-height: 200px;
-}
-
-div.instruments-for-find-statistic {
-    grid-template-columns: 2fr 1fr 50px;
-}
-
-div.instruments-for-find-workouts {
-    grid-template-columns: 1fr 50px;
 }

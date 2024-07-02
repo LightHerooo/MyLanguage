@@ -8,7 +8,7 @@ public class WorkoutType {
 
     @Id
     @GeneratedValue
-    long id;
+    private long id;
 
     @Column(name = "title")
     private String title;
@@ -16,8 +16,8 @@ public class WorkoutType {
     @Column(name = "code")
     private String code;
 
-    @Column(name = "message")
-    private String message;
+    @Column(name = "description")
+    private String description;
 
     @Column(name = "path_to_image")
     private String pathToImage;
@@ -48,12 +48,12 @@ public class WorkoutType {
         this.code = code;
     }
 
-    public String getMessage() {
-        return message;
+    public String getDescription() {
+        return description;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setDescription(String message) {
+        this.description = message;
     }
 
     public String getPathToImage() {

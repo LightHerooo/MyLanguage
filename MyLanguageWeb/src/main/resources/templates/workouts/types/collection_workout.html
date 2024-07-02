@@ -6,16 +6,28 @@
                           '&quot;' + ${WORKOUT_TYPE.title} + '&quot;'">Настройка режима тренировки</title>
         <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
 
-        <link rel="stylesheet" type="text/css" href="/css/root.css">
-        <link rel="stylesheet" type="text/css" href="/css/main.css">
-        <link rel="stylesheet" type="text/css" href="/css/info_blocks/big_info_block.css">
-        <link rel="stylesheet" type="text/css" href="/css/info_blocks/small_info_block.css">
-        <link rel="stylesheet" type="text/css" href="/css/info_blocks/dynamic_info_block.css">
-        <link rel="stylesheet" type="text/css" href="/css/other/instruments_for_table.css">
-        <link rel="stylesheet" type="text/css" href="/css/other/collection_info.css">
-        <link rel="stylesheet" type="text/css" href="/css/other/rule.css">
-        <link rel="stylesheet" type="text/css" href="/css/other/loading.css">
-        <link rel="stylesheet" type="text/css" href="/css/other/element_with_flag.css">
+        <link rel="stylesheet" type="text/css" href="/css/span/span_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/span/span_loading_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/span/span_rule_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/span/span_flag_element.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/table/table_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/table/instruments_for_table.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/div/div_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/div/div_with_data_builder_element.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/form/form_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/label/label_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/input/input_text_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/select/select_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/button/button_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/a/a_button_element.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/info_block/info_block.css">
+        <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_header.css">
+        <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_big_header.css">
+
         <link rel="stylesheet" type="text/css" href="/css/templates/workouts/types/general.css">
         <link rel="stylesheet" type="text/css" href="/css/templates/workouts/types/collection_workout.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
@@ -27,105 +39,154 @@
           <div th:insert="~{layouts/header}"></div>
         </header>
         <main>
-            <div class="big-info-block-container">
-                <div class="big-info-block-left-container">
-                    <img class="img-big-info-block"
-                         src="#"
+            <div class="div-info-block-big-header-container">
+                <div class="div-info-block-big-header-img-container">
+                    <img src="#"
                          th:src="${WORKOUT_TYPE.pathToImage}"
                          alt="workout_type.png"/>
                 </div>
-                <div class="big-info-block-right-container">
-                    <h1 class="h1-big-info-block"
-                        th:text="${WORKOUT_TYPE.title}">Название режима тренировки</h1>
-                    <div class="big-info-block-text"
-                         th:text="${WORKOUT_TYPE.message}">
-                      Информация о режиме тренировки.
+                <div class="div-info-block-big-header-data-container">
+                    <h1 th:text="${WORKOUT_TYPE.title}"></h1>
+                    <div>
+                        <span th:text="${WORKOUT_TYPE.description}"></span>
                     </div>
                     <br>
                 </div>
             </div>
-            <div class="workout-container">
-                <div class="workout-item">
-                    <div class="small-info-block-container">
-                        <img class="img-small-info-block"
-                             src="/images/other/add.png"
-                             alt="add.png"/>
-                        <h1 class="h1-small-info-block">Новая тренировка</h1>
+            <div class="div-prepare-to-start-workout-container">
+                <div class="div-new-workout-settings">
+                    <div class="div-info-block-header-container">
+                        <img src="#"
+                             th:src="${WORKOUT_TYPE.pathToImage}"
+                             alt="collection_workout.png"/>
+                        <h1>Новая тренировка</h1>
                     </div>
-                    <div class="new-workout-start-container">
-                        <div class="info-block-standard">
-                            <form action="/workouts/start" id="submit_send" class="form-standard">
-                                <div class="form-item-standard" id="div_customer_collection_container">
-                                    <label class="label-standard" for="cb_customer_collections">
-                                        Коллекция, которую будете тренировать:</label>
-                                    <div class="element-with-flag-container">
-                                        <select id="cb_customer_collections" class="select-standard"></select>
-                                        <div class="flag-container">
-                                            <div id="customer_collection_flag"></div>
+                    <div class="div-info-block-container">
+                        <form id="form_workout_collection_workout"
+                              action="/workouts/start"
+                              class="form-element">
+                            <div class="div-form-element-item">
+                                <label for="select_customer_collections" class="label-element">
+                                    Коллекция, которую будете тренировать:</label>
+                                <div id="div_select_customer_collections" class="div-select-with-flag-element-container">
+                                    <select id="select_customer_collections" class="select-element" disabled></select>
+                                    <div>
+                                        <div>
+                                            <span id="span_flag_select_customer_collections"></span>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="form-item-standard" id="div_lang_out_container">
-                                    <label class="label-standard" for="cb_langs_out">Язык, на который будете переводить:</label>
-                                    <div class="element-with-flag-container">
-                                        <select id="cb_langs_out" class="select-standard"></select>
-                                        <div class="flag-container">
-                                            <div id="lang_out_flag"></div>
+                            </div>
+                            <div class="div-form-element-item">
+                                <label for="select_langs_out" class="label-element">Язык, на который будете переводить:</label>
+                                <div id="div_select_langs_out" class="div-select-with-flag-element-container">
+                                    <select id="select_langs_out" class="select-element" disabled></select>
+                                    <div>
+                                        <div>
+                                            <span id="span_flag_select_langs_out"></span>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="horizontal-delimiter"></div>
-                                <div class="form-actions-container">
-                                    <input id="btn_submit" type="submit"
-                                           class="submit-standard" value="Начать тренировку">
-                                    <button id="btn_drop_workout_settings" type="button"
-                                            class="button-with-img-standard"
-                                            title="Сбросить настройки">
-                                        <img class="img-btn-drop"
-                                             src="/images/other/trash.png" alt="trash.png"/>
-                                    </button>
-                                </div>
-                                <div id="workout_start_info_container"></div>
-                            </form>
+                            </div>
+                            <div class="div-element-horizontal-delimiter"></div>
+                            <div class="div-form-element-actions-container">
+                                <button id="button_submit_workout_collection_workout"
+                                        type="submit"
+                                        class="button-submit"
+                                        disabled>Начать тренировку</button>
+                                <button id="button_reset_workout_collection_workout"
+                                        type="reset"
+                                        class="button-reset"
+                                        title="Сбросить настройки" disabled>
+                                    <img src="/images/buttons/delete.png"
+                                         alt="delete.png"/>
+                                </button>
+                            </div>
+                            <div id="div_message_container_workout_collection_workout"
+                                 class="div-form-element-message-container"></div>
+                        </form>
+                    </div>
+                </div>
+                <div class="div-not-over-workouts">
+                    <div class="div-info-block-header-container">
+                        <img src="/images/other/history.png"
+                             alt="history.png"/>
+                        <h1>Незавершённые тренировки</h1>
+                    </div>
+                    <div class="div-instruments-for-table-container div-instruments-for-find-not-over-workouts-container">
+                        <div class="div-instrument-for-table-container">
+                            <label></label>
+                            <label></label>
+                        </div>
+                        <div class="div-instrument-for-table-container">
+                            <label for="button_refresh_workouts_not_over"></label>
+                            <button id="button_refresh_workouts_not_over"
+                                    class="button-with-img-element-32 button-element-default"
+                                    title="Обновить" disabled>
+                                <img id="img_refresh_workouts_not_over"
+                                     src="/images/buttons/refresh.png"
+                                     alt="refresh.png"/>
+                            </button>
                         </div>
                     </div>
-                </div>
-                <div class="workout-item">
-                    <div class="small-info-block-container">
-                        <img class="img-small-info-block"
-                             src="/images/other/history.png"
-                             alt="history.png"/>
-                        <h1 class="h1-small-info-block">Незавершённые тренировки</h1>
-                    </div>
-                    <div id="not_over_workouts_container" class="info-block-standard"></div>
+                    <table id="table_workouts_not_over"
+                           class="table-element">
+                        <colgroup id="colgroup_workouts_not_over">
+                            <col style="width: 5%"/>
+                            <col style="width: 65%"/>
+                            <col style="width: 30%"/>
+                            <col style="width: 80px"/>
+                        </colgroup>
+                        <thead id="thead_workouts_not_over"
+                               class="thead-table-element-medium">
+                        <tr>
+                            <th>№</th>
+                            <th>Тренировка</th>
+                            <th>Время</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody id="tbody_workouts_not_over"></tbody>
+                    </table>
                 </div>
             </div>
-            <div class="instruments-for-table-container-margin instruments-for-find-words-in-collection-container">
-                <div class="label-for-input-container">
-                    <label class="label-standard" for="tb_finder">Поиск:</label>
+            <div class="div-instruments-for-table-container div-instruments-for-find-words-in-collection-container">
+                <div class="div-instrument-for-table-container">
+                    <label for="input_text_finder_words_in_collection">Поиск:</label>
+                    <input id="input_text_finder_words_in_collection"
+                           type="text"
+                           class="input-text-element" disabled>
                 </div>
-                <input id="tb_finder" class="text-standard" type="text">
-
-                <div class="label-for-input-container"></div>
-                <button id="btn_refresh_table" class="button-with-img-standard" title="Обновить">
-                    <img class="img-btn-refresh" src="/images/other/refresh.png" alt="refresh.png"/>
-                </button>
+                <div class="div-instrument-for-table-container">
+                    <label></label>
+                    <button id="button_refresh_words_in_collection"
+                            class="button-with-img-element-32 button-element-default"
+                            title="Обновить" disabled>
+                        <img id="img_refresh_words_in_collection"
+                             src="/images/buttons/refresh.png"
+                             alt="refresh.png"/>
+                    </button>
+                </div>
             </div>
-            <div id="div_collection_info" class="info-block-standard collection-info"></div>
-            <table class="table-standard">
-                <colgroup>
+            <div id="div_customer_collection_info"
+                 class="div-info-block-container"
+                 style="min-height: 200px"></div>
+            <table id="table_words_in_collection"
+                   class="table-element">
+                <colgroup id="colgroup_words_in_collection">
                     <col style="width: 5%;">
                     <col style="width: 65%;">
                     <col style="width: 30%;">
                 </colgroup>
-                <thead id="words_in_collection_head">
+                <thead id="thead_words_in_collection"
+                       class="thead-table-element-medium">
                     <tr>
                         <th>№</th>
                         <th>Слово</th>
                         <th>Язык</th>
                     </tr>
                 </thead>
-                <tbody id="words_in_collection_body"></tbody>
+                <tbody id="tbody_words_in_collection"></tbody>
             </table>
         </main>
     </body>

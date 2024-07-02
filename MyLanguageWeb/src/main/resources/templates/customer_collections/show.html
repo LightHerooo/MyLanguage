@@ -7,12 +7,27 @@
 
     <link rel="stylesheet" type="text/css" href="/css/root.css">
     <link rel="stylesheet" type="text/css" href="/css/main.css">
-    <link rel="stylesheet" type="text/css" href="/css/info_blocks/big_info_block.css">
-    <link rel="stylesheet" type="text/css" href="/css/info_blocks/dynamic_info_block.css">
-    <link rel="stylesheet" type="text/css" href="/css/other/instruments_for_table.css">
-    <link rel="stylesheet" type="text/css" href="/css/other/collection_info.css">
-    <link rel="stylesheet" type="text/css" href="/css/other/loading.css">
-    <link rel="stylesheet" type="text/css" href="/css/other/element_with_flag.css">
+    <link rel="stylesheet" type="text/css" href="/css/img_sizes.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/span/span_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/span/span_flag_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/span/span_loading_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/span/span_rule_element.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/div/div_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/div/div_with_data_builder_element.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/table/table_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/table/instruments_for_table.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/a/a_button_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/input/input_text_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/select/select_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/button/button_element.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_big_header.css">
+    <link rel="stylesheet" type="text/css" href="/css/info_block/info_block.css">
+
     <link rel="stylesheet" type="text/css" href="/css/templates/customer_collections/show.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
 
@@ -23,71 +38,81 @@
         <div th:insert="~{layouts/header}"></div>
     </header>
     <main>
-        <div class="big-info-block-container">
-            <div class="big-info-block-left-container">
-                <img class="img-big-info-block"
-                     src="/images/customer_collections/customer_collections.png"
+        <div class="div-info-block-big-header-container">
+            <div class="div-info-block-big-header-img-container">
+                <img src="/images/templates/customer_collections/customer_collections.png"
                      alt="customer_collections.png"/>
             </div>
-            <div class="big-info-block-right-container">
-                <h1 class="h1-big-info-block">Мои коллекции</h1>
-                <div class="big-info-block-text">
-                    Здесь вы можете посмотреть ваши коллекции со словами. Создавайте новые коллекции,
-                    добавляйте в них слова на странице
-                    <a href="/words">"Cлова"</a>.
+            <div class="div-info-block-big-header-data-container">
+                <h1>Мои коллекции</h1>
+                <div>
+                    <span>
+                        Здесь вы можете посмотреть ваши коллекции со словами. Создавайте новые коллекции,
+                        добавляйте в них слова на странице <a href="/words">"Слова"</a>.
+                    </span>
                 </div>
                 <br>
-                <div class="big-info-block-text statistics-container">
-                    <div id="collections_statistics_container"></div>
+                <div id="div_customer_collections_statistic"
+                     style="min-height: 150px">
                 </div>
+                <br>
             </div>
         </div>
-        <div class="actions-container">
-            <a class="a-button-standard" href="/customer_collections/new">
-                <div class="vertical-flex-container-standard action">
-                    <img class="img-action" src="/images/customer_collections/new_collection.png" alt="new_collection.png"/>
-                    <div>Создать новые коллекции</div>
-                </div>
+        <div class="div-actions-container">
+            <a href="/customer_collections/new" class="a-button-with-img-and-span-element-vertical-128 a-button-element-default">
+                <span>
+                    <img src="/images/templates/customer_collections/new_collection.png"
+                         alt="new_collection.png"/>
+                </span>
+                <span>Создать новые коллекции</span>
             </a>
-            <a class="a-button-standard" href="/customer_collections/collections_settings">
-                <div class="vertical-flex-container-standard action">
-                    <img class="img-action"
-                         src="/images/customer_collections/collections_settings.png"
+            <a href="/customer_collections/collections_settings" class="a-button-with-img-and-span-element-vertical-128 a-button-element-default">
+                <span>
+                    <img src="/images/templates/customer_collections/collections_settings.png"
                          alt="collections_settings.png"/>
-                    <div>Управление коллекциями</div>
-                </div>
+                </span>
+                <span>Управление коллекциями</span>
             </a>
         </div>
-        <div class="instruments-for-table-container-margin instruments-for-find-words-in-collection-container">
-            <div class="label-for-input-container">
-                <label class="label-standard" for="tb_finder">Поиск:</label>
+        <div class="div-instruments-for-table-container-margin div-instruments-for-find-words-in-collection-container">
+            <div class="div-instrument-for-table-container">
+                <label for="input_text_finder">Поиск:</label>
+                <input id="input_text_finder" class="input-text-element" type="text" disabled>
             </div>
-            <input id="tb_finder" class="text-standard" type="text">
-
-            <div class="label-for-input-container">
-                <label class="label-standard" for="cb_customer_collections">Коллекция:</label>
-            </div>
-            <div class="element-with-flag-container">
-                <select id="cb_customer_collections" class="select-standard"></select>
-                <div class="flag-container">
-                    <div id="collection_flag"></div>
+            <div class="div-instrument-for-table-container">
+                <label for="select_customer_collections">Коллекция:</label>
+                <div id="div_select_customer_collections" class="div-select-with-flag-element-container">
+                    <select id="select_customer_collections" class="select-element" disabled></select>
+                    <div>
+                        <div>
+                            <span id="span_flag_select_customer_collections" ></span>
+                        </div>
+                    </div>
                 </div>
             </div>
-
-            <div class="label-for-input-container"></div>
-            <button id="btn_refresh" class="button-with-img-standard" title="Обновить">
-                <img class="img-btn-refresh" src="/images/other/refresh.png" alt="refresh.png"/>
-            </button>
+            <div class="div-instrument-for-table-container">
+                <label for="button_refresh"></label>
+                <button id="button_refresh"
+                        class="button-with-img-element-32 button-element-default"
+                        title="Обновить" disabled>
+                    <img id="img_button_refresh"
+                         src="/images/other/refresh.png"
+                         alt="refresh.png"/>
+                </button>
+            </div>
         </div>
-        <div id="div_collection_info" class="info-block-standard collection-info"></div>
-        <table class="table-standard">
-            <colgroup>
+        <div id="div_customer_collection_info"
+             class="div-info-block-container"
+             style="min-height: 200px"></div>
+        <table id="table_words_in_collection" class="table-element">
+            <colgroup id="colgroup_words_in_collection">
                 <col style="width: 5%;">
                 <col style="width: 65%;">
                 <col style="width: 30%;">
                 <col style="width: 50px;">
             </colgroup>
-            <thead id="collection_word_table_head">
+            <thead id="thead_words_in_collection"
+                   class="thead-table-element-medium">
             <tr>
                 <th>№</th>
                 <th>Слово</th>
@@ -95,7 +120,7 @@
                 <th></th>
             </tr>
             </thead>
-            <tbody id="collection_word_table_body"></tbody>
+            <tbody id="tbody_words_in_collection"></tbody>
         </table>
     </main>
 </body>

@@ -1,6 +1,7 @@
 package ru.herooo.mylanguagedb.entities;
 
 import jakarta.persistence.*;
+import ru.herooo.mylanguagedb.entities.workout.Workout;
 
 import java.time.LocalDateTime;
 
@@ -12,11 +13,11 @@ public class WorkoutItem {
     @SequenceGenerator(name = "workout_item_id_seq", sequenceName = "workout_item_id_seq", allocationSize = 1)
     private long id;
 
-    @Column(name = "word_title_question")
-    private String wordTitleQuestion;
+    @Column(name = "question")
+    private String question;
 
-    @Column(name = "word_title_answer")
-    private String wordTitleAnswer;
+    @Column(name = "answer")
+    private String answer;
 
     @Column(name = "is_correct")
     private boolean isCorrect;
@@ -59,20 +60,20 @@ public class WorkoutItem {
         this.roundNumber = roundNumber;
     }
 
-    public String getWordTitleQuestion() {
-        return wordTitleQuestion;
+    public String getQuestion() {
+        return question;
     }
 
-    public void setWordTitleQuestion(String wordTitleQuestion) {
-        this.wordTitleQuestion = wordTitleQuestion;
+    public void setQuestion(String question) {
+        this.question = question;
     }
 
-    public String getWordTitleAnswer() {
-        return wordTitleAnswer;
+    public String getAnswer() {
+        return answer;
     }
 
-    public void setWordTitleAnswer(String wordTitleAnswer) {
-        this.wordTitleAnswer = wordTitleAnswer;
+    public void setAnswer(String answer) {
+        this.answer = answer;
     }
 
     public LocalDateTime getDateOfSetAnswer() {

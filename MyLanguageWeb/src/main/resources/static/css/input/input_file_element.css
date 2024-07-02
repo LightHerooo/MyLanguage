@@ -1,0 +1,95 @@
+div.div-input-file-element-container {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+div.div-input-file-element-actions-container {
+    display: grid;
+    grid: 1fr / 1fr 50px;
+    gap: 5px;
+}
+
+label.label-input-file-element-container,
+label.label-input-file-element-container-disabled {
+    display: grid;
+}
+
+label.label-input-file-element-container input[type=file],
+label.label-input-file-element-container-disabled input[type=file] {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+    display: block;
+    width: 0;
+    height: 0;
+}
+
+label.label-input-file-element-container span,
+label.label-input-file-element-container-disabled span {
+    display: grid;
+    cursor: pointer;
+    padding: 10px 20px;
+
+    border: 2px solid var(--main-third-color);
+    background: var(--main-second-color);
+
+    text-align: center;
+    font-size: var(--small-font-size);
+}
+
+label.label-input-file-element-container-disabled span {
+    pointer-events: none;
+    cursor: default;
+
+    opacity: 0.5;
+}
+
+label.label-input-file-element-container:hover span {
+    background-color: var(--main-third-color);
+}
+
+button.button-drop-selected-files {
+    min-height: 50px;
+
+    display: grid;
+    justify-content: center;
+    align-items: center;
+
+    cursor: pointer;
+
+    border: 2px solid var(--main-third-color);
+    background: var(--main-second-color);
+}
+button.button-drop-selected-files:hover {
+    background: var(--main-third-color);
+}
+button.button-drop-selected-files > img {
+    width: 32px;
+    height: 32px;
+}
+button.button-drop-selected-files:disabled {
+    opacity: 0.6;
+}
+
+div.div-input-file-element-message-container {
+    display: grid;
+    justify-content: left;
+    align-items: center;
+}
+
+
+
+div.div-input-img-element-container {
+    display: grid;
+    grid: 1fr / 200px 1fr;
+    gap: 10px;
+}
+
+div.div-input-img-element-container > img {
+    width: 200px;
+    height: 200px;
+
+    border: 2px solid black;
+    background: white;
+}

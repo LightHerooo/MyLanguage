@@ -17,23 +17,26 @@ public class WorkoutTypeService {
         this.WORKOUT_TYPE_CRUD_REPOSITORY = workoutTypeCrudRepository;
     }
 
-    public List<WorkoutType> findAll() {
-        return WORKOUT_TYPE_CRUD_REPOSITORY.findAll();
+    public List<WorkoutType> findAll(String title, Boolean isPrepared, Boolean isActive, Long numberOfItems,
+                                     Long lastWorkoutTypeIdOnPreviousPage) {
+        return WORKOUT_TYPE_CRUD_REPOSITORY.findAll(title, isPrepared, isActive, numberOfItems, lastWorkoutTypeIdOnPreviousPage);
     }
 
-    public List<WorkoutType> findAll(String title) {
-        return WORKOUT_TYPE_CRUD_REPOSITORY.findAll(title);
+    public List<WorkoutType> findAll() {
+        return WORKOUT_TYPE_CRUD_REPOSITORY.findAll(null, true, null, 0L, 0L);
+    }
+
+
+
+    public WorkoutType find(String code) {
+        return WORKOUT_TYPE_CRUD_REPOSITORY.findByCode(code).orElse(null);
     }
 
     public WorkoutType find(WorkoutTypes workoutTypes) {
         return WORKOUT_TYPE_CRUD_REPOSITORY.find(workoutTypes).orElse(null);
     }
 
-    public WorkoutType find(String code) {
-        return WORKOUT_TYPE_CRUD_REPOSITORY.findByCode(code).orElse(null);
-    }
-
-    public WorkoutType changeActiveStatus(WorkoutType workoutType, boolean isActive) {
+    public WorkoutType editIsActive(WorkoutType workoutType, boolean isActive) {
         WorkoutType result = null;
         if (workoutType != null) {
             workoutType.setActive(isActive);
@@ -42,4 +45,11 @@ public class WorkoutTypeService {
 
         return result;
     }
+
+
+
+    public void switchWorkoutTypes(boolean isActive) {
+        WORKOUT_TYPE_CRUD_REPOSITORY.switchWorkoutTypes(isActive);
+    }
+
 }

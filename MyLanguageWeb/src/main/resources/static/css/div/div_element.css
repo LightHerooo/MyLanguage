@@ -1,0 +1,65 @@
+div.div-element-horizontal-flex-container,
+div.div-element-horizontal-flex-container-center {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+}
+div.div-element-horizontal-flex-container-center {
+    justify-content: center;
+    align-items: center;
+}
+
+div.div-element-vertical-flex-container,
+div.div-element-vertical-flex-container-center {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+div.div-element-vertical-flex-container-center {
+    justify-content: center;
+    align-items: center;
+}
+
+div.div-element-align-items-center {
+    display: grid;
+    align-items: center;
+}
+div.div-element-justify-content-center {
+    display: grid;
+    justify-content: center;
+}
+div.div-element-content-center {
+    display: grid;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+div.div-element-horizontal-delimiter, div.div-element-horizontal-delimiter-margin {
+    height: 1px;
+    background: rgba(var(--main-third-color-rgb), var(--opacity-standard));
+}
+div.div-element-horizontal-delimiter-margin {
+    margin: 5px 25px 5px 25px;
+}
+div.div-element-vertical-delimiter, div.div-element-vertical-delimiter-margin {
+    width: 1px;
+    background: rgba(var(--main-third-color-rgb), var(--opacity-standard));
+}
+div.div-element-vertical-delimiter-margin {
+    margin: 25px 5px 25px 5px;
+}
+
+div.div-element-overflow-vertical {
+    overflow-y: scroll;
+}
+div.div-element-overflow-vertical::-webkit-scrollbar-track {
+    background-color: var(--main-first-color);
+}
+div.div-element-overflow-vertical::-webkit-scrollbar {
+    width: 15px;
+    background-color: var(--main-first-color);;
+}
+div.div-element-overflow-vertical::-webkit-scrollbar-thumb {
+    background-color: var(--main-second-color);
+}

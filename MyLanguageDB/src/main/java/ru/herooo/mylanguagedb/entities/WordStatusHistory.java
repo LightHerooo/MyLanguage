@@ -1,8 +1,8 @@
 package ru.herooo.mylanguagedb.entities;
 
 import jakarta.persistence.*;
+import ru.herooo.mylanguagedb.entities.word.Word;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity

@@ -6,7 +6,7 @@ div.procedure-action {
     align-items: center;
     gap: 10px;
 
-    font-size: var(--third-font-size);
+    font-size: var(--small-font-size);
     font-weight: bold;
 }
 

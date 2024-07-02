@@ -52,7 +52,7 @@ div.special-action {
     padding: 10px;
 
     font-weight: bold;
-    font-size: var(--second-font-size);
+    font-size: var(--medium-font-size);
 }
 
 img.img-special-action {

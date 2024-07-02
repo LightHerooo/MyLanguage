@@ -17,12 +17,12 @@ public class WordStatusService {
         this.WORD_STATUS_CRUD_REPOSITORY = wordStatusCrudRepository;
     }
 
-    // Получение всех статусов слов
     public List<WordStatus> findAll() {
         return WORD_STATUS_CRUD_REPOSITORY.findAll();
     }
 
-    // Поиск по коду
+
+
     public WordStatus find(String code) {
         return WORD_STATUS_CRUD_REPOSITORY.findByCode(code).orElse(null);
     }

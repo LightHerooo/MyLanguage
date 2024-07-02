@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.herooo.mylanguagedb.entities.CustomerRole;
 import ru.herooo.mylanguageweb.dto.entity.customerrole.CustomerRoleMapping;
-import ru.herooo.mylanguageweb.dto.entity.customerrole.CustomerRoleResponseDTO;
-import ru.herooo.mylanguageweb.dto.other.CustomResponseMessage;
+import ru.herooo.mylanguageweb.dto.entity.customerrole.response.CustomerRoleResponseDTO;
+import ru.herooo.mylanguageweb.dto.other.response.ResponseMessageResponseDTO;
 import ru.herooo.mylanguageweb.services.CustomerRoleService;
 
 import java.util.List;
@@ -28,7 +28,7 @@ public class CustomerRolesRestController {
         this.CUSTOMER_ROLE_MAPPING = customerRoleMapping;
     }
 
-    @GetMapping
+    @GetMapping("/get")
     public ResponseEntity<?> getAll() {
         List<CustomerRole> roles = CUSTOMER_ROLE_SERVICE.findAll();
         if (roles != null && roles.size() > 0) {
@@ -38,7 +38,7 @@ public class CustomerRolesRestController {
                     .toList();
             return ResponseEntity.ok(responseDTOs);
         } else {
-            CustomResponseMessage message = new CustomResponseMessage(1, "Роли не найдены.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Роли не найдены.");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -50,7 +50,7 @@ public class CustomerRolesRestController {
             CustomerRoleResponseDTO dto = CUSTOMER_ROLE_MAPPING.mapToResponseDTO(role);
             return ResponseEntity.ok(dto);
         } else {
-            CustomResponseMessage message = new CustomResponseMessage(1,
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
                     String.format("Роль с кодом '%s' не найдена.", code));
             return ResponseEntity.badRequest().body(message);
         }

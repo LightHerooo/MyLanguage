@@ -2,14 +2,14 @@ main {
     min-height: 1300px;
 }
 
-div.statistics-container {
+div.div-statistics-container {
     min-height: 150px;
 
     display: grid;
     align-items: center;
 }
 
-div.instruments-for-find-word-histories-container {
+div.div-instruments-for-find-word-histories-container {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 50px;
+    grid-template-columns: 2fr 1fr 1fr 60px;
 }

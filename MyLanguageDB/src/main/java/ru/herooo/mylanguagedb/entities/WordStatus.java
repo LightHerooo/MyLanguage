@@ -18,8 +18,8 @@ public class WordStatus {
     @Column(name = "code")
     private String code;
 
-    @Column(name = "message")
-    private String message;
+    @Column(name = "description")
+    private String description;
 
     @ManyToOne
     @JoinColumn(name = "color_id")
@@ -45,12 +45,12 @@ public class WordStatus {
         this.code = code;
     }
 
-    public String getMessage() {
-        return message;
+    public String getDescription() {
+        return description;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setDescription(String message) {
+        this.description = message;
     }
 
     public Color getColor() {

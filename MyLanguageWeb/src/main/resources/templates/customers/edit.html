@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title th:text="|${WEB_APP_NAME} - Редактирование профиля|"></title>
+        <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
+
+        <link rel="stylesheet" type="text/css" href="/css/root.css">
+        <link rel="stylesheet" type="text/css" href="/css/main.css">
+        <link rel="stylesheet" type="text/css" href="/css/img_sizes.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/span/span_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/span/span_flag_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/span/span_loading_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/span/span_rule_element.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/input/input_text_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/input/input_file_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/input/input_checkbox_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/input/input_password_element.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/select/select_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/form/form_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/label/label_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/textarea/textarea_element.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/info_block/info_block.css">
+        <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_header.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/templates/customers/edit.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
+
+        <script type="module" src="/js/templates/customers/edit.js"></script>
+    </head>
+    <body>
+        <header>
+            <div th:insert="~{layouts/header}"></div>
+        </header>
+        <main>
+            <div class="div-customer-edit-container">
+                <div class="div-info-block-header-container">
+                    <img src="/images/other/pencil.png"
+                         alt="pencil.png"/>
+                    <h1>Редактирование пользователя</h1>
+                </div>
+                <div class="div-customer-edit-container-for-two-containers">
+                    <div class="div-customer-edit-profile-container">
+                        <div class="div-info-block-header-container">
+                            <img src="/images/templates/customers/edit_profile.png"
+                                 alt="edit_profile.png"/>
+                            <h1>Изменение профиля</h1>
+                        </div>
+                        <div class="div-info-block-container">
+                            <form id="form_customer_edit_profile"
+                                  th:action="@{/customers/info/{id}(id=${AUTH_CUSTOMER.id})}"
+                                  class="form-element">
+                                <div id="div_input_img_customer_avatar"
+                                     class="div-input-img-element-container">
+                                    <img id="img_customer_avatar"
+                                         src="#"
+                                         alt="#"/>
+                                    <div class="div-form-element-item">
+                                        <label for="input_file_customer_avatar"
+                                               class="label-element">Изображение:</label>
+                                        <div id="div_input_file_customer_avatar"
+                                             class="div-input-file-element-container">
+                                            <div class="div-input-file-element-actions-container">
+                                                <label id="label_input_file_customer_avatar"
+                                                       class="label-input-file-element-container-disabled">
+                                                    <input id="input_file_customer_avatar"
+                                                           type="file" disabled>
+                                                    <span>Выберите файл</span>
+                                                </label>
+                                                <button id="button_drop_selected_files_customer_avatar"
+                                                        class="button-drop-selected-files"
+                                                        type="button" disabled>
+                                                    <img src="/images/buttons/delete.png"
+                                                         alt="delete.png"/>
+                                                </button>
+                                            </div>
+                                            <div id="div_input_file_message_container_customer_avatar"
+                                                 class="div-input-file-element-message-container"></div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="div-form-element-item">
+                                    <label for="input_text_customer_nickname"
+                                           class="label-element">Никнейм:</label>
+                                    <input id="input_text_customer_nickname"
+                                           type="text"
+                                           class="input-text-element" disabled/>
+                                </div>
+                                <div class="div-form-element-item">
+                                    <label for="select_countries" class="label-element">Страна:</label>
+                                    <div id="div_select_countries" class="div-select-with-flag-element-container">
+                                        <select id="select_countries"
+                                                class="select-element" disabled></select>
+                                        <div>
+                                            <div>
+                                                <span id="span_flag_select_countries"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="div-form-element-item">
+                                    <label for="textarea_customer_description"
+                                           class="label-element">Описание:</label>
+                                    <div id="div_textarea_customer_description"
+                                         class="div-textarea-with-counter-element-container">
+                                        <textarea id="textarea_customer_description"
+                                                  class="textarea-element" disabled
+                                                  style="min-height: 200px"></textarea>
+                                        <div>
+                                            <span id="span_counter_textarea_customer_description"></span>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="div-element-horizontal-delimiter"></div>
+                                <button id="button_submit_customer_edit_profile"
+                                        type="submit"
+                                        class="button-submit"
+                                        disabled>Сохранить изменения</button>
+                                <div id="div_message_container_customer_edit_profile"
+                                     class="div-form-element-message-container"></div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="div-customer-edit-password-container">
+                        <div class="div-info-block-header-container">
+                            <img src="/images/templates/customers/edit_password.png"
+                                 alt="edit_password.png"/>
+                            <h1>Изменение пароля</h1>
+                        </div>
+                        <div class="div-info-block-container">
+                            <form id="form_customer_edit_password"
+                                  action="#"
+                                  class="form-element">
+                                <div class="div-form-element-item">
+                                    <label for="input_password_old"
+                                           class="label-element">Старый пароль:</label>
+                                    <input id="input_password_old"
+                                           type="password"
+                                           class="input-password-element" disabled/>
+                                </div>
+                                <div class="div-form-element-item">
+                                    <label for="input_password_new"
+                                           class="label-element">Новый пароль:</label>
+                                    <input id="input_password_new"
+                                           type="password"
+                                           class="input-password-element" disabled/>
+                                </div>
+                                <div class="div-form-element-item">
+                                    <label for="input_password_repeat"
+                                           class="label-element">Повторите пароль:</label>
+                                    <input id="input_password_repeat"
+                                           type="password"
+                                           class="input-password-element" disabled/>
+                                </div>
+                                <div class="div-form-element-item div-element-content-center">
+                                    <div id="div_input_checkbox_show_password" class="div-input-checkbox-element-container">
+                                        <input id="input_checkbox_show_password"
+                                               type="checkbox"
+                                               class="input-checkbox-element" disabled>
+                                        <label id="label_input_checkbox_show_password"
+                                               for="input_checkbox_show_password"
+                                               class="label-input-checkbox-element-disabled">Показать пароль</label>
+                                    </div>
+                                </div>
+                                <div class="div-element-horizontal-delimiter"></div>
+                                <button id="button_submit_customer_edit_password"
+                                        type="submit"
+                                        class="button-submit"
+                                        disabled>Изменить пароль</button>
+                                <div id="div_message_container_customer_edit_password"
+                                     class="div-form-element-message-container"></div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </body>
+</html>

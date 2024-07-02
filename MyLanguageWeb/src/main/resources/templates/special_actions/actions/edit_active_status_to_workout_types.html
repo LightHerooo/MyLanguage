@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title th:text="|${WEB_APP_NAME} - Изменение статуса активности в режимах тренировок|"></title>
+        <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
+
+        <link rel="stylesheet" type="text/css" href="/css/root.css">
+        <link rel="stylesheet" type="text/css" href="/css/main.css">
+        <link rel="stylesheet" type="text/css" href="/css/img_sizes.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/span/span_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/span/span_loading_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/span/span_rule_element.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/table/table_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/table/instruments_for_table.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/input/input_text_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/select/select_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/button/button_element.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_big_header.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/templates/special_actions/actions/edit_active_status_to_workout_types.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
+
+        <script type="module" src="/js/templates/special_actions/edit_active_status_to_workout_types.js"></script>
+    </head>
+    <body>
+        <header>
+            <div th:insert="~{layouts/header}"></div>
+        </header>
+        <main>
+            <div class="div-info-block-big-header-container">
+                <div class="div-info-block-big-header-img-container">
+                    <img src="/images/logo/logo.png"
+                         alt="logo.png"/>
+                </div>
+                <div class="div-info-block-big-header-data-container">
+                    <h1>Изменение статуса активности в режимах тренировок</h1>
+                    <div>
+                        <span>
+                            Изменяйте статусы активности в режимах тренировок.
+                            Администраторам и модераторам будут доступны режимы тренировок вне зависимости от их активности.
+                        </span>
+                    </div>
+                    <br>
+                </div>
+            </div>
+            <div class="div-actions-container">
+                <button id="button_turn_on_all"
+                        class="button-with-img-and-span-element-horizontal-32 button-element-green" disabled>
+                    <span id="span_turn_on_all">Включить все режимы тренировок</span>
+                    <span>
+                        <img id="img_turn_on_all"
+                             src="/images/buttons/accept.png"
+                             alt="accept.png">
+                    </span>
+                </button>
+                <button id="button_turn_off_all"
+                        class="button-with-img-and-span-element-horizontal-32 button-element-red" disabled>
+                    <span id="span_turn_off_all">Выключить все режимы тренировок</span>
+                    <span>
+                        <img id="img_turn_off_all"
+                             src="/images/buttons/deny.png"
+                             alt="deny.png">
+                    </span>
+                </button>
+                <button class="button-with-img-and-span-element-horizontal-32 button-element-default" disabled>
+                    <span>...</span>
+                    <span>
+                        <img src="/images/buttons/question.png"
+                             alt="question.png">
+                    </span>
+                </button>
+            </div>
+            <div class="div-instruments-for-table-container-margin div-instruments-for-find-workout-types-container">
+                <div class="div-instrument-for-table-container">
+                    <label for="input_text_finder">Поиск:</label>
+                    <input id="input_text_finder"
+                           type="text"
+                           class="input-text-element" disabled>
+                </div>
+                <div class="div-instrument-for-table-container">
+                    <label for="select_is_active">Поиск:</label>
+                    <select id="select_is_active"
+                            class="select-element"></select>
+                </div>
+                <div class="div-instrument-for-table-container">
+                    <label for="button_refresh"></label>
+                    <button id="button_refresh"
+                            class="button-with-img-element-32 button-element-default"
+                            title="Обновить" disabled>
+                        <img id="img_button_refresh"
+                             src="/images/other/refresh.png"
+                             alt="refresh.png"/>
+                    </button>
+                </div>
+            </div>
+            <table id="table_workout_types" class="table-element">
+                <colgroup id="colgroup_workout_types">
+                    <col style="width: 5%">
+                    <col style="width: 65%">
+                    <col style="width: 30%">
+                </colgroup>
+                <thead id="thead_workout_types"
+                       class="thead-table-element-medium">
+                    <tr>
+                        <th>№</th>
+                        <th>Название</th>
+                        <th>Статус активности</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody_workout_types"></tbody>
+            </table>
+        </main>
+    </body>
+</html>

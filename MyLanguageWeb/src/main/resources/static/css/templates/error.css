@@ -1,0 +1,28 @@
+main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+div.div-error-container {
+    width: 500px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+
+    overflow-wrap: anywhere;
+    text-align: center;
+}
+
+span.span-error-code {
+    font-weight: bold;
+    font-size: 200px;
+}
+
+span.span-error-message {
+    font-size: var(--small-font-size);
+}
+

@@ -4,14 +4,26 @@
         <meta charset="UTF-8">
         <title th:text="${WEB_APP_NAME} + ' - Информация о тренировке №' + ${WORKOUT_ID}"></title>
         <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
+
         <link rel="stylesheet" type="text/css" href="/css/root.css">
         <link rel="stylesheet" type="text/css" href="/css/main.css">
-        <link rel="stylesheet" type="text/css" href="/css/info_blocks/small_info_block.css">
-        <link rel="stylesheet" type="text/css" href="/css/info_blocks/dynamic_info_block.css">
-        <link rel="stylesheet" type="text/css" href="/css/other/loading.css">
-        <link rel="stylesheet" type="text/css" href="/css/other/rule.css">
-        <link rel="stylesheet" type="text/css" href="/css/types/workout_statistic.css">
-        <link rel="stylesheet" type="text/css" href="/css/types/workout_round_statistic.css">
+        <link rel="stylesheet" type="text/css" href="/css/img_sizes.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/span/span_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/span/span_flag_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/span/span_rule_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/span/span_loading_element.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/div/div_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/div/div_with_data_builder_element.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/a/a_button_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/button/button_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/table/table_element.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/info_block/info_block.css">
+        <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_header.css">
+
         <link rel="stylesheet" type="text/css" href="/css/templates/workouts/show_info_one.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
 
@@ -22,40 +34,47 @@
           <div th:insert="~{layouts/header}"></div>
         </header>
         <main>
-            <div class="small-info-block-container">
-                <img class="img-small-info-block" src="/images/workouts/brain.png" alt="brain.png"/>
-                <h1 class="h1-small-info-block" th:text="'Информация о тренировке №' + ${WORKOUT_ID}"></h1>
+            <div class="div-info-block-header-container">
+                <img src="/images/other/brain.png"
+                     alt="brain.png"/>
+                <h1 th:text="'Информация о тренировке №' + ${WORKOUT_ID}"></h1>
             </div>
-            <div class="workout-info-with-actions-container">
-                <div id="div_workout_info" class="info-block-standard"></div>
-                <div id="div_workout_extra_actions" class="info-block-standard"></div>
+            <div class="div-workout-info-with-actions-container">
+                <div id="div_workout_info"
+                     class="div-info-block-container"></div>
+                <div id="div_workout_actions"
+                     class="div-info-block-container"></div>
             </div>
-            <div class="small-info-block-container-margin">
-                <img class="img-small-info-block" src="/images/other/statistic.png" alt="statistic.png"/>
-                <h1 class="h1-small-info-block">Статистика</h1>
+            <div class="div-info-block-header-container-margin">
+                <img src="/images/other/statistic.png"
+                     alt="statistic.png"/>
+                <h1>Статистика</h1>
             </div>
-            <div id="div_workout_statistics" class="workout-statistics-container info-block-standard"></div>
+            <div id="div_workout_statistic"
+                 class="div-info-block-container"
+                 style="min-height: 100px"></div>
 
-            <div class="small-info-block-container-margin">
-                <img class="img-small-info-block" src="/images/other/history.png" alt="history.png"/>
-                <h1 class="h1-small-info-block">История ответов</h1>
+            <div class="div-info-block-header-container-margin">
+                <img src="/images/other/history.png" alt="history.png"/>
+                <h1>История ответов</h1>
             </div>
-            <table class="table-standard">
-                <colgroup>
+            <table id="table_workout_answers_history_over" class="table-element">
+                <colgroup id="colgroup_workout_answers_history_over" >
                     <col style="width: 70px"/>
                     <col style="width: 50px"/>
                     <col style="width: 100%"/>
                     <col style="width: 100px"/>
                 </colgroup>
-                <thead id="thead_workout_history">
+                <thead id="thead_workout_answers_history_over"
+                       class="thead-table-element-medium">
                     <tr>
                         <th>№</th>
                         <th></th>
-                        <th>Вопрос/ответ</th>
+                        <th>Вопрос & ответ</th>
                         <th></th>
                     </tr>
                 </thead>
-                <tbody id="tbody_workout_history"></tbody>
+                <tbody id="tbody_workout_answers_history_over"></tbody>
             </table>
         </main>
     </body>

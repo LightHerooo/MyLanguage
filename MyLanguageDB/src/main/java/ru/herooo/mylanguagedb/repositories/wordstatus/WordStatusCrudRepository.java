@@ -10,10 +10,12 @@ import java.util.Optional;
 
 @Repository
 public interface WordStatusCrudRepository extends CrudRepository<WordStatus, Long>, WordStatusRepository<WordStatus> {
-    Optional<WordStatus> findByCode(String code);
-
     @Query(value =
             "FROM WordStatus ws " +
             "ORDER BY ws.title")
     List<WordStatus> findAll();
+
+
+
+    Optional<WordStatus> findByCode(String code);
 }

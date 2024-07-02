@@ -2,14 +2,13 @@ package ru.herooo.mylanguageweb.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.herooo.mylanguagedb.entities.Word;
 import ru.herooo.mylanguagedb.entities.WordStatus;
 import ru.herooo.mylanguagedb.entities.WordStatusHistory;
 import ru.herooo.mylanguagedb.repositories.WordStatusHistoryCrudRepository;
 import ru.herooo.mylanguagedb.repositories.wordstatus.WordStatusCrudRepository;
 import ru.herooo.mylanguagedb.repositories.wordstatus.WordStatuses;
 import ru.herooo.mylanguageweb.dto.entity.wordstatushistory.WordStatusHistoryMapping;
-import ru.herooo.mylanguageweb.dto.entity.wordstatushistory.WordStatusHistoryRequestDTO;
+import ru.herooo.mylanguageweb.dto.entity.wordstatushistory.request.WordStatusHistoryAddRequestDTO;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,20 +31,27 @@ public class WordStatusHistoryService {
         this.WORD_STATUS_HISTORY_MAPPING = wordStatusHistoryMapping;
     }
 
-    public List<WordStatusHistory> findList(Long wordId) {
-        return WORD_STATUS_HISTORY_CRUD_REPOSITORY.findList(wordId);
+    public List<WordStatusHistory> findAllWordsWithCurrentStatus(String title,
+                                                                 String langCode,
+                                                                 String wordStatusCode,
+                                                                 Long customerId,
+                                                                 Long numberOfItems,
+                                                                 Long lastWordStatusHistoryIdOnPreviousPage) {
+        return WORD_STATUS_HISTORY_CRUD_REPOSITORY.findAllWordsWithCurrentStatus(title, langCode, wordStatusCode,
+                customerId, numberOfItems, lastWordStatusHistoryIdOnPreviousPage);
+    }
+
+    public List<WordStatusHistory> findAllWordChangesHistory(Long wordId) {
+        return WORD_STATUS_HISTORY_CRUD_REPOSITORY.findAllWordChangesHistory(wordId);
     }
 
     public WordStatusHistory findCurrent(Long wordId) {
         return WORD_STATUS_HISTORY_CRUD_REPOSITORY.findCurrent(wordId).orElse(null);
     }
 
-    public WordStatusHistory add(WordStatusHistoryRequestDTO dto) {
+    public WordStatusHistory add(WordStatusHistoryAddRequestDTO dto) {
         WordStatusHistory status = WORD_STATUS_HISTORY_MAPPING.mapToWordStatusHistory(dto);
         status.setDateOfStart(LocalDateTime.now());
-
-        WordStatus wordStatus = WORD_STATUS_CRUD_REPOSITORY.find(WordStatuses.NEW).orElse(null);
-        status.setWordStatus(wordStatus);
 
         return WORD_STATUS_HISTORY_CRUD_REPOSITORY.save(status);
     }

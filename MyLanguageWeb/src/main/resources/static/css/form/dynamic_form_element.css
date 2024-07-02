@@ -1,0 +1,84 @@
+form.form-dynamic-form-element {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 15px;
+}
+
+
+div.div-dynamic-form-element-rows-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+div.div-dynamic-form-element-row-container {
+    min-height: 100px;
+
+    display: grid;
+    grid: 1fr / 1fr 60px;
+    gap: 10px;
+}
+
+div.div-dynamic-form-element-row-data-container {
+    display: grid;
+    align-items: center;
+
+    background: rgba(var(--main-first-color-rgb), var(--opacity-standard));
+
+    padding: 10px;
+}
+
+div.div-dynamic-form-element-row-data-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+div.div-dynamic-form-element-button-add-row-container {
+    display: grid;
+}
+
+div.div-dynamic-form-element-submit-container {
+    min-height: 50px;
+
+    display: grid;
+    grid: 1fr / 1fr 200px;
+    align-items: center;
+    gap: 10px;
+
+    background: rgba(var(--main-first-color-rgb), var(--opacity-standard));
+    padding: 10px;
+}
+
+div.div-dynamic-form-element-message-container {
+    display: grid;
+    justify-content: left;
+    align-items: center;
+}
+
+
+button.button-submit {
+    min-height: 50px;
+
+    display: grid;
+    justify-content: center;
+    align-items: center;
+
+    cursor: pointer;
+
+    border: 2px solid var(--main-third-color);
+    background: var(--main-second-color);
+
+    color: black;
+    font-family: inherit;
+    font-size: var(--small-font-size);
+    text-decoration: none;
+    text-align: center;
+}
+button.button-submit:hover {
+    background: var(--main-third-color);
+}
+button.button-submit:disabled {
+    opacity: 0.6;
+}

@@ -2,14 +2,15 @@ package ru.herooo.mylanguageweb.dto.entity.wordincollection;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.herooo.mylanguagedb.entities.CustomerCollection;
-import ru.herooo.mylanguagedb.entities.Word;
+import ru.herooo.mylanguagedb.entities.customer_collection.CustomerCollection;
+import ru.herooo.mylanguagedb.entities.word.Word;
 import ru.herooo.mylanguagedb.entities.WordInCollection;
 import ru.herooo.mylanguagedb.repositories.CustomerCollectionCrudRepository;
 import ru.herooo.mylanguagedb.repositories.word.WordCrudRepository;
-import ru.herooo.mylanguageutils.StringUtils;
 import ru.herooo.mylanguageweb.dto.entity.customercollection.CustomerCollectionMapping;
 import ru.herooo.mylanguageweb.dto.entity.word.WordMapping;
+import ru.herooo.mylanguageweb.dto.entity.wordincollection.request.WordInCollectionAddRequestDTO;
+import ru.herooo.mylanguageweb.dto.entity.wordincollection.response.WordInCollectionResponseDTO;
 
 @Service
 public class WordInCollectionMapping {
@@ -19,23 +20,17 @@ public class WordInCollectionMapping {
     private final CustomerCollectionMapping CUSTOMER_COLLECTION_MAPPING;
     private final WordMapping WORD_MAPPING;
 
-    private final StringUtils STRING_UTILS;
-
     @Autowired
     public WordInCollectionMapping(WordCrudRepository wordCrudRepository,
                                    CustomerCollectionCrudRepository customerCollectionCrudRepository,
 
                                    CustomerCollectionMapping customerCollectionMapping,
-                                   WordMapping wordMapping,
-
-                                   StringUtils stringUtils) {
+                                   WordMapping wordMapping) {
         this.WORD_CRUD_REPOSITORY = wordCrudRepository;
         this.CUSTOMER_COLLECTION_CRUD_REPOSITORY = customerCollectionCrudRepository;
 
         this.CUSTOMER_COLLECTION_MAPPING = customerCollectionMapping;
         this.WORD_MAPPING = wordMapping;
-
-        this.STRING_UTILS = stringUtils;
     }
 
     public WordInCollectionResponseDTO mapToResponseDTO(WordInCollection wordInCollection) {
@@ -54,7 +49,7 @@ public class WordInCollectionMapping {
         return dto;
     }
 
-    public WordInCollection mapToWordInCollection(WordInCollectionRequestDTO dto) {
+    public WordInCollection mapToWordInCollection(WordInCollectionAddRequestDTO dto) {
         WordInCollection wordInCollection = new WordInCollection();
 
         long wordId = dto.getWordId();
@@ -63,9 +58,9 @@ public class WordInCollectionMapping {
             wordInCollection.setWord(word);
         }
 
-        long collectionId = dto.getCollectionId();
-        if (collectionId != 0) {
-            CustomerCollection collection = CUSTOMER_COLLECTION_CRUD_REPOSITORY.findById(collectionId)
+        long customerCollectionId = dto.getCustomerCollectionId();
+        if (customerCollectionId != 0) {
+            CustomerCollection collection = CUSTOMER_COLLECTION_CRUD_REPOSITORY.findById(customerCollectionId)
                     .orElse(null);
             wordInCollection.setCustomerCollection(collection);
         }

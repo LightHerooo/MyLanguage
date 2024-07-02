@@ -7,95 +7,96 @@
 
       <link rel="stylesheet" type="text/css" href="/css/root.css">
       <link rel="stylesheet" type="text/css" href="/css/main.css">
+
+      <link rel="stylesheet" type="text/css" href="/css/span/span_flag_element.css">
+      <link rel="stylesheet" type="text/css" href="/css/div/div_element.css">
+
       <link rel="stylesheet" type="text/css" href="/css/templates/layouts/header.css">
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
   </head>
   <body>
     <nav>
-        <div class="nav-left-container">
-            <a href="/" class="nav-logotype">
-                <img class="nav-logotype-img" src="/images/logo/logo.png" alt="logo.png"/>
-                <p th:text="${WEB_APP_NAME}"></p>
+        <div class="div-nav-left-container">
+            <a href="/" class="a-nav-logotype">
+                <img src="/images/logo/logo.png" alt="logo.png"/>
+                <span th:text="${WEB_APP_NAME}"></span>
             </a>
-            <div class="vertical-delimiter-margin"></div>
-            <a href="/workouts" class="nav-item">
-                <img class="nav-item-img" src="/images/workouts/brain.png" alt="workout.png"/>
-                <p>Тренироваться</p>
+            <div class="div-element-vertical-delimiter-margin"></div>
+            <a href="/workouts" class="a-nav-item">
+                <img src="/images/other/brain.png" alt="workout.png"/>
+                <span>Тренироваться</span>
             </a>
-            <div class="vertical-delimiter-margin"></div>
-            <a href="/words" class="nav-item">
-                <img class="nav-item-img" src="/images/words/words.png" alt="words.png"/>
-                <p>Слова</p>
+            <div class="div-element-vertical-delimiter-margin"></div>
+            <a href="/words" class="a-nav-item">
+                <img src="/images/templates/words/words.png" alt="words.png"/>
+                <span>Слова</span>
             </a>
-            <div class="vertical-delimiter-margin"></div>
-            <a href="/customer_collections" class="nav-item">
-                <img class="nav-item-img" src="/images/customer_collections/customer_collections.png" alt="customer_collections.png"/>
-                <p>Мои коллекции</p>
+            <div class="div-element-vertical-delimiter-margin"></div>
+            <a href="/customer_collections" class="a-nav-item">
+                <img src="/images/templates/customer_collections/customer_collections.png" alt="customer_collections.png"/>
+                <span>Мои коллекции</span>
             </a>
-            <div class="vertical-delimiter-margin"></div>
-            <a href="#" class="nav-item-disabled">
-                <img class="nav-item-img" src="/images/rating.png" alt="rating.png"/>
-                <p>Рейтинг</p>
+            <div class="div-element-vertical-delimiter-margin"></div>
+            <a href="#" class="a-nav-item-disabled">
+                <img src="/images/other/cup.png" alt="rating.png"/>
+                <span>Рейтинг</span>
             </a>
-            <div class="vertical-delimiter-margin"></div>
+            <div class="div-element-vertical-delimiter-margin"></div>
         </div>
-        <div class="authorization-container" th:if="${AUTH_CUSTOMER == null}">
-            <div class="vertical-delimiter-margin"></div>
-            <a class="nav-item" href="/customers/new">
-                <img class="nav-item-img" src="/images/customers/registration.png" alt="registration.png"/>
-                <p>Регистрация</p>
+        <div class="div-nav-right-container" th:if="${AUTH_CUSTOMER == null}">
+            <div class="div-element-vertical-delimiter-margin"></div>
+            <a class="a-nav-item" href="/customers/registration">
+                <img src="/images/templates/customers/registration.png" alt="registration.png"/>
+                <span>Регистрация</span>
             </a>
-            <div class="vertical-delimiter-margin"></div>
-            <a class="nav-item" href="/customers/entry">
-                <img class="nav-item-img" src="/images/customers/entry.png" alt="entry.png"/>
-                <p>Вход</p>
+            <div class="div-element-vertical-delimiter-margin"></div>
+            <a class="a-nav-item" href="/customers/entry">
+                <img src="/images/templates/customers/entry.png" alt="entry.png"/>
+                <span>Вход</span>
             </a>
-            <div class="vertical-delimiter-margin"></div>
+            <div class="div-element-vertical-delimiter-margin"></div>
         </div>
-        <div class="authorization-container" th:if="${AUTH_CUSTOMER != null}">
-            <div th:if="${IS_SUPER_USER == true}" class="vertical-delimiter-margin"></div>
-            <a th:if="${IS_SUPER_USER == true}" class="nav-item" href="/special_actions">
-                <img class="nav-item-img"
-                     src="#" th:src="${AUTH_CUSTOMER.role.pathToImage}"
+        <div class="div-nav-right-container" th:if="${AUTH_CUSTOMER != null}">
+            <div class="div-element-vertical-delimiter-margin" th:if="${IS_SUPER_USER == true}"></div>
+            <a class="a-nav-item" href="/special_actions" th:if="${IS_SUPER_USER == true}">
+                <img src="#" th:src="${AUTH_CUSTOMER.role.pathToImage}"
                      alt="role.png"/>
-                <div class="nav-special-actions-text"
-                     th:style="${AUTH_CUSTOMER.role.color != null
-                     ? 'color: #' + AUTH_CUSTOMER.role.color.hexCode
-                     : ''}">Специальные возможности</div>
+                <span th:style="${AUTH_CUSTOMER.role.color != null
+                      ? 'color: #' + AUTH_CUSTOMER.role.color.hexCode
+                      : ''}">Специальные возможности</span>
             </a>
-            <div class="vertical-delimiter-margin"></div>
-            <a class="nav-item" th:href="@{/customers/info/{id}(id = ${AUTH_CUSTOMER.id})}">
-                <img class="auth-customer-img" src="/images/customer_roles/customer.png" alt="customer.png"/>
-                <div class="auth-customer-info-container">
-                    <div class="customer-nickname-container">
+            <div class="div-element-vertical-delimiter-margin"></div>
+            <a class="a-nav-customer" th:href="@{/customers/info/{id}(id = ${AUTH_CUSTOMER.id})}">
+                <div class="div-a-nav-customer-img-container">
+                    <img src="#"
+                         th:src="${AUTH_CUSTOMER.pathToAvatar != null
+                         ? AUTH_CUSTOMER.pathToAvatar
+                         : '/customers/avatar/0'}"
+                         alt="customer.png"/>
+                </div>
+                <div class="div-a-nav-customer-info-container">
+                    <div class="div-a-nav-customer-nickname-container">
                         <span th:class="'fi fi-' + ${AUTH_CUSTOMER.country.code}"
                               th:title="${AUTH_CUSTOMER.country.title}"></span>
-                        <span class="customer-nickname"
+                        <span class="span-customer-nickname"
                               th:text="${AUTH_CUSTOMER.nickname}"
                               th:style="${AUTH_CUSTOMER.role.color != null
                               ? 'color: #' + AUTH_CUSTOMER.role.color.hexCode
                               : ''}"></span>
                     </div>
-                    <div class="auth-customer-info-extra-container">
-                        <div class="auth-customer-info-extra-item">
-                            <img class="auth-customer-info-extra-item-img"
-                                 src="#" th:src="${AUTH_CUSTOMER.role.pathToImage}"
+                    <div class="div-a-nav-customer-info-extra-container">
+                        <div class="div-a-nav-customer-info-extra-container-item">
+                            <img src="#" th:src="${AUTH_CUSTOMER.role.pathToImage}"
                                  alt="role.png"/>
-                            <div th:text="${AUTH_CUSTOMER.role.title}"
-                                 th:style="${AUTH_CUSTOMER.role.color != null
-                                 ? 'color: #' + AUTH_CUSTOMER.role.color.hexCode
-                                 : ''}"></div>
-                        </div>
-                        <div class="vertical-delimiter"></div>
-                        <div class="auth-customer-info-extra-item">
-                            <img class="auth-customer-info-extra-item-img" src="/images/rating.png"
-                                 alt="role.png"/>
-                            <div>NaN</div>
+                            <span th:text="${AUTH_CUSTOMER.role.title}"
+                                  th:style="${AUTH_CUSTOMER.role.color != null
+                                  ? 'color: #' + AUTH_CUSTOMER.role.color.hexCode
+                                  : ''}"></span>
                         </div>
                     </div>
                 </div>
             </a>
-            <div class="vertical-delimiter-margin"></div>
+            <div class="div-element-vertical-delimiter-margin"></div>
         </div>
     </nav>
   </body>

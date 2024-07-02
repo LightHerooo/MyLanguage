@@ -2,7 +2,6 @@ package ru.herooo.mylanguageutils.yandexdictionary.yandexdic;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ru.herooo.mylanguageutils.StringUtils;
 import ru.herooo.mylanguageutils.http.HttpJsonResponse;
 import ru.herooo.mylanguageutils.http.HttpURLConnectionUtils;
 import ru.herooo.mylanguageutils.http.URLUtils;
@@ -15,7 +14,7 @@ import java.net.URL;
 import java.util.HashMap;
 
 public class YandexDicUtils {
-    public HttpJsonResponse getHttpJsonResponse(String word, String langInCode, String langOutCode) {
+    public HttpJsonResponse createHttpJsonResponse(String word, String langInCode, String langOutCode) {
         YandexDictionaryUtils utils = new YandexDictionaryUtils();
         YandexDictionaryProperties properties = utils.getProperties();
 
@@ -38,35 +37,35 @@ public class YandexDicUtils {
         return new HttpURLConnectionUtils().sendGET(url);
     }
 
-    public YandexDicResult getYandexDicResult(HttpJsonResponse httpJsonResponse) {
-        YandexDicResult result = null;
+    public YandexDic createYandexDic(HttpJsonResponse httpJsonResponse) {
+        YandexDic yandexDic = null;
         if (httpJsonResponse.getCode() == 200) {
             try {
                 ObjectMapper mapper = new ObjectMapper();
-                result = mapper.readValue(httpJsonResponse.getJsonStr(), YandexDicResult.class);
+                yandexDic = mapper.readValue(httpJsonResponse.getJsonStr(), YandexDic.class);
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
             }
         }
 
-        return result;
+        return yandexDic;
     }
 
-    public YandexDictionaryError getYandexDicError(HttpJsonResponse httpJsonResponse) {
-        YandexDictionaryError result = null;
+    public YandexDictionaryError createYandexDictionaryError(HttpJsonResponse httpJsonResponse) {
+        YandexDictionaryError yandexDictionaryError = null;
 
         if (httpJsonResponse.getCode() != 200) {
             try {
                 ObjectMapper mapper = new ObjectMapper();
-                result = mapper.readValue(httpJsonResponse.getJsonStr(), YandexDictionaryError.class);
+                yandexDictionaryError = mapper.readValue(httpJsonResponse.getJsonStr(), YandexDictionaryError.class);
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
             }
         }
 
         String message = "Неизвестная ошибка обращения к переводам API словаря.";
-        if (result != null) {
-            switch (result.getCode()) {
+        if (yandexDictionaryError != null) {
+            switch (yandexDictionaryError.getCode()) {
                 case 401 -> message = "Ключ API невалиден.";
                 case 402 -> message = "Ключ API заблокирован.";
                 case 403 -> message = "Превышено суточное ограничение на количество запросов.";
@@ -74,13 +73,13 @@ public class YandexDicUtils {
                 case 501 -> message = "Заданное направление перевода не поддерживается.";
             }
 
-            result.setMessage(message);
+            yandexDictionaryError.setMessage(message);
         } else {
-            result = new YandexDictionaryError();
-            result.setCode(500);
-            result.setMessage(message);
+            yandexDictionaryError = new YandexDictionaryError();
+            yandexDictionaryError.setCode(500);
+            yandexDictionaryError.setMessage(message);
         }
 
-        return result;
+        return yandexDictionaryError;
     }
 }

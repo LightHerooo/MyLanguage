@@ -1,12 +1,11 @@
 package ru.herooo.mylanguageutils;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Random;
 
 public class StringUtils {
 
-    public String getRandomStrEn(int length) {
+    public String createRandomStrEn(int length) {
         Random random = new Random();
         String rndStrBuffer = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstvwxyz";
         StringBuilder strBuilder = new StringBuilder(length);
@@ -17,72 +16,62 @@ public class StringUtils {
         return strBuilder.toString();
     }
 
-    public String changeEndOfTheWordByNumberOfItems(String word,
-                                                    long numberOfItems,
-                                                    EndOfTheWord endIfBetweenFiveAndTwenty,
-                                                    EndOfTheWord endIfBetweenTwoAndFour,
-                                                    EndOfTheWord endIfSingle,
-                                                    EndOfTheWord endIfZero) {
-        numberOfItems = Math.abs(numberOfItems);
-        long remainsOfOneHundred = numberOfItems % 100;
-        long remainsOfTen = numberOfItems % 10;
-        if (remainsOfOneHundred >= 10 && remainsOfOneHundred <= 20
-                || remainsOfTen >= 5) {
-            if (endIfBetweenFiveAndTwenty != null) {
-                word = word.substring(0, word.length() - endIfBetweenFiveAndTwenty.getOffsetBack());
-                return word + endIfBetweenFiveAndTwenty.getValue();
-            } else {
-                return word;
+    public String createWordWithNewEnding(String word,
+                                          long numberOfItems,
+                                          String endingBetweenFiveAndTwenty,
+                                          String endingBetweenTwoAndFour,
+                                          String endingSingle,
+                                          String endingZero,
+                                          int oldEndingLength) {
+        String wordWithNewEnding = word;
+
+        if (!isStringVoid(word)) {
+            long remainsOfOneHundred = numberOfItems % 100;
+            long remainsOfTen = numberOfItems % 10;
+
+            String neededEnding = null;
+            if ((remainsOfOneHundred >= 10
+                    && remainsOfOneHundred <= 20)
+                    || remainsOfTen >= 5) {
+                neededEnding = endingBetweenFiveAndTwenty;
+            } else if (remainsOfTen >= 2) {
+                neededEnding = endingBetweenTwoAndFour;
+            } else if (remainsOfTen == 1) {
+                neededEnding = endingSingle;
+            } else if (remainsOfTen == 0) {
+                neededEnding = endingZero;
+            }
+
+            if (oldEndingLength >= 0
+                    && oldEndingLength < word.length()) {
+                wordWithNewEnding = word.substring(0, word.length() - oldEndingLength);
+
+                if (!isStringVoid(neededEnding)) {
+                    wordWithNewEnding = String.format("%s%s", wordWithNewEnding, neededEnding);
+                }
             }
         }
 
-        if (remainsOfTen >= 2) {
-            if (endIfBetweenTwoAndFour != null) {
-                word = word.substring(0, word.length() - endIfBetweenTwoAndFour.getOffsetBack());
-                return word + endIfBetweenTwoAndFour.getValue();
-            } else {
-                return word;
-            }
-        } else if (remainsOfTen == 1) {
-            if (endIfSingle != null) {
-                word = word.substring(0, word.length() - endIfSingle.getOffsetBack());
-                return word + endIfSingle.getValue();
-            } else {
-                return word;
-            }
-        } else if (remainsOfTen == 0) {
-            if (endIfZero != null) {
-                word = word.substring(0, word.length() - endIfZero.getOffsetBack());
-                return word + endIfZero.getValue();
-            } else {
-                return word;
-            }
-        }
-
-        return word;
+        return wordWithNewEnding;
     }
 
-    public boolean isNotStringVoid(String value) {
-        return value != null && !value.isEmpty() && !value.isBlank();
+    public String createDateWithTimeStr(LocalDateTime dateTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy (HH:mm)");
+        return dateTime.format(formatter);
+    }
+
+    public String createStrTrimToLower(String str) {
+        String result = null;
+
+        if (!isStringVoid(str)) {
+            result = str.trim();
+            result = result.toLowerCase();
+        }
+
+        return result;
     }
 
     public boolean isStringVoid(String value) {
         return value == null || value.isEmpty() || value.isBlank();
-    }
-
-    public String getDateFormat(LocalDateTime dateTime) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        return dateTime.format(formatter);
-    }
-
-    public String getClearString(String str) {
-        if (str != null) {
-            str = str.trim();
-            str = str.toLowerCase();
-
-            return str;
-        }
-
-        return null;
     }
 }

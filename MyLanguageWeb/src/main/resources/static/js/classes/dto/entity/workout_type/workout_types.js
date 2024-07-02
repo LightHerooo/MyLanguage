@@ -1,3 +1,8 @@
+export class WorkoutTypes {
+    RANDOM_WORDS = new WorkoutType(1n, "random_words");
+    COLLECTION_WORKOUT = new WorkoutType(2n, "collection_workout");
+}
+
 class WorkoutType {
     ID;
     CODE;
@@ -6,9 +11,4 @@ class WorkoutType {
         this.ID = id;
         this.CODE = code;
     }
-}
-
-export class WorkoutTypes {
-    RANDOM_WORDS = new WorkoutType(1n, "random_words");
-    COLLECTION_WORKOUT = new WorkoutType(2n, "collection_workout");
 }

@@ -1,31 +1,33 @@
-div.hello-message-container {
-    gap: 5px;
+div.div-hello-container {
+    min-height: 200px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+
+    background: rgba(var(--main-first-color-rgb), var(--opacity-standard));
 }
 
-h1.h1-hello-message {
-    font-size: var(--first-font-size);
+div.div-hello-container > h1 {
+    margin-top: 5px;
+    margin-bottom: 5px;
+
+    font-size: 60px;
     font-weight: bold;
-}
-
-div.hello-message-text {
-    font-size: var(--second-font-size);
     text-align: center;
 }
 
-div.actions-container {
-    height: 300px;
+div.div-hello-container > span {
+    font-size: 40px;
+    text-align: center;
+}
+
+div.div-actions-container {
+    min-height: 300px;
 
     display: grid;
     grid: 1fr / 1fr 1fr 1fr 1fr;
     gap: 10px;
-}
-
-div.action {
-    font-size: var(--second-font-size);
-    font-weight: bold;
-}
-
-img.action-img {
-    width: 128px;
-    height: 128px;
 }

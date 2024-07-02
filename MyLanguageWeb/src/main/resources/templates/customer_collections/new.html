@@ -7,11 +7,21 @@
 
     <link rel="stylesheet" type="text/css" href="/css/root.css">
     <link rel="stylesheet" type="text/css" href="/css/main.css">
-    <link rel="stylesheet" type="text/css" href="/css/info_blocks/big_info_block.css">
-    <link rel="stylesheet" type="text/css" href="/css/other/rule.css">
-    <link rel="stylesheet" type="text/css" href="/css/other/loading.css">
-    <link rel="stylesheet" type="text/css" href="/css/other/element_with_flag.css">
-    <link rel="stylesheet" type="text/css" href="/css/templates/customer_collections/new.css">
+    <link rel="stylesheet" type="text/css" href="/css/img_sizes.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/span/span_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/span/span_flag_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/span/span_loading_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/span/span_rule_element.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/label/label_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/input/input_text_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/select/select_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/button/button_element.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_big_header.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/form/dynamic_form_element.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
 
     <script type="module" src="/js/templates/customer_collections/new.js"></script>
@@ -21,30 +31,37 @@
         <div th:insert="~{layouts/header}"></div>
     </header>
     <main>
-        <div class="big-info-block-container">
-            <div class="big-info-block-left-container">
-                <img class="img-big-info-block" src="/images/customer_collections/new_collection.png"
+        <div class="div-info-block-big-header-container">
+            <div class="div-info-block-big-header-img-container">
+                <img src="/images/templates/customer_collections/new_collection.png"
                      alt="new_collection.png"/>
             </div>
-            <div class="big-info-block-right-container">
-                <h1 class="h1-big-info-block">Создание новых коллекций</h1>
+            <div class="div-info-block-big-header-data-container">
+                <h1>Создание новых коллекций</h1>
                 <div class="big-info-block-text">
-                    Создавайте коллекции слов для изучения и тренировки.
-                    За раз можно создать не более 5-ти коллекций.
+                    <span>
+                        Создавайте коллекции слов для изучения и тренировки.
+                    </span>
                 </div>
                 <br>
             </div>
         </div>
-        <div class="new-collections-container" id="new_collections_container"></div>
-        <a class="a-button-accept-standard a-btn-new-collection" id="a_btn_new_collection">
-            <img class="btn-new-collection-img" src="/images/other/add.png" alt="add.png">
-        </a>
-        <div class="send-new-collections-container info-block-standard">
-            <div id="send_new_collections_info"></div>
-            <form method="GET" action="/customer_collections" class="send-new-collections-form" id="submit_send">
-                <input type="submit" class="submit-standard btn-send" value="Создать" id="btn_send">
-            </form>
-        </div>
+        <form id="form_new_customer_collections"
+              method="GET"
+              action="/customer_collections"
+              class="form-dynamic-form-element">
+            <div id="div_rows_container_new_customer_collections"
+                 class="div-dynamic-form-element-rows-container"></div>
+            <div id="div_button_add_row_container_new_customer_collections"
+                 class="div-dynamic-form-element-button-add-row-container"></div>
+            <div class="div-dynamic-form-element-submit-container">
+                <div id="div_message_container_new_customer_collections"
+                     class="div-dynamic-form-element-message-container"></div>
+                <button id="button_submit_new_customer_collections"
+                        type="submit"
+                        class="button-submit" disabled>Создать</button>
+            </div>
+        </form>
     </main>
 </body>
 </html>

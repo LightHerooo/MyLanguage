@@ -4,14 +4,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.herooo.mylanguagedb.entities.Country;
 import ru.herooo.mylanguagedb.entities.Customer;
-import ru.herooo.mylanguagedb.entities.CustomerRole;
 import ru.herooo.mylanguageutils.StringUtils;
 import ru.herooo.mylanguageweb.dto.entity.country.CountryMapping;
-import ru.herooo.mylanguageweb.dto.entity.country.CountryResponseDTO;
+import ru.herooo.mylanguageweb.dto.entity.country.response.CountryResponseDTO;
+import ru.herooo.mylanguageweb.dto.entity.customer.request.edit.CustomerEditRequestDTO;
+import ru.herooo.mylanguageweb.dto.entity.customer.request.CustomerAddRequestDTO;
+import ru.herooo.mylanguageweb.dto.entity.customer.response.CustomerResponseDTO;
 import ru.herooo.mylanguageweb.dto.entity.customerrole.CustomerRoleMapping;
-import ru.herooo.mylanguageweb.dto.entity.customerrole.CustomerRoleResponseDTO;
+import ru.herooo.mylanguageweb.dto.entity.customerrole.response.CustomerRoleResponseDTO;
 import ru.herooo.mylanguageweb.services.CountryService;
 import ru.herooo.mylanguageweb.services.CustomerRoleService;
+
+import java.io.File;
 
 @Service
 public class CustomerMapping {
@@ -40,63 +44,71 @@ public class CustomerMapping {
         this.STRING_UTILS = stringUtils;
     }
 
-    // Маппинг для добавления (все вносимые поля не могут быть изменены)
-    public Customer mapToCustomer(CustomerRequestDTO dto) {
+    public Customer mapToCustomer(CustomerAddRequestDTO dto) {
         Customer customer = new Customer();
 
+        String nickname = dto.getNickname();
+        if (!STRING_UTILS.isStringVoid(nickname)) {
+            nickname = nickname.trim();
+            customer.setNickname(nickname);
+        }
+
         String email = dto.getEmail();
-        if (STRING_UTILS.isNotStringVoid(email)) {
+        if (!STRING_UTILS.isStringVoid(email)) {
             email = email.trim();
             customer.setEmail(email);
         }
 
         String login = dto.getLogin();
-        if (STRING_UTILS.isNotStringVoid(login)) {
+        if (!STRING_UTILS.isStringVoid(login)) {
             login = login.trim();
             customer.setLogin(login);
         }
 
-        return mapToCustomer(customer, dto);
-    }
-
-    // Маппинг для изменения (все вносимые поля могут быть изменены)
-    public Customer mapToCustomer(Customer oldCustomer, CustomerRequestDTO dto) {
-        String nickname = dto.getNickname();
-        if (STRING_UTILS.isNotStringVoid(nickname)) {
-            nickname = nickname.trim();
-            if (STRING_UTILS.isNotStringVoid(nickname)) {
-                oldCustomer.setNickname(nickname);
-            }
-        }
-
         String password = dto.getPassword();
-        if (STRING_UTILS.isNotStringVoid(password)) {
-            oldCustomer.setPassword(password);
-        }
-
-        String roleCode = dto.getRoleCode();
-        if (STRING_UTILS.isNotStringVoid(roleCode)) {
-            CustomerRole role = CUSTOMER_ROLE_SERVICE.find(roleCode);
-            if (role != null) {
-                oldCustomer.setRole(role);
-            }
+        if (!STRING_UTILS.isStringVoid(password)) {
+            customer.setPassword(password);
         }
 
         String countryCode = dto.getCountryCode();
-        if (STRING_UTILS.isNotStringVoid(countryCode)) {
+        if (!STRING_UTILS.isStringVoid(countryCode)) {
             Country country = COUNTRY_SERVICE.find(countryCode);
-            if (country != null) {
-                oldCustomer.setCountry(country);
-            }
+            customer.setCountry(country);
         }
 
-        return oldCustomer;
+        return customer;
+    }
+
+    public Customer mapToCustomer(Customer customer, File avatarFile, CustomerEditRequestDTO dto) {
+        if (customer != null) {
+            if (avatarFile != null && avatarFile.exists()) {
+                customer.setPathToAvatar("/customers/avatar/" + avatarFile.getName());
+            }
+
+            String nickname = dto.getNickname();
+            if (!STRING_UTILS.isStringVoid(nickname)) {
+                nickname = nickname.trim();
+                customer.setNickname(nickname);
+            }
+
+            String countryCode = dto.getCountryCode();
+            if (!STRING_UTILS.isStringVoid(countryCode)) {
+                Country country = COUNTRY_SERVICE.find(countryCode);
+                customer.setCountry(country);
+            }
+
+            customer.setDescription(dto.getDescription());
+        }
+
+        return customer;
     }
 
     public CustomerResponseDTO mapToResponseDTO(Customer customer) {
         CustomerResponseDTO dto = new CustomerResponseDTO();
         dto.setId(customer.getId());
         dto.setNickname(customer.getNickname());
+        dto.setPathToAvatar(customer.getPathToAvatar());
+        dto.setDescription(customer.getDescription());
         dto.setDateOfCreate(customer.getDateOfCreate());
         dto.setDateOfLastVisit(customer.getDateOfLastVisit());
 

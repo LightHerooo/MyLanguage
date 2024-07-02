@@ -1,0 +1,134 @@
+button.button-element-default:disabled,
+button.button-element-green:disabled,
+button.button-element-yellow:disabled,
+button.button-element-red:disabled,
+button.button-element-blue:disabled {
+    opacity: 0.6;
+}
+
+button.button-element-default,
+button.button-element-green,
+button.button-element-yellow,
+button.button-element-red,
+button.button-element-blue {
+    display: grid;
+    justify-content: center;
+    align-items: center;
+
+    cursor: pointer;
+
+    color: black;
+    font-family: inherit;
+    font-size: var(--small-font-size);
+    text-decoration: none;
+    text-align: center;
+}
+
+button.button-element-default {
+    border: 2px solid var(--main-third-color);
+    background: var(--main-second-color);
+}
+button.button-element-default:hover {
+    background: var(--main-third-color);
+}
+
+button.button-element-green {
+    border: 2px solid var(--green-dark-color);
+    background: var(--green-light-color);
+}
+button.button-element-green:hover {
+    background: var(--green-dark-color);
+}
+
+button.button-element-yellow {
+    border: 2px solid var(--yellow-dark-color);
+    background: var(--yellow-light-color);
+}
+button.button-element-yellow:hover {
+    background: var(--yellow-dark-color);
+}
+
+button.button-element-red {
+    border: 2px solid var(--red-dark-color);
+    background: var(--red-light-color);
+}
+button.button-element-red:hover {
+    background: var(--red-dark-color);
+}
+
+button.button-element-blue {
+    border: 2px solid var(--blue-dark-color);
+    background: var(--blue-light-color);
+}
+button.button-element-blue:hover {
+    background: var(--blue-dark-color);
+}
+
+
+button.button-with-img-element-16 {
+    padding: 5px;
+}
+button.button-with-img-element-16 > img {
+    width: 16px;
+    height: 16px;
+}
+
+button.button-with-img-element-32 {
+    padding: 10px;
+}
+button.button-with-img-element-32 > img {
+    width: 32px;
+    height: 32px;
+}
+
+
+button.button-with-img-and-span-element-horizontal-32 {
+    display: grid;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+button.button-with-img-and-span-element-horizontal-32 > span {
+    display: grid;
+    justify-content: center;
+    align-items: center;
+
+    text-align: center;
+    font-weight: bold;
+}
+
+button.button-with-img-and-span-element-horizontal-32 {
+    grid: 1fr / 1fr 50px;
+    padding: 10px;
+}
+button.button-with-img-and-span-element-horizontal-32 > span > img {
+    width: 32px;
+    height: 32px;
+}
+
+
+button.button-with-img-and-span-element-vertical-128 {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+button.button-with-img-and-span-element-vertical-128 > span {
+    display: grid;
+    justify-content: center;
+    align-items: center;
+
+    text-align: center;
+    font-weight: bold;
+}
+
+button.button-with-img-and-span-element-vertical-128 {
+    padding: 20px;
+}
+button.button-with-img-and-span-element-vertical-128 > span > img {
+    width: 128px;
+    height: 128px;
+}

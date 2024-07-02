@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title th:text="|${WEB_APP_NAME} - Изменение роли у пользователей|"></title>
+        <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
+
+        <link rel="stylesheet" type="text/css" href="/css/root.css">
+        <link rel="stylesheet" type="text/css" href="/css/main.css">
+        <link rel="stylesheet" type="text/css" href="/css/img_sizes.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/span/span_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/span/span_loading_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/span/span_flag_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/span/span_rule_element.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/table/table_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/table/instruments_for_table.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/input/input_text_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/select/select_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/button/button_element.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_big_header.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/templates/special_actions/actions/edit_role_to_customers.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
+
+        <script type="module" src="/js/templates/special_actions/edit_role_to_customers.js"></script>
+    </head>
+    <body>
+        <header>
+            <div th:insert="~{layouts/header}"></div>
+        </header>
+        <main>
+            <div class="div-info-block-big-header-container">
+                <div class="div-info-block-big-header-img-container">
+                    <img src="/images/customer_roles/customer.png"
+                         alt="logo.png"/>
+                </div>
+                <div class="div-info-block-big-header-data-container">
+                    <h1>Изменение роли у пользователей</h1>
+                    <div>
+                        <span>
+                            Изменяйте роли у пользователей, чтобы открыть им новые возможности.
+                            Будьте предельно внимательны к пользователям, которым хотите изменить роль.
+                        </span>
+                    </div>
+                    <br>
+                    <div>
+                        <span style="font-weight: bold">Роли пользователей:</span>
+                        <div th:each="customerRole: ${CUSTOMER_ROLES}">
+                            <span class="span-element-for-hint"
+                               th:style="${customerRole.color != null
+                               ? 'color: #' + customerRole.color.hexCode
+                               : ''}"
+                               th:text="${customerRole.title}"
+                               th:title="${customerRole.description}"/>
+                            -
+                            <span th:text="${customerRole.description}"/>
+                        </div>
+                    </div>
+                    <br>
+                </div>
+            </div>
+            <div class="div-instruments-for-table-container-margin div-instruments-for-find-customers-container">
+                <div class="div-instrument-for-table-container">
+                    <label for="input_text_finder">Поиск:</label>
+                    <input id="input_text_finder" type="text" class="input-text-element" disabled>
+                </div>
+                <div class="div-instrument-for-table-container">
+                    <label for="select_customer_roles">Роли:</label>
+                    <div id="div_select_customer_roles" class="div-select-with-img-element-container">
+                        <select id="select_customer_roles" class="select-element" disabled></select>
+                        <div>
+                            <div>
+                                <img id="img_select_customer_roles" src="#" alt=""/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="div-instrument-for-table-container">
+                    <label for="button_refresh"></label>
+                    <button id="button_refresh"
+                            class="button-with-img-element-32 button-element-default"
+                            title="Обновить" disabled>
+                        <img id="img_button_refresh"
+                             src="/images/other/refresh.png"
+                             alt="refresh.png"/>
+                    </button>
+                </div>
+            </div>
+            <table id="table_customers" class="table-element">
+                <colgroup id="colgroup_customers">
+                    <col style="width: 5%;">
+                    <col style="width: 60%;">
+                    <col style="width: 35%;">
+                </colgroup>
+                <thead id="thead_customers"
+                       class="thead-table-element-medium">
+                <tr>
+                    <th>№</th>
+                    <th>Никнейм</th>
+                    <th>Роль</th>
+                </tr>
+                </thead>
+                <tbody id="tbody_customers"></tbody>
+            </table>
+        </main>
+    </body>
+</html>

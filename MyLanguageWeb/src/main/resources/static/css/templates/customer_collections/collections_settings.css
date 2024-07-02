@@ -2,14 +2,7 @@ main {
     min-height: 1500px;
 }
 
-div.statistics-container {
-    min-height: 150px;
-
+div.div-instruments-for-find-customer-collections-container {
     display: grid;
-    align-items: center;
-}
-
-div.instruments-for-find-customer-collections-container {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 50px;
+    grid-template-columns: 2fr 1fr 1fr 60px;
 }

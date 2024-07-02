@@ -4,7 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.herooo.mylanguagedb.entities.WordStatus;
 import ru.herooo.mylanguageweb.dto.entity.color.ColorMapping;
-import ru.herooo.mylanguageweb.dto.entity.color.ColorResponseDTO;
+import ru.herooo.mylanguageweb.dto.entity.color.response.ColorResponseDTO;
+import ru.herooo.mylanguageweb.dto.entity.wordstatus.response.WordStatusResponseDTO;
 
 @Service
 public class WordStatusMapping {
@@ -21,7 +22,7 @@ public class WordStatusMapping {
         dto.setId(wordStatus.getId());
         dto.setTitle(wordStatus.getTitle());
         dto.setCode(wordStatus.getCode());
-        dto.setMessage(wordStatus.getMessage());
+        dto.setDescription(wordStatus.getDescription());
 
         if (wordStatus.getColor() != null) {
             ColorResponseDTO color = COLOR_MAPPING.mapToResponseDTO(wordStatus.getColor());

@@ -3,19 +3,26 @@ package ru.herooo.mylanguageweb.dto.entity.workout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.herooo.mylanguagedb.entities.*;
+import ru.herooo.mylanguagedb.entities.customer_collection.CustomerCollection;
+import ru.herooo.mylanguagedb.entities.workout.Workout;
 import ru.herooo.mylanguagedb.repositories.CustomerCollectionCrudRepository;
 import ru.herooo.mylanguagedb.repositories.CustomerCrudRepository;
 import ru.herooo.mylanguagedb.repositories.LangCrudRepository;
+import ru.herooo.mylanguagedb.repositories.WordInCollectionCrudRepository;
 import ru.herooo.mylanguagedb.repositories.workouttype.WorkoutTypeCrudRepository;
+import ru.herooo.mylanguagedb.repositories.workouttype.WorkoutTypes;
 import ru.herooo.mylanguageutils.StringUtils;
 import ru.herooo.mylanguageweb.dto.entity.customer.CustomerMapping;
-import ru.herooo.mylanguageweb.dto.entity.customer.CustomerResponseDTO;
+import ru.herooo.mylanguageweb.dto.entity.customer.response.CustomerResponseDTO;
 import ru.herooo.mylanguageweb.dto.entity.customercollection.CustomerCollectionMapping;
-import ru.herooo.mylanguageweb.dto.entity.customercollection.CustomerCollectionResponseDTO;
+import ru.herooo.mylanguageweb.dto.entity.customercollection.response.CustomerCollectionResponseDTO;
 import ru.herooo.mylanguageweb.dto.entity.lang.LangMapping;
-import ru.herooo.mylanguageweb.dto.entity.lang.LangResponseDTO;
+import ru.herooo.mylanguageweb.dto.entity.lang.response.LangResponseDTO;
+import ru.herooo.mylanguageweb.dto.entity.workout.request.add.types.WorkoutAddCollectionWorkoutRequestDTO;
+import ru.herooo.mylanguageweb.dto.entity.workout.request.add.types.WorkoutAddRandomWordsRequestDTO;
+import ru.herooo.mylanguageweb.dto.entity.workout.response.WorkoutResponseDTO;
 import ru.herooo.mylanguageweb.dto.entity.workouttype.WorkoutTypeMapping;
-import ru.herooo.mylanguageweb.dto.entity.workouttype.WorkoutTypeResponseDTO;
+import ru.herooo.mylanguageweb.dto.entity.workouttype.response.WorkoutTypeResponseDTO;
 
 @Service
 public class WorkoutMapping {
@@ -23,6 +30,7 @@ public class WorkoutMapping {
     private final WorkoutTypeCrudRepository WORKOUT_TYPE_CRUD_REPOSITORY;
     private final LangCrudRepository LANG_CRUD_REPOSITORY;
     private final CustomerCollectionCrudRepository CUSTOMER_COLLECTION_CRUD_REPOSITORY;
+    private final WordInCollectionCrudRepository WORD_IN_COLLECTION_CRUD_REPOSITORY;
 
     private final CustomerMapping CUSTOMER_MAPPING;
     private final WorkoutTypeMapping WORKOUT_TYPE_MAPPING;
@@ -36,6 +44,7 @@ public class WorkoutMapping {
                           WorkoutTypeCrudRepository workoutTypeCrudRepository,
                           LangCrudRepository langCrudRepository,
                           CustomerCollectionCrudRepository customerCollectionCrudRepository,
+                          WordInCollectionCrudRepository wordInCollectionCrudRepository,
 
                           CustomerMapping customerMapping,
                           WorkoutTypeMapping workoutTypeMapping,
@@ -46,6 +55,7 @@ public class WorkoutMapping {
         this.WORKOUT_TYPE_CRUD_REPOSITORY = workoutTypeCrudRepository;
         this.LANG_CRUD_REPOSITORY = langCrudRepository;
         this.CUSTOMER_COLLECTION_CRUD_REPOSITORY = customerCollectionCrudRepository;
+        this.WORD_IN_COLLECTION_CRUD_REPOSITORY = wordInCollectionCrudRepository;
 
         this.CUSTOMER_MAPPING = customerMapping;
         this.WORKOUT_TYPE_MAPPING = workoutTypeMapping;
@@ -61,7 +71,6 @@ public class WorkoutMapping {
         dto.setNumberOfWords(workout.getNumberOfWords());
         dto.setDateOfStart(workout.getDateOfStart());
         dto.setDateOfEnd(workout.getDateOfEnd());
-        dto.setIsActive(workout.isActive());
         dto.setCurrentMilliseconds(workout.getCurrentMilliseconds());
 
         if (workout.getCustomer() != null) {
@@ -93,29 +102,23 @@ public class WorkoutMapping {
         return dto;
     }
 
-    public Workout mapToWorkout(WorkoutRequestDTO dto) {
+    public Workout mapToWorkout(WorkoutAddRandomWordsRequestDTO dto) {
         Workout workout = new Workout();
 
-        String workoutTypeCode = dto.getWorkoutTypeCode();
-        if (STRING_UTILS.isNotStringVoid(workoutTypeCode)) {
-            WorkoutType workoutType = WORKOUT_TYPE_CRUD_REPOSITORY.findByCode(workoutTypeCode).orElse(null);
-            workout.setWorkoutType(workoutType);
-        }
-
-        String authCode = dto.getAuthCode();
-        if (STRING_UTILS.isNotStringVoid(authCode)) {
-            Customer customer = CUSTOMER_CRUD_REPOSITORY.findByAuthCode(authCode).orElse(null);
+        String authKey = dto.getAuthKey();
+        if (!STRING_UTILS.isStringVoid(authKey)) {
+            Customer customer = CUSTOMER_CRUD_REPOSITORY.findByAuthKey(authKey).orElse(null);
             workout.setCustomer(customer);
         }
 
         String langInCode = dto.getLangInCode();
-        if (STRING_UTILS.isNotStringVoid(langInCode)) {
+        if (!STRING_UTILS.isStringVoid(langInCode)) {
             Lang langIn = LANG_CRUD_REPOSITORY.findByCode(langInCode).orElse(null);
             workout.setLangIn(langIn);
         }
 
         String langOutCode = dto.getLangOutCode();
-        if (STRING_UTILS.isNotStringVoid(langOutCode)) {
+        if (!STRING_UTILS.isStringVoid(langOutCode)) {
             Lang langOut = LANG_CRUD_REPOSITORY.findByCode(langOutCode).orElse(null);
             workout.setLangOut(langOut);
         }
@@ -125,10 +128,49 @@ public class WorkoutMapping {
             workout.setNumberOfWords(numberOfWords);
         }
 
-        // Не проводим дополнительных проверок, т.к. поле может быть NULL
-        CustomerCollection collection = CUSTOMER_COLLECTION_CRUD_REPOSITORY.findById(dto.getCollectionId())
-                .orElse(null);
-        workout.setCustomerCollection(collection);
+        WorkoutType workoutType = WORKOUT_TYPE_CRUD_REPOSITORY
+                .findByCode(WorkoutTypes.RANDOM_WORDS.CODE).orElse(null);
+        workout.setWorkoutType(workoutType);
+
+        return workout;
+    }
+
+    public Workout mapToWorkout(WorkoutAddCollectionWorkoutRequestDTO dto) {
+        Workout workout = new Workout();
+
+        String authKey = dto.getAuthKey();
+        if (!STRING_UTILS.isStringVoid(authKey)) {
+            Customer customer = CUSTOMER_CRUD_REPOSITORY.findByAuthKey(authKey).orElse(null);
+            workout.setCustomer(customer);
+        }
+
+        String langOutCode = dto.getLangOutCode();
+        if (!STRING_UTILS.isStringVoid(langOutCode)) {
+            Lang langOut = LANG_CRUD_REPOSITORY.findByCode(langOutCode).orElse(null);
+            workout.setLangOut(langOut);
+        }
+
+        WorkoutType workoutType = WORKOUT_TYPE_CRUD_REPOSITORY
+                .findByCode(WorkoutTypes.COLLECTION_WORKOUT.CODE).orElse(null);
+        workout.setWorkoutType(workoutType);
+
+        long customerCollectionId = dto.getCustomerCollectionId();
+        CustomerCollection customerCollection = CUSTOMER_COLLECTION_CRUD_REPOSITORY.findById(
+                customerCollectionId).orElse(null);
+        if (customerCollection != null) {
+            String langInCode = customerCollection.getLang().getCode();
+            if (!STRING_UTILS.isStringVoid(langInCode)) {
+                Lang langIn = LANG_CRUD_REPOSITORY.findByCode(langInCode).orElse(null);
+                workout.setLangIn(langIn);
+            }
+
+            long numberOfWords = WORD_IN_COLLECTION_CRUD_REPOSITORY.count(customerCollectionId).orElse(0L);
+            if (numberOfWords > 0) {
+                workout.setNumberOfWords(numberOfWords);
+            }
+
+            workout.setCustomerCollection(customerCollection);
+        }
 
         return workout;
     }

@@ -1,21 +1,7 @@
-div.workout-info-with-actions-container {
-    min-height: 100px;
+div.div-workout-info-with-actions-container {
+    min-height: 200px;
 
     display: grid;
     grid: 1fr / 1.5fr 1fr;
     gap: 10px;
-}
-
-div.workout-action {
-    font-size: var(--third-font-size);
-    font-weight: bold;
-}
-
-img.img-workout-action {
-    width: 128px;
-    height: 128px;
-}
-
-div.workout-statistics-container {
-    min-height: 100px;
 }

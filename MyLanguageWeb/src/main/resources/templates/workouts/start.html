@@ -4,14 +4,26 @@
         <meta charset="UTF-8">
         <title th:text="${WEB_APP_NAME} + ' - Тренировка'"></title>
         <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
+
         <link rel="stylesheet" type="text/css" href="/css/root.css">
         <link rel="stylesheet" type="text/css" href="/css/main.css">
-        <link rel="stylesheet" type="text/css" href="/css/info_blocks/small_info_block.css">
-        <link rel="stylesheet" type="text/css" href="/css/info_blocks/dynamic_info_block.css">
-        <link rel="stylesheet" type="text/css" href="/css/other/loading.css">
-        <link rel="stylesheet" type="text/css" href="/css/other/rule.css">
-        <link rel="stylesheet" type="text/css" href="/css/other/element_with_flag.css">
-        <link rel="stylesheet" type="text/css" href="/css/types/workout_round_statistic.css">
+        <link rel="stylesheet" type="text/css" href="/css/img_sizes.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/span/span_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/span/span_flag_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/span/span_rule_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/span/span_loading_element.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/div/div_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/div/div_with_data_builder_element.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/input/input_text_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/button/button_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/table/table_element.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/info_block/info_block.css">
+        <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_header.css">
+
         <link rel="stylesheet" type="text/css" href="/css/templates/workouts/start.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
 
@@ -21,25 +33,23 @@
         <header>
             <div th:insert="~{layouts/header}"></div>
         </header>
-        <main class="start-workout">
-            <div class="start-workout-container">
-                <div class="start-workout-info-container">
-                    <div id="div_workout_info" class="info-block-standard start-workout-info"></div>
-                    <div class="start-workout-info-item-with-header-container">
-                        <div class="info-block-standard small-info-block-container">
-                            <img class="img-small-info-block"
-                                 src="/images/other/clock.png"
-                                 alt="clock.png"/>
-                            <h1 class="h1-small-info-block">Время</h1>
-                        </div>
-                        <div id="div_timer_info" class="info-block-standard start-workout-info-timer">NaN</div>
+        <main class="main-workout-start">
+            <div class="div-workout-start-container">
+                <div id="div_workout_info"
+                     class="div-info-block-container"></div>
+                <div id="div_workout_interaction"
+                     class="div-workout-interaction-container div-info-block-container"></div>
+                <div class="div-workout-timer-container">
+                    <div class="div-info-block-header-container">
+                        <img src="/images/other/clock.png"
+                             alt="clock.png"/>
+                        <h1>Время</h1>
                     </div>
-                    <div id="div_round_info" class="info-block-standard content-center-standard"></div>
+                    <div id="div_timer_workout"
+                         class="div-info-block-container"></div>
                 </div>
-                <div class="start-workout-interaction-container">
-                    <div id="div_interaction_container" class="info-block-standard content-center-standard"></div>
-                    <div id="div_answers_history_container" class="info-block-standard content-center-standard"></div>
-                </div>
+                <div id="div_workout_round_statistic_not_over"
+                     class="div-info-block-container"></div>
             </div>
         </main>
     </body>

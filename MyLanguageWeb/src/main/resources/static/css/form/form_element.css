@@ -1,0 +1,58 @@
+form.form-element {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 15px;
+}
+
+div.div-form-element-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+div.div-form-element-actions-container {
+    display: grid;
+    grid: 1fr / 1fr 50px;
+    gap: 5px;
+}
+
+button.button-submit,
+button.button-reset {
+    min-height: 50px;
+
+    display: grid;
+    justify-content: center;
+    align-items: center;
+
+    cursor: pointer;
+
+    border: 2px solid var(--main-third-color);
+    background: var(--main-second-color);
+
+    color: black;
+    font-family: inherit;
+    font-size: var(--small-font-size);
+    text-decoration: none;
+    text-align: center;
+}
+button.button-submit:hover,
+button.button-reset:hover {
+    background: var(--main-third-color);
+}
+
+button.button-submit:disabled,
+button.button-reset:disabled {
+    opacity: 0.6;
+}
+
+button.button-reset > img {
+    width: 32px;
+    height: 32px;
+}
+
+div.div-form-element-message-container {
+    display: grid;
+    justify-content: center;
+    align-items: center;
+}

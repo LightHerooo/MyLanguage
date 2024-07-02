@@ -7,12 +7,27 @@
 
     <link rel="stylesheet" type="text/css" href="/css/root.css">
     <link rel="stylesheet" type="text/css" href="/css/main.css">
-    <link rel="stylesheet" type="text/css" href="/css/info_blocks/big_info_block.css">
-    <link rel="stylesheet" type="text/css" href="/css/info_blocks/dynamic_info_block.css">
-    <link rel="stylesheet" type="text/css" href="/css/other/instruments_for_table.css">
-    <link rel="stylesheet" type="text/css" href="/css/other/loading.css">
-    <link rel="stylesheet" type="text/css" href="/css/other/element_with_flag.css">
+    <link rel="stylesheet" type="text/css" href="/css/img_sizes.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/span/span_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/span/span_flag_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/span/span_loading_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/span/span_rule_element.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/div/div_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/div/div_with_data_builder_element.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/table/instruments_for_table.css">
+    <link rel="stylesheet" type="text/css" href="/css/table/table_element.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/input/input_text_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/select/select_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/button/button_element.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_big_header.css">
+
     <link rel="stylesheet" type="text/css" href="/css/templates/customer_collections/collections_settings.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
 
     <script type="module" src="/js/templates/customer_collections/collections_settings.js"></script>
 </head>
@@ -21,59 +36,66 @@
             <div th:insert="~{layouts/header}"></div>
         </header>
         <main>
-            <div class="big-info-block-container">
-                <div class="big-info-block-left-container">
-                    <img class="img-big-info-block"
-                         src="/images/customer_collections/collections_settings.png"
+            <div class="div-info-block-big-header-container">
+                <div class="div-info-block-big-header-img-container">
+                    <img src="/images/templates/customer_collections/collections_settings.png"
                          alt="collections_settings.png"/>
                 </div>
-                <div class="big-info-block-right-container">
-                    <h1 class="h1-big-info-block">Управление коллекциями</h1>
-                    <div class="big-info-block-text">
-                        На этой странице вы можете управлять активностью коллекций или удалять их.
-                        У каждой коллекции можно просмотреть слова, которые в ней находятся, нажав на кнопку со стрелкой.
-                        Не бойтесь случайных нажатий на кнопки удаления, для запуска операции потребуется <span style="font-weight: bold">два нажатия</span>.
+                <div class="div-info-block-big-header-data-container">
+                    <h1>Управление коллекциями</h1>
+                    <div>
+                        <span>
+                            На этой странице вы можете управлять активностью коллекций или удалять их.
+                            У каждой коллекции можно просмотреть слова, которые в ней находятся, нажав на кнопку со стрелкой.
+                            Не бойтесь случайных нажатий на кнопки удаления, для запуска операции потребуется
+                            <span style="font-weight: bold">два нажатия</span>.
+                        </span>
                     </div>
                     <br>
-                    <div class="big-info-block-text statistics-container">
-                        <div id="collections_statistics_container"></div>
+                    <div id="div_customer_collections_statistic"
+                         style="min-height: 150px">
                     </div>
+                    <br>
                 </div>
             </div>
-            <div class="instruments-for-table-container-margin instruments-for-find-customer-collections-container">
-                <div class="label-for-input-container">
-                    <label class="label-standard" for="tb_finder">Поиск:</label>
+            <div class="div-instruments-for-table-container-margin div-instruments-for-find-customer-collections-container">
+                <div class="div-instrument-for-table-container">
+                    <label for="input_text_finder">Поиск:</label>
+                    <input id="input_text_finder" class="input-text-element" type="text" disabled>
                 </div>
-                <input id="tb_finder" class="text-standard" type="text">
-
-                <div class="label-for-input-container">
-                    <label class="label-standard" for="cb_langs">Язык:</label>
-                </div>
-                <div class="element-with-flag-container">
-                    <select id="cb_langs" class="select-standard"></select>
-                    <div class="flag-container">
-                        <div id="lang_flag"></div>
+                <div class="div-instrument-for-table-container">
+                    <label for="select_langs">Язык:</label>
+                    <div id="div_select_langs" class="div-select-with-flag-element-container">
+                        <select id="select_langs" class="select-element" disabled></select>
+                        <div>
+                            <div>
+                                <span id="span_flag_select_langs"></span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
-                <div class="label-for-input-container">
-                    <label class="label-standard" for="cb_is_active">Активный:</label>
+                <div class="div-instrument-for-table-container">
+                    <label for="select_is_active" class="label-element">Активный:</label>
+                    <select id="select_is_active" class="select-element" disabled></select>
                 </div>
-                <select id="cb_is_active" class="select-standard"></select>
-
-                <div class="label-for-input-container"></div>
-                <button id="btn_refresh" class="button-with-img-standard" title="Обновить">
-                    <img class="img-btn-refresh" src="/images/other/refresh.png" alt="refresh.png"/>
-                </button>
+                <div class="div-instrument-for-table-container">
+                    <label for="button_refresh"></label>
+                    <button id="button_refresh"
+                            class="button-with-img-element-32 button-element-default"
+                            title="Обновить" disabled>
+                        <img id="img_button_refresh" src="/images/other/refresh.png" alt="refresh.png"/>
+                    </button>
+                </div>
             </div>
-            <table class="table-standard">
-                <colgroup id="colgroup_collections">
+            <table id="table_my_customer_collections" class="table-element">
+                <colgroup id="colgroup_my_customer_collections">
                     <col style="width: 5%;">
                     <col style="width: 75%;">
                     <col style="width: 20%;">
                     <col style="width: 80px;">
                 </colgroup>
-                <thead id="thead_collections">
+                <thead id="thead_my_customer_collections"
+                       class="thead-table-element-medium">
                     <tr>
                         <th>№</th>
                         <th>Коллекция</th>
@@ -81,7 +103,7 @@
                         <th></th>
                     </tr>
                 </thead>
-                <tbody id="tbody_collections"></tbody>
+                <tbody id="tbody_my_customer_collections"></tbody>
             </table>
         </main>
     </body>

@@ -16,28 +16,30 @@ public class LangService {
         this.LANG_CRUD_REPOSITORY = langCrudRepository;
     }
 
-    // Получение всех языков
-    public List<Lang> findAll(String title) {
-        return LANG_CRUD_REPOSITORY.findAll(title);
+    public List<Lang> findAll(String title, Boolean isActiveForIn, Boolean isActiveForOut, Long numberOfItems,
+                              Long lastLangIdOnPreviousPage) {
+        return LANG_CRUD_REPOSITORY.findAll(title, isActiveForIn, isActiveForOut, numberOfItems, lastLangIdOnPreviousPage);
+    }
+
+    public List<Lang> findAll() {
+        return LANG_CRUD_REPOSITORY.findAll(null, null, null, 0L, 0L);
     }
 
     public List<Lang> findAllForIn(Boolean isActiveForIn) {
-        return LANG_CRUD_REPOSITORY.findAllForIn(isActiveForIn);
+        return LANG_CRUD_REPOSITORY.findAll(null, isActiveForIn, null, 0L, 0L);
     }
 
     public List<Lang> findAllForOut(Boolean isActiveForOut) {
-        return LANG_CRUD_REPOSITORY.findAllForOut(isActiveForOut);
+        return LANG_CRUD_REPOSITORY.findAll(null, null, isActiveForOut, 0L, 0L);
     }
+
+
 
     public Lang find(String code) {
         return LANG_CRUD_REPOSITORY.findByCode(code).orElse(null);
     }
 
-    public long count(Boolean isActive) {
-        return LANG_CRUD_REPOSITORY.countForIn(isActive).orElse(0L);
-    }
-
-    public Lang changeActivityForIn(Lang lang, boolean isActiveForIn) {
+    public Lang editIsActiveForIn(Lang lang, boolean isActiveForIn) {
         Lang result = null;
         if (lang != null) {
             lang.setActiveForIn(isActiveForIn);
@@ -47,7 +49,7 @@ public class LangService {
         return result;
     }
 
-    public Lang changeActivityForOut(Lang lang, boolean isActiveForOut) {
+    public Lang editIsActiveForOut(Lang lang, boolean isActiveForOut) {
         Lang result = null;
         if (lang != null) {
             lang.setActiveForOut(isActiveForOut);
@@ -55,5 +57,21 @@ public class LangService {
         }
 
         return result;
+    }
+
+
+
+    public long countForIn(Boolean isActiveForIn) {
+        return LANG_CRUD_REPOSITORY.countForIn(isActiveForIn).orElse(0L);
+    }
+
+
+
+    public void turnOffLangsIn() {
+        LANG_CRUD_REPOSITORY.turnOffLangsIn();
+    }
+
+    public void turnOffLangsOut() {
+        LANG_CRUD_REPOSITORY.turnOffLangsOut();
     }
 }

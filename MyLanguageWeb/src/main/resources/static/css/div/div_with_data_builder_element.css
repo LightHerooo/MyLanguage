@@ -1,0 +1,64 @@
+div.div-with-data-builder-element-container {
+    display: flex;
+    flex-direction: column;
+}
+
+div.div-with-data-builder-element-row-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+}
+
+span.span-div-with-data-builder-element-row-left-content,
+span.span-div-with-data-builder-element-row-right-content {
+    font-size: var(--small-font-size);
+}
+
+span.span-div-with-data-builder-element-row-left-content {
+    font-weight: bold;
+}
+
+span.span-div-with-data-builder-element-extra-content {
+    font-weight: bold;
+}
+
+span.span-div-with-data-builder-element-show-more {
+    cursor: pointer;
+    font-style: italic;
+    text-decoration: underline;
+}
+
+
+div.div-with-header-and-data-builder-element-container {
+    display: flex;
+    flex-direction: column;
+}
+
+div.div-with-header-and-data-builder-element-container > h1 {
+    margin-top: 3px;
+    margin-bottom: 3px;
+
+    font-size: var(--medium-font-size);
+    font-weight: bold;
+    text-align: left;
+}
+
+
+div.div-with-img-and-data-builder-element-container {
+    display: grid;
+    align-items: center;
+    grid: 1fr / 180px 4fr;
+    gap: 10px;
+}
+
+div.div-with-img-and-data-builder-element-img-container {
+    display: grid;
+    justify-content: center;
+    align-items: center;
+}
+
+div.div-with-img-and-data-builder-element-img-container > img {
+    width: 128px;
+    height: 128px;
+}

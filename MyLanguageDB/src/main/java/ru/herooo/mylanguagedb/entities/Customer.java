@@ -3,7 +3,6 @@ package ru.herooo.mylanguagedb.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -25,6 +24,12 @@ public class Customer {
     @Column(name="date_of_last_visit")
     private LocalDateTime dateOfLastVisit;
 
+    @Column(name="path_to_avatar")
+    private String pathToAvatar;
+
+    @Column(name="description")
+    private String description;
+
     @JsonIgnore
     @Column(name="login")
     private String login;
@@ -38,8 +43,8 @@ public class Customer {
     private String email;
 
     @JsonIgnore
-    @Column(name="auth_code")
-    private String authCode;
+    @Column(name="auth_key")
+    private String authKey;
 
     @ManyToOne
     @JoinColumn(name="customer_role_id")
@@ -93,12 +98,12 @@ public class Customer {
         this.email = email;
     }
 
-    public String getAuthCode() {
-        return authCode;
+    public String getAuthKey() {
+        return authKey;
     }
 
-    public void setAuthCode(String authCode) {
-        this.authCode = authCode;
+    public void setAuthKey(String authCode) {
+        this.authKey = authCode;
     }
 
     public LocalDateTime getDateOfCreate() {
@@ -125,6 +130,22 @@ public class Customer {
         this.country = country;
     }
 
+    public String getPathToAvatar() {
+        return pathToAvatar;
+    }
+
+    public void setPathToAvatar(String pathToAvatar) {
+        this.pathToAvatar = pathToAvatar;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -134,10 +155,12 @@ public class Customer {
                 && Objects.equals(nickname, customer.nickname)
                 && Objects.equals(dateOfCreate, customer.dateOfCreate)
                 && Objects.equals(dateOfLastVisit, customer.dateOfLastVisit)
+                && Objects.equals(pathToAvatar, customer.pathToAvatar)
+                && Objects.equals(description, customer.description)
                 && Objects.equals(login, customer.login)
                 && Objects.equals(password, customer.password)
                 && Objects.equals(email, customer.email)
-                && Objects.equals(authCode, customer.authCode)
+                && Objects.equals(authKey, customer.authKey)
                 && Objects.equals(role, customer.role)
                 && Objects.equals(country, customer.country);
     }
@@ -148,10 +171,12 @@ public class Customer {
                 nickname,
                 dateOfCreate,
                 dateOfLastVisit,
+                pathToAvatar,
+                description,
                 login,
                 password,
                 email,
-                authCode,
+                authKey,
                 role,
                 country);
     }

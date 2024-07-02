@@ -7,10 +7,26 @@
 
     <link rel="stylesheet" type="text/css" href="/css/root.css">
     <link rel="stylesheet" type="text/css" href="/css/main.css">
-    <link rel="stylesheet" type="text/css" href="/css/info_blocks/small_info_block.css">
-    <link rel="stylesheet" type="text/css" href="/css/info_blocks/dynamic_info_block.css">
-    <link rel="stylesheet" type="text/css" href="/css/other/instruments_for_table.css">
-    <link rel="stylesheet" type="text/css" href="/css/other/loading.css">
+    <link rel="stylesheet" type="text/css" href="/css/img_sizes.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/span/span_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/span/span_flag_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/span/span_loading_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/span/span_rule_element.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/table/table_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/table/instruments_for_table.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/div/div_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/div/div_with_data_builder_element.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/a/a_button_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/select/select_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/button/button_element.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/info_block/info_block.css">
+    <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_header.css">
+
     <link rel="stylesheet" type="text/css" href="/css/templates/customers/show_info_one.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
 
@@ -21,109 +37,141 @@
         <div th:insert="~{layouts/header}"></div>
     </header>
     <main>
-        <div th:class="${IS_CUSTOMER_OWNER == true ? 'customer-info-with-actions-container-owner' : ''}">
-            <div class="customer-info-container info-block-standard">
-                <div class="avatar-container">
-                    <img class="img-avatar"
-                         src="/images/customer_roles/customer.png"
-                         alt="customer.png"/>
+        <div th:class="${IS_CUSTOMER_OWNER == true ? 'div-customer-info-with-actions-container-owner' : ''}">
+            <div class="div-info-block-container div-customer-info-container">
+                <img class="img-avatar"
+                     src="#"
+                     th:src="${CURRENT_CUSTOMER.pathToAvatar != null
+                    ? CURRENT_CUSTOMER.pathToAvatar
+                    : '/customers/avatar/0'}" alt="customer.png"/>
+                <div class="div-customer-data-container">
+                    <div class="div-nickname-container">
+                        <span th:class="'fi fi-' + ${CURRENT_CUSTOMER.country.code}"
+                              th:title="${CURRENT_CUSTOMER.country.title}"></span>
+                        <span th:text="${CURRENT_CUSTOMER.nickname}"
+                              th:style="${CURRENT_CUSTOMER.role.color != null
+                                ? 'color: #' + CURRENT_CUSTOMER.role.color.hexCode
+                                : ''}"></span>
+                    </div>
+                    <div class="div-element-horizontal-delimiter"></div>
+                    <div class="div-description-container">
+                        <span th:text="${CURRENT_CUSTOMER.description != null
+                            && CURRENT_CUSTOMER.description.length > 0
+                            ? CURRENT_CUSTOMER.description
+                            : 'Информация отсутствует.'}"></span>
+                    </div>
+
+
+                    <div class="div-element-horizontal-delimiter"></div>
+                    <div class="div-with-data-builder-element-container">
+                        <div class="div-with-data-builder-element-row-container">
+                            <span class="span-div-with-data-builder-element-row-left-content">ID:</span>
+                            <span class="span-div-with-data-builder-element-row-right-content"
+                                  th:text="${CURRENT_CUSTOMER.id}"></span>
+                        </div>
+                        <div class="div-with-data-builder-element-row-container">
+                            <span class="span-div-with-data-builder-element-row-left-content">Дата регистрации:</span>
+                            <span class="span-div-with-data-builder-element-row-right-content"
+                                  th:text="${DATE_OF_CREATE}"></span>
+                        </div>
+                        <div class="div-with-data-builder-element-row-container">
+                            <span class="span-div-with-data-builder-element-row-left-content">Был в сети:</span>
+                            <span class="span-div-with-data-builder-element-row-right-content"
+                                  th:text="${DATE_OF_LAST_VISIT}"></span>
+                        </div>
+                    </div>
                 </div>
-                <div class="info-container">
-                    <div class="dynamic-info-block-right-container">
-                        <h1 class="h1-dynamic-info-block">
-                            <span th:class="'fi fi-' + ${CURRENT_CUSTOMER.country.code}"
-                                  th:title="${CURRENT_CUSTOMER.country.title}"></span>
-                            <span th:text="${CURRENT_CUSTOMER.nickname}"
-                                  th:style="${CURRENT_CUSTOMER.role.color != null
-                          ? 'color: #' + CURRENT_CUSTOMER.role.color.hexCode
-                          : ''}"></span>
-                        </h1>
-                    </div>
-                    <div class="dynamic-info-block-right-container">
-                        <div class="dynamic-info-block-data-row">
-                            <span class="data-row-right-text">Информация отсутствует.</span>
-                        </div>
-                        <br>
-                    </div>
-                    <div class="dynamic-info-block-right-container">
-                        <div class="dynamic-info-block-data-row">
-                            <span class="data-row-left-text">ID:</span>
-                            <span class="data-row-right-text" th:text="${CURRENT_CUSTOMER.id}"></span>
-                        </div>
-                        <div class="dynamic-info-block-data-row">
-                            <span class="data-row-left-text">Дата регистрации:</span>
-                            <span class="data-row-right-text" th:text="${DATE_OF_CREATE}"></span>
-                        </div>
-                        <div class="dynamic-info-block-data-row">
-                            <span class="data-row-left-text">Был в сети:</span>
-                            <span class="data-row-right-text" th:text="${DATE_OF_LAST_VISIT}"></span>
+            </div>
+            <div class="div-customer-actions-container" th:if="${IS_CUSTOMER_OWNER == true}">
+                <a href="/customers/edit"
+                   class="a-button-with-img-element-64 a-button-element-blue"
+                   title="Изменить профиль">
+                    <img src="/images/other/pencil.png"
+                         alt="pencil.png"/>
+                </a>
+                <a href="/customers/exit"
+                   class="a-button-with-img-element-64 a-button-element-red"
+                   title="Выйти">
+                    <img src="/images/templates/customers/entry.png"
+                         alt="entry.png"/>
+                </a>
+            </div>
+        </div>
+
+        <div class="div-info-block-header-container-margin">
+            <img src="/images/other/statistic.png"
+                 alt="statistic.png"/>
+            <h1>Статистика</h1>
+        </div>
+        <div class="div-instruments-for-table-container div-instruments-for-find-statistic-container">
+            <div class="div-instrument-for-table-container">
+                <label for="select_workout_types_workouts_customer_statistic">Режим тренировки:</label>
+                <div id="div_select_workout_types_workouts_customer_statistic" class="div-select-with-img-element-container">
+                    <select id="select_workout_types_workouts_customer_statistic" class="select-element" disabled></select>
+                    <div>
+                        <div>
+                            <img id="img_select_workout_types_workouts_customer_statistic" src="#" alt=""/>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="actions-container" th:if="${IS_CUSTOMER_OWNER == true}">
-                <a class="a-button-disabled-standard">
-                    <div class="content-center-standard">
-                        <img class="img-action"
-                             src="/images/other/pencil.png"
-                             alt="pencil.png"/>
+            <div class="div-instrument-for-table-container">
+                <label for="select_periods_workouts_customer_statistic">Период:</label>
+                <select id="select_periods_workouts_customer_statistic"
+                        class="select-element" disabled></select>
+            </div>
+            <div class="div-instrument-for-table-container">
+                <label for="button_refresh_workouts_customer_statistic"></label>
+                <button id="button_refresh_workouts_customer_statistic"
+                        class="button-with-img-element-32 button-element-default"
+                        title="Обновить" disabled>
+                    <img id="img_button_refresh_workouts_customer_statistic"
+                         src="/images/other/refresh.png"
+                         alt="refresh.png"/>
+                </button>
+            </div>
+        </div>
+        <div id="div_workouts_customer_statistic"
+             class="div-info-block-container"
+             style="min-height: 200px"></div>
+
+        <div class="div-info-block-header-container-margin">
+            <img src="/images/other/history.png"
+                 alt="history.png"/>
+            <h1>История тренировок</h1>
+        </div>
+        <div class="div-instruments-for-table-container div-instruments-for-find-workouts-container">
+            <div class="div-instrument-for-table-container">
+                <label for="select_workout_types_workouts_history">Режим тренировки:</label>
+                <div id="div_select_workout_types_workouts_history" class="div-select-with-img-element-container">
+                    <select id="select_workout_types_workouts_history" class="select-element" disabled></select>
+                    <div>
+                        <div>
+                            <img id="img_select_workout_types_workouts_history" src="#" alt=""/>
+                        </div>
                     </div>
-                </a>
-                <a class="a-button-deny-standard" href="/customers/exit">
-                    <div class="content-center-standard">
-                        <img class="img-action"
-                             src="/images/customers/entry.png"
-                             alt="entry.png"/>
-                    </div>
-                </a>
+                </div>
+            </div>
+            <div class="div-instrument-for-table-container">
+                <label for="button_refresh_workouts_history"></label>
+                <button id="button_refresh_workouts_history"
+                        class="button-with-img-element-32 button-element-default"
+                        title="Обновить" disabled>
+                    <img id="img_button_refresh_workouts_history"
+                         src="/images/other/refresh.png"
+                         alt="refresh.png"/>
+                </button>
             </div>
         </div>
-
-        <div class="small-info-block-container-margin">
-            <img class="img-small-info-block" src="/images/other/statistic.png" alt="statistic.png"/>
-            <h1 class="h1-small-info-block">Статистика</h1>
-        </div>
-        <div class="instruments-for-table-container instruments-for-find-statistic">
-            <div class="label-for-input-container">
-                <label class="label-standard" for="cb_workout_types_for_statistic">Режим тренировки:</label>
-            </div>
-            <select id="cb_workout_types_for_statistic" class="select-standard"></select>
-
-            <div class="label-for-input-container">
-                <label class="label-standard" for="cb_periods_for_statistic">Период:</label>
-            </div>
-            <select id="cb_periods_for_statistic" class="select-standard"></select>
-
-            <div class="label-for-input-container"></div>
-            <button id="btn_refresh_for_statistic" class="button-with-img-standard" title="Обновить">
-                <img class="img-btn-refresh" src="/images/other/refresh.png" alt="refresh.png"/>
-            </button>
-        </div>
-        <div id="div_statistic" class="info-block-standard statistic-container"></div>
-
-        <div class="small-info-block-container-margin">
-            <img class="img-small-info-block" src="/images/other/history.png" alt="history.png"/>
-            <h1 class="h1-small-info-block">История тренировок</h1>
-        </div>
-        <div class="instruments-for-table-container instruments-for-find-workouts">
-            <div class="label-for-input-container">
-                <label class="label-standard" for="cb_workout_types_for_workouts">Режим тренировки:</label>
-            </div>
-            <select id="cb_workout_types_for_workouts" class="select-standard"></select>
-
-            <div class="label-for-input-container"></div>
-            <button id="btn_refresh_for_workouts" class="button-with-img-standard" title="Обновить">
-                <img class="img-btn-refresh" src="/images/other/refresh.png" alt="refresh.png"/>
-            </button>
-        </div>
-        <table class="table-standard">
-            <colgroup>
+        <table id="table_workouts_history" class="table-element">
+            <colgroup id="colgroup_workouts_history">
                 <col style="width: 5%"/>
                 <col style="width: 75%"/>
                 <col style="width: 20%"/>
                 <col style="width: 80px"/>
             </colgroup>
-            <thead id="thead_workouts">
+            <thead id="thead_workouts_history"
+                   class="thead-table-element-medium">
                 <tr>
                     <th>№</th>
                     <th>Тренировка</th>
@@ -131,7 +179,7 @@
                     <th></th>
                 </tr>
             </thead>
-            <tbody id="tbody_workouts"></tbody>
+            <tbody id="tbody_workouts_history"></tbody>
         </table>
     </main>
 </body>

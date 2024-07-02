@@ -6,11 +6,10 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import ru.herooo.mylanguageutils.StringUtils;
-import ru.herooo.mylanguageutils.http.HttpJsonResponse;
+import ru.herooo.mylanguageutils.file.FileUtils;
 import ru.herooo.mylanguageutils.yandexdictionary.yandexdic.YandexDicUtils;
-import ru.herooo.mylanguageutils.yandexdictionary.yandexlangs.YandexLangsResult;
 import ru.herooo.mylanguageutils.yandexdictionary.yandexlangs.YandexLangsUtils;
-import ru.herooo.mylanguageweb.global.GlobalCookieUtils;
+import ru.herooo.mylanguageweb.projectcookie.ProjectCookiesUtils;
 
 @SpringBootApplication(scanBasePackages= {
         "ru.herooo.mylanguageweb",
@@ -20,15 +19,6 @@ import ru.herooo.mylanguageweb.global.GlobalCookieUtils;
 public class MyLanguageApplication {
     public static void main(String[] args) {
         SpringApplication.run(MyLanguageApplication.class, args);
-
-        /*YandexLangsUtils utils = new YandexLangsUtils();
-        HttpJsonResponse response = utils.getHttpJsonResponse();
-        if (response.getCode() == 200) {
-            YandexLangsResult result = utils.getYandexLangsResult(response);
-            for (String lang: result.getLangs()) {
-                System.out.println(lang);
-            }
-        }*/
     }
 
     @Bean
@@ -37,8 +27,13 @@ public class MyLanguageApplication {
     }
 
     @Bean
-    public GlobalCookieUtils globalCookieUtils() {
-        return new GlobalCookieUtils();
+    public FileUtils fileUtils() {
+        return new FileUtils();
+    }
+
+    @Bean
+    public ProjectCookiesUtils projectCookiesUtils() {
+        return new ProjectCookiesUtils();
     }
 
     @Bean

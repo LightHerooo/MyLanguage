@@ -3,14 +3,16 @@ package ru.herooo.mylanguageweb.dto.entity.word;
 import org.springframework.stereotype.Service;
 import ru.herooo.mylanguagedb.entities.Customer;
 import ru.herooo.mylanguagedb.entities.Lang;
-import ru.herooo.mylanguagedb.entities.Word;
+import ru.herooo.mylanguagedb.entities.word.Word;
 import ru.herooo.mylanguagedb.repositories.CustomerCrudRepository;
 import ru.herooo.mylanguagedb.repositories.LangCrudRepository;
 import ru.herooo.mylanguageutils.StringUtils;
-import ru.herooo.mylanguageweb.dto.entity.customer.CustomerResponseDTO;
+import ru.herooo.mylanguageweb.dto.entity.customer.response.CustomerResponseDTO;
 import ru.herooo.mylanguageweb.dto.entity.customer.CustomerMapping;
 import ru.herooo.mylanguageweb.dto.entity.lang.LangMapping;
-import ru.herooo.mylanguageweb.dto.entity.lang.LangResponseDTO;
+import ru.herooo.mylanguageweb.dto.entity.lang.response.LangResponseDTO;
+import ru.herooo.mylanguageweb.dto.entity.word.request.WordAddRequestDTO;
+import ru.herooo.mylanguageweb.dto.entity.word.response.WordResponseDTO;
 
 @Service
 public class WordMapping {
@@ -48,34 +50,33 @@ public class WordMapping {
             dto.setLang(lang);
         }
 
-        if (word.getAuthor() != null) {
-            CustomerResponseDTO customer = CUSTOMER_MAPPING.mapToResponseDTO(word.getAuthor());
+        if (word.getCustomer() != null) {
+            CustomerResponseDTO customer = CUSTOMER_MAPPING.mapToResponseDTO(word.getCustomer());
             dto.setCustomer(customer);
         }
 
         return dto;
     }
 
-    // Маппинг для добавления (все вносимые поля не могут быть изменены)
-    public Word mapToWord(WordRequestDTO dto) {
+    public Word mapToWord(WordAddRequestDTO dto) {
         Word word = new Word();
 
         String title = dto.getTitle();
-        if (STRING_UTILS.isNotStringVoid(title)) {
-            title = STRING_UTILS.getClearString(title);
+        if (!STRING_UTILS.isStringVoid(title)) {
+            title = STRING_UTILS.createStrTrimToLower(title);
             word.setTitle(title);
         }
 
         String langCode = dto.getLangCode();
-        if (STRING_UTILS.isNotStringVoid(langCode)) {
+        if (!STRING_UTILS.isStringVoid(langCode)) {
             Lang lang = LANG_CRUD_REPOSITORY.findByCode(langCode).orElse(null);
             word.setLang(lang);
         }
 
-        String authCode = dto.getAuthCode();
-        if (STRING_UTILS.isNotStringVoid(authCode)) {
-            Customer customer = CUSTOMER_CRUD_REPOSITORY.findByAuthCode(authCode).orElse(null);
-            word.setAuthor(customer);
+        String authKey = dto.getAuthKey();
+        if (!STRING_UTILS.isStringVoid(authKey)) {
+            Customer customer = CUSTOMER_CRUD_REPOSITORY.findByAuthKey(authKey).orElse(null);
+            word.setCustomer(customer);
         }
 
         return word;

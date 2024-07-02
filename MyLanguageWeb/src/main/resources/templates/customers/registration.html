@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="|${WEB_APP_NAME} - Регистрация|">Регистрация</title>
+    <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
+
+    <link rel="stylesheet" type="text/css" href="/css/root.css">
+    <link rel="stylesheet" type="text/css" href="/css/main.css">
+    <link rel="stylesheet" type="text/css" href="/css/img_sizes.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/span/span_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/span/span_flag_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/span/span_loading_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/span/span_rule_element.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/input/input_text_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/input/input_password_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/input/input_checkbox_element.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/button/button_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/form/form_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/label/label_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/select/select_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/div/div_element.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_header.css">
+    <link rel="stylesheet" type="text/css" href="/css/info_block/info_block.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/templates/customers/registration.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
+
+    <script type="module" src="/js/templates/customers/registration.js"></script>
+</head>
+<body>
+    <header>
+        <div th:insert="~{layouts/header}"></div>
+    </header>
+    <main>
+        <div class="div-registration-container">
+            <div class="div-info-block-header-container">
+                <img src="/images/templates/customers/registration.png"
+                     alt="registration.png"/>
+                <h1>Регистрация</h1>
+            </div>
+            <div class="div-registration-content-container">
+                <div class="div-registration-info-container">
+                    <div class="div-info-block-header-container">
+                        <h1>Преимущества регистрации:</h1>
+                    </div>
+                    <div class="div-registration-advantages-container">
+                        <button class="button-with-img-and-span-element-vertical-128 button-element-default">
+                            <span>
+                                <img src="/images/templates/words/new_words.png"
+                                     alt="new_words.png"/>
+                            </span>
+                            <span>Предложение новых слов</span>
+                        </button>
+                        <button class="button-with-img-and-span-element-vertical-128 button-element-default">
+                            <span>
+                                <img src="/images/templates/customer_collections/new_collection.png"
+                                     alt="new_collection.png"/>
+                            </span>
+                            <span>Создание коллекций слов</span>
+                        </button>
+                        <button class="button-with-img-and-span-element-vertical-128 button-element-default"
+                           style="grid-column: 1 / 3">
+                            <span>
+                                <img src="/images/other/brain.png"
+                                     alt="brain.png"/>
+                            </span>
+                            <span>Тренировка слов в различных режимах</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="div-info-block-container">
+                    <form id="form_registration"
+                          th:method="POST"
+                          th:action="@{/customers/entry}"
+                          th:object="${CUSTOMER_ENTRY_REQUEST_DTO}"
+                          class="form-element">
+                        <div class="div-form-element-item">
+                            <label for="input_text_nickname" class="label-element">Никнейм (публичный):</label>
+                            <input id="input_text_nickname" type="text" autocomplete="false"
+                                   class="input-text-element" readonly>
+                        </div>
+                        <div class="div-form-element-item">
+                            <label for="select_countries" class="label-element">Страна:</label>
+                            <div id="div_select_countries" class="div-select-with-flag-element-container">
+                                <select id="select_countries" class="select-element" readonly></select>
+                                <div>
+                                    <div>
+                                        <span id="span_flag_select_countries"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="div-form-element-item">
+                            <label for="input_text_email" class="label-element">Электронная почта:</label>
+                            <input id="input_text_email" type="text" autocomplete="false"
+                                   class="input-text-element" readonly>
+                        </div>
+                        <div class="div-form-element-item">
+                            <label for="input_text_login" class="label-element">Логин (приватный, для входа):</label>
+                            <input id="input_text_login" type="text" autocomplete="false"
+                                   class="input-text-element" th:field="*{login}" readonly>
+                        </div>
+                        <div class="div-form-element-item">
+                            <label for="input_password" class="label-element">Пароль:</label>
+                            <input id="input_password" type="password" autocomplete="false"
+                                   class="input-password-element" th:field="*{password}" readonly>
+                        </div>
+                        <div class="div-form-element-item">
+                            <label for="input_password_repeat" class="label-element">Повторите пароль:</label>
+                            <input id="input_password_repeat" type="password" autocomplete="false"
+                                   class="input-password-element" readonly>
+                        </div>
+                        <div class="div-form-element-item div-element-content-center">
+                            <div id="div_input_checkbox_show_password" class="div-input-checkbox-element-container">
+                                <input id="input_checkbox_show_password" type="checkbox" class="input-checkbox-element" disabled>
+                                <label id="label_input_checkbox_show_password"
+                                       for="input_checkbox_show_password"
+                                       class="label-input-checkbox-element-disabled">Показать пароль</label>
+                            </div>
+                        </div>
+                        <div class="div-element-horizontal-delimiter"></div>
+                        <button id="button_submit_registration"
+                                type="submit"
+                                class="button-submit"
+                                disabled>Зарегистрироваться</button>
+                        <div id="div_message_container_registration"
+                             class="div-form-element-message-container"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

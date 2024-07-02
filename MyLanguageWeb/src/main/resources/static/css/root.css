@@ -1,41 +1,44 @@
 :root {
-    --first-color: #dcd6d6;
-    --first-color-rgb: 220, 214, 214;
+    /* Основные цвета сайта --- */
+    --main-first-color: #FADADD;
+    --main-first-color-rgb: 250,218,221;
 
-    --second-color: #bbb8b8;
-    --second-color-rgb: 187, 184, 184;
+    --main-second-color: #FFCBDB;
+    --main-second-color-rgb: 255,203,219;
 
-    --third-color: #918e8e;
-    --third-color-rgb: 145, 142, 142;
+    --main-third-color: #F19CBB;
+    --main-third-color-rgb: 241,156,187;
+    /* --- */
+
+    /* Другие цвета --- */
+    --green-light-color: #48B548;
+    --green-light-color-rgb: 72, 181, 72;
+
+    --green-dark-color: #489148;
+    --green-dark-color-rgb: 72, 145, 72;
+
+    --yellow-light-color: #D8B400;
+    --yellow-light-color-rgb: 216, 180, 0;
+
+    --yellow-dark-color: #AD9000;
+    --warning-dark-color-rgb: 173, 144, 0;
+
+    --red-light-color: #B54848;
+    --red-light-color-rgb: 181, 72, 72;
+
+    --red-dark-color: #913C3C;
+    --red-dark-color-rgb: 145, 60, 60;
+
+    --blue-light-color: #3049D3;
+    --blue-light-color-rgb: 48, 73, 211;
+
+    --blue-dark-color: #263BA5;
+    --blue-dark-color-rgb: 38, 59, 165;
+    /* --- */
 
     --opacity-standard: 0.9;
-    --border-radius-standard: 10px;
 
-    --first-font-size: 60px;
-    --second-font-size: 40px;
-    --third-font-size: 20px;
-
-    --accept-first-color: #48B548;
-    --accept-first-color-rgb: 72, 181, 72;
-
-    --accept-second-color: #489148;
-    --accept-second-color-rgb: 72, 145, 72;
-
-    --warning-first-color: #D8B400;
-    --warning-first-color-rgb: 216, 180, 0;
-
-    --warning-second-color: #AD9000;
-    --warning-second-color-rgb: 173, 144, 0;
-
-    --deny-first-color: #B54848;
-    --deny-first-color-rgb: 181, 72, 72;
-
-    --deny-second-color: #913C3C;
-    --deny-second-color-rgb: 145, 60, 60;
-
-    --info-first-color: #3049D3;
-    --info-first-color-rgb: 48, 73, 211;
-
-    --info-second-color: #263BA5;
-    --info-second-color-rgb: 38, 59, 165;
+    --big-font-size: 40px;
+    --medium-font-size: 30px;
+    --small-font-size: 20px;
 }

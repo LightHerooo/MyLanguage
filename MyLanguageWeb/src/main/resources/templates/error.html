@@ -7,7 +7,12 @@
 
     <link rel="stylesheet" type="text/css" href="/css/root.css">
     <link rel="stylesheet" type="text/css" href="/css/main.css">
-    <link rel="stylesheet" type="text/css" href="/css/error.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/div/div_element.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/info_block/info_block.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/templates/error.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
 </head>
 <body>
@@ -15,10 +20,10 @@
       <div th:insert="~{layouts/header}"></div>
     </header>
     <main>
-        <div class="error-container info-block-standard">
-            <div class="error-code" th:text="${ERROR_CODE}"/>
-            <div class="horizontal-delimiter-margin"></div>
-            <div class="error-message" th:text="${ERROR_MESSAGE}"/>
+        <div class="div-info-block-container div-error-container">
+            <span class="span-error-code" th:text="${ERROR_CODE}"/>
+            <div class="div-element-horizontal-delimiter-margin"></div>
+            <span class="span-error-message" th:text="${ERROR_MESSAGE}"/>
         </div>
     </main>
 </body>

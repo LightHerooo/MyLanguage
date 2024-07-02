@@ -1,0 +1,59 @@
+table.table-element {
+    border-spacing: 5px 5px;
+    table-layout: fixed;
+    margin: -5px -5px;
+    width: calc(100% + 10px);
+
+    overflow: hidden;
+    overflow-wrap: anywhere;
+}
+
+thead.thead-table-element-big th,
+thead.thead-table-element-medium th,
+thead.thead-table-element-small th {
+    background: var(--main-third-color);
+    padding: 10px;
+}
+
+thead.thead-table-element-big th {
+    font-size: var(--big-font-size);
+}
+
+thead.thead-table-element-medium th {
+    font-size: var(--medium-font-size);
+}
+
+thead.thead-table-element-small th {
+    font-size: var(--small-font-size);
+}
+
+table.table-element tbody {
+    font-size: var(--small-font-size);
+}
+
+table.table-element td {
+    padding: 15px;
+}
+
+table.table-element tbody tr:nth-child(odd){
+    background: var(--main-first-color);
+}
+
+table.table-element tbody tr:nth-child(even){
+    background: var(--main-second-color);
+}
+
+button.button-show-more {
+    border: 2px solid var(--main-third-color);
+    background: var(--main-second-color);
+
+    cursor: pointer;
+
+    font-family: inherit;
+    font-size: var(--small-font-size);
+    font-weight: bold;
+}
+
+button.button-show-more:hover {
+    background: var(--main-third-color);
+}

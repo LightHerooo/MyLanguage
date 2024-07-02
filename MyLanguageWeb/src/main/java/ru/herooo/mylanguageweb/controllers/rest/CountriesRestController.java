@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.herooo.mylanguagedb.entities.Country;
 import ru.herooo.mylanguageweb.dto.entity.country.CountryMapping;
-import ru.herooo.mylanguageweb.dto.entity.country.CountryResponseDTO;
-import ru.herooo.mylanguageweb.dto.other.CustomResponseMessage;
+import ru.herooo.mylanguageweb.dto.entity.country.response.CountryResponseDTO;
+import ru.herooo.mylanguageweb.dto.other.response.ResponseMessageResponseDTO;
 import ru.herooo.mylanguageweb.services.CountryService;
 
 import java.util.List;
@@ -29,7 +29,7 @@ public class CountriesRestController {
         this.COUNTRY_MAPPING = countryMapping;
     }
 
-    @GetMapping
+    @GetMapping("/get")
     public ResponseEntity<?> getAll() {
         List<Country> countries = COUNTRY_SERVICE.findAll();
         if (countries != null && countries.size() > 0) {
@@ -39,7 +39,7 @@ public class CountriesRestController {
                     .toList();
             return ResponseEntity.ok(responseDTOs);
         } else {
-            CustomResponseMessage message = new CustomResponseMessage(1, "Страны не найдены.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Страны не найдены.");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -51,7 +51,7 @@ public class CountriesRestController {
             CountryResponseDTO dto = COUNTRY_MAPPING.mapToResponseDTO(country);
             return ResponseEntity.ok(dto);
         } else {
-            CustomResponseMessage message = new CustomResponseMessage(1,
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
                     String.format("Страна с кодом '%s' не найдена.", code));
             return ResponseEntity.badRequest().body(message);
         }

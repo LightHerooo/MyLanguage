@@ -13,8 +13,8 @@ public class CustomerRoleRepositoryImpl implements CustomerRoleRepository<Custom
 
     @Override
     public Optional<CustomerRole> find(CustomerRoles customerRoles) {
-        return em.createQuery("from CustomerRole cr where cr.id = :customerRoleId", CustomerRole.class)
-                .setParameter("customerRoleId", customerRoles.getId()).
+        return em.createQuery("from CustomerRole cr where cr.id = :id", CustomerRole.class)
+                .setParameter("id", customerRoles.ID).
                 getResultStream().findAny();
     }
 }

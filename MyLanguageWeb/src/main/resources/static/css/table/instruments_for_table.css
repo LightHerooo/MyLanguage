@@ -1,0 +1,27 @@
+div.div-instruments-for-table-container,
+div.div-instruments-for-table-container-margin {
+    display: grid;
+    grid-auto-flow: column;
+    gap: 5px;
+}
+
+div.div-instruments-for-table-container-margin {
+    margin-top: 50px;
+}
+
+div.div-instrument-for-table-container {
+    display: grid;
+    grid: 1fr 1fr / 1fr;
+    gap: 5px;
+}
+
+div.div-instrument-for-table-container label {
+    background: rgba(var(--main-first-color-rgb), var(--opacity-standard));
+    padding: 5px;
+
+    display: grid;
+    align-items: center;
+
+    font-size: var(--small-font-size);
+    font-weight: bold;
+}

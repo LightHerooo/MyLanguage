@@ -1,11 +1,5 @@
 package ru.herooo.mylanguageutils.http;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import ru.herooo.mylanguageutils.StringUtils;
-import ru.herooo.mylanguageutils.yandexdictionary.YandexDictionaryError;
-import ru.herooo.mylanguageutils.yandexdictionary.yandexdic.YandexDicResult;
-
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;

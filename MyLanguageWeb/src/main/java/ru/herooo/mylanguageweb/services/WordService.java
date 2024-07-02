@@ -3,12 +3,12 @@ package ru.herooo.mylanguageweb.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.herooo.mylanguagedb.entities.Lang;
-import ru.herooo.mylanguagedb.entities.Word;
+import ru.herooo.mylanguagedb.entities.word.Word;
 import ru.herooo.mylanguagedb.repositories.word.WordCrudRepository;
-import ru.herooo.mylanguagedb.types.WordsStatistic;
+import ru.herooo.mylanguagedb.entities.word.types.WordsStatistic;
 import ru.herooo.mylanguageutils.StringUtils;
 import ru.herooo.mylanguageweb.dto.entity.word.WordMapping;
-import ru.herooo.mylanguageweb.dto.entity.word.WordRequestDTO;
+import ru.herooo.mylanguageweb.dto.entity.word.request.WordAddRequestDTO;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,7 +25,9 @@ public class WordService {
 
     @Autowired
     public WordService(WordCrudRepository wordCrudRepository,
+
                        WordMapping wordMapping,
+
                        StringUtils stringUtils) {
         this.WORD_CRUD_REPOSITORY = wordCrudRepository;
 
@@ -34,50 +36,31 @@ public class WordService {
         this.STRING_UTILS = stringUtils;
     }
 
-    public List<Word> findListRandom(String langCode, Long count) {
-        return WORD_CRUD_REPOSITORY.findListRandom(langCode, count);
-    }
-
-    public List<Word> findListByTitleInDifferentLangs(String title, String wordStatusCode) {
-        return WORD_CRUD_REPOSITORY.findListByTitleInDifferentLangs(title, wordStatusCode);
-    }
-
-    public List<Word> findAll(String title, String wordStatusCode,
-                              String langCode, Long numberOfWordsOnPage,
+    public List<Word> findAll(String title, String langCode, String wordStatusCode, Long customerId, Long numberOfWordsOnPage,
                               Long lastWordIdOnPreviousPage) {
-        return WORD_CRUD_REPOSITORY.findAll(title, wordStatusCode,
-                langCode, numberOfWordsOnPage, lastWordIdOnPreviousPage);
+        return WORD_CRUD_REPOSITORY.findAll(title, langCode, wordStatusCode, customerId, numberOfWordsOnPage,
+                lastWordIdOnPreviousPage);
     }
 
-    public List<Word> findAllCustomer(String title, String wordStatusCode,
-                                      String langCode, Long customerId,
-                                      Long numberOfWordsOnPage,
-                                      Long lastWordIdOnPreviousPage) {
-        return WORD_CRUD_REPOSITORY.findAllCustomer(title, wordStatusCode,
-                langCode, customerId, numberOfWordsOnPage, lastWordIdOnPreviousPage);
+    public List<Word> findAllRandom(String langCode, Long numberOfItems) {
+        return WORD_CRUD_REPOSITORY.findAllRandom(langCode, numberOfItems);
     }
 
-    public List<WordsStatistic> findWordsStatistics() {
-        return WORD_CRUD_REPOSITORY.findWordsStatistics();
+    public List<Word> findAllWithCurrentTitle(String title, String wordStatusCode) {
+        return WORD_CRUD_REPOSITORY.findAllWithCurrentTitle(title, wordStatusCode);
     }
 
-    public List<WordsStatistic> findWordsStatistics(Long customerId) {
-        return WORD_CRUD_REPOSITORY.findWordsStatistics(customerId);
+    public List<WordsStatistic> findWordsStatistic() {
+        return WORD_CRUD_REPOSITORY.findWordsStatistic();
     }
 
-    public long countByWordStatusCode(String wordStatusCode) {
-        return WORD_CRUD_REPOSITORY.count(null, wordStatusCode, null).orElse(0L);
+    public List<WordsStatistic> findWordsCustomerStatistic(Long customerId) {
+        return WORD_CRUD_REPOSITORY.findWordsCustomerStatistic(customerId);
     }
 
-    public long countByLangCode(String langCode) {
-        return WORD_CRUD_REPOSITORY.count(null, null, langCode).orElse(0L);
-    }
 
-    public long count(LocalDate date) {
-        return WORD_CRUD_REPOSITORY.count(date).orElse(0L);
-    }
 
-    public Word findById(long id) {
+    public Word find(long id) {
         return WORD_CRUD_REPOSITORY.findById(id).orElse(null);
     }
 
@@ -85,18 +68,34 @@ public class WordService {
         return WORD_CRUD_REPOSITORY.findFirstByTitleIgnoreCaseAndLang(title, lang).orElse(null);
     }
 
-    public Word add(WordRequestDTO dto) {
+    public Word add(WordAddRequestDTO dto) {
         Word word = WORD_MAPPING.mapToWord(dto);
         return add(word);
     }
 
     public Word add(Word word) {
-        String title = STRING_UTILS.getClearString(word.getTitle());
+        String title = STRING_UTILS.createStrTrimToLower(word.getTitle());
         word.setTitle(title);
-
         word.setDateOfCreate(LocalDateTime.now());
+
         return WORD_CRUD_REPOSITORY.save(word);
     }
+
+
+
+    public long countByWordStatusCode(String wordStatusCode) {
+        return WORD_CRUD_REPOSITORY.count(null, null, wordStatusCode).orElse(0L);
+    }
+
+    public long countByLangCode(String langCode) {
+        return WORD_CRUD_REPOSITORY.count(null, langCode, null).orElse(0L);
+    }
+
+    public long countByDateOfCreate(LocalDate dateOfCreate) {
+        return WORD_CRUD_REPOSITORY.countByDateOfCreate(dateOfCreate).orElse(0L);
+    }
+
+
 
     public void deleteAllUnclaimed() {
         WORD_CRUD_REPOSITORY.deleteAllUnclaimed();

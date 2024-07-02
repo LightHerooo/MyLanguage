@@ -1,0 +1,20 @@
+textarea.textarea-element {
+    font-size: var(--small-font-size);
+    resize: none;
+}
+
+div.div-textarea-with-counter-element-container {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+div.div-textarea-with-counter-element-container > div {
+    display: grid;
+    justify-content: right;
+    align-items: center;
+}
+
+div.div-textarea-with-counter-element-container > div > span {
+    font-size: 15px;
+}

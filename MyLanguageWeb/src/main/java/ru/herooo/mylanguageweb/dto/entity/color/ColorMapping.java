@@ -2,6 +2,7 @@ package ru.herooo.mylanguageweb.dto.entity.color;
 
 import org.springframework.stereotype.Service;
 import ru.herooo.mylanguagedb.entities.Color;
+import ru.herooo.mylanguageweb.dto.entity.color.response.ColorResponseDTO;
 
 @Service
 public class ColorMapping {

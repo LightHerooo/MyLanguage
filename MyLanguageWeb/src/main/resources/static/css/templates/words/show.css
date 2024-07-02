@@ -2,35 +2,25 @@ main {
     min-height: 1500px;
 }
 
-div.statistics-container {
+div.div-statistics-container {
     min-height: 150px;
 
     display: grid;
     align-items: center;
 }
 
-div.actions-container {
+div.div-actions-container {
+    min-height: 250px;
+
     display: grid;
     grid: 1fr / 1fr 1fr;
     gap: 10px;
 }
 
-div.action {
-    height: 250px;
-
-    font-size: var(--third-font-size);
-    font-weight: bold;
+div.div-instruments-for-find-words-container {
+    grid-template-columns: 2fr 1fr 60px;
 }
 
-img.img-action {
-    width: 128px;
-    height: 128px;
-}
-
-div.instruments-for-find-words-container {
-    grid-template-columns: 2fr 1fr 50px;
-}
-
-div.instruments-for-find-words-container-auth {
-    grid-template-columns: 2fr 1fr 1.5fr 50px;
+div.div-instruments-for-find-words-container-auth {
+    grid-template-columns: 2fr 1fr 1.5fr 60px;
 }

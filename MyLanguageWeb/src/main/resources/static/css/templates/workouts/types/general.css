@@ -2,31 +2,25 @@ main {
     min-height: 1000px;
 }
 
-div.workout-container {
+div.div-prepare-to-start-workout-container {
     display: grid;
     grid-auto-flow: column;
     grid-template: 1fr / 500px 1fr;
     gap: 10px;
 }
 
-div.workout-item {
-    display: grid;
-    grid: 90px 1fr / 1fr;
-    gap: 10px;
-}
-
-div.new-workout-start-container {
+div.div-new-workout-settings {
     display: flex;
     flex-direction: column;
+    gap: 5px;
 }
 
-div.form-actions-container {
-    display: grid;
-    grid: 1fr / 1fr 50px;
-    gap: 10px;
+div.div-not-over-workouts {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 
-img.img-btn-drop {
-    width: 32px;
-    height: 32px;
+div.div-instruments-for-find-not-over-workouts-container {
+    grid-template-columns: 1fr 60px;
 }

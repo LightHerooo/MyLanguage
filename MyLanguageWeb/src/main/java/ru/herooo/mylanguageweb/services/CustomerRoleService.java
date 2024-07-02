@@ -20,6 +20,8 @@ public class CustomerRoleService {
         return CUSTOMER_ROLE_CRUD_REPOSITORY.findAll();
     }
 
+
+
     public CustomerRole find(CustomerRoles role) {
         return CUSTOMER_ROLE_CRUD_REPOSITORY.find(role).orElse(null);
     }

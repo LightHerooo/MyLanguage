@@ -8,20 +8,26 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.herooo.mylanguagedb.entities.Customer;
+import ru.herooo.mylanguagedb.entities.Lang;
 import ru.herooo.mylanguagedb.entities.WorkoutItem;
+import ru.herooo.mylanguagedb.entities.WorkoutType;
+import ru.herooo.mylanguagedb.entities.workout.Workout;
+import ru.herooo.mylanguagedb.repositories.workouttype.WorkoutTypes;
 import ru.herooo.mylanguageutils.http.HttpJsonResponse;
-import ru.herooo.mylanguageutils.yandexdictionary.yandexdic.YandexDicResult;
+import ru.herooo.mylanguageutils.yandexdictionary.yandexdic.YandexDic;
 import ru.herooo.mylanguageutils.yandexdictionary.YandexDictionaryError;
 import ru.herooo.mylanguageutils.yandexdictionary.yandexdic.YandexDicUtils;
-import ru.herooo.mylanguageweb.dto.entity.workout.WorkoutRequestDTO;
-import ru.herooo.mylanguageweb.dto.entity.workoutitem.AnswerResultResponseDTO;
-import ru.herooo.mylanguageweb.dto.entity.workoutitem.WorkoutItemRequestDTO;
-import ru.herooo.mylanguageweb.dto.other.CustomResponseMessage;
+import ru.herooo.mylanguageweb.dto.entity.workoutitem.request.WorkoutItemIdRequestDTO;
+import ru.herooo.mylanguageweb.dto.entity.workoutitem.request.edit.WorkoutItemEditAnswerRequestDTO;
+import ru.herooo.mylanguageweb.dto.other.request.entity.EntityIdRequestDTO;
+import ru.herooo.mylanguageweb.dto.entity.workoutitem.other.AnswerInfoResponseDTO;
+import ru.herooo.mylanguageweb.dto.other.response.ResponseMessageResponseDTO;
 import ru.herooo.mylanguageweb.dto.entity.workoutitem.WorkoutItemMapping;
-import ru.herooo.mylanguageweb.dto.entity.workoutitem.WorkoutItemResponseDTO;
-import ru.herooo.mylanguageweb.dto.other.LongResponse;
+import ru.herooo.mylanguageweb.dto.entity.workoutitem.response.WorkoutItemResponseDTO;
+import ru.herooo.mylanguageweb.dto.other.response.value.LongResponseDTO;
 import ru.herooo.mylanguageweb.services.CustomerService;
 import ru.herooo.mylanguageweb.services.WorkoutItemService;
+import ru.herooo.mylanguageweb.services.WorkoutService;
 
 import java.util.List;
 import java.util.Random;
@@ -36,6 +42,8 @@ public class WorkoutItemsRestController {
 
     private final WorkoutItemService WORKOUT_ITEM_SERVICE;
     private final CustomerService CUSTOMER_SERVICE;
+    private final WorkoutService WORKOUT_SERVICE;
+
 
     private final WorkoutItemMapping WORKOUT_ITEM_MAPPING;
 
@@ -47,6 +55,7 @@ public class WorkoutItemsRestController {
 
                                       WorkoutItemService workoutItemService,
                                       CustomerService customerService,
+                                      WorkoutService workoutService,
 
                                       WorkoutItemMapping workoutItemMapping,
 
@@ -56,123 +65,168 @@ public class WorkoutItemsRestController {
 
         this.WORKOUT_ITEM_SERVICE = workoutItemService;
         this.CUSTOMER_SERVICE = customerService;
+        this.WORKOUT_SERVICE = workoutService;
 
         this.WORKOUT_ITEM_MAPPING = workoutItemMapping;
 
         this.DIC_UTILS = yandexDicUtils;
     }
 
-    @GetMapping("/with_answer_in_round")
-    public ResponseEntity<?> getListWithAnswer(@RequestParam("workout_id") Long workoutId,
-                                               @RequestParam("round_number") Long roundNumber) {
+    @GetMapping("/get")
+    public ResponseEntity<?> getAll(@RequestParam("workout_id") Long workoutId,
+                                    @RequestParam(value = "is_question_with_answer", required = false) Boolean isQuestionWithAnswer,
+                                    @RequestParam(value = "round_number", required = false, defaultValue = "0") Integer roundNumber) {
         ResponseEntity<?> response = WORKOUTS_REST_CONTROLLER.find(workoutId);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
 
-        response = WORKOUTS_REST_CONTROLLER.validateRoundNumberValue(workoutId, roundNumber);
+        response = WORKOUTS_REST_CONTROLLER.validateRoundNumber(workoutId, roundNumber);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
 
-        List<WorkoutItem> workoutItems = WORKOUT_ITEM_SERVICE
-                .findListWithAnswerInRound(workoutId, roundNumber);
-        if (workoutItems != null) {
-            if (workoutItems.size() > 0) {
-                List<WorkoutItemResponseDTO> responseDTOs = workoutItems
-                        .stream()
-                        .map(WORKOUT_ITEM_MAPPING::mapToResponseDTO)
-                        .toList();
-                return ResponseEntity.ok(responseDTOs);
-            } else {
-                CustomResponseMessage message = new CustomResponseMessage(999, "Ответы не найдены.");
-                return ResponseEntity.badRequest().body(message);
-            }
+        List<WorkoutItem> workoutItems = WORKOUT_ITEM_SERVICE.findAll(workoutId, isQuestionWithAnswer, roundNumber);
+        if (workoutItems != null && workoutItems.size() > 0) {
+            List<WorkoutItemResponseDTO> responseDTOs = workoutItems
+                    .stream()
+                    .map(WORKOUT_ITEM_MAPPING::mapToResponseDTO)
+                    .toList();
+            return ResponseEntity.ok(responseDTOs);
         } else {
-            CustomResponseMessage message = new CustomResponseMessage(1,
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
                     String.format("Слова с ответами в тренировке с id = '%d' в раунде №%d не найдены.",
                             workoutId, roundNumber));
             return ResponseEntity.badRequest().body(message);
         }
     }
 
-    @GetMapping("/count_with_answer_in_round")
-    public ResponseEntity<?> getCountWithAnswer(
+    @GetMapping("/count")
+    public ResponseEntity<?> getCount(
             @RequestParam("workout_id") Long workoutId,
-            @RequestParam("round_number") Long roundNumber) {
+            @RequestParam(value = "is_question_with_answer", required = false) Boolean isQuestionWithAnswer,
+            @RequestParam(value = "round_number", required = false, defaultValue = "0") Integer roundNumber) {
         ResponseEntity<?> response = WORKOUTS_REST_CONTROLLER.find(workoutId);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
 
-        response = WORKOUTS_REST_CONTROLLER.validateRoundNumberValue(workoutId, roundNumber);
+        response = WORKOUTS_REST_CONTROLLER.validateRoundNumber(workoutId, roundNumber);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
 
-        long numberOfItems = WORKOUT_ITEM_SERVICE.countWithAnswerInRound(workoutId, roundNumber);
-        return ResponseEntity.ok(new LongResponse(numberOfItems));
+        long numberOfItems = WORKOUT_ITEM_SERVICE.count(workoutId, isQuestionWithAnswer, roundNumber);
+        return ResponseEntity.ok(new LongResponseDTO(numberOfItems));
     }
 
-    @PostMapping("/add_to_next_round")
-    public ResponseEntity<?> addToNextRound(HttpServletRequest request,
-                                            @RequestBody WorkoutItemRequestDTO dto) {
-        ResponseEntity<?> response = validateBeforeCrud(request, dto);
-        if (response.getStatusCode() != HttpStatus.OK) {
-            return response;
-        }
-
-        // Проверям, дан ли ответ на вопрос
-        WorkoutItem workoutItem = WORKOUT_ITEM_SERVICE.find(dto.getId());
-        if (workoutItem.getDateOfSetAnswer() == null) {
-            CustomResponseMessage message = new CustomResponseMessage(1,
-                    "На вопрос не был дан ответ.");
-            return ResponseEntity.badRequest().body(message);
-        }
-
-        // Проверяем, корректный ли ответ
-        if (workoutItem.isCorrect()) {
-            CustomResponseMessage message = new CustomResponseMessage(2,
-                    "Невозможно добавить слово в следующий раунд, так как на него был дан правильный ответ.");
-            return ResponseEntity.badRequest().body(message);
-        }
-
-        // Мы должны проверить, нет ли неотвеченных вопросов в прошлом раунде
-        int currentRoundNumber = workoutItem.getRoundNumber();
-        if (currentRoundNumber > 1) {
-            int beforeRoundNumber = currentRoundNumber - 1;
-            WorkoutItem workoutItemWithoutAnswer = WORKOUT_ITEM_SERVICE
-                    .findFirstWithoutAnswer(workoutItem.getWorkout().getId(), beforeRoundNumber);
-            if (workoutItemWithoutAnswer != null) {
-                CustomResponseMessage message = new CustomResponseMessage(3,
-                        "В предыдущем раунде ещё есть вопросы без ответа.");
-                return ResponseEntity.badRequest().body(message);
-            }
-        }
-
-        WorkoutItem workoutItemForNextRound = new WorkoutItem();
-        workoutItemForNextRound.setWorkout(workoutItem.getWorkout());
-        workoutItemForNextRound.setWordTitleQuestion(workoutItem.getWordTitleQuestion());
-        workoutItemForNextRound.setRoundNumber(currentRoundNumber + 1);
-        workoutItemForNextRound = WORKOUT_ITEM_SERVICE.add(workoutItemForNextRound);
-        if (workoutItemForNextRound != null) {
-            WorkoutItemResponseDTO responseDTO = WORKOUT_ITEM_MAPPING.mapToResponseDTO(workoutItem);
-            return ResponseEntity.ok(responseDTO);
+    @GetMapping("/find/by_id")
+    public ResponseEntity<?> find(@RequestParam("id") Long id) {
+        WorkoutItem workoutItem = WORKOUT_ITEM_SERVICE.find(id);
+        if (workoutItem != null) {
+            WorkoutItemResponseDTO dto = WORKOUT_ITEM_MAPPING.mapToResponseDTO(workoutItem);
+            return ResponseEntity.ok(dto);
         } else {
-            CustomResponseMessage message = new CustomResponseMessage(4,
-                    "Не удалось создать вопрос на следующий раунд.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
+                    String.format("Элемента тренировки с id = '%d' не найдено.", id));
             return ResponseEntity.badRequest().body(message);
         }
     }
 
-    @PatchMapping("/set_answer")
-    public ResponseEntity<?> setAnswer(HttpServletRequest request,
-                                       @Valid @RequestBody WorkoutItemRequestDTO dto,
-                                       BindingResult bindingResult) {
-        ResponseEntity<?> response = validateBeforeCrud(request, dto);
+    @GetMapping("/find/random_without_answer")
+    public ResponseEntity<?> findRandomWithoutAnswer(
+            @RequestParam("workout_id") Long workoutId,
+            @RequestParam("round_number") Integer roundNumber) {
+        ResponseEntity<?> response = WORKOUTS_REST_CONTROLLER.find(workoutId);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
+
+        response = WORKOUTS_REST_CONTROLLER.validateRoundNumber(workoutId, roundNumber);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        WorkoutItem workoutItem = WORKOUT_ITEM_SERVICE
+                .findRandomWithoutAnswer(workoutId, roundNumber);
+        if (workoutItem != null) {
+            WorkoutItemResponseDTO dto = WORKOUT_ITEM_MAPPING.mapToResponseDTO(workoutItem);
+            return ResponseEntity.ok(dto);
+        } else {
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(999,
+                    String.format("Слово в раунде '%d' тренировки с id = '%d' не найдено.", roundNumber, workoutId));
+            return ResponseEntity.badRequest().body(message);
+        }
+    }
+
+
+
+    @PostMapping("/validate/before_edit")
+    public ResponseEntity<?> validateBeforeEdit(HttpServletRequest request,
+                                                @RequestBody WorkoutItemIdRequestDTO dto) {
+        String validateCustomerAuthKey = CUSTOMER_SERVICE.validateAuthKey(request, dto.getCustomerAuthKey());
+        dto.setCustomerAuthKey(validateCustomerAuthKey);
+
+        // Проверяем пользователя
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.findExistsByAuthKey(validateCustomerAuthKey);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        String validateWorkoutAuthKey = WORKOUT_SERVICE.validateAuthKey(request, dto.getWorkoutAuthKey());
+        dto.setWorkoutAuthKey(validateWorkoutAuthKey);
+
+        // Проверяем тренировку
+        response = WORKOUTS_REST_CONTROLLER.findExistsByAuthKey(validateWorkoutAuthKey);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        // Проверяем элемент тренировки
+        long workoutItemId = dto.getId();
+        response = find(workoutItemId);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        // Тренировкой должен владеть пользователь
+        WorkoutItem workoutItem = WORKOUT_ITEM_SERVICE.find(workoutItemId);
+        Workout workout = workoutItem.getWorkout();
+        Customer customer = CUSTOMER_SERVICE.findByAuthKey(validateCustomerAuthKey);
+        response = WORKOUTS_REST_CONTROLLER.validateIsAuthor(customer.getId(), workout.getId());
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        // Тренировка не должна быть завершена
+        response = WORKOUTS_REST_CONTROLLER.validateIsNotOver(workout.getId());
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
+                "Данные для изменения элемента тренировки корректны.");
+        return ResponseEntity.ok(message);
+    }
+
+
+
+    @PatchMapping("/edit/answer")
+    public ResponseEntity<?> setAnswer(HttpServletRequest request,
+                                       @Valid @RequestBody WorkoutItemEditAnswerRequestDTO dto,
+                                       BindingResult bindingResult) {
+        // Проверяем элемент тренировки перед его изменением
+        WorkoutItemIdRequestDTO workoutItemIdRequestDTO = new WorkoutItemIdRequestDTO();
+        workoutItemIdRequestDTO.setId(dto.getId());
+        workoutItemIdRequestDTO.setCustomerAuthKey(dto.getCustomerAuthKey());
+        workoutItemIdRequestDTO.setWorkoutAuthKey(dto.getWorkoutAuthKey());
+
+        ResponseEntity<?> response = validateBeforeEdit(request, workoutItemIdRequestDTO);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+        dto.setCustomerAuthKey(workoutItemIdRequestDTO.getCustomerAuthKey());
+        dto.setWorkoutAuthKey(workoutItemIdRequestDTO.getWorkoutAuthKey());
 
         // Проверяем наличие ошибок привязки DTO
         if (bindingResult.hasErrors()) {
@@ -183,197 +237,143 @@ public class WorkoutItemsRestController {
                     .get()
                     .getDefaultMessage();
 
-            CustomResponseMessage message = new CustomResponseMessage(1, errorMessage);
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, errorMessage);
             return ResponseEntity.badRequest().body(message);
         }
 
-        // Проверяем, не дан ли ответ на пришедший вопрос
+        // Проверяем, не дан ли ответ
         WorkoutItem workoutItem = WORKOUT_ITEM_SERVICE.find(dto.getId());
         if (workoutItem.getDateOfSetAnswer() != null) {
-            CustomResponseMessage message = new CustomResponseMessage(1, "На вопрос уже был дан ответ.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(2, "На вопрос уже был дан ответ.");
             return ResponseEntity.badRequest().body(message);
         }
 
-        response = tryToGetAnswerResult(dto);
-        if (response.getBody() instanceof AnswerResultResponseDTO answerResultResponseDTO) {
-            workoutItem.setCorrect(answerResultResponseDTO.getIsCorrect());
-            workoutItem = WORKOUT_ITEM_SERVICE.edit(workoutItem, dto);
+        response = tryToCreateAnswerInfoResponseDTO(workoutItem, dto.getAnswer());
+        if (response.getBody() instanceof AnswerInfoResponseDTO answerInfoResponseDTO) {
+            // Мы должны добавить слово в следующий раунд, если ответ неверный (не для всех режимов)
+            boolean isCorrect = answerInfoResponseDTO.getIsCorrect();
+            if (!isCorrect) {
+                // Ответ переносится в следующий раунд, если переводы были найдены
+                List<String> possibleAnswers = answerInfoResponseDTO.getPossibleAnswers();
+                if (possibleAnswers != null && possibleAnswers.size() > 0) {
+                    Workout workout = workoutItem.getWorkout();
+                    if (workout != null) {
+                        WorkoutType workoutType = workout.getWorkoutType();
+                        if (workoutType != null &&
+                                (workoutType.getId() == WorkoutTypes.RANDOM_WORDS.ID
+                                        || workoutType.getId() == WorkoutTypes.COLLECTION_WORKOUT.ID)) {
+                            WorkoutItem workoutItemToNextRound = WORKOUT_ITEM_SERVICE.copyToNextRound(workoutItem);
+                            if (workoutItemToNextRound == null) {
+                                ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(3,
+                                        "Не удалось перенести вопрос в следующий раунд.");
+                                return ResponseEntity.badRequest().body(message);
+                            }
+                        }
+                    }
+                }
+            }
+
+            workoutItem = WORKOUT_ITEM_SERVICE.setAnswer(workoutItem, dto.getAnswer(), isCorrect);
             if (workoutItem != null) {
-                answerResultResponseDTO.setWorkoutItem(WORKOUT_ITEM_MAPPING.mapToResponseDTO(workoutItem));
-                return ResponseEntity.ok(answerResultResponseDTO);
+                answerInfoResponseDTO.setWorkoutItem(WORKOUT_ITEM_MAPPING.mapToResponseDTO(workoutItem));
+                return ResponseEntity.ok(answerInfoResponseDTO);
             } else {
-                CustomResponseMessage message = new CustomResponseMessage(2,
+                ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(4,
                         "Не удалось сохранить ответ на вопрос.");
                 return ResponseEntity.badRequest().body(message);
             }
-        } else if (response.getBody() instanceof CustomResponseMessage) {
+        } else if (response.getBody() instanceof ResponseMessageResponseDTO) {
             return response;
         } else {
-            CustomResponseMessage message = new CustomResponseMessage(3, "Неизвестная ошибка обращения к API.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(5, "Неизвестная ошибка обращения к API.");
             return ResponseEntity.badRequest().body(message);
         }
     }
 
-    @GetMapping("/find/by_id")
-    public ResponseEntity<?> find(@RequestParam("id") Long id) {
-        WorkoutItem workoutItem = WORKOUT_ITEM_SERVICE.find(id);
-        if (workoutItem != null) {
-            WorkoutItemResponseDTO dto = WORKOUT_ITEM_MAPPING.mapToResponseDTO(workoutItem);
-            return ResponseEntity.ok(dto);
-        } else {
-            CustomResponseMessage message = new CustomResponseMessage(1,
-                    String.format("Элемента тренировки с id = '%d' не найдено.", id));
-            return ResponseEntity.badRequest().body(message);
-        }
-    }
 
-    @GetMapping("/find/random_without_answer_in_round")
-    public ResponseEntity<?> findRandomWithoutAnswerInRound(
-            @RequestParam("workout_id") Long workoutId,
-            @RequestParam("round_number") Long roundNumber) {
-        ResponseEntity<?> response = WORKOUTS_REST_CONTROLLER.find(workoutId);
-        if (response.getStatusCode() != HttpStatus.OK) {
-            return response;
-        }
 
-        response = WORKOUTS_REST_CONTROLLER.validateRoundNumberValue(workoutId, roundNumber);
-        if (response.getStatusCode() != HttpStatus.OK) {
-            return response;
+    public ResponseEntity<?> tryToCreateAnswerInfoResponseDTO(WorkoutItem workoutItem, String answer) {
+        // Подготавливаем данные для проверки ответа
+        String word = workoutItem.getQuestion();
+        String langInCode = null;
+        String langOutCode = null;
+
+        Workout workout = workoutItem.getWorkout();
+        if (workout != null) {
+            Lang lang = workout.getLangIn();
+            if (lang != null) {
+                langInCode = lang.getCode();
+            }
+
+            lang = workout.getLangOut();
+            if (lang != null) {
+                langOutCode = lang.getCode();
+            }
         }
 
-        WorkoutItem workoutItem = WORKOUT_ITEM_SERVICE
-                .findRandomWithoutAnswerInRound(workoutId, roundNumber);
-        if (workoutItem != null) {
-            WorkoutItemResponseDTO dto = WORKOUT_ITEM_MAPPING.mapToResponseDTO(workoutItem);
-            return ResponseEntity.ok(dto);
-        } else {
-            CustomResponseMessage message = new CustomResponseMessage(999,
-                    String.format("Слово в раунде '%d' тренировки с id = '%d' не найдено.", roundNumber, workoutId));
-            return ResponseEntity.badRequest().body(message);
-        }
-    }
-
-    @PostMapping("/validate/before_crud")
-    public ResponseEntity<?> validateBeforeCrud(HttpServletRequest request,
-                                                @RequestBody WorkoutItemRequestDTO dto) {
-        String validateAuthCode = CUSTOMER_SERVICE.validateAuthCode(request, dto.getAuthCode());
-        dto.setAuthCode(validateAuthCode);
-
-        // Проверяем авторизированного пользователя
-        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.findExistsByAuthCode(dto.getAuthCode());
-        if (response.getStatusCode() != HttpStatus.OK) {
-            return response;
-        }
-
-        // Ищем элемент тренировки
-        response = find(dto.getId());
-        if (response.getStatusCode() != HttpStatus.OK) {
-            return response;
-        }
-
-        // Проверяем ключ безопасности
-        WorkoutItem workoutItem = WORKOUT_ITEM_SERVICE.find(dto.getId());
-
-        WorkoutRequestDTO workoutRequestDTO = new WorkoutRequestDTO();
-        workoutRequestDTO.setId(workoutItem.getWorkout().getId());
-        workoutRequestDTO.setSecurityKey(dto.getSecurityKey());
-
-        response = WORKOUTS_REST_CONTROLLER.validateSecurityKey(request, workoutRequestDTO);
-        if (response.getStatusCode() != HttpStatus.OK) {
-            return response;
-        }
-
-        // Сравниваем пользователя элемента тренировки с пользователем, который хочет её изменить
-        Customer authCustomer = CUSTOMER_SERVICE.findByAuthCode(dto.getAuthCode());
-        if (!workoutItem.getWorkout().getCustomer().equals(authCustomer)) {
-            CustomResponseMessage message = new CustomResponseMessage(1,
-                    "Разрешено взаимодействовать только с элементами своих тренировок.");
-            return ResponseEntity.badRequest().body(message);
-        }
-
-        // Тренировка не должна быть завершена
-        response = WORKOUTS_REST_CONTROLLER.validateIsNotWorkoutEnded(workoutItem.getWorkout().getId());
-        if (response.getStatusCode() != HttpStatus.OK) {
-            return response;
-        }
-
-        CustomResponseMessage message = new CustomResponseMessage(1, "Данные корректны.");
-        return ResponseEntity.ok(message);
-    }
-
-    public ResponseEntity<?> tryToGetAnswerResult(@RequestBody WorkoutItemRequestDTO dto) {
-        ResponseEntity<?> response = find(dto.getId());
-        if (response.getStatusCode() != HttpStatus.OK) {
-            return response;
-        }
-
-        WorkoutItem workoutItem = WORKOUT_ITEM_SERVICE.find(dto.getId());
-        String word = workoutItem.getWordTitleQuestion();
-        String langInCode = workoutItem.getWorkout().getLangIn().getCode();
-        String langOutCode = workoutItem.getWorkout().getLangOut().getCode();
-
-        HttpJsonResponse jsonResponse = DIC_UTILS.getHttpJsonResponse(word, langInCode, langOutCode);
-        if (jsonResponse != null) {
-            if (jsonResponse.getCode() == HttpStatus.OK.value()) {
-                YandexDicResult yandexDicResult = DIC_UTILS.getYandexDicResult(jsonResponse);
-                if (yandexDicResult != null) {
-                    List<String> allTranslates =  yandexDicResult.getAllTranslates();
+        // Проверяем ответ на вопрос
+        HttpJsonResponse httpJsonResponse = DIC_UTILS.createHttpJsonResponse(word, langInCode, langOutCode);
+        if (httpJsonResponse != null) {
+            if (httpJsonResponse.getCode() == HttpStatus.OK.value()) {
+                YandexDic yandexDic = DIC_UTILS.createYandexDic(httpJsonResponse);
+                if (yandexDic != null) {
+                    List<String> allTranslates =  yandexDic.getAllTranslates();
                     if (allTranslates != null && allTranslates.size() > 0) {
+                        // Проверяем корректность овтета
                         boolean isCorrect = allTranslates
                                 .stream()
-                                .anyMatch(s -> s.equalsIgnoreCase(dto.getWordTitleAnswer()));
+                                .anyMatch(s -> s.equalsIgnoreCase(answer));
 
+                        // Если ответ верный, мы не должны его отображать в других возможных переводах
                         if (isCorrect) {
-                            // Если ответ верный, мы не должны его отображать в других возможных переводах
                             allTranslates = allTranslates
                                     .stream()
-                                    .filter(s -> !s.equalsIgnoreCase(dto.getWordTitleAnswer())).toList();
+                                    .filter(s -> !s.equalsIgnoreCase(answer)).toList();
                         }
 
-                        // Режем список до максимально возможного количества
+                        // Уменьшаем список до максимально возможного количества
                         if (allTranslates.size() > MAX_NUMBER_OF_POSSIBLE_VALUES) {
                             allTranslates = allTranslates.subList(0, MAX_NUMBER_OF_POSSIBLE_VALUES);
                         }
 
-
-                        AnswerResultResponseDTO answerResultResponseDTO = new AnswerResultResponseDTO();
-                        answerResultResponseDTO.setIsCorrect(isCorrect);
-                        answerResultResponseDTO.setPossibleAnswers(allTranslates);
+                        AnswerInfoResponseDTO answerInfoResponseDTO = new AnswerInfoResponseDTO();
+                        answerInfoResponseDTO.setIsCorrect(isCorrect);
+                        answerInfoResponseDTO.setPossibleAnswers(allTranslates);
                         if (isCorrect) {
                             String[] correctMessages = new String[]
                                     {"Правильно!", "Верно!", "Молодец!", "Отлично!", "Так держать!"};
 
                             Random random = new Random();
-                            answerResultResponseDTO.setMessage(
+                            answerInfoResponseDTO.setMessage(
                                     correctMessages[random.nextInt(correctMessages.length)]);
                         } else {
                             String[] incorrectMessages = new String[] {"Неправильно.", "Неверно."};
 
                             Random random = new Random();
-                            answerResultResponseDTO.setMessage(
+                            answerInfoResponseDTO.setMessage(
                                     incorrectMessages[random.nextInt(incorrectMessages.length)]);
                         }
 
-                        return ResponseEntity.ok(answerResultResponseDTO);
+                        return ResponseEntity.ok(answerInfoResponseDTO);
                     } else {
-                        AnswerResultResponseDTO answerResultResponseDTO = new AnswerResultResponseDTO();
-                        answerResultResponseDTO.setIsCorrect(false);
-                        answerResultResponseDTO.setMessage("Переводы слова не найдены.");
-                        return ResponseEntity.badRequest().body(answerResultResponseDTO);
+                        AnswerInfoResponseDTO answerInfoResponseDTO = new AnswerInfoResponseDTO();
+                        answerInfoResponseDTO.setIsCorrect(false);
+                        answerInfoResponseDTO.setMessage("Переводы слова не найдены.");
+                        return ResponseEntity.badRequest().body(answerInfoResponseDTO);
                     }
                 } else {
-                    CustomResponseMessage message = new CustomResponseMessage(1,
+                    ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
                             "Не удалось получить результат обращения к API.");
                     return ResponseEntity.badRequest().body(message);
                 }
             } else {
-                YandexDictionaryError dicError = DIC_UTILS.getYandexDicError(jsonResponse);
-                CustomResponseMessage message = new CustomResponseMessage(
+                YandexDictionaryError dicError = DIC_UTILS.createYandexDictionaryError(httpJsonResponse);
+                ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(
                         dicError.getCode(), dicError.getMessage());
                 return ResponseEntity.badRequest().body(message);
             }
         } else {
-            CustomResponseMessage message = new CustomResponseMessage(2, "Не удалось обратиться к API.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(2, "Не удалось обратиться к API.");
             return ResponseEntity.badRequest().body(message);
         }
     }

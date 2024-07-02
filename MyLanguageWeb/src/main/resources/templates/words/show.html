@@ -7,12 +7,27 @@
 
     <link rel="stylesheet" type="text/css" href="/css/root.css">
     <link rel="stylesheet" type="text/css" href="/css/main.css">
-    <link rel="stylesheet" type="text/css" href="/css/info_blocks/big_info_block.css">
-    <link rel="stylesheet" type="text/css" href="/css/info_blocks/dynamic_info_block.css">
-    <link rel="stylesheet" type="text/css" href="/css/other/instruments_for_table.css">
-    <link rel="stylesheet" type="text/css" href="/css/other/collection_info.css">
-    <link rel="stylesheet" type="text/css" href="/css/other/loading.css">
-    <link rel="stylesheet" type="text/css" href="/css/other/element_with_flag.css">
+    <link rel="stylesheet" type="text/css" href="/css/img_sizes.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/span/span_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/span/span_flag_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/span/span_loading_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/span/span_rule_element.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/div/div_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/div/div_with_data_builder_element.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/table/instruments_for_table.css">
+    <link rel="stylesheet" type="text/css" href="/css/table/table_element.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/a/a_button_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/input/input_text_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/select/select_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/button/button_element.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_big_header.css">
+    <link rel="stylesheet" type="text/css" href="/css/info_block/info_block.css">
+
     <link rel="stylesheet" type="text/css" href="/css/templates/words/show.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
 
@@ -23,89 +38,101 @@
         <div th:insert="~{layouts/header}"></div>
     </header>
     <main>
-        <div class="big-info-block-container">
-            <div class="big-info-block-left-container">
-                <img class="img-big-info-block"
-                     src="/images/words/words.png"
+        <div class="div-info-block-big-header-container">
+            <div class="div-info-block-big-header-img-container">
+                <img src="/images/templates/words/words.png"
                      alt="all_words.png"/>
             </div>
-            <div class="big-info-block-right-container">
-                <h1 class="h1-big-info-block">Слова</h1>
-                <div class="big-info-block-text">
-                    На странице находятся все слова со статусом
-                    <a class="a-for-hint"
-                       th:style="'color: #' + ${ACTIVE_WORD_STATUS.color.hexCode}"
-                       th:text="'&quot;' + ${ACTIVE_WORD_STATUS.title} + '&quot;'"
-                       th:title="${ACTIVE_WORD_STATUS.message}"/>
-                    ресурса <span th:text="${WEB_APP_NAME}"/>.
-                    <span style="font-weight: bold" th:if="${AUTH_CUSTOMER == null}">
-                        <a href="/customers/entry">Авторизуйтесь</a>, чтобы получить дополнительные возможности.
+            <div class="div-info-block-big-header-data-container">
+                <h1>Слова</h1>
+                <div>
+                    <span>
+                        На странице находятся все слова со статусом
+                        <span class="span-element-for-hint"
+                           th:style="'color: #' + ${ACTIVE_WORD_STATUS.color.hexCode}"
+                           th:text="'&quot;' + ${ACTIVE_WORD_STATUS.title} + '&quot;'"
+                           th:title="${ACTIVE_WORD_STATUS.description}"/>
+                        ресурса <span th:text="${WEB_APP_NAME}"/>.
+                        <span style="font-weight: bold" th:if="${AUTH_CUSTOMER == null}">
+                            <a href="/customers/entry">Авторизуйтесь</a>, чтобы получить дополнительные возможности.
+                        </span>
                     </span>
                 </div>
                 <br>
-                <div class="big-info-block-text statistics-container">
-                    <div id="words_statistics_container"></div>
+                <div id="div_words_statistic"
+                     style="min-height: 150px">
                 </div>
+                <br>
             </div>
         </div>
-        <div class="actions-container" th:if="${AUTH_CUSTOMER != null}">
-            <a class="a-button-standard" href="/words/new">
-                <div class="vertical-flex-container-standard action">
-                    <img class="img-action" src="/images/words/new_words.png" alt="new_words.png"/>
-                    <div>Предложить новые слова</div>
-                </div>
+        <div class="div-actions-container" th:if="${AUTH_CUSTOMER != null}">
+            <a href="/words/new" class="a-button-with-img-and-span-element-vertical-128 a-button-element-default">
+                <span>
+                    <img src="/images/templates/words/new_words.png"
+                         alt="new_words.png"/>
+                </span>
+                <span>Предложить новые слова</span>
             </a>
-            <a class="a-button-standard" href="/words/my_words_history">
-                <div class="vertical-flex-container-standard action">
-                    <img class="img-action" src="/images/words/my_words_history.png" alt="new_words_history.png"/>
-                    <div>История моих предложенных слов</div>
-                </div>
+            <a href="/words/my_words_history" class="a-button-with-img-and-span-element-vertical-128 a-button-element-default">
+                <span>
+                    <img src="/images/templates/words/my_words_history.png"
+                         alt="new_words_history.png"/>
+                </span>
+                <span>История моих предложенных слов</span>
             </a>
         </div>
         <div th:class="${AUTH_CUSTOMER != null
-            ? 'instruments-for-table-container-margin instruments-for-find-words-container-auth'
-            : 'instruments-for-table-container-margin instruments-for-find-words-container'}">
-            <div class="label-for-input-container">
-                <label class="label-standard" for="tb_finder">Поиск:</label>
+            ? 'div-instruments-for-table-container-margin div-instruments-for-find-words-container-auth'
+            : 'div-instruments-for-table-container-margin div-instruments-for-find-words-container'}">
+            <div class="div-instrument-for-table-container">
+                <label for="input_text_finder">Поиск:</label>
+                <input id="input_text_finder" class="input-text-element" type="text" disabled>
             </div>
-            <input id="tb_finder" class="text-standard" type="text">
-
-            <div class="label-for-input-container">
-                <label class="label-standard" for="cb_langs">Язык:</label>
-            </div>
-            <div class="element-with-flag-container">
-                <select id="cb_langs" class="select-standard"></select>
-                <div class="flag-container">
-                    <div id="lang_flag"></div>
+            <div class="div-instrument-for-table-container">
+                <label for="select_langs">Язык:</label>
+                <div id="div_select_langs" class="div-select-with-flag-element-container">
+                    <select id="select_langs" class="select-element" disabled></select>
+                    <div>
+                        <div>
+                            <span id="span_flag_select_langs"></span>
+                        </div>
+                    </div>
                 </div>
             </div>
-
-            <div class="label-for-input-container" th:if="${AUTH_CUSTOMER != null}">
-                <label class="label-standard" for="cb_customer_collections">Коллекция:</label>
-            </div>
-
-            <div class="element-with-flag-container" th:if="${AUTH_CUSTOMER != null}">
-                <select id="cb_customer_collections" class="select-standard"></select>
-                <div class="flag-container">
-                    <div id="collection_flag"></div>
+            <div class="div-instrument-for-table-container" th:if="${AUTH_CUSTOMER != null}">
+                <label for="select_customer_collections">Коллекция:</label>
+                <div id="div_select_customer_collections"
+                     class="div-select-with-flag-element-container">
+                    <select id="select_customer_collections"
+                            class="select-element" disabled></select>
+                    <div>
+                        <div>
+                            <span id="span_flag_select_customer_collections"></span>
+                        </div>
+                    </div>
                 </div>
             </div>
-
-            <div class="label-for-input-container"></div>
-            <button id="btn_refresh" class="button-with-img-standard" title="Обновить">
-                <img class="img-btn-refresh" src="/images/other/refresh.png" alt="refresh.png"/>
-            </button>
+            <div class="div-instrument-for-table-container">
+                <label for="button_refresh"></label>
+                <button id="button_refresh"
+                        class="button-with-img-element-32 button-element-default"
+                        title="Обновить" disabled>
+                    <img id="img_button_refresh" src="/images/buttons/refresh.png" alt="refresh.png"/>
+                </button>
+            </div>
         </div>
-        <div id="div_collection_info" class="info-block-standard collection-info"
+        <div id="div_customer_collection_info"
+             class="div-info-block-container"
+             style="min-height: 200px"
              th:if="${AUTH_CUSTOMER != null}"></div>
-        <table class="table-standard">
-            <colgroup >
+        <table id="table_words" class="table-element">
+            <colgroup id="colgroup_words">
                 <col style="width: 5%;">
                 <col style="width: 65%;">
                 <col style="width: 30%;">
                 <col style="width: 50px" th:if="${AUTH_CUSTOMER != null}">
             </colgroup>
-            <thead id="words_table_head">
+            <thead id="thead_words" class="thead-table-element-medium">
                 <tr>
                     <th>№</th>
                     <th>Слово</th>
@@ -113,7 +140,7 @@
                     <th th:if="${AUTH_CUSTOMER != null}"></th>
                 </tr>
             </thead>
-            <tbody id="words_table_body"></tbody>
+            <tbody id="tbody_words"></tbody>
         </table>
     </main>
 </body>

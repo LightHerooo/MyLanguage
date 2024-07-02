@@ -7,8 +7,23 @@
 
     <link rel="stylesheet" type="text/css" href="/css/root.css">
     <link rel="stylesheet" type="text/css" href="/css/main.css">
-    <link rel="stylesheet" type="text/css" href="/css/other/rule.css">
-    <link rel="stylesheet" type="text/css" href="/css/other/loading.css">
+    <link rel="stylesheet" type="text/css" href="/css/img_sizes.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/span/span_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/span/span_rule_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/span/span_loading_element.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/input/input_text_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/input/input_password_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/input/input_checkbox_element.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/form/form_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/label/label_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/div/div_element.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/info_block/info_block.css">
+    <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_header.css">
+
     <link rel="stylesheet" type="text/css" href="/css/templates/customers/entry.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
 
@@ -19,45 +34,57 @@
         <div th:insert="~{layouts/header}"></div>
     </header>
     <main>
-        <div class="entry-container">
-            <div class="entry info-block-standard">
-                <div class="entry-header">
-                    <img class="entry-header-img" src="/images/customers/entry.png" alt="entry.png"/>
-                    <p>Вход</p>
-                </div>
-                <div class="horizontal-delimiter-margin"></div>
-                <form id="form_entry" th:method="POST" th:action="@{/customers/entry}" th:object="${CUSTOMER_REQUEST_DTO}"
-                      class="form-standard">
-                    <div id="div_login_container" class="form-item-standard">
-                        <label for="tb_login" class="label-standard">Логин:</label>
-                        <input id="tb_login" type="text" autocomplete="false"
-                               class="text-standard" th:field="*{login}">
+        <div class="div-entry-container">
+            <div class="div-info-block-header-container">
+                <img src="/images/templates/customers/entry.png"
+                     alt="entry.png"/>
+                <h1>Вход</h1>
+            </div>
+            <div class="div-info-block-container">
+                <form id="form_entry"
+                      th:method="POST"
+                      th:action="@{/customers/entry}"
+                      th:object="${CUSTOMER_ENTRY_REQUEST_DTO}"
+                      class="form-element">
+                    <div class="div-form-element-item">
+                        <label for="input_text_login" class="label-element">Логин:</label>
+                        <input id="input_text_login" type="text" autocomplete="false"
+                               class="input-text-element" th:field="*{login}" readonly>
                     </div>
-                    <div id="div_password_container" class="form-item-standard">
-                        <label for="pb_password" class="label-standard">Пароль:</label>
-                        <input id="pb_password" type="password" autocomplete="false"
-                               class="text-standard" th:field="*{password}">
+                    <div class="div-form-element-item">
+                        <label for="input_password" class="label-element">Пароль:</label>
+                        <input id="input_password" type="password" autocomplete="false"
+                               class="input-password-element" th:field="*{password}" readonly>
                     </div>
-                    <div class="form-item-standard">
-                        <div class="checkbox-container-standard">
-                            <input id="check_show_password" type="checkbox" class="checkbox-standard">
-                            <a id="a_check_show_password" class="a-checkbox-standard">Показать пароль</a>
+                    <div class="div-form-element-item div-element-content-center">
+                        <div id="div_input_checkbox_show_password" class="div-input-checkbox-element-container">
+                            <input id="input_checkbox_show_password" type="checkbox" class="input-checkbox-element" disabled>
+                            <label id="label_input_checkbox_show_password"
+                                   for="input_checkbox_show_password"
+                                   class="label-input-checkbox-element-disabled">Показать пароль</label>
                         </div>
                     </div>
-                    <div class="horizontal-delimiter"></div>
-                    <input type="submit" class="submit-standard" value="Войти" id="btn_entry">
-                    <div class="form-item-standard error-container"
-                         th:if="${#fields.hasAnyErrors()}">
-                        <div th:each="err: ${#fields.allErrors()}" class="rule-container" id="entry_info_container">
-                            <img class="img-rule" src="/images/rules/error.png" alt="error.png">
-                            <span class="rule-error-text" th:text="${err}"/>
+                    <div class="div-element-horizontal-delimiter"></div>
+                    <button id="button_submit_entry"
+                            type="submit"
+                            class="button-submit"
+                            disabled>Войти</button>
+                    <div id="div_message_container_entry" class="div-form-element-message-container">
+                        <div class="div-element-vertical-flex-container-center"
+                             th:if="${#fields.hasAnyErrors()}">
+                            <span th:each="err: ${#fields.allErrors()}" class="span-rule-element-error">
+                                <img src="" alt="">
+                                <span th:text="${err}"/>
+                            </span>
                         </div>
                     </div>
                 </form>
             </div>
-            <div class="dont-have-account-container info-block-standard">
-                <div>Нет аккаунта?</div>
-                <a href="/customers/new">Регистрация</a>
+            <div class="div-info-block-container">
+                <div class="div-dont-have-account-container">
+                    <span>Нет аккаунта?</span>
+                    <a href="/customers/registration">Регистрация</a>
+                </div>
             </div>
         </div>
     </main>

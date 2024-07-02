@@ -1,0 +1,21 @@
+div.div-input-checkbox-element-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+div.div-input-checkbox-element-container > input {
+    cursor: pointer;
+}
+
+label.label-input-checkbox-element {
+    cursor: pointer;
+    font-size: var(--small-font-size);
+}
+
+label.label-input-checkbox-element-disabled {
+    pointer-events: none;
+    font-size: var(--small-font-size);
+}

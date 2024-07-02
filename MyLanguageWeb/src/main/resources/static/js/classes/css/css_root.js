@@ -1,16 +1,16 @@
 export class CssRoot {
-    FIRST_FONT_SIZE = this.#getValueInRootCssFile("--first-font-size");
-    SECOND_FONT_SIZE = this.#getValueInRootCssFile("--second-font-size");
-    THIRD_FONT_SIZE = this.#getValueInRootCssFile("--third-font-size");
+    BIG_FONT_SIZE_STYLE_ID = this.#getValueInRootCssFile("--big-font-size");
+    MEDIUM_FONT_SIZE_STYLE_ID = this.#getValueInRootCssFile("--medium-font-size");
+    SMALL_FONT_SIZE_STYLE_ID = this.#getValueInRootCssFile("--small-font-size");
 
-    ACCEPT_FIRST_COLOR = this.#getValueInRootCssFile("--accept-first-color");
-    ACCEPT_FIRST_COLOR_RGB = this.#getValueInRootCssFile("--accept-first-color-rgb");
-    WARNING_FIRST_COLOR = this.#getValueInRootCssFile("--warning-first-color");
-    WARNING_FIRST_COLOR_RGB = this.#getValueInRootCssFile("--warning-first-color-rgb");
-    DENY_FIRST_COLOR = this.#getValueInRootCssFile("--deny-first-color");
-    DENY_FIRST_COLOR_RGB = this.#getValueInRootCssFile("--deny-first-color-rgb");
+    GREEN_LIGHT_COLOR_STYLE_ID = this.#getValueInRootCssFile("--green-light-color");
+    GREEN_LIGHT_COLOR_RGB_STYLE_ID = this.#getValueInRootCssFile("--green-light-color-rgb");
+    YELLOW_LIGHT_COLOR_STYLE_ID = this.#getValueInRootCssFile("--yellow-light-color");
+    YELLOW_LIGHT_COLOR_RGB_STYLE_ID = this.#getValueInRootCssFile("--yellow-light-color-rgb");
+    RED_LIGHT_COLOR_STYLE_ID = this.#getValueInRootCssFile("--red-light-color");
+    RED_LIGHT_COLOR_RGB_STYLE_ID = this.#getValueInRootCssFile("--red-light-color-rgb");
 
-    OPACITY_STANDARD = this.#getValueInRootCssFile("--opacity-standard");
+    OPACITY_STANDARD_STYLE_ID = this.#getValueInRootCssFile("--opacity-standard");
 
     #getValueInRootCssFile(name) {
         let root = document.querySelector(":root");

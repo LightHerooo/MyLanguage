@@ -1,0 +1,12 @@
+span.span-element-for-hint {
+    font-weight: bold;
+    text-decoration: underline dotted;
+    cursor: pointer;
+}
+
+span.span-element-text-align-center {
+    display: grid;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}

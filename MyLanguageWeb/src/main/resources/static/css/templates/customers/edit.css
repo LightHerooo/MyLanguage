@@ -1,0 +1,31 @@
+main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+div.div-customer-edit-container {
+    width: 1300px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+div.div-customer-edit-container-for-two-containers {
+    display: grid;
+    grid: 1fr / 1fr 1fr;
+    gap: 10px;
+}
+
+div.div-customer-edit-profile-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+div.div-customer-edit-password-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}

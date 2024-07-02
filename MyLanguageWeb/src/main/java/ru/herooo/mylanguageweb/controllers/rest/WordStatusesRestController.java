@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.herooo.mylanguagedb.entities.WordStatus;
-import ru.herooo.mylanguageweb.dto.other.CustomResponseMessage;
+import ru.herooo.mylanguageweb.dto.other.response.ResponseMessageResponseDTO;
 import ru.herooo.mylanguageweb.dto.entity.wordstatus.WordStatusMapping;
-import ru.herooo.mylanguageweb.dto.entity.wordstatus.WordStatusResponseDTO;
+import ru.herooo.mylanguageweb.dto.entity.wordstatus.response.WordStatusResponseDTO;
 import ru.herooo.mylanguageweb.services.WordStatusService;
 
 import java.util.List;
@@ -27,7 +27,7 @@ public class WordStatusesRestController {
         this.WORD_STATUS_MAPPING = wordStatusMapping;
     }
 
-    @GetMapping
+    @GetMapping("/get")
     public ResponseEntity<?> getAll() {
         List<WordStatus> wordStatuses = WORD_STATUS_SERVICE.findAll();
         if (wordStatuses != null && wordStatuses.size() > 0) {
@@ -35,7 +35,7 @@ public class WordStatusesRestController {
                     wordStatuses.stream().map(WORD_STATUS_MAPPING::mapToResponseDTO).toList();
             return ResponseEntity.ok(responseDTOs);
         } else {
-            CustomResponseMessage message = new CustomResponseMessage(1, "Статусы слов не найдены");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Статусы слов не найдены");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -47,7 +47,7 @@ public class WordStatusesRestController {
             WordStatusResponseDTO dto = WORD_STATUS_MAPPING.mapToResponseDTO(wordStatus);
             return ResponseEntity.ok(dto);
         } else {
-            CustomResponseMessage message = new CustomResponseMessage(1,
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
                     String.format("Статус слова с кодом '%s' не найден.", code));
             return ResponseEntity.badRequest().body(message);
         }

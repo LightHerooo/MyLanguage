@@ -7,12 +7,8 @@ public enum CustomerRoles {
     MODERATOR (3);
 
 
-    private final long id;
+    public final long ID;
     CustomerRoles(long id) {
-        this.id = id;
-    }
-
-    public long getId() {
-        return id;
+        this.ID = id;
     }
 }
