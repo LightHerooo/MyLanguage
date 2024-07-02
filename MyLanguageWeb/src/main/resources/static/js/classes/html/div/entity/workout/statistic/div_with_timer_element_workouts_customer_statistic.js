@@ -1,6 +1,6 @@
 import {
     DivWithTimerAbstractElement
-} from "../../../with_timer/abstracts/div_with_timer_abstract_element.js";
+} from "../../../abstracts/div_with_timer_abstract_element.js";
 
 import {
     WorkoutsAPI

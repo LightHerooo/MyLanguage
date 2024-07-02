@@ -33,7 +33,7 @@ const _RULE_TYPES = new RuleTypes();
 const _EVENT_NAMES = new EventNames();
 
 export class FormElementCustomerEditPassword extends FormAbstractElement {
-    #inputPasswordElementOld;
+    #inputPasswordWithRuleElementOld;
     #inputPasswordWithRuleElementCustomerPassword;
     #inputPasswordWithRuleElementRepeat;
     #inputCheckboxElementShowPassword;
@@ -42,8 +42,8 @@ export class FormElementCustomerEditPassword extends FormAbstractElement {
         super(form, buttonSubmit, divMessageContainer);
     }
 
-    setInputPasswordElementOld(inputPasswordElementObj) {
-        this.#inputPasswordElementOld = inputPasswordElementObj;
+    setInputPasswordWithRuleElementOld(inputPasswordWithRuleElementObjOld) {
+        this.#inputPasswordWithRuleElementOld = inputPasswordWithRuleElementObjOld;
     }
 
     setInputPasswordWithRuleElementCustomerPassword(inputPasswordWithRuleElementCustomerPasswordObj) {
@@ -62,9 +62,13 @@ export class FormElementCustomerEditPassword extends FormAbstractElement {
     async prepare() {
         await super.prepare();
 
-        let inputPasswordElementOld = this.#inputPasswordElementOld;
-        if (inputPasswordElementOld) {
-            let inputPassword = inputPasswordElementOld.getInputPassword();
+        let inputPasswordWithRuleElementOld = this.#inputPasswordWithRuleElementOld;
+        if (inputPasswordWithRuleElementOld) {
+            if (!inputPasswordWithRuleElementOld.getIsPrepared()) {
+                inputPasswordWithRuleElementOld.prepare();
+            }
+
+            let inputPassword = inputPasswordWithRuleElementOld.getInputPassword();
             if (inputPassword) {
                 let self = this;
                 inputPassword.addEventListener(_EVENT_NAMES.INPUT.PASSWORD.INPUT, function() {
@@ -122,27 +126,33 @@ export class FormElementCustomerEditPassword extends FormAbstractElement {
 
 
     async checkCorrectValues() {
-        let isPasswordCorrect = false;
+        let isOldPasswordCorrect = false;
+        let inputPasswordWithRuleElementOld = this.#inputPasswordWithRuleElementOld;
+        if (inputPasswordWithRuleElementOld) {
+            isOldPasswordCorrect = await inputPasswordWithRuleElementOld.checkCorrectValue();
+        }
+
+        let isNewPasswordCorrect = false;
         let inputPasswordWithRuleElementCustomerPassword = this.#inputPasswordWithRuleElementCustomerPassword;
         if (inputPasswordWithRuleElementCustomerPassword) {
-            isPasswordCorrect = await inputPasswordWithRuleElementCustomerPassword.checkCorrectValue();
+            isNewPasswordCorrect = await inputPasswordWithRuleElementCustomerPassword.checkCorrectValue();
         }
 
-        let isPasswordRepeatCorrect = false;
+        let isNewPasswordRepeatCorrect = false;
         let inputPasswordWithRuleElementRepeat = this.#inputPasswordWithRuleElementRepeat;
         if (inputPasswordWithRuleElementRepeat) {
-            isPasswordRepeatCorrect = await inputPasswordWithRuleElementRepeat.checkCorrectValue();
+            isNewPasswordRepeatCorrect = await inputPasswordWithRuleElementRepeat.checkCorrectValue();
         }
 
-        return isPasswordCorrect && isPasswordRepeatCorrect;
+        return isOldPasswordCorrect && isNewPasswordCorrect && isNewPasswordRepeatCorrect;
     }
 
     async submit() {
         let dto = new CustomerEditPasswordRequestDTO();
 
-        let inputPasswordElementOld = this.#inputPasswordElementOld;
-        if (inputPasswordElementOld) {
-            dto.setOldPassword(inputPasswordElementOld.getValue());
+        let inputPasswordWithRuleElementOld = this.#inputPasswordWithRuleElementOld;
+        if (inputPasswordWithRuleElementOld) {
+            dto.setOldPassword(inputPasswordWithRuleElementOld.getValue());
         }
 
         let inputPasswordWithRuleElementCustomerPassword = this.#inputPasswordWithRuleElementCustomerPassword;
@@ -177,9 +187,9 @@ export class FormElementCustomerEditPassword extends FormAbstractElement {
     changeDisabledStatusToFormElements(isDisabled) {
         super.changeDisabledStatusToFormElements(isDisabled);
 
-        let inputPasswordElementOld = this.#inputPasswordElementOld;
-        if (inputPasswordElementOld) {
-            inputPasswordElementOld.changeDisabledStatus(isDisabled);
+        let inputPasswordWithRuleElementOld = this.#inputPasswordWithRuleElementOld;
+        if (inputPasswordWithRuleElementOld) {
+            inputPasswordWithRuleElementOld.changeDisabledStatus(isDisabled);
         }
 
         let inputPasswordWithRuleElementCustomerPassword = this.#inputPasswordWithRuleElementCustomerPassword;

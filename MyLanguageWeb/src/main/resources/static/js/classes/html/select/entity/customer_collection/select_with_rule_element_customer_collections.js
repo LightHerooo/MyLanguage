@@ -20,7 +20,7 @@ import {
 
 import {
     SelectWithFlagAndRuleAbstractElement
-} from "../../with_flag/abstracts/select_with_flag_and_rule_abstract_element.js";
+} from "../../abstracts/with_flag/select_with_flag_and_rule_abstract_element.js";
 
 import {
     ProjectCookies
@@ -36,8 +36,8 @@ const _SELECT_WITH_FLAG_ELEMENT_CUSTOMER_COLLECTIONS_UTILS =
 
 export class SelectWithRuleElementCustomerCollections extends SelectWithFlagAndRuleAbstractElement {
 
-    constructor(divContainer, select, spanFlag, doNeedToCreateFirstOption) {
-        super(divContainer, select, spanFlag, doNeedToCreateFirstOption);
+    constructor(divContainer, select, spanFlag, doNeedToCreateFirstOption, isRequired) {
+        super(divContainer, select, spanFlag, doNeedToCreateFirstOption, isRequired);
     }
 
     getSelectedValue() {
@@ -62,19 +62,12 @@ export class SelectWithRuleElementCustomerCollections extends SelectWithFlagAndR
 
 
     async checkCorrectValue() {
-        let isCorrect = false;
-        let isPrepared = this.getIsPrepared();
-        if (isPrepared) {
-            isCorrect = true;
+        let isCorrect = await super.checkCorrectValue();
+        if (isCorrect) {
             let ruleType;
             let message;
 
             let customerCollectionId = this.getSelectedValue();
-            if (!customerCollectionId) {
-                isCorrect = false;
-                ruleType = _RULE_TYPES.ERROR;
-                message = "Выберите коллекцию.";
-            }
 
             // Ищем коллекцию ---
             if (isCorrect) {
@@ -126,8 +119,6 @@ export class SelectWithRuleElementCustomerCollections extends SelectWithFlagAndR
             } else {
                 this.hideRule();
             }
-        } else {
-            throw new Error("Object \'SelectWithRuleElementCustomerCollections\' is not prepared.");
         }
 
         return isCorrect;

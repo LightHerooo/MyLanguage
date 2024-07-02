@@ -29,7 +29,7 @@ export class LabelElement {
     }
 
 
-    changeLabelText(str) {
+    changeText(str) {
         let label = this.#label;
         if (label) {
             label.textContent = str;

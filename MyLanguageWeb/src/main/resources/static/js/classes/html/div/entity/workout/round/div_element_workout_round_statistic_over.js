@@ -19,10 +19,6 @@ import {
 } from "../../../../../css/css_root.js";
 
 import {
-    WorkoutRoundStatisticResponseDTO
-} from "../../../../../dto/entity/workout/types/statistic/LEGACY/workout_round_statistic_response_dto.js";
-
-import {
     CssInfoBlockHeader
 } from "../../../../../css/info_block/css_info_block_header.js";
 
@@ -33,6 +29,10 @@ import {
 import {
     ImgSrcs
 } from "../../../../img_srcs.js";
+
+import {
+    WorkoutRoundStatisticResponseDTO
+} from "../../../../../dto/entity/workout/types/statistic/workout_round_statistic_response_dto.js";
 
 const _WORKOUTS_API = new WorkoutsAPI();
 

@@ -66,8 +66,11 @@
                               action="/workouts/start"
                               class="form-element">
                             <div class="div-form-element-item">
-                                <label for="select_customer_collections" class="label-element">
-                                    Коллекция, которую будете тренировать:</label>
+                                <label for="select_customer_collections" class="label-required-element">
+                                    <span>Коллекция, которую будете тренировать</span>
+                                    <span> </span>
+                                    <span class="span-label-required-element-red-star">*</span>
+                                </label>
                                 <div id="div_select_customer_collections" class="div-select-with-flag-element-container">
                                     <select id="select_customer_collections" class="select-element" disabled></select>
                                     <div>
@@ -78,7 +81,11 @@
                                 </div>
                             </div>
                             <div class="div-form-element-item">
-                                <label for="select_langs_out" class="label-element">Язык, на который будете переводить:</label>
+                                <label for="select_langs_out" class="label-required-element">
+                                    <span>Язык, на который будете переводить</span>
+                                    <span> </span>
+                                    <span class="span-label-required-element-red-star">*</span>
+                                </label>
                                 <div id="div_select_langs_out" class="div-select-with-flag-element-container">
                                     <select id="select_langs_out" class="select-element" disabled></select>
                                     <div>
@@ -152,7 +159,7 @@
             </div>
             <div class="div-instruments-for-table-container div-instruments-for-find-words-in-collection-container">
                 <div class="div-instrument-for-table-container">
-                    <label for="input_text_finder_words_in_collection">Поиск:</label>
+                    <label for="input_text_finder_words_in_collection">Слово</label>
                     <input id="input_text_finder_words_in_collection"
                            type="text"
                            class="input-text-element" disabled>

@@ -20,7 +20,8 @@ export class SelectWithRuleElementCustomerCollectionsWorkoutCollectionWorkout ex
         super(selectWithRuleElementCustomerCollectionsObj.getDivContainer(),
             selectWithRuleElementCustomerCollectionsObj.getSelect(),
             selectWithRuleElementCustomerCollectionsObj.getSpanFlag(),
-            selectWithRuleElementCustomerCollectionsObj.getDoNeedToCreateFirstOption());
+            selectWithRuleElementCustomerCollectionsObj.getDoNeedToCreateFirstOption(),
+            selectWithRuleElementCustomerCollectionsObj.getIsRequired());
     }
 
     setSelectWithRuleElementLangsOutWorkoutCollectionWorkout(selectWithRuleElementLangsOutWorkoutCollectionWorkoutObj) {

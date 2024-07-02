@@ -1,6 +1,6 @@
 import {
     AButtonAbstractElement
-} from "../abstracts/a_button_abstract_element.js";
+} from "../../abstracts/a_button/a_button_abstract_element.js";
 
 import {
     AButtonWithImgAndSpanElementTypes

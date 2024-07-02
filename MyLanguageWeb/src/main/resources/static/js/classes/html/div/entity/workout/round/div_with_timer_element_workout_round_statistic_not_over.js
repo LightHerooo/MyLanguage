@@ -1,6 +1,6 @@
 import {
     DivWithTimerAbstractElement
-} from "../../../with_timer/abstracts/div_with_timer_abstract_element.js";
+} from "../../../abstracts/div_with_timer_abstract_element.js";
 
 import {
     RuleTypes
@@ -13,10 +13,6 @@ import {
 import {
     HttpStatuses
 } from "../../../../../api/classes/http/http_statuses.js";
-
-import {
-    WorkoutRoundStatisticResponseDTO
-} from "../../../../../dto/entity/workout/types/statistic/LEGACY/workout_round_statistic_response_dto.js";
 
 import {
     CssInfoBlockHeader
@@ -41,6 +37,10 @@ import {
 import {
     ImgSrcs
 } from "../../../../img_srcs.js";
+
+import {
+    WorkoutRoundStatisticResponseDTO
+} from "../../../../../dto/entity/workout/types/statistic/workout_round_statistic_response_dto.js";
 
 const _WORKOUTS_API = new WorkoutsAPI();
 

@@ -1,14 +1,14 @@
 import {
     InputTextElement
-} from "./input_text_element.js";
+} from "../input_text_element.js";
 
 import {
     CssInputTextElement
-} from "../../../css/input/css_input_text_element.js";
+} from "../../../../css/input/css_input_text_element.js";
 
 import {
     SpanFlagElement
-} from "../../span/elements/span_flag_element.js";
+} from "../../../span/elements/span_flag_element.js";
 
 const _CSS_INPUT_TEXT_ELEMENT = new CssInputTextElement();
 

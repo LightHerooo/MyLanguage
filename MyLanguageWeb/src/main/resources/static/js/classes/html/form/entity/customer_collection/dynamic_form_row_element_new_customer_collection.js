@@ -1,7 +1,7 @@
 import {
     DynamicFormRowAbstractElement
 
-} from "../../dynamic_form/abstracts/dynamic_form_row_abstract_element.js";
+} from "../../abstracts/dynamic_form/dynamic_form_row_abstract_element.js";
 
 import {
     DynamicFormRowDataElementNewCustomerCollection

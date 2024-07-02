@@ -1,22 +1,22 @@
 import {
     CssDivElement
-} from "../../../../css/div/css_div_element.js";
+} from "../../../css/div/css_div_element.js";
 
 import {
     TableUtils
-} from "../../table_utils.js";
+} from "../table_utils.js";
 
 import {
     TableAbstractElement
-} from "../../abstracts/table_abstract_element.js";
+} from "./table_abstract_element.js";
 
 import {
     CustomTimer
-} from "../../../../timer/custom_timer.js";
+} from "../../../timer/custom_timer.js";
 
 import {
     SpanLoadingElement
-} from "../../../span/elements/span_loading_element.js";
+} from "../../span/elements/span_loading_element.js";
 
 const _CSS_DIV_ELEMENT = new CssDivElement();
 

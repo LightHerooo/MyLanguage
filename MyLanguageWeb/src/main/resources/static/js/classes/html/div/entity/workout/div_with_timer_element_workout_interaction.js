@@ -1,6 +1,6 @@
 import {
     DivWithTimerAbstractElement
-} from "../../with_timer/abstracts/div_with_timer_abstract_element.js";
+} from "../../abstracts/div_with_timer_abstract_element.js";
 
 import {
     RuleTypes
@@ -60,7 +60,7 @@ import {
 
 import {
     InputTextWithFlagElement
-} from "../../../input/text/input_text_with_flag_element.js";
+} from "../../../input/text/with_flag/input_text_with_flag_element.js";
 
 import {
     InputTextElement

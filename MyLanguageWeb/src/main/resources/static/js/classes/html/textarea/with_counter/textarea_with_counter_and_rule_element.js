@@ -1,6 +1,10 @@
 import {
-    SelectAbstractElement
-} from "./select_abstract_element.js";
+    TextareaWithCounterElement
+} from "./textarea_with_counter_element.js";
+
+import {
+    EventNames
+} from "../../event_names.js";
 
 import {
     SpanRuleElement
@@ -10,24 +14,17 @@ import {
     RuleTypes
 } from "../../span/elements/rule/rule_types.js";
 
-import {
-    EventNames
-} from "../../event_names.js";
-
-const _RULE_TYPES = new RuleTypes();
 const _EVENT_NAMES = new EventNames();
+const _RULE_TYPES = new RuleTypes();
 
-export class SelectWithRuleAbstractElement extends SelectAbstractElement {
+export class TextareaWithCounterAndRuleElement extends TextareaWithCounterElement {
     #isRequired = false;
 
     #spanRuleElement;
 
-    constructor(select, doNeedToCreateFirstOption, isRequired) {
-        super(select, doNeedToCreateFirstOption);
-        if (this.constructor === SelectWithRuleAbstractElement) {
-            throw new Error('Abstract classes can\'t be instantiated.');
-        }
-
+    constructor(textareaWithCounterElementObj, isRequired) {
+        super(textareaWithCounterElementObj.getDivContainer(), textareaWithCounterElementObj,
+            textareaWithCounterElementObj.getSpanCounter());
         this.#isRequired = isRequired;
     }
 
@@ -35,26 +32,17 @@ export class SelectWithRuleAbstractElement extends SelectAbstractElement {
         return this.#isRequired;
     }
 
-
     prepare() {
         super.prepare();
 
-        let select = this.getSelect();
-        if (select) {
+        let textarea = this.getTextarea();
+        if (textarea) {
             let self = this;
-            select.addEventListener(_EVENT_NAMES.SELECT.CHANGE, async function() {
+            textarea.addEventListener(_EVENT_NAMES.TEXTAREA.INPUT, async function() {
                 await self.checkCorrectValue();
             })
         }
     }
-
-
-    async refresh(doNeedToSaveSelectedPosition){
-        await super.refresh(doNeedToSaveSelectedPosition);
-
-        await this.checkCorrectValue();
-    }
-
 
     showRule(ruleTypeObj, message) {
         let isPrepared = this.getIsPrepared();
@@ -63,10 +51,10 @@ export class SelectWithRuleAbstractElement extends SelectAbstractElement {
 
             let spanRuleElement = new SpanRuleElement(ruleTypeObj, message);
 
-            let select = this.getSelect();
+            let inputText = this.getInputText();
             let span = spanRuleElement.getSpan();
-            if (select && span) {
-                let parentElement = select.parentElement;
+            if (inputText && span) {
+                let parentElement = inputText.parentElement;
                 if (parentElement) {
                     parentElement.appendChild(span);
                 }
@@ -74,7 +62,7 @@ export class SelectWithRuleAbstractElement extends SelectAbstractElement {
 
             this.#spanRuleElement = spanRuleElement;
         } else {
-            throw new Error("Object \'SelectWithRuleAbstractElement\' is not prepared.");
+            throw new Error("Object \'TextareaWithCounterAndRuleElement\' is not prepared.");
         }
     }
 
@@ -92,7 +80,7 @@ export class SelectWithRuleAbstractElement extends SelectAbstractElement {
                 }
             }
         } else {
-            throw new Error("Object \'SelectWithRuleAbstractElement\' is not prepared.");
+            throw new Error("Object \'TextareaWithCounterAndRuleElement\' is not prepared.");
         }
     }
 
@@ -107,8 +95,8 @@ export class SelectWithRuleAbstractElement extends SelectAbstractElement {
 
             let isRequired = this.#isRequired;
             if (isRequired) {
-                let selectedValue = this.getSelectedValue();
-                if (!selectedValue) {
+                let value = this.getValue();
+                if (!value) {
                     isCorrect = false;
                     ruleType = _RULE_TYPES.ERROR;
                     message = "Обязательное поле";
@@ -121,7 +109,7 @@ export class SelectWithRuleAbstractElement extends SelectAbstractElement {
                 this.hideRule();
             }
         } else {
-            throw new Error("Object \'SelectWithRuleAbstractElement\' is not prepared.");
+            throw new Error("Object \'TextareaWithCounterAndRuleElement\' is not prepared.");
         }
 
         return isCorrect;

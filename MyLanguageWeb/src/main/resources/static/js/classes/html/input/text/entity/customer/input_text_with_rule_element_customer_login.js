@@ -1,6 +1,6 @@
 import {
-    InputTextWithRuleAbstractElement
-} from "../../abstracts/input_text_with_rule_abstract_element.js";
+    InputTextWithRuleElement
+} from "../../input_text_with_rule_element.js";
 
 import {
     CustomTimer
@@ -27,19 +27,17 @@ const _CUSTOMERS_API = new CustomersAPI();
 const _RULE_TYPES = new RuleTypes();
 const _HTTP_STATUSES = new HttpStatuses();
 
-export class InputTextWithRuleElementCustomerLogin extends InputTextWithRuleAbstractElement {
+export class InputTextWithRuleElementCustomerLogin extends InputTextWithRuleElement {
     #customTimer = new CustomTimer();
 
-    constructor(inputTextElementObj) {
-        super(inputTextElementObj);
+    constructor(inputTextWithRuleElementObj) {
+        super(inputTextWithRuleElementObj, inputTextWithRuleElementObj.getIsRequired());
     }
 
 
     async checkCorrectValue() {
-        let isCorrect = false;
-        let isPrepared = this.getIsPrepared();
-        if (isPrepared) {
-            isCorrect = true;
+        let isCorrect = await super.checkCorrectValue();
+        if (isCorrect) {
             let ruleType;
             let message;
 
@@ -107,8 +105,6 @@ export class InputTextWithRuleElementCustomerLogin extends InputTextWithRuleAbst
             } else {
                 this.hideRule();
             }
-        } else {
-            throw new Error("Object \'InputTextWithRuleElementCustomerLogin\' is not prepared.");
         }
 
         return isCorrect;

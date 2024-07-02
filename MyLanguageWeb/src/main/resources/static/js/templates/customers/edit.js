@@ -63,12 +63,24 @@ import {
 } from "../../classes/html/textarea/with_counter/textarea_with_counter_element.js";
 
 import {
-    TextareaElementCustomerDescription
+    TextareaWithRuleElementCustomerDescription
 } from "../../classes/html/textarea/entity/customer/textarea_element_customer_description.js";
 
 import {
     ProjectCookies
 } from "../../classes/html/project_cookies.js";
+
+import {
+    InputTextWithRuleElement
+} from "../../classes/html/input/text/input_text_with_rule_element.js";
+
+import {
+    InputPasswordWithRuleElement
+} from "../../classes/html/input/password/input_password_with_rule_element.js";
+
+import {
+    TextareaWithCounterAndRuleElement
+} from "../../classes/html/textarea/with_counter/textarea_with_counter_and_rule_element.js";
 
 const _CUSTOMERS_API = new CustomersAPI();
 
@@ -79,13 +91,13 @@ const _HTTP_STATUSES = new HttpStatuses();
 let _inputImgElementCustomerAvatar;
 let _inputTextWithRuleElementCustomerNickname;
 let _selectWithRuleElementCountries;
-let _textareaElementCustomerDescription;
+let _textareaWithRuleElementCustomerDescription;
 
 let _formElementCustomerEditProfile;
 //---
 
 // Элементы формы + форма "Изменение пароля пользователя" ---
-let _inputPasswordElementOld;
+let _inputPasswordWithRuleElementOld;
 let _inputPasswordWithRuleElementCustomerPassword;
 let _inputPasswordWithRuleElementRepeat;
 let _inputCheckboxElementShowPassword;
@@ -104,13 +116,13 @@ window.onload = async function() {
     prepareInputImgElementCustomerAvatar();
     prepareInputTextElementCustomerNickname();
     await prepareSelectWithRuleElementCountries();
-    prepareTextareaElementCustomerDescription();
+    prepareTextareaWithRuleElementCustomerDescription();
 
     await prepareFormElementCustomerEditProfile();
     //---
 
     // Элементы формы + форма "Изменение пароля пользователя" ---
-    prepareInputPasswordElementOld();
+    prepareInputPasswordWithRuleElementOld();
     prepareInputPasswordWithRuleElementCustomer();
     prepareInputPasswordWithRuleElementRepeat();
     prepareInputCheckboxElementShowPassword();
@@ -164,7 +176,8 @@ function prepareInputTextElementCustomerNickname() {
     let inputText = document.getElementById("input_text_customer_nickname");
     if (inputText) {
         let inputTextElement = new InputTextElement(inputText);
-        _inputTextWithRuleElementCustomerNickname = new InputTextWithRuleElementCustomerNickname(inputTextElement);
+        let inputTextWithRuleElement = new InputTextWithRuleElement(inputTextElement, true);
+        _inputTextWithRuleElementCustomerNickname = new InputTextWithRuleElementCustomerNickname(inputTextWithRuleElement);
         _inputTextWithRuleElementCustomerNickname.prepare();
 
         if (_currentCustomer) {
@@ -180,7 +193,7 @@ async function prepareSelectWithRuleElementCountries() {
     let spanFlag = document.getElementById("span_flag_select_countries");
     if (divContainer && select && spanFlag) {
         _selectWithRuleElementCountries = new SelectWithRuleElementCountries(
-            divContainer, select, spanFlag, true);
+            divContainer, select, spanFlag, true, true);
         _selectWithRuleElementCountries.prepare();
         await _selectWithRuleElementCountries.fill();
 
@@ -194,7 +207,7 @@ async function prepareSelectWithRuleElementCountries() {
     }
 }
 
-function prepareTextareaElementCustomerDescription() {
+function prepareTextareaWithRuleElementCustomerDescription() {
     let divContainer = document.getElementById("div_textarea_customer_description");
     let textarea = document.getElementById("textarea_customer_description");
     let spanCounter = document.getElementById("span_counter_textarea_customer_description");
@@ -202,8 +215,11 @@ function prepareTextareaElementCustomerDescription() {
         let textareaElement = new TextareaElement(textarea);
         let textareaWithCounterElement = new TextareaWithCounterElement(
             divContainer, textareaElement, spanCounter);
-        _textareaElementCustomerDescription = new TextareaElementCustomerDescription(textareaWithCounterElement);
-        _textareaElementCustomerDescription.prepare();
+        let textareaWithCounterAndRuleElement = new TextareaWithCounterAndRuleElement(
+            textareaWithCounterElement, false);
+        _textareaWithRuleElementCustomerDescription = new TextareaWithRuleElementCustomerDescription(
+            textareaWithCounterAndRuleElement);
+        _textareaWithRuleElementCustomerDescription.prepare();
     }
 }
 
@@ -216,7 +232,7 @@ async function prepareFormElementCustomerEditProfile() {
         _formElementCustomerEditProfile.setInputImgElementCustomerAvatar(_inputImgElementCustomerAvatar);
         _formElementCustomerEditProfile.setInputTextWithRuleElementCustomerNickname(_inputTextWithRuleElementCustomerNickname);
         _formElementCustomerEditProfile.setSelectWithRuleElementCountries(_selectWithRuleElementCountries);
-        _formElementCustomerEditProfile.setTextareaElementCustomerDescription(_textareaElementCustomerDescription);
+        _formElementCustomerEditProfile.setTextareaElementWithRuleCustomerDescription(_textareaWithRuleElementCustomerDescription);
         _formElementCustomerEditProfile.setCustomerResponseDTO(_currentCustomer);
 
         await _formElementCustomerEditProfile.prepare();
@@ -225,10 +241,12 @@ async function prepareFormElementCustomerEditProfile() {
 //---
 
 // Элементы формы + форма "Изменение пароля пользователя" ---
-function prepareInputPasswordElementOld() {
+function prepareInputPasswordWithRuleElementOld() {
     let inputPassword = document.getElementById("input_password_old");
     if (inputPassword) {
-        _inputPasswordElementOld = new InputPasswordElement(inputPassword);
+        let inputPasswordElement = new InputPasswordElement(inputPassword);
+        _inputPasswordWithRuleElementOld = new InputPasswordWithRuleElement(inputPasswordElement, true);
+        _inputPasswordWithRuleElementOld.prepare();
     }
 }
 
@@ -236,8 +254,10 @@ function prepareInputPasswordWithRuleElementCustomer() {
     let inputPassword = document.getElementById("input_password_new");
     if (inputPassword) {
         let inputPasswordElement = new InputPasswordElement(inputPassword);
+        let inputPasswordWithRuleElement = new InputPasswordWithRuleElement(
+            inputPasswordElement, true);
         _inputPasswordWithRuleElementCustomerPassword = new InputPasswordWithRuleElementCustomerPassword(
-            inputPasswordElement);
+            inputPasswordWithRuleElement);
 
         _inputPasswordWithRuleElementCustomerPassword.prepare();
     }
@@ -247,7 +267,10 @@ function prepareInputPasswordWithRuleElementRepeat() {
     let inputPassword = document.getElementById("input_password_repeat");
     if (inputPassword) {
         let inputPasswordElement = new InputPasswordElement(inputPassword);
-        _inputPasswordWithRuleElementRepeat = new InputPasswordWithRuleElementRepeat(inputPasswordElement);
+        let inputPasswordWithRuleElement = new InputPasswordWithRuleElement(
+            inputPasswordElement, true);
+        _inputPasswordWithRuleElementRepeat = new InputPasswordWithRuleElementRepeat(
+            inputPasswordWithRuleElement);
         _inputPasswordWithRuleElementRepeat.setFirstInputPasswordElement(
             _inputPasswordWithRuleElementCustomerPassword);
 
@@ -262,7 +285,7 @@ function prepareInputCheckboxElementShowPassword() {
     if (divContainer && inputCheckbox && label) {
         let inputCheckboxElement = new InputCheckboxElement(divContainer, inputCheckbox, label);
         _inputCheckboxElementShowPassword = new InputCheckboxElementShowPassword(inputCheckboxElement,
-            [_inputPasswordElementOld, _inputPasswordWithRuleElementCustomerPassword,
+            [_inputPasswordWithRuleElementOld, _inputPasswordWithRuleElementCustomerPassword,
                 _inputPasswordWithRuleElementRepeat]);
 
         _inputCheckboxElementShowPassword.prepare();
@@ -275,7 +298,7 @@ async function prepareFormElementCustomerEditPassword() {
     let divMessageContainer = document.getElementById("div_message_container_customer_edit_password");
     if (form && buttonSubmit && divMessageContainer) {
         _formElementCustomerEditPassword = new FormElementCustomerEditPassword(form, buttonSubmit, divMessageContainer);
-        _formElementCustomerEditPassword.setInputPasswordElementOld(_inputPasswordElementOld);
+        _formElementCustomerEditPassword.setInputPasswordWithRuleElementOld(_inputPasswordWithRuleElementOld);
         _formElementCustomerEditPassword.setInputPasswordWithRuleElementCustomerPassword(_inputPasswordWithRuleElementCustomerPassword);
         _formElementCustomerEditPassword.setInputPasswordWithRuleElementRepeat(_inputPasswordWithRuleElementRepeat);
         _formElementCustomerEditPassword.setInputCheckboxElementShowPassword(_inputCheckboxElementShowPassword);

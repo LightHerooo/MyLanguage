@@ -1,6 +1,6 @@
 import {
-    InputPasswordWithRuleAbstractElement
-} from "../abstracts/input_password_with_rule_abstract_element.js";
+    InputPasswordWithRuleElement
+} from "../input_password_with_rule_element.js";
 
 import {
     RuleTypes
@@ -13,11 +13,11 @@ import {
 const _RULE_TYPES = new RuleTypes();
 const _EVENT_NAMES = new EventNames();
 
-export class InputPasswordWithRuleElementRepeat extends InputPasswordWithRuleAbstractElement {
+export class InputPasswordWithRuleElementRepeat extends InputPasswordWithRuleElement {
     #firstInputPasswordElement;
 
-    constructor(inputPasswordElementObj) {
-        super(inputPasswordElementObj);
+    constructor(inputPasswordWithRuleElementObj) {
+        super(inputPasswordWithRuleElementObj, inputPasswordWithRuleElementObj.getIsRequired());
     }
 
     setFirstInputPasswordElement(firstInputPasswordElementObj) {
@@ -40,11 +40,8 @@ export class InputPasswordWithRuleElementRepeat extends InputPasswordWithRuleAbs
     }
 
     async checkCorrectValue() {
-        let isCorrect = false;
-
-        let isPrepared = this.getIsPrepared();
-        if (isPrepared) {
-            isCorrect = true;
+        let isCorrect = await super.checkCorrectValue();
+        if (isCorrect) {
             let ruleType;
             let message;
 
@@ -66,8 +63,6 @@ export class InputPasswordWithRuleElementRepeat extends InputPasswordWithRuleAbs
             } else {
                 this.hideRule();
             }
-        } else {
-            throw new Error("Object \'InputPasswordWithRuleElementRepeat\' is not prepared.");
         }
 
         return isCorrect;

@@ -1,12 +1,10 @@
 import {
-    TextareaWithCounterElement
-} from "../../with_counter/textarea_with_counter_element.js";
+    TextareaWithCounterAndRuleElement
+} from "../../with_counter/textarea_with_counter_and_rule_element.js";
 
-
-export class TextareaElementCustomerDescription extends TextareaWithCounterElement {
-    constructor(textareaWithCounterElementObj) {
-        super(textareaWithCounterElementObj.getDivContainer(), textareaWithCounterElementObj,
-            textareaWithCounterElementObj.getSpanCounter());
+export class TextareaWithRuleElementCustomerDescription extends TextareaWithCounterAndRuleElement {
+    constructor(textareaWithCounterAndRuleElementObj) {
+        super(textareaWithCounterAndRuleElementObj, textareaWithCounterAndRuleElementObj.getIsRequired());
     }
 
     prepare() {

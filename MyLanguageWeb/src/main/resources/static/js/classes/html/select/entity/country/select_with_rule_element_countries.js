@@ -20,7 +20,7 @@ import {
 
 import {
     SelectWithFlagAndRuleAbstractElement
-} from "../../with_flag/abstracts/select_with_flag_and_rule_abstract_element.js";
+} from "../../abstracts/with_flag/select_with_flag_and_rule_abstract_element.js";
 
 
 const _COUNTRIES_API = new CountriesAPI();
@@ -31,8 +31,8 @@ const _SELECT_ELEMENT_COUNTRIES_UTILS = new SelectElementCountriesUtils();
 
 export class SelectWithRuleElementCountries extends SelectWithFlagAndRuleAbstractElement {
 
-    constructor(divContainer, select, spanFlag, doNeedToCreateFirstOption) {
-        super(divContainer, select, spanFlag, doNeedToCreateFirstOption);
+    constructor(divContainer, select, spanFlag, doNeedToCreateFirstOption, isRequired) {
+        super(divContainer, select, spanFlag, doNeedToCreateFirstOption, isRequired);
     }
 
     async createFirstOption() {
@@ -53,19 +53,12 @@ export class SelectWithRuleElementCountries extends SelectWithFlagAndRuleAbstrac
 
 
     async checkCorrectValue(){
-        let isCorrect = false;
-        let isPrepared = this.getIsPrepared();
-        if (isPrepared) {
-            isCorrect = true;
+        let isCorrect = await super.checkCorrectValue();
+        if (isCorrect) {
             let ruleType;
             let message;
 
             let countryCode = this.getSelectedValue();
-            if (!countryCode) {
-                isCorrect = false;
-                ruleType = _RULE_TYPES.ERROR;
-                message = "Выберите страну";
-            }
 
             // Ищем страну ---
             if (isCorrect) {
@@ -83,8 +76,6 @@ export class SelectWithRuleElementCountries extends SelectWithFlagAndRuleAbstrac
             } else {
                 this.hideRule();
             }
-        } else {
-            throw new Error("Object \'SelectWithRuleElementCountries\' is not prepared.");
         }
 
         return isCorrect;

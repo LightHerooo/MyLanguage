@@ -1,6 +1,6 @@
 import {
-    InputTextWithRuleAbstractElement
-} from "../../abstracts/input_text_with_rule_abstract_element.js";
+    InputTextWithRuleElement
+} from "../../input_text_with_rule_element.js";
 
 import {
     RuleTypes
@@ -36,13 +36,13 @@ const _RULE_TYPES = new RuleTypes();
 const _HTTP_STATUSES = new HttpStatuses();
 const _EVENT_NAMES = new EventNames();
 
-export class InputTextWithRuleElementWordTitle extends InputTextWithRuleAbstractElement {
+export class InputTextWithRuleElementWordTitle extends InputTextWithRuleElement {
     #selectElementLangsIn;
 
     #customTimer = new CustomTimer();
 
-    constructor(inputTextElementObj) {
-        super(inputTextElementObj);
+    constructor(inputTextWithRuleElementObj) {
+        super(inputTextWithRuleElementObj, inputTextWithRuleElementObj.getIsRequired());
     }
 
     setSelectElementLangsIn(selectElementLangsInObj) {
@@ -66,10 +66,8 @@ export class InputTextWithRuleElementWordTitle extends InputTextWithRuleAbstract
     }
 
     async checkCorrectValue() {
-        let isCorrect = false;
-        let isPrepared = this.getIsPrepared();
-        if (isPrepared) {
-            isCorrect = true;
+        let isCorrect = await super.checkCorrectValue();
+        if (isCorrect) {
             let ruleType;
             let message;
 
@@ -145,8 +143,6 @@ export class InputTextWithRuleElementWordTitle extends InputTextWithRuleAbstract
             } else {
                 this.hideRule();
             }
-        } else {
-            throw new Error("Object \'InputTextWithRuleElementWordTitle\' is not prepared.");
         }
 
         return isCorrect;

@@ -18,7 +18,8 @@ export class SelectWithRuleElementLangsOutWorkoutCollectionWorkout extends Selec
 
     constructor(selectWithRuleElementLangsOutObj) {
         super(selectWithRuleElementLangsOutObj.getDivContainer(), selectWithRuleElementLangsOutObj.getSelect(),
-            selectWithRuleElementLangsOutObj.getSpanFlag(), selectWithRuleElementLangsOutObj.getDoNeedToCreateFirstOption());
+            selectWithRuleElementLangsOutObj.getSpanFlag(), selectWithRuleElementLangsOutObj.getDoNeedToCreateFirstOption(),
+            selectWithRuleElementLangsOutObj.getIsRequired());
     }
 
     setSelectWithRuleElementCustomerCollectionsWorkoutCollectionWorkout(selectWithRuleElementCustomerCollectionsWorkoutCollectionWorkoutObj) {

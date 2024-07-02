@@ -1,6 +1,6 @@
 import {
-    InputPasswordWithRuleAbstractElement
-} from "../../abstracts/input_password_with_rule_abstract_element.js";
+    InputPasswordWithRuleElement
+} from "../../input_password_with_rule_element.js";
 
 import {
     RuleTypes
@@ -8,29 +8,24 @@ import {
 
 const _RULE_TYPES = new RuleTypes();
 
-export class InputPasswordWithRuleElementCustomerPassword extends InputPasswordWithRuleAbstractElement {
+export class InputPasswordWithRuleElementCustomerPassword extends InputPasswordWithRuleElement {
+    constructor(inputPasswordWithRuleElementObj) {
+        super(inputPasswordWithRuleElementObj, inputPasswordWithRuleElementObj.getIsRequired());
+    }
+
     async checkCorrectValue() {
-        let isCorrect = false;
-        let isPrepared = this.getIsPrepared();
-        if (isPrepared) {
-            isCorrect = true;
+        let isCorrect = await super.checkCorrectValue();
+        if (isCorrect) {
             let ruleType;
             let message;
 
             let value = this.getValue();
-            if (!value) {
+
+            const PASSWORD_MIN_SIZE = 8;
+            if (value.length < PASSWORD_MIN_SIZE) {
                 isCorrect = false;
                 ruleType = _RULE_TYPES.ERROR;
-                message = "Пароль не может быть пустым";
-            }
-
-            if (isCorrect) {
-                const PASSWORD_MIN_SIZE = 8;
-                if (value.length < PASSWORD_MIN_SIZE) {
-                    isCorrect = false;
-                    ruleType = _RULE_TYPES.ERROR;
-                    message = `Пароль должен быть не менее ${PASSWORD_MIN_SIZE} символов.`;
-                }
+                message = `Пароль должен быть не менее ${PASSWORD_MIN_SIZE} символов.`;
             }
 
             if (isCorrect) {
@@ -57,8 +52,6 @@ export class InputPasswordWithRuleElementCustomerPassword extends InputPasswordW
             } else {
                 this.hideRule();
             }
-        } else {
-            throw new Error("Object \'InputPasswordWithRuleElementCustomer\' is not prepared.");
         }
 
         return isCorrect;

@@ -18,7 +18,8 @@ export class SelectWithRuleElementLangsOutWorkoutRandomWords extends SelectWithR
 
     constructor(selectWithRuleElementLangsOutObj) {
         super(selectWithRuleElementLangsOutObj.getDivContainer(), selectWithRuleElementLangsOutObj.getSelect(),
-            selectWithRuleElementLangsOutObj.getSpanFlag(), selectWithRuleElementLangsOutObj.getDoNeedToCreateFirstOption());
+            selectWithRuleElementLangsOutObj.getSpanFlag(), selectWithRuleElementLangsOutObj.getDoNeedToCreateFirstOption(),
+            selectWithRuleElementLangsOutObj.getIsRequired());
     }
 
     setSelectWithRuleElementLangsInWorkoutRandomWords(selectWithRuleElementLangsInWorkoutRandomWordsObj) {

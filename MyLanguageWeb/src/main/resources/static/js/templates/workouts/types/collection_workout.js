@@ -131,7 +131,7 @@ async function prepareCoupleSelectElementsForWorkoutCollectionWorkout() {
     let spanFlag = document.getElementById("span_flag_select_customer_collections");
     if (divContainer && select && spanFlag) {
         let selectWithRuleElementCustomerCollections =
-            new SelectWithRuleElementCustomerCollections(divContainer, select, spanFlag, true);
+            new SelectWithRuleElementCustomerCollections(divContainer, select, spanFlag, true, true);
         _selectWithRuleElementCustomerCollectionsWorkoutCollectionWorkout =
             new SelectWithRuleElementCustomerCollectionsWorkoutCollectionWorkout(selectWithRuleElementCustomerCollections);
 
@@ -145,7 +145,7 @@ async function prepareCoupleSelectElementsForWorkoutCollectionWorkout() {
     spanFlag = document.getElementById("span_flag_select_langs_out");
     if (divContainer && select && spanFlag) {
         let selectWithRuleElementLangsIn =
-            new SelectWithRuleElementLangsIn(divContainer, select, spanFlag, true);
+            new SelectWithRuleElementLangsIn(divContainer, select, spanFlag, true, true);
         _selectWithRuleElementLangsOutWorkoutCollectionWorkout =
             new SelectWithRuleElementLangsOutWorkoutCollectionWorkout(selectWithRuleElementLangsIn);
 

@@ -206,14 +206,6 @@ class WorkoutsGETRequests {
 
         return await _XML_UTILS.sendGET(requestURL);
     }
-
-    // todo ?
-    async validateIsOver(id) {
-        let requestURL = new URL(`${_URL_TO_API_WORKOUTS_VALIDATE}/is_over`);
-        requestURL.searchParams.set("id", id);
-
-        return await _XML_UTILS.sendGET(requestURL);
-    }
 }
 
 class WorkoutsPOSTRequests {

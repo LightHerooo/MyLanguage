@@ -91,7 +91,7 @@ async function prepareCoupleSelectElementsForWorkoutRandomWords() {
     let spanFlag = document.getElementById("span_flag_select_langs_in");
     if (divContainer && select && spanFlag) {
         let selectWithRuleElementLangsIn =
-            new SelectWithRuleElementLangsIn(divContainer, select, spanFlag, true);
+            new SelectWithRuleElementLangsIn(divContainer, select, spanFlag, true, true);
         _selectWithRuleElementLangsInWorkoutRandomWords =
             new SelectWithRuleElementLangsInWorkoutRandomWords(selectWithRuleElementLangsIn);
 
@@ -105,7 +105,7 @@ async function prepareCoupleSelectElementsForWorkoutRandomWords() {
     spanFlag = document.getElementById("span_flag_select_langs_out");
     if (divContainer && select && spanFlag) {
         let selectWithRuleElementLangsOut =
-            new SelectWithRuleElementLangsOut(divContainer, select, spanFlag, true);
+            new SelectWithRuleElementLangsOut(divContainer, select, spanFlag, true, true);
         _selectWithRuleElementLangsOutWorkoutRandomWords =
             new SelectWithRuleElementLangsOutWorkoutRandomWords(selectWithRuleElementLangsOut);
 
@@ -130,7 +130,7 @@ async function prepareSelectWithRuleElementNumbersOfWords() {
     let select = document.getElementById("select_numbers_of_words");
     if (select) {
         _selectWithRuleElementNumbersOfWords = new SelectWithRuleElementNumbers(
-            select, _NUMBERS_OF_WORDS_ARR, true);
+            select, _NUMBERS_OF_WORDS_ARR, true, true);
         _selectWithRuleElementNumbersOfWords.prepare();
 
         await _selectWithRuleElementNumbersOfWords.fill();

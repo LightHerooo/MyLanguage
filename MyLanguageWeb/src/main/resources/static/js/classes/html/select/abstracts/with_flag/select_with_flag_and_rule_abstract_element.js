@@ -18,13 +18,21 @@ const _RULE_TYPES = new RuleTypes();
 const _EVENT_NAMES = new EventNames();
 
 export class SelectWithFlagAndRuleAbstractElement extends SelectWithFlagAbstractElement {
+    #isRequired = false;
+
     #spanRuleElement;
 
-    constructor(divContainer, select, spanFlag, doNeedToCreateFirstOption) {
+    constructor(divContainer, select, spanFlag, doNeedToCreateFirstOption, isRequired) {
         super(divContainer, select, spanFlag, doNeedToCreateFirstOption);
         if (this.constructor === SelectWithFlagAndRuleAbstractElement) {
             throw new Error('Abstract classes can\'t be instantiated.');
         }
+
+        this.#isRequired = isRequired;
+    }
+
+    getIsRequired() {
+        return this.#isRequired;
     }
 
 
@@ -96,12 +104,19 @@ export class SelectWithFlagAndRuleAbstractElement extends SelectWithFlagAbstract
         let isPrepared = this.getIsPrepared();
         if (isPrepared) {
             isCorrect = true;
-            let ruleType = _RULE_TYPES.ERROR;
-            let message = "Проверки не подготовлены";
+            let ruleType;
+            let message;
 
-            //...
+            let isRequired = this.#isRequired;
+            if (isRequired) {
+                let selectedValue = this.getSelectedValue();
+                if (!selectedValue) {
+                    isCorrect = false;
+                    ruleType = _RULE_TYPES.ERROR;
+                    message = "Обязательное поле";
+                }
+            }
 
-            isCorrect = false;
             if (!isCorrect) {
                 this.showRule(ruleType, message);
             } else {

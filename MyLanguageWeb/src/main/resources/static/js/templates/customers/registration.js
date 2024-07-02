@@ -42,6 +42,14 @@ import {
     InputCheckboxElementShowPassword
 } from "../../classes/html/input/checkbox/elements/input_checkbox_element_show_password.js";
 
+import {
+    InputTextWithRuleElement
+} from "../../classes/html/input/text/input_text_with_rule_element.js";
+
+import {
+    InputPasswordWithRuleElement
+} from "../../classes/html/input/password/input_password_with_rule_element.js";
+
 // Элементы формы + форма ---
 let _inputTextWithRuleElementCustomerNickname;
 let _selectWithRuleElementCountries;
@@ -80,7 +88,8 @@ function prepareInputTextWithRuleElementCustomerNickname() {
     let inputText = document.getElementById("input_text_nickname");
     if (inputText) {
         let inputTextElement = new InputTextElement(inputText);
-        _inputTextWithRuleElementCustomerNickname = new InputTextWithRuleElementCustomerNickname(inputTextElement);
+        let inputTextWithRuleElement = new InputTextWithRuleElement(inputTextElement, true);
+        _inputTextWithRuleElementCustomerNickname = new InputTextWithRuleElementCustomerNickname(inputTextWithRuleElement);
         _inputTextWithRuleElementCustomerNickname.prepare();
     }
 }
@@ -91,7 +100,7 @@ async function prepareSelectWithRuleElementCountries() {
     let spanFlag = document.getElementById("span_flag_select_countries");
     if (divContainer && select && spanFlag) {
         _selectWithRuleElementCountries = new SelectWithRuleElementCountries(
-            divContainer, select, spanFlag, true);
+            divContainer, select, spanFlag, true, true);
         _selectWithRuleElementCountries.prepare();
         await _selectWithRuleElementCountries.fill();
     }
@@ -101,8 +110,8 @@ function prepareInputTextWithRuleElementCustomerEmail() {
     let inputText = document.getElementById("input_text_email");
     if (inputText) {
         let inputTextElement = new InputTextElement(inputText);
-
-        _inputTextWithRuleElementCustomerEmail = new InputTextWithRuleElementCustomerEmail(inputTextElement);
+        let inputTextWithRuleElement = new InputTextWithRuleElement(inputTextElement, true);
+        _inputTextWithRuleElementCustomerEmail = new InputTextWithRuleElementCustomerEmail(inputTextWithRuleElement);
         _inputTextWithRuleElementCustomerEmail.prepare();
     }
 }
@@ -111,8 +120,8 @@ function prepareInputTextWithRuleElementCustomerLogin() {
     let inputText = document.getElementById("input_text_login");
     if (inputText) {
         let inputTextElement = new InputTextElement(inputText);
-
-        _inputTextWithRuleElementCustomerLogin = new InputTextWithRuleElementCustomerLogin(inputTextElement);
+        let inputTextWithRuleElement = new InputTextWithRuleElement(inputTextElement, true);
+        _inputTextWithRuleElementCustomerLogin = new InputTextWithRuleElementCustomerLogin(inputTextWithRuleElement);
         _inputTextWithRuleElementCustomerLogin.prepare();
     }
 }
@@ -121,9 +130,10 @@ function prepareInputPasswordWithRuleElementCustomerPassword() {
     let inputPassword = document.getElementById("input_password");
     if (inputPassword) {
         let inputPasswordElement = new InputPasswordElement(inputPassword);
-
+        let inputPasswordWithRuleElement = new InputPasswordWithRuleElement(
+            inputPasswordElement, true);
         _inputPasswordWithRuleElementCustomerPassword = new InputPasswordWithRuleElementCustomerPassword(
-            inputPasswordElement);
+            inputPasswordWithRuleElement);
         _inputPasswordWithRuleElementCustomerPassword.prepare();
     }
 }
@@ -132,9 +142,9 @@ function prepareInputPasswordWithRuleElementRepeat() {
     let inputPassword = document.getElementById("input_password_repeat");
     if (inputPassword) {
         let inputPasswordElement = new InputPasswordElement(inputPassword);
-
-        _inputPasswordWithRuleElementRepeat = new InputPasswordWithRuleElementRepeat(
-            inputPasswordElement);
+        let inputPasswordWithRuleElement = new InputPasswordWithRuleElement(
+            inputPasswordElement, true);
+        _inputPasswordWithRuleElementRepeat = new InputPasswordWithRuleElementRepeat(inputPasswordWithRuleElement);
         _inputPasswordWithRuleElementRepeat.setFirstInputPasswordElement(_inputPasswordWithRuleElementCustomerPassword);
         _inputPasswordWithRuleElementRepeat.prepare();
     }

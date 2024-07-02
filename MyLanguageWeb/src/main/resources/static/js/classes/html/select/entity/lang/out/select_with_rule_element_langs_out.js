@@ -20,7 +20,7 @@ import {
 
 import {
     SelectWithFlagAndRuleAbstractElement
-} from "../../../with_flag/abstracts/select_with_flag_and_rule_abstract_element.js";
+} from "../../../abstracts/with_flag/select_with_flag_and_rule_abstract_element.js";
 
 const _LANGS_API = new LangsAPI();
 
@@ -30,8 +30,8 @@ const _SELECT_ELEMENT_LANGS_UTILS = new SelectElementLangsUtils();
 
 export class SelectWithRuleElementLangsOut extends SelectWithFlagAndRuleAbstractElement {
 
-    constructor(divContainer, select, spanFlag, doNeedToCreateFirstOption) {
-        super(divContainer, select, spanFlag, doNeedToCreateFirstOption);
+    constructor(divContainer, select, spanFlag, doNeedToCreateFirstOption, isRequired) {
+        super(divContainer, select, spanFlag, doNeedToCreateFirstOption, isRequired);
     }
 
     async createFirstOption() {
@@ -52,19 +52,12 @@ export class SelectWithRuleElementLangsOut extends SelectWithFlagAndRuleAbstract
 
 
     async checkCorrectValue() {
-        let isCorrect = false;
-        let isPrepared = this.getIsPrepared();
-        if (isPrepared) {
-            isCorrect = true;
+        let isCorrect = await super.checkCorrectValue();
+        if (isCorrect) {
             let ruleType;
             let message;
 
             let langCode = this.getSelectedValue();
-            if (!langCode) {
-                isCorrect = false;
-                ruleType = _RULE_TYPES.ERROR;
-                message = "Выберите язык.";
-            }
 
             // Ищем язык ---
             if (isCorrect) {
@@ -95,8 +88,6 @@ export class SelectWithRuleElementLangsOut extends SelectWithFlagAndRuleAbstract
             } else {
                 this.hideRule();
             }
-        } else {
-            throw new Error("Object \'SelectWithRuleElementLangsOut\' is not prepared.");
         }
 
         return isCorrect;

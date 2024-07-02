@@ -1,6 +1,6 @@
 import {
     DynamicFormRowDataAbstractElement
-} from "../../dynamic_form/abstracts/dynamic_form_row_data_abstract_element.js";
+} from "../../abstracts/dynamic_form/dynamic_form_row_data_abstract_element.js";
 
 import {
     SelectWithRuleElementLangsIn
@@ -15,12 +15,16 @@ import {
 } from "../../../input/text/input_text_element.js";
 
 import {
-    LabelElement
-} from "../../../label/label_element.js";
-
-import {
     CssDynamicFormElement
 } from "../../../../css/form/css_dynamic_form_element.js";
+
+import {
+    InputTextWithRuleElement
+} from "../../../input/text/input_text_with_rule_element.js";
+
+import {
+    LabelRequiredElement
+} from "../../../label/label_required_element.js";
 
 const _CSS_DYNAMIC_FORM_ELEMENT = new CssDynamicFormElement();
 
@@ -47,14 +51,15 @@ export class DynamicFormRowDataElementNewCustomerCollection extends DynamicFormR
         let selectWithRuleElementLangsIn = this.#selectWithRuleElementLangsIn;
         if (!selectWithRuleElementLangsIn) {
             selectWithRuleElementLangsIn = new SelectWithRuleElementLangsIn(
-                null, null, null, true);
+                null, null, null, true, true);
         }
 
         let inputTextWithRuleElementCustomerCollectionTitle = this.#inputTextWithRuleElementCustomerCollectionTitle;
         if (!inputTextWithRuleElementCustomerCollectionTitle) {
             let inputTextElement = new InputTextElement(null);
+            let inputTextWithRuleElement = new InputTextWithRuleElement(inputTextElement, true);
             inputTextWithRuleElementCustomerCollectionTitle = new InputTextWithRuleElementCustomerCollectionTitle(
-                inputTextElement);
+                inputTextWithRuleElement);
             inputTextWithRuleElementCustomerCollectionTitle.setSelectElementLangsIn(
                 selectWithRuleElementLangsIn);
         }
@@ -95,9 +100,9 @@ export class DynamicFormRowDataElementNewCustomerCollection extends DynamicFormR
             let divItem = document.createElement("div");
             divItem.classList.add(_CSS_DYNAMIC_FORM_ELEMENT.DIV_DYNAMIC_FORM_ELEMENT_ROW_DATA_ITEM_CLASS_ID);
 
-            let labelElement = new LabelElement(null);
-            labelElement.changeLabelText("Название:");
-            let label = labelElement.getLabel();
+            let labelRequiredElement = new LabelRequiredElement(null, null);
+            labelRequiredElement.changeText("Название");
+            let label = labelRequiredElement.getLabel();
             if (label) {
                 divItem.appendChild(label);
             }
@@ -115,9 +120,9 @@ export class DynamicFormRowDataElementNewCustomerCollection extends DynamicFormR
             let divItem = document.createElement("div");
             divItem.classList.add(_CSS_DYNAMIC_FORM_ELEMENT.DIV_DYNAMIC_FORM_ELEMENT_ROW_DATA_ITEM_CLASS_ID);
 
-            let labelElement = new LabelElement(null);
-            labelElement.changeLabelText("Язык:");
-            let label = labelElement.getLabel();
+            let labelRequiredElement = new LabelRequiredElement(null, null);
+            labelRequiredElement.changeText("Язык");
+            let label = labelRequiredElement.getLabel();
             if (label) {
                 divItem.appendChild(label);
             }

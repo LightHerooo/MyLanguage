@@ -4,7 +4,7 @@ import {
 
 import {
     SelectAbstractElement
-} from "../../abstracts/select_abstract_element.js";
+} from "../select_abstract_element.js";
 
 import {
     EventNames

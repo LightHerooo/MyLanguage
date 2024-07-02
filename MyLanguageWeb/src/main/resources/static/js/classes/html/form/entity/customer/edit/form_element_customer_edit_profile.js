@@ -36,7 +36,7 @@ export class FormElementCustomerEditProfile extends FormAbstractElement {
     #inputImgElementCustomerAvatar;
     #inputTextWithRuleElementCustomerNickname;
     #selectWithRuleElementCountries;
-    #textareaElementCustomerDescription;
+    #textareaWithRuleElementCustomerDescription;
     #customerResponseDTO;
 
     constructor(form, buttonSubmit, divMessageContainer) {
@@ -55,8 +55,8 @@ export class FormElementCustomerEditProfile extends FormAbstractElement {
         this.#selectWithRuleElementCountries = selectWithRuleElementCountriesObj;
     }
 
-    setTextareaElementCustomerDescription(textareaElementCustomerDescriptionObj) {
-        this.#textareaElementCustomerDescription = textareaElementCustomerDescriptionObj;
+    setTextareaElementWithRuleCustomerDescription(textareaWithRuleElementCustomerDescriptionObj) {
+        this.#textareaWithRuleElementCustomerDescription = textareaWithRuleElementCustomerDescriptionObj;
     }
 
     setCustomerResponseDTO(customerResponseDTOObj) {
@@ -140,7 +140,7 @@ export class FormElementCustomerEditProfile extends FormAbstractElement {
             }
         }
 
-        let textareaWithRuleElementCustomerDescription = this.#textareaElementCustomerDescription;
+        let textareaWithRuleElementCustomerDescription = this.#textareaWithRuleElementCustomerDescription;
         if (textareaWithRuleElementCustomerDescription) {
             if (!textareaWithRuleElementCustomerDescription.getIsPrepared()) {
                 textareaWithRuleElementCustomerDescription.prepare();
@@ -180,7 +180,13 @@ export class FormElementCustomerEditProfile extends FormAbstractElement {
             isCountryCorrect = await selectWithRuleElementCountries.checkCorrectValue();
         }
 
-        return isAvatarCorrect && isNicknameCorrect && isCountryCorrect;
+        let isDescriptionCorrect = false;
+        let textareaWithRuleElementCustomerDescription = this.#textareaWithRuleElementCustomerDescription;
+        if (textareaWithRuleElementCustomerDescription) {
+            isDescriptionCorrect = await textareaWithRuleElementCustomerDescription.checkCorrectValue();
+        }
+
+        return isAvatarCorrect && isNicknameCorrect && isCountryCorrect && isDescriptionCorrect;
     }
 
     async submit() {
@@ -212,7 +218,7 @@ export class FormElementCustomerEditProfile extends FormAbstractElement {
         //---
 
         // Описание ---
-        let textareaWithRuleElementCustomerDescription = this.#textareaElementCustomerDescription;
+        let textareaWithRuleElementCustomerDescription = this.#textareaWithRuleElementCustomerDescription;
         if (textareaWithRuleElementCustomerDescription) {
             dto.setDescription(textareaWithRuleElementCustomerDescription.getValue());
         }
@@ -257,7 +263,7 @@ export class FormElementCustomerEditProfile extends FormAbstractElement {
             selectWithRuleElementCountries.changeDisabledStatus(isDisabled);
         }
 
-        let textareaWithRuleElementCustomerDescription = this.#textareaElementCustomerDescription;
+        let textareaWithRuleElementCustomerDescription = this.#textareaWithRuleElementCustomerDescription;
         if (textareaWithRuleElementCustomerDescription) {
             textareaWithRuleElementCustomerDescription.changeDisabledStatus(isDisabled);
         }

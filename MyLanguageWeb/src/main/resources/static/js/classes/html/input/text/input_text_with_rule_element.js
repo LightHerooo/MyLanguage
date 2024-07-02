@@ -1,36 +1,42 @@
 import {
     InputTextElement
-} from "../input_text_element.js";
+} from "./input_text_element.js";
 
 import {
     SpanRuleElement
-} from "../../../span/elements/rule/span_rule_element.js";
+} from "../../span/elements/rule/span_rule_element.js";
 
 import {
     RuleTypes
-} from "../../../span/elements/rule/rule_types.js";
+} from "../../span/elements/rule/rule_types.js";
 
 import {
     EventNames
-} from "../../../event_names.js";
+} from "../../event_names.js";
 
 const _RULE_TYPES = new RuleTypes();
 const _EVENT_NAMES = new EventNames();
 
-export class InputTextWithRuleAbstractElement extends InputTextElement {
+export class InputTextWithRuleElement extends InputTextElement {
+    #isRequired = false;
+
     #isPrepared = false;
     #spanRuleElement;
 
-    constructor(inputTextElementObj) {
+    constructor(inputTextElementObj, isRequired) {
         super(inputTextElementObj.getInputText());
-        if (this.constructor === InputTextWithRuleAbstractElement) {
-            throw new Error('Abstract classes can\'t be instantiated.');
-        }
+
+        this.#isRequired = isRequired;
     }
 
     getIsPrepared() {
         return this.#isPrepared;
     }
+
+    getIsRequired() {
+        return this.#isRequired;
+    }
+
 
     prepare() {
         let isPrepared = this.#isPrepared;
@@ -45,13 +51,13 @@ export class InputTextWithRuleAbstractElement extends InputTextElement {
 
             this.#isPrepared = true;
         } else {
-            throw new Error("Object \'InputTextWithRuleAbstractElement\' has already been prepared.");
+            throw new Error("Object \'InputTextWithRuleElement\' has already been prepared.");
         }
     }
 
 
     showRule(ruleTypeObj, message) {
-        let isPrepared = this.getIsPrepared();
+        let isPrepared = this.#isPrepared;
         if (isPrepared) {
             this.hideRule();
 
@@ -68,12 +74,12 @@ export class InputTextWithRuleAbstractElement extends InputTextElement {
 
             this.#spanRuleElement = spanRuleElement;
         } else {
-            throw new Error("Object \'InputTextWithRuleAbstractElement\' is not prepared.");
+            throw new Error("Object \'InputTextWithRuleElement\' is not prepared.");
         }
     }
 
     hideRule() {
-        let isPrepared = this.getIsPrepared();
+        let isPrepared = this.#isPrepared;
         if (isPrepared) {
             let spanRuleElement = this.#spanRuleElement;
             if (spanRuleElement) {
@@ -86,7 +92,7 @@ export class InputTextWithRuleAbstractElement extends InputTextElement {
                 }
             }
         } else {
-            throw new Error("Object \'InputTextWithRuleAbstractElement\' is not prepared.");
+            throw new Error("Object \'InputTextWithRuleElement\' is not prepared.");
         }
     }
 
@@ -96,19 +102,26 @@ export class InputTextWithRuleAbstractElement extends InputTextElement {
         let isPrepared = this.#isPrepared;
         if (isPrepared) {
             isCorrect = true;
-            let ruleType = _RULE_TYPES.ERROR;
-            let message = "Проверки не подготовлены";
+            let ruleType;
+            let message;
 
-            //...
+            let isRequired = this.#isRequired;
+            if (isRequired) {
+                let value = this.getValue();
+                if (!value) {
+                    isCorrect = false;
+                    ruleType = _RULE_TYPES.ERROR;
+                    message = "Обязательное поле";
+                }
+            }
 
-            isCorrect = false;
             if (!isCorrect) {
                 this.showRule(ruleType, message);
             } else {
                 this.hideRule();
             }
         } else {
-            throw new Error("Object \'InputTextWithRuleAbstractElement\' is not prepared.");
+            throw new Error("Object \'InputTextWithRuleElement\' is not prepared.");
         }
 
         return isCorrect;

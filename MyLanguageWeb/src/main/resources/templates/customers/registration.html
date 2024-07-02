@@ -46,7 +46,7 @@
             <div class="div-registration-content-container">
                 <div class="div-registration-info-container">
                     <div class="div-info-block-header-container">
-                        <h1>Преимущества регистрации:</h1>
+                        <h1>Преимущества регистрации</h1>
                     </div>
                     <div class="div-registration-advantages-container">
                         <button class="button-with-img-and-span-element-vertical-128 button-element-default">
@@ -80,12 +80,20 @@
                           th:object="${CUSTOMER_ENTRY_REQUEST_DTO}"
                           class="form-element">
                         <div class="div-form-element-item">
-                            <label for="input_text_nickname" class="label-element">Никнейм (публичный):</label>
+                            <label for="input_text_nickname" class="label-required-element">
+                                <span>Никнейм</span>
+                                <span> </span>
+                                <span class="span-label-required-element-red-star">*</span>
+                            </label>
                             <input id="input_text_nickname" type="text" autocomplete="false"
                                    class="input-text-element" readonly>
                         </div>
                         <div class="div-form-element-item">
-                            <label for="select_countries" class="label-element">Страна:</label>
+                            <label for="select_countries" class="label-required-element">
+                                <span>Страна</span>
+                                <span> </span>
+                                <span class="span-label-required-element-red-star">*</span>
+                            </label>
                             <div id="div_select_countries" class="div-select-with-flag-element-container">
                                 <select id="select_countries" class="select-element" readonly></select>
                                 <div>
@@ -96,22 +104,38 @@
                             </div>
                         </div>
                         <div class="div-form-element-item">
-                            <label for="input_text_email" class="label-element">Электронная почта:</label>
+                            <label for="input_text_email" class="label-required-element">
+                                <span>Электронная почта</span>
+                                <span> </span>
+                                <span class="span-label-required-element-red-star">*</span>
+                            </label>
                             <input id="input_text_email" type="text" autocomplete="false"
                                    class="input-text-element" readonly>
                         </div>
                         <div class="div-form-element-item">
-                            <label for="input_text_login" class="label-element">Логин (приватный, для входа):</label>
+                            <label for="input_text_login" class="label-required-element">
+                                <span>Логин (для входа)</span>
+                                <span> </span>
+                                <span class="span-label-required-element-red-star">*</span>
+                            </label>
                             <input id="input_text_login" type="text" autocomplete="false"
                                    class="input-text-element" th:field="*{login}" readonly>
                         </div>
                         <div class="div-form-element-item">
-                            <label for="input_password" class="label-element">Пароль:</label>
+                            <label for="input_password" class="label-required-element">
+                                <span>Пароль</span>
+                                <span> </span>
+                                <span class="span-label-required-element-red-star">*</span>
+                            </label>
                             <input id="input_password" type="password" autocomplete="false"
                                    class="input-password-element" th:field="*{password}" readonly>
                         </div>
                         <div class="div-form-element-item">
-                            <label for="input_password_repeat" class="label-element">Повторите пароль:</label>
+                            <label for="input_password_repeat" class="label-required-element">
+                                <span>Повторите пароль</span>
+                                <span> </span>
+                                <span class="span-label-required-element-red-star">*</span>
+                            </label>
                             <input id="input_password_repeat" type="password" autocomplete="false"
                                    class="input-password-element" readonly>
                         </div>

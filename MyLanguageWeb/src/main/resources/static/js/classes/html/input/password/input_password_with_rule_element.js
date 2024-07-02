@@ -1,35 +1,40 @@
 import {
     InputPasswordElement
-} from "../input_password_element.js";
+} from "./input_password_element.js";
 
 import {
     RuleTypes
-} from "../../../span/elements/rule/rule_types.js";
+} from "../../span/elements/rule/rule_types.js";
 
 import {
     SpanRuleElement
-} from "../../../span/elements/rule/span_rule_element.js";
+} from "../../span/elements/rule/span_rule_element.js";
 
 import {
     EventNames
-} from "../../../event_names.js";
+} from "../../event_names.js";
 
 const _RULE_TYPES = new RuleTypes();
 const _EVENT_NAMES = new EventNames();
 
-export class InputPasswordWithRuleAbstractElement extends InputPasswordElement {
+export class InputPasswordWithRuleElement extends InputPasswordElement {
+    #isRequired = false;
+
     #isPrepared = false;
     #spanRuleElement;
 
-    constructor(inputPasswordElementObj) {
+    constructor(inputPasswordElementObj, isRequired) {
         super(inputPasswordElementObj.getInputPassword());
-        if (this.constructor === InputPasswordWithRuleAbstractElement) {
-            throw new Error('Abstract classes can\'t be instantiated.');
-        }
+
+        this.#isRequired = isRequired;
     }
 
     getIsPrepared() {
         return this.#isPrepared;
+    }
+
+    getIsRequired() {
+        return this.#isRequired;
     }
 
 
@@ -46,7 +51,7 @@ export class InputPasswordWithRuleAbstractElement extends InputPasswordElement {
 
             this.#isPrepared = true;
         } else {
-            throw new Error("Object \'InputPasswordWithRuleAbstractElement\' has already been prepared.");
+            throw new Error("Object \'InputPasswordWithRuleElement\' has already been prepared.");
         }
     }
 
@@ -69,7 +74,7 @@ export class InputPasswordWithRuleAbstractElement extends InputPasswordElement {
 
             this.#spanRuleElement = spanRuleElement;
         } else {
-            throw new Error("Object \'InputPasswordWithRuleAbstractElement\' is not prepared.");
+            throw new Error("Object \'InputPasswordWithRuleElement\' is not prepared.");
         }
     }
 
@@ -87,7 +92,7 @@ export class InputPasswordWithRuleAbstractElement extends InputPasswordElement {
                 }
             }
         } else {
-            throw new Error("Object \'InputPasswordWithRuleAbstractElement\' is not prepared.");
+            throw new Error("Object \'InputPasswordWithRuleElement\' is not prepared.");
         }
     }
 
@@ -97,19 +102,26 @@ export class InputPasswordWithRuleAbstractElement extends InputPasswordElement {
         let isPrepared = this.#isPrepared;
         if (isPrepared) {
             isCorrect = true;
-            let ruleType =  _RULE_TYPES.ERROR;
-            let message = "Проверки не подготовлены";
+            let ruleType;
+            let message;
 
-            // ...
+            let isRequired = this.#isRequired;
+            if (isRequired) {
+                let value = this.getValue();
+                if (!value) {
+                    isCorrect = false;
+                    ruleType = _RULE_TYPES.ERROR;
+                    message = "Обязательное поле";
+                }
+            }
 
-            isCorrect = false;
             if (!isCorrect) {
-                this.showRule(ruleType, message)
+                this.showRule(ruleType, message);
             } else {
                 this.hideRule();
             }
         } else {
-            throw new Error("Object \'InputPasswordWithRuleAbstractElement\' is not prepared.");
+            throw new Error("Object \'InputPasswordWithRuleElement\' is not prepared.");
         }
 
         return isCorrect;

@@ -1,18 +1,18 @@
 import {
     CustomTimer
-} from "../../../../timer/custom_timer.js";
+} from "../../../timer/custom_timer.js";
 
 import {
     DivAbstractElement
-} from "../../abstracts/div_abstract_element.js";
+} from "./div_abstract_element.js";
 
 import {
     CssDivElement
-} from "../../../../css/div/css_div_element.js";
+} from "../../../css/div/css_div_element.js";
 
 import {
     SpanLoadingElement
-} from "../../../span/elements/span_loading_element.js";
+} from "../../span/elements/span_loading_element.js";
 
 const _CSS_DIV_ELEMENT = new CssDivElement();
 

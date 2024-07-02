@@ -1,6 +1,6 @@
 import {
     WorkoutAnswersStatisticResponseDTO
-} from "../workout_answers_statistic_response_dto.js";
+} from "./workout_answers_statistic_response_dto.js";
 
 export class WorkoutRoundStatisticResponseDTO {
     #numberOfQuestions;

@@ -36,7 +36,7 @@ import {
 
 import {
     TableWithTimerAbstractElement
-} from "../../with_timer/abstracts/table_with_timer_abstract_element.js";
+} from "../../abstracts/table_with_timer_abstract_element.js";
 
 import {
     SelectElementBoolean

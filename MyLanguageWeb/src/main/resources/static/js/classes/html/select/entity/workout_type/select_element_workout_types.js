@@ -12,7 +12,7 @@ import {
 
 import {
     SelectWithImgAbstractElement
-} from "../../with_img/abstracts/select_with_img_abstract_element.js";
+} from "../../abstracts/with_img/select_with_img_abstract_element.js";
 
 import {
     ImgSrcs

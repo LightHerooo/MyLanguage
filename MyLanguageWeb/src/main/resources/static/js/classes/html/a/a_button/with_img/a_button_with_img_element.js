@@ -8,7 +8,7 @@ import {
 
 import {
     AButtonAbstractElement
-} from "../abstracts/a_button_abstract_element.js";
+} from "../../abstracts/a_button/a_button_abstract_element.js";
 
 const _A_BUTTON_WITH_IMG_ELEMENT_TYPES = new AButtonWithImgElementTypes();
 const _A_BUTTON_WITH_IMG_ELEMENT_SIZES = new AButtonWithImgElementSizes();

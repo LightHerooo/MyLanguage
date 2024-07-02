@@ -4,7 +4,7 @@ import {
 
 import {
     SelectWithFlagAbstractElement
-} from "../../with_flag/abstracts/select_with_flag_abstract_element.js";
+} from "../../abstracts/with_flag/select_with_flag_abstract_element.js";
 
 const _SELECT_WITH_FLAG_ELEMENT_CUSTOMER_COLLECTIONS_UTILS =
     new SelectElementCustomerCollectionsUtils();

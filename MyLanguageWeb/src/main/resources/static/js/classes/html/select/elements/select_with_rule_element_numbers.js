@@ -11,8 +11,8 @@ const _RULE_TYPES = new RuleTypes();
 export class SelectWithRuleElementNumbers extends SelectWithRuleAbstractElement {
     #numbersArr = [1, 2, 3, 4, 5];
 
-    constructor(select, numbersArr, doNeedToCreateFirstOption) {
-        super(select, doNeedToCreateFirstOption);
+    constructor(select, numbersArr, doNeedToCreateFirstOption, isRequired) {
+        super(select, doNeedToCreateFirstOption, isRequired);
         this.#numbersArr = numbersArr;
     }
 
@@ -53,11 +53,8 @@ export class SelectWithRuleElementNumbers extends SelectWithRuleAbstractElement 
     }
 
     async checkCorrectValue() {
-        let isCorrect = false;
-
-        let numbersArr = this.#numbersArr;
-        if (numbersArr) {
-            isCorrect = true;
+        let isCorrect = await super.checkCorrectValue();
+        if (isCorrect) {
             let ruleType;
             let message;
 
@@ -73,18 +70,21 @@ export class SelectWithRuleElementNumbers extends SelectWithRuleAbstractElement 
 
             // Ищем значение в массиве ---
             if (isCorrect) {
-                let isValueInArr = false;
-                for (let i = 0; i < numbersArr.length; i++) {
-                    if (value === numbersArr[i]) {
-                        isValueInArr = true;
-                        break;
+                let numbersArr = this.#numbersArr;
+                if (numbersArr) {
+                    let isValueInArr = false;
+                    for (let i = 0; i < numbersArr.length; i++) {
+                        if (value === numbersArr[i]) {
+                            isValueInArr = true;
+                            break;
+                        }
                     }
-                }
 
-                if (!isValueInArr) {
-                    isCorrect = false;
-                    message = "Недопустимое число";
-                    ruleType = _RULE_TYPES.ERROR;
+                    if (!isValueInArr) {
+                        isCorrect = false;
+                        message = "Недопустимое число";
+                        ruleType = _RULE_TYPES.ERROR;
+                    }
                 }
             }
             //---
