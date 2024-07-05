@@ -43,8 +43,8 @@ import {
 } from "../../../../../../dto/entity/workout/types/favourite/favourite_customer_collection_response_dto.js";
 
 import {
-    ImgSrcs
-} from "../../../../../img_srcs.js";
+    UrlPaths
+} from "../../../../../../url/path/url_paths.js";
 
 const _WORKOUTS_API = new WorkoutsAPI();
 
@@ -54,7 +54,7 @@ const _CSS_TABLE_ELEMENT = new CssTableElement();
 const _CSS_DIV_ELEMENT = new CssDivElement();
 
 const _HTTP_STATUSES = new HttpStatuses();
-const _IMG_SRCS = new ImgSrcs();
+const _URL_PATHS = new UrlPaths();
 
 export class TableElementWorkoutsCustomerFavouritesStatistic extends TableAbstractElement{
     #customerId;
@@ -285,7 +285,11 @@ export class TableElementWorkoutsCustomerFavouritesStatistic extends TableAbstra
 
                 let img = document.createElement("img");
                 img.classList.add(_CSS_IMG_SIZES.IMG_SIZE_128_CLASS_ID);
-                img.src = _IMG_SRCS.OTHER.BOOKS;
+
+                let pathToImage = customerCollection.getPathToImage();
+                img.src = pathToImage
+                    ? pathToImage
+                    : _URL_PATHS.CUSTOMER_COLLECTIONS.IMAGE_DEFAULT.getPath();
 
                 divContentCenter.appendChild(img)
                 td.appendChild(divContentCenter);

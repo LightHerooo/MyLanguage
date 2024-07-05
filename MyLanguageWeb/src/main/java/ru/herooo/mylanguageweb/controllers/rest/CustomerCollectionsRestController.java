@@ -8,12 +8,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import ru.herooo.mylanguagedb.entities.*;
 import ru.herooo.mylanguagedb.entities.customer_collection.CustomerCollection;
 import ru.herooo.mylanguagedb.entities.word.Word;
 import ru.herooo.mylanguagedb.entities.customer_collection.types.CustomerCollectionsStatistic;
 import ru.herooo.mylanguagedb.entities.workout.Workout;
+import ru.herooo.mylanguageutils.file.MimeTypeWithSize;
+import ru.herooo.mylanguageutils.file.filesize.FileSize;
+import ru.herooo.mylanguageutils.file.filesize.FileSizeUnits;
+import ru.herooo.mylanguageutils.file.mimetype.ImageMimeTypes;
 import ru.herooo.mylanguageutils.yandexdictionary.yandexlangs.YandexLangs;
+import ru.herooo.mylanguageweb.controllers.common.ControllerUtils;
+import ru.herooo.mylanguageweb.dto.entity.customercollection.request.CustomerCollectionEditRequestDTO;
 import ru.herooo.mylanguageweb.dto.other.request.entity.EntityIdRequestDTO;
 import ru.herooo.mylanguageweb.dto.other.request.entity.edit.b.EntityEditBooleanByIdRequestDTO;
 import ru.herooo.mylanguageweb.dto.other.response.ResponseMessageResponseDTO;
@@ -30,6 +37,13 @@ import java.util.*;
 @RestController
 @RequestMapping("/api/customer_collections")
 public class CustomerCollectionsRestController {
+    private final MimeTypeWithSize[] ACCEPTED_MIME_TYPES_WITH_SIZE_FOR_IMAGE = new MimeTypeWithSize[] {
+            new MimeTypeWithSize(ImageMimeTypes.PNG.MIME_TYPE, new FileSize(FileSizeUnits.MB, 5)),
+            new MimeTypeWithSize(ImageMimeTypes.JPG.MIME_TYPE, new FileSize(FileSizeUnits.MB, 5)),
+            new MimeTypeWithSize(ImageMimeTypes.JPEG.MIME_TYPE, new FileSize(FileSizeUnits.MB, 5)),
+            new MimeTypeWithSize(ImageMimeTypes.GIF.MIME_TYPE, new FileSize(FileSizeUnits.MB, 1)),
+    };
+
     private final CustomersRestController CUSTOMERS_REST_CONTROLLER;
     private final LangsRestController LANGS_REST_CONTROLLER;
     private final WorkoutsRestController WORKOUTS_REST_CONTROLLER;
@@ -45,6 +59,8 @@ public class CustomerCollectionsRestController {
     private final CustomerCollectionMapping CUSTOMER_COLLECTION_MAPPING;
     private final CustomerCollectionsStatisticMapping CUSTOMER_COLLECTIONS_WITH_LANG_STATISTIC_MAPPING;
 
+    private final ControllerUtils CONTROLLER_UTILS;
+
     @Autowired
     public CustomerCollectionsRestController(CustomersRestController customersRestController,
                                              LangsRestController langsRestController,
@@ -59,7 +75,8 @@ public class CustomerCollectionsRestController {
                                              LangService langService,
 
                                              CustomerCollectionMapping customerCollectionMapping,
-                                             CustomerCollectionsStatisticMapping customerCollectionsStatisticMapping) {
+                                             CustomerCollectionsStatisticMapping customerCollectionsStatisticMapping,
+                                             ControllerUtils controllerUtils) {
         this.CUSTOMERS_REST_CONTROLLER = customersRestController;
         this.LANGS_REST_CONTROLLER = langsRestController;
         this.WORKOUTS_REST_CONTROLLER = workoutsRestController;
@@ -74,6 +91,7 @@ public class CustomerCollectionsRestController {
 
         this.CUSTOMER_COLLECTION_MAPPING = customerCollectionMapping;
         this.CUSTOMER_COLLECTIONS_WITH_LANG_STATISTIC_MAPPING = customerCollectionsStatisticMapping;
+        this.CONTROLLER_UTILS = controllerUtils;
     }
 
     @GetMapping("/get")
@@ -101,7 +119,7 @@ public class CustomerCollectionsRestController {
 
         if (numberOfItems == null || numberOfItems < 0) {
             ResponseMessageResponseDTO message =
-                    new ResponseMessageResponseDTO(2, "Количество записей не должно быть отрицательным.");
+                    new ResponseMessageResponseDTO(2, "Количество записей не должно быть отрицательным");
             return ResponseEntity.badRequest().body(message);
         }
 
@@ -110,7 +128,7 @@ public class CustomerCollectionsRestController {
             ResponseMessageResponseDTO message =
                     new ResponseMessageResponseDTO(3,
                             "ID последней коллекции на предыдущей странице не должен быть отрицательным. " +
-                                    "Если вы хотите отобразить первую страницу, укажите ID = 0.");
+                                    "Если вы хотите отобразить первую страницу, укажите ID = 0");
             return ResponseEntity.badRequest().body(message);
         }
 
@@ -122,7 +140,7 @@ public class CustomerCollectionsRestController {
             return ResponseEntity.ok(collectionsDTO);
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    "Коллекции по указанным фильтрам не найдены.");
+                    "Коллекции по указанным фильтрам не найдены");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -167,7 +185,7 @@ public class CustomerCollectionsRestController {
         } else if (response.getBody() instanceof ResponseMessageResponseDTO) {
             return response;
         } else {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Неизвестная ошибка обращения к API.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Неизвестная ошибка обращения к API");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -209,11 +227,52 @@ public class CustomerCollectionsRestController {
             return ResponseEntity.ok(dto);
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    String.format("Коллекция с id = '%d' не найдена.", id));
+                    String.format("Коллекция с id = '%d' не найдена", id));
             return ResponseEntity.badRequest().body(message);
         }
     }
 
+    @GetMapping("/find/by_customer_and_title")
+    public ResponseEntity<?> findByCustomerAndTitle(@RequestParam("customer_id") Long customerId,
+                                                    @RequestParam("title") String title) {
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.find(customerId);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        Customer customer = CUSTOMER_SERVICE.find(customerId);
+        CustomerCollection customerCollection = CUSTOMER_COLLECTION_SERVICE.findByCustomerAndTitle(customer, title);
+        if (customerCollection != null) {
+            CustomerCollectionResponseDTO responseDTO = CUSTOMER_COLLECTION_MAPPING.mapToResponseDTO(customerCollection);
+            return ResponseEntity.ok(responseDTO);
+        } else {
+            ResponseMessageResponseDTO responseDTO = new ResponseMessageResponseDTO(1,
+                    String.format("Коллекции с названием '%s' у пользователя не существует", title));
+            return ResponseEntity.badRequest().body(responseDTO);
+        }
+    }
+
+    @GetMapping("/exists/by_customer_and_title")
+    public ResponseEntity<?> isExistsByCustomerAndTitle(@RequestParam("customer_id") Long customerId,
+                                                        @RequestParam("title") String title) {
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.find(customerId);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+        
+        Customer customer = CUSTOMER_SERVICE.find(customerId);
+        CustomerCollection customerCollection = CUSTOMER_COLLECTION_SERVICE.findByCustomerAndTitle(customer, title);
+        if (customerCollection != null) {
+            ResponseMessageResponseDTO responseDTO = new ResponseMessageResponseDTO(1, 
+                    "У вас уже есть коллекция с таким названием");
+            return ResponseEntity.ok(responseDTO);
+        } else {
+            ResponseMessageResponseDTO responseDTO = new ResponseMessageResponseDTO(1,
+                    String.format("Коллекции с названием '%s' у пользователя не существует", title));
+            return ResponseEntity.badRequest().body(responseDTO);
+        }
+    }
+            
     @GetMapping("/validate/is_author")
     public ResponseEntity<?> validateIsAuthor(@RequestParam("customer_id") Long customerId,
                                               @RequestParam("customer_collection_id") Long customerCollectionId) {
@@ -230,10 +289,10 @@ public class CustomerCollectionsRestController {
         Customer customer = CUSTOMER_SERVICE.find(customerId);
         CustomerCollection collection = CUSTOMER_COLLECTION_SERVICE.find(customerCollectionId);
         if (customer.equals(collection.getCustomer())) {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Коллекция принадлежит пользователю.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Коллекция принадлежит пользователю");
             return ResponseEntity.ok(message);
         } else {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Коллекция не принадлежит пользователю.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Коллекция не принадлежит пользователю");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -249,10 +308,10 @@ public class CustomerCollectionsRestController {
         response = LANGS_REST_CONTROLLER.validateIsActiveForIn(collection.getLang().getCode());
         if (response.getStatusCode() != HttpStatus.OK) {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    "Коллекция недоступна, так как её язык в данный момент неактивен.");
+                    "Коллекция недоступна, так как её язык в данный момент неактивен");
             return ResponseEntity.badRequest().body(message);
         } else {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Язык коллекции активен.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Язык коллекции активен");
             return ResponseEntity.ok(message);
         }
     }
@@ -266,13 +325,14 @@ public class CustomerCollectionsRestController {
 
         CustomerCollection collection = CUSTOMER_COLLECTION_SERVICE.find(id);
         if (collection.isActiveForAuthor()) {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Коллекция активна для автора.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Коллекция активна для автора");
             return ResponseEntity.ok(message);
         } else {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Коллекция неактивна для автора.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Коллекция неактивна для автора");
             return ResponseEntity.badRequest().body(message);
         }
     }
+
 
 
 
@@ -291,7 +351,7 @@ public class CustomerCollectionsRestController {
             return ResponseEntity.ok(responseDTO);
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    "Произошла ошибка при добавлении коллекции.");
+                    "Произошла ошибка при добавлении коллекции");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -303,7 +363,7 @@ public class CustomerCollectionsRestController {
         String validateAuthKey = CUSTOMER_SERVICE.validateAuthKey(request, dto.getAuthKey());
         dto.setAuthKey(validateAuthKey);
 
-        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.findExistsByAuthKey(validateAuthKey);
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.isExistsByAuthKey(validateAuthKey);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
@@ -365,12 +425,12 @@ public class CustomerCollectionsRestController {
                 CUSTOMER_COLLECTION_SERVICE.delete(collection);
 
                 ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                        "Не удалось получить слова из тренировки.");
+                        "Не удалось получить слова из тренировки");
                 return ResponseEntity.badRequest().body(message);
             }
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(2,
-                    "Неизвестная ошибка создания коллекции по коду тренировки.");
+                    "Неизвестная ошибка создания коллекции по коду тренировки");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -382,7 +442,7 @@ public class CustomerCollectionsRestController {
         String validateAuthKey = CUSTOMER_SERVICE.validateAuthKey(request, dto.getAuthKey());
         dto.setAuthKey(validateAuthKey);
 
-        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.findExistsByAuthKey(dto.getAuthKey());
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.isExistsByAuthKey(dto.getAuthKey());
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
@@ -413,17 +473,23 @@ public class CustomerCollectionsRestController {
         }
 
         // Проверяем наличие коллекции с таким же названием у создающего
-        Customer authCustomer = CUSTOMER_SERVICE.findByAuthKey(dto.getAuthKey());
+        Customer customer = CUSTOMER_SERVICE.findByAuthKey(dto.getAuthKey());
+        response = this.isExistsByCustomerAndTitle(customer.getId(), dto.getTitle());
+        if (response.getStatusCode() == HttpStatus.OK) {
+            ResponseMessageResponseDTO message = (ResponseMessageResponseDTO) response.getBody();
+            return ResponseEntity.badRequest().body(message);
+        }
+
         CustomerCollection collection =
-                CUSTOMER_COLLECTION_SERVICE.findByCustomerAndTitle(authCustomer, dto.getTitle());
+                CUSTOMER_COLLECTION_SERVICE.findByCustomerAndTitle(customer, dto.getTitle());
         if (collection != null) {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(2,
-                    "У вас уже есть коллекция с таким названием.");
+                    "У вас уже есть коллекция с таким названием");
             return ResponseEntity.badRequest().body(message);
         }
 
         ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                "Данные для добавления коллекции корректны.");
+                "Данные для добавления коллекции корректны");
         return ResponseEntity.ok(message);
     }
 
@@ -434,7 +500,7 @@ public class CustomerCollectionsRestController {
         dto.setAuthKey(validateAuthKey);
 
         // Проверяем пользователя
-        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.findExistsByAuthKey(validateAuthKey);
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.isExistsByAuthKey(validateAuthKey);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
@@ -460,11 +526,99 @@ public class CustomerCollectionsRestController {
         }
 
         ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                "Коллекция для использования в тренировке корректна.");
+                "Коллекция для использования в тренировке корректна");
         return ResponseEntity.ok(message);
     }
 
 
+    @PatchMapping("/edit")
+    public ResponseEntity<?> edit(HttpServletRequest request,
+                                  @RequestPart(name = "image", required = false) MultipartFile image,
+                                  @RequestPart("customer_collection") @Valid CustomerCollectionEditRequestDTO dto,
+                                  BindingResult bindingResult) {
+        String validateAuthKey = CUSTOMER_SERVICE.validateAuthKey(request, dto.getAuthKey());
+        dto.setAuthKey(validateAuthKey);
+
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.isExistsByAuthKey(dto.getAuthKey());
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        // Проверяем наличие ошибок привязки DTO
+        if (bindingResult.hasErrors()) {
+            String errorMessage = bindingResult
+                    .getAllErrors()
+                    .stream()
+                    .findAny()
+                    .get()
+                    .getDefaultMessage();
+
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, errorMessage);
+            return ResponseEntity.badRequest().body(message);
+        }
+
+        // Проверяем коллекцию
+        long customerCollectionId = dto.getId();
+        response = this.find(customerCollectionId);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        // Коллекция должна принадлежать пользователю
+        Customer customer = CUSTOMER_SERVICE.findByAuthKey(validateAuthKey);
+        response = this.validateIsAuthor(customer.getId(), customerCollectionId);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        // Проверяем пришедший файл на корректность
+        if (image != null) {
+            response = CONTROLLER_UTILS.checkMultipartFile(image, ACCEPTED_MIME_TYPES_WITH_SIZE_FOR_IMAGE);
+            if (response.getStatusCode() != HttpStatus.OK) {
+                return response;
+            }
+        }
+
+        // Проверяем название (если коллекция та же, не выдаем ошибку)
+        CustomerCollection customerCollection = CUSTOMER_COLLECTION_SERVICE.find(customerCollectionId);
+        response = this.isExistsByCustomerAndTitle(customer.getId(), dto.getTitle());
+        if (response.getStatusCode() == HttpStatus.OK) {
+            CustomerCollection customerCollectionByTitle = CUSTOMER_COLLECTION_SERVICE.findByCustomerAndTitle(
+                    customer, dto.getTitle());
+            if (!customerCollection.equals(customerCollectionByTitle)) {
+                ResponseMessageResponseDTO message = (ResponseMessageResponseDTO) response.getBody();
+                return ResponseEntity.badRequest().body(message);
+            }
+        }
+
+        customerCollection = CUSTOMER_COLLECTION_SERVICE.edit(customerCollection, image, dto);
+        if (customerCollection != null) {
+            // Мы дожны удалить некоторые слова из коллекции (при необходимости)
+            boolean doNeedToDeleteAllWords = dto.getDoNeedToDeleteAllWords();
+            Long[] excludedWordInCollectionIds = dto.getExcludedWordInCollectionIds();
+            if (doNeedToDeleteAllWords) {
+                // Удаляем все слова из коллекции
+                WORD_IN_COLLECTION_SERVICE.deleteAllByCustomerCollection(customerCollectionId, excludedWordInCollectionIds);
+            } else {
+                // Удаляем слова-исключения из коллекции
+                if (excludedWordInCollectionIds != null) {
+                    for (Long id: excludedWordInCollectionIds) {
+                        WordInCollection wordInCollection = WORD_IN_COLLECTION_SERVICE.find(id);
+                        if (wordInCollection != null) {
+                            WORD_IN_COLLECTION_SERVICE.delete(wordInCollection);
+                        }
+                    }
+                }
+            }
+
+            CustomerCollectionResponseDTO responseDTO = CUSTOMER_COLLECTION_MAPPING.mapToResponseDTO(customerCollection);
+            return ResponseEntity.ok(responseDTO);
+        } else {
+            ResponseMessageResponseDTO responseDTO = new ResponseMessageResponseDTO(2,
+                    "Произошла ошибка изменения коллекции");
+            return ResponseEntity.badRequest().body(responseDTO);
+        }
+    }
 
     @PatchMapping("/edit/is_active_for_author")
     public ResponseEntity<?> editIsActiveForAuthor(HttpServletRequest request,
@@ -472,7 +626,7 @@ public class CustomerCollectionsRestController {
         String validateAuthKey = CUSTOMER_SERVICE.validateAuthKey(request, dto.getAuthKey());
         dto.setAuthKey(validateAuthKey);
 
-        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.findExistsByAuthKey(dto.getAuthKey());
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.isExistsByAuthKey(dto.getAuthKey());
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
@@ -497,7 +651,7 @@ public class CustomerCollectionsRestController {
             return ResponseEntity.ok(responseDTO);
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    "Произошла ошибка изменения статуса активности для автора.");
+                    "Произошла ошибка изменения статуса активности для автора");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -508,19 +662,19 @@ public class CustomerCollectionsRestController {
     public ResponseEntity<?> delete(HttpServletRequest request,
                                     @RequestBody EntityIdRequestDTO dto) {
         String validateAuthKey = CUSTOMER_SERVICE.validateAuthKey(request, dto.getAuthKey());
-        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.findExistsByAuthKey(validateAuthKey);
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.isExistsByAuthKey(validateAuthKey);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
 
-        // Проверяем существование коллекции
+        // Проверяем коллекцию
         long customerCollectionId = dto.getId();
         response = find(customerCollectionId);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
 
-        // Коллекцией должен владеть пользователь, который хочет её удалить
+        // Коллекция должна принадлежать пользователю
         Customer customer = CUSTOMER_SERVICE.findByAuthKey(validateAuthKey);
         response = validateIsAuthor(customer.getId(), customerCollectionId);
         if (response.getStatusCode() != HttpStatus.OK) {
@@ -530,7 +684,7 @@ public class CustomerCollectionsRestController {
         CustomerCollection customerCollection = CUSTOMER_COLLECTION_SERVICE.find(customerCollectionId);
         CUSTOMER_COLLECTION_SERVICE.delete(customerCollection);
 
-        ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Коллекция успешно удалена.");
+        ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Коллекция успешно удалена");
         return ResponseEntity.ok(message);
     }
 }

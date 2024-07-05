@@ -119,7 +119,7 @@ export class DivWithTimerElementWorkoutTypes extends DivWithTimerAbstractElement
                 aButtonWithImgAndSpanElement.changeAButtonWithImgAndTextElementSize(
                     _A_BUTTON_WITH_IMG_AND_SPAN_ELEMENT_VERTICAL_SIZE.SIZE_128);
                 aButtonWithImgAndSpanElement.changeTo(_A_BUTTON_WITH_IMG_AND_SPAN_ELEMENT_TYPES.DEFAULT);
-                aButtonWithImgAndSpanElement.changeSpanText("...");
+                aButtonWithImgAndSpanElement.changeSpanText("..");
                 aButtonWithImgAndSpanElement.changeDisabledStatus(true, false);
 
                 if (i < json.length) {

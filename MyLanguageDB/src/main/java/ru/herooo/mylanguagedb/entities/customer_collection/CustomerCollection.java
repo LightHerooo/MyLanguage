@@ -25,6 +25,12 @@ public class CustomerCollection {
     @Column(name="is_active_for_author")
     private boolean isActiveForAuthor;
 
+    @Column(name = "path_to_image")
+    private String pathToImage;
+
+    @Column(name = "description")
+    private String description;
+
     @ManyToOne
     @JoinColumn(name="customer_id")
     private Customer customer;
@@ -77,6 +83,22 @@ public class CustomerCollection {
 
     public void setLang(Lang lang) {
         this.lang = lang;
+    }
+
+    public String getPathToImage() {
+        return pathToImage;
+    }
+
+    public void setPathToImage(String pathToImage) {
+        this.pathToImage = pathToImage;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @Override

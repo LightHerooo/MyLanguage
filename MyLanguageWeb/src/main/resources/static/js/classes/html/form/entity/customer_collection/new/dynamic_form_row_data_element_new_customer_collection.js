@@ -1,35 +1,35 @@
 import {
     DynamicFormRowDataAbstractElement
-} from "../../abstracts/dynamic_form/dynamic_form_row_data_abstract_element.js";
+} from "../../../abstracts/dynamic_form/dynamic_form_row_data_abstract_element.js";
 
 import {
     SelectWithRuleElementLangsIn
-} from "../../../select/entity/lang/in/select_with_rule_element_langs_in.js";
+} from "../../../../select/entity/lang/in/select_with_rule_element_langs_in.js";
 
 import {
-    InputTextWithRuleElementCustomerCollectionTitle
-} from "../../../input/text/entity/customer_collection/input_text_with_rule_element_customer_collection_title.js";
+    InputTextWithRuleElementCustomerCollectionTitleAdd
+} from "../../../../input/text/entity/customer_collection/title/input_text_with_rule_element_customer_collection_title_add.js";
 
 import {
     InputTextElement
-} from "../../../input/text/input_text_element.js";
+} from "../../../../input/text/input_text_element.js";
 
 import {
     CssDynamicFormElement
-} from "../../../../css/form/css_dynamic_form_element.js";
+} from "../../../../../css/form/css_dynamic_form_element.js";
 
 import {
     InputTextWithRuleElement
-} from "../../../input/text/input_text_with_rule_element.js";
+} from "../../../../input/text/input_text_with_rule_element.js";
 
 import {
     LabelRequiredElement
-} from "../../../label/label_required_element.js";
+} from "../../../../label/label_required_element.js";
 
 const _CSS_DYNAMIC_FORM_ELEMENT = new CssDynamicFormElement();
 
 export class DynamicFormRowDataElementNewCustomerCollection extends DynamicFormRowDataAbstractElement {
-    #inputTextWithRuleElementCustomerCollectionTitle;
+    #inputTextWithRuleElementCustomerCollectionTitleAdd;
     #selectWithRuleElementLangsIn;
 
     constructor(div) {
@@ -38,8 +38,8 @@ export class DynamicFormRowDataElementNewCustomerCollection extends DynamicFormR
         this.#tryToSetDefaultValues();
     }
 
-    getInputTextWithRuleElementCustomerCollectionTitle() {
-        return this.#inputTextWithRuleElementCustomerCollectionTitle;
+    getInputTextWithRuleElementCustomerCollectionTitleAdd() {
+        return this.#inputTextWithRuleElementCustomerCollectionTitleAdd;
     }
 
     getSelectWithRuleElementLangsIn() {
@@ -54,17 +54,17 @@ export class DynamicFormRowDataElementNewCustomerCollection extends DynamicFormR
                 null, null, null, true, true);
         }
 
-        let inputTextWithRuleElementCustomerCollectionTitle = this.#inputTextWithRuleElementCustomerCollectionTitle;
-        if (!inputTextWithRuleElementCustomerCollectionTitle) {
+        let inputTextWithRuleElementCustomerCollectionTitleAdd = this.#inputTextWithRuleElementCustomerCollectionTitleAdd;
+        if (!inputTextWithRuleElementCustomerCollectionTitleAdd) {
             let inputTextElement = new InputTextElement(null);
             let inputTextWithRuleElement = new InputTextWithRuleElement(inputTextElement, true);
-            inputTextWithRuleElementCustomerCollectionTitle = new InputTextWithRuleElementCustomerCollectionTitle(
+            inputTextWithRuleElementCustomerCollectionTitleAdd = new InputTextWithRuleElementCustomerCollectionTitleAdd(
                 inputTextWithRuleElement);
-            inputTextWithRuleElementCustomerCollectionTitle.setSelectElementLangsIn(
+            inputTextWithRuleElementCustomerCollectionTitleAdd.setSelectElementLangsIn(
                 selectWithRuleElementLangsIn);
         }
 
-        this.#inputTextWithRuleElementCustomerCollectionTitle = inputTextWithRuleElementCustomerCollectionTitle;
+        this.#inputTextWithRuleElementCustomerCollectionTitleAdd = inputTextWithRuleElementCustomerCollectionTitleAdd;
         this.#selectWithRuleElementLangsIn = selectWithRuleElementLangsIn;
     }
 
@@ -72,10 +72,10 @@ export class DynamicFormRowDataElementNewCustomerCollection extends DynamicFormR
     async prepare() {
         await super.prepare();
 
-        let inputTextWithRuleElementCustomerCollectionTitle = this.#inputTextWithRuleElementCustomerCollectionTitle;
-        if (inputTextWithRuleElementCustomerCollectionTitle) {
-            if (!inputTextWithRuleElementCustomerCollectionTitle.getIsPrepared()) {
-                inputTextWithRuleElementCustomerCollectionTitle.prepare();
+        let inputTextWithRuleElementCustomerCollectionTitleAdd = this.#inputTextWithRuleElementCustomerCollectionTitleAdd;
+        if (inputTextWithRuleElementCustomerCollectionTitleAdd) {
+            if (!inputTextWithRuleElementCustomerCollectionTitleAdd.getIsPrepared()) {
+                inputTextWithRuleElementCustomerCollectionTitleAdd.prepare();
             }
         }
 
@@ -95,8 +95,8 @@ export class DynamicFormRowDataElementNewCustomerCollection extends DynamicFormR
         div.style.grid = "1fr / 1fr 1fr";
         div.style.gap = "10px";
 
-        let inputTextWithRuleElementCustomerCollectionTitle = this.#inputTextWithRuleElementCustomerCollectionTitle;
-        if (inputTextWithRuleElementCustomerCollectionTitle) {
+        let inputTextWithRuleElementCustomerCollectionTitleAdd = this.#inputTextWithRuleElementCustomerCollectionTitleAdd;
+        if (inputTextWithRuleElementCustomerCollectionTitleAdd) {
             let divItem = document.createElement("div");
             divItem.classList.add(_CSS_DYNAMIC_FORM_ELEMENT.DIV_DYNAMIC_FORM_ELEMENT_ROW_DATA_ITEM_CLASS_ID);
 
@@ -107,7 +107,7 @@ export class DynamicFormRowDataElementNewCustomerCollection extends DynamicFormR
                 divItem.appendChild(label);
             }
 
-            let inputText = inputTextWithRuleElementCustomerCollectionTitle.getInputText();
+            let inputText = inputTextWithRuleElementCustomerCollectionTitleAdd.getInputText();
             if (inputText) {
                 divItem.appendChild(inputText);
             }
@@ -142,9 +142,9 @@ export class DynamicFormRowDataElementNewCustomerCollection extends DynamicFormR
     changeDisabledStatusToRowDataElements(isDisabled) {
         super.changeDisabledStatusToRowDataElements(isDisabled);
 
-        let inputTextWithRuleElementCustomerCollectionTitle = this.#inputTextWithRuleElementCustomerCollectionTitle;
-        if (inputTextWithRuleElementCustomerCollectionTitle) {
-            inputTextWithRuleElementCustomerCollectionTitle.changeDisabledStatus(isDisabled);
+        let inputTextWithRuleElementCustomerCollectionTitleAdd = this.#inputTextWithRuleElementCustomerCollectionTitleAdd;
+        if (inputTextWithRuleElementCustomerCollectionTitleAdd) {
+            inputTextWithRuleElementCustomerCollectionTitleAdd.changeDisabledStatus(isDisabled);
         }
 
         let selectWithRuleElementLangsIn = this.#selectWithRuleElementLangsIn;

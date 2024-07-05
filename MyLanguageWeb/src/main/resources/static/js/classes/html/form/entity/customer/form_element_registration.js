@@ -33,7 +33,7 @@ const _RULE_TYPES = new RuleTypes();
 const _EVENT_NAMES = new EventNames();
 
 export class FormElementRegistration extends FormAbstractElement {
-    #inputTextWithRuleElementCustomerNickname;
+    #inputTextWithRuleElementCustomerNicknameAdd;
     #selectWithRuleElementCountries;
     #inputTextWithRuleElementCustomerEmail;
     #inputTextWithRuleElementCustomerLogin;
@@ -45,8 +45,8 @@ export class FormElementRegistration extends FormAbstractElement {
         super(form, buttonSubmit, divMessageContainer);
     }
 
-    setInputTextWithRuleElementCustomerNickname(inputTextWithRuleElementCustomerNicknameObj) {
-        this.#inputTextWithRuleElementCustomerNickname = inputTextWithRuleElementCustomerNicknameObj;
+    setInputTextWithRuleElementCustomerNicknameAdd(inputTextWithRuleElementCustomerNicknameAddObj) {
+        this.#inputTextWithRuleElementCustomerNicknameAdd = inputTextWithRuleElementCustomerNicknameAddObj;
     }
 
     setSelectWithRuleElementCountries(selectWithRuleElementCountriesObj) {
@@ -77,13 +77,13 @@ export class FormElementRegistration extends FormAbstractElement {
     async prepare() {
         await super.prepare();
 
-        let inputTextWithRuleElementCustomerNickname = this.#inputTextWithRuleElementCustomerNickname;
-        if (inputTextWithRuleElementCustomerNickname) {
-            if (!inputTextWithRuleElementCustomerNickname.getIsPrepared()) {
-                inputTextWithRuleElementCustomerNickname.prepare();
+        let inputTextWithRuleElementCustomerNicknameAdd = this.#inputTextWithRuleElementCustomerNicknameAdd;
+        if (inputTextWithRuleElementCustomerNicknameAdd) {
+            if (!inputTextWithRuleElementCustomerNicknameAdd.getIsPrepared()) {
+                inputTextWithRuleElementCustomerNicknameAdd.prepare();
             }
 
-            let inputText = inputTextWithRuleElementCustomerNickname.getInputText();
+            let inputText = inputTextWithRuleElementCustomerNicknameAdd.getInputText();
             if (inputText) {
                 let self = this;
                 inputText.addEventListener(_EVENT_NAMES.INPUT.TEXT.INPUT, function() {
@@ -188,9 +188,9 @@ export class FormElementRegistration extends FormAbstractElement {
 
     async checkCorrectValues() {
         let isNicknameCorrect = false;
-        let inputTextWithRuleElementCustomerNickname = this.#inputTextWithRuleElementCustomerNickname;
-        if (inputTextWithRuleElementCustomerNickname) {
-            isNicknameCorrect = await inputTextWithRuleElementCustomerNickname.checkCorrectValue();
+        let inputTextWithRuleElementCustomerNicknameAdd = this.#inputTextWithRuleElementCustomerNicknameAdd;
+        if (inputTextWithRuleElementCustomerNicknameAdd) {
+            isNicknameCorrect = await inputTextWithRuleElementCustomerNicknameAdd.checkCorrectValue();
         }
 
         let isCountryCorrect = false;
@@ -230,9 +230,9 @@ export class FormElementRegistration extends FormAbstractElement {
     async submit() {
         let customerAddRequestDTO = new CustomerAddRequestDTO();
 
-        let inputTextWithRuleElementCustomerNickname = this.#inputTextWithRuleElementCustomerNickname;
-        if (inputTextWithRuleElementCustomerNickname) {
-            customerAddRequestDTO.setNickname(inputTextWithRuleElementCustomerNickname.getValue());
+        let inputTextWithRuleElementCustomerNicknameAdd = this.#inputTextWithRuleElementCustomerNicknameAdd;
+        if (inputTextWithRuleElementCustomerNicknameAdd) {
+            customerAddRequestDTO.setNickname(inputTextWithRuleElementCustomerNicknameAdd.getValue());
         }
 
         let selectWithRuleElementCountries = this.#selectWithRuleElementCountries;
@@ -276,9 +276,9 @@ export class FormElementRegistration extends FormAbstractElement {
     changeDisabledStatusToFormElements(isDisabled) {
         super.changeDisabledStatusToFormElements(isDisabled);
 
-        let inputTextWithRuleElementCustomerNickname = this.#inputTextWithRuleElementCustomerNickname;
-        if (inputTextWithRuleElementCustomerNickname) {
-            inputTextWithRuleElementCustomerNickname.changeReadOnlyStatus(isDisabled);
+        let inputTextWithRuleElementCustomerNicknameAdd = this.#inputTextWithRuleElementCustomerNicknameAdd;
+        if (inputTextWithRuleElementCustomerNicknameAdd) {
+            inputTextWithRuleElementCustomerNicknameAdd.changeReadOnlyStatus(isDisabled);
         }
 
         let selectWithRuleElementCountries = this.#selectWithRuleElementCountries;

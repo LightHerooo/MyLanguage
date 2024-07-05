@@ -416,7 +416,7 @@ export class InputFileElement {
 
             this.changeDisabledStatus(false);
         } else {
-            throw new Error("Object \'InputFileElement\' is not prepared.");
+            throw new Error("Object \'InputFileElement\' is not prepared");
         }
     }
 
@@ -457,7 +457,7 @@ export class InputFileElement {
                 //---
 
                 // Проверяем файл на общий MIME-тип изображений ---
-                if (isCorrect) {
+                if (isCorrect && !isMIMETypeALL) {
                     currentMIMETypeALL = _IMAGE_MIME_TYPES.ALL;
                     MIMETypeWithSizeALL = this.#findMIMETypeWithSizeByMIMEType(currentMIMETypeALL);
                     if (MIMETypeWithSizeALL) {
@@ -515,7 +515,7 @@ export class InputFileElement {
                 this.showRule(ruleType, message);
             }
         } else {
-            throw new Error("Object \'InputFileElement\' is not prepared.");
+            throw new Error("Object \'InputFileElement\' is not prepared");
         }
 
         return isCorrect;
@@ -558,7 +558,7 @@ export class InputFileElement {
 
             this.#isPrepared = true;
         } else {
-            throw new Error("Object \'InputFileElement\' has already been prepared.");
+            throw new Error("Object \'InputFileElement\' has already been prepared");
         }
     }
 
@@ -571,7 +571,7 @@ export class InputFileElement {
                 inputFile.multiple = isMultiple;
             }
         } else {
-            throw new Error("Object \'InputFileElement\' is not prepared.");
+            throw new Error("Object \'InputFileElement\' is not prepared");
         }
     }
 
@@ -600,7 +600,7 @@ export class InputFileElement {
             this.#dropSelectedFiles();
             //---
         } else {
-            throw new Error("Object \'InputFileElement\' is not prepared.");
+            throw new Error("Object \'InputFileElement\' is not prepared");
         }
     }
 
@@ -614,7 +614,7 @@ export class InputFileElement {
                 divMessageContainer.appendChild(new SpanRuleElement(ruleTypeObj, message).getSpan());
             }
         } else {
-            throw new Error("Object \'InputFileElement\' is not prepared.");
+            throw new Error("Object \'InputFileElement\' is not prepared");
         }
     }
 
@@ -646,7 +646,7 @@ export class InputFileElement {
                 //---
             }
         } else {
-            throw new Error("Object \'InputFileElement\' is not prepared.");
+            throw new Error("Object \'InputFileElement\' is not prepared");
         }
 
         return isCorrect;
@@ -676,7 +676,7 @@ export class InputFileElement {
                 buttonDropSelectedFiles.disabled = isDisabled;
             }
         } else {
-            throw new Error("Object \'InputFileElement\' is not prepared.");
+            throw new Error("Object \'InputFileElement\' is not prepared");
         }
     }
 }

@@ -3,8 +3,8 @@ package ru.herooo.mylanguageweb.dto.entity.workout.types.statistic.round;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import ru.herooo.mylanguageweb.controllers.json.LongDeserializer;
-import ru.herooo.mylanguageweb.controllers.json.LongSerializer;
+import ru.herooo.mylanguageweb.controllers.json.l.LongDeserializer;
+import ru.herooo.mylanguageweb.controllers.json.l.LongSerializer;
 import ru.herooo.mylanguageweb.dto.entity.workout.types.statistic.WorkoutAnswersStatisticResponseDTO;
 
 public class WorkoutRoundStatisticResponseDTO {

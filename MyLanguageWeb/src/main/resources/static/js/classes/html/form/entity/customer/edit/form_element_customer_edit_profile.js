@@ -34,9 +34,9 @@ const _EVENT_NAMES = new EventNames();
 
 export class FormElementCustomerEditProfile extends FormAbstractElement {
     #inputImgElementCustomerAvatar;
-    #inputTextWithRuleElementCustomerNickname;
+    #inputTextWithRuleElementCustomerNicknameEdit;
     #selectWithRuleElementCountries;
-    #textareaWithRuleElementCustomerDescription;
+    #textareaWithCounterElementCustomerDescription;
     #customerResponseDTO;
 
     constructor(form, buttonSubmit, divMessageContainer) {
@@ -47,16 +47,16 @@ export class FormElementCustomerEditProfile extends FormAbstractElement {
         this.#inputImgElementCustomerAvatar = inputImgElementCustomerAvatarObj;
     }
 
-    setInputTextWithRuleElementCustomerNickname(inputTextWithRuleElementCustomerNicknameObj) {
-        this.#inputTextWithRuleElementCustomerNickname = inputTextWithRuleElementCustomerNicknameObj;
+    setInputTextWithRuleElementCustomerNicknameEdit(inputTextWithRuleElementCustomerNicknameEditObj) {
+        this.#inputTextWithRuleElementCustomerNicknameEdit = inputTextWithRuleElementCustomerNicknameEditObj;
     }
 
     setSelectWithRuleElementCountries(selectWithRuleElementCountriesObj) {
         this.#selectWithRuleElementCountries = selectWithRuleElementCountriesObj;
     }
 
-    setTextareaElementWithRuleCustomerDescription(textareaWithRuleElementCustomerDescriptionObj) {
-        this.#textareaWithRuleElementCustomerDescription = textareaWithRuleElementCustomerDescriptionObj;
+    setTextareaWithCounterElementCustomerDescription(textareaWithCounterElementObjCustomerDescription) {
+        this.#textareaWithCounterElementCustomerDescription = textareaWithCounterElementObjCustomerDescription;
     }
 
     setCustomerResponseDTO(customerResponseDTOObj) {
@@ -97,18 +97,19 @@ export class FormElementCustomerEditProfile extends FormAbstractElement {
             inputImgElementCustomerAvatar.refreshImgSrc();
         }
 
-        let inputTextWithRuleElementCustomerNickname = this.#inputTextWithRuleElementCustomerNickname;
-        if (inputTextWithRuleElementCustomerNickname) {
-            if (!inputTextWithRuleElementCustomerNickname.getIsPrepared()) {
-                inputTextWithRuleElementCustomerNickname.prepare();
+        let inputTextWithRuleElementCustomerNicknameEdit = this.#inputTextWithRuleElementCustomerNicknameEdit;
+        if (inputTextWithRuleElementCustomerNicknameEdit) {
+            if (!inputTextWithRuleElementCustomerNicknameEdit.getIsPrepared()) {
+                inputTextWithRuleElementCustomerNicknameEdit.prepare();
             }
 
             if (customerResponseDTO) {
-                inputTextWithRuleElementCustomerNickname.changeValue(
+                inputTextWithRuleElementCustomerNicknameEdit.setCustomerId(customerResponseDTO.getId());
+                inputTextWithRuleElementCustomerNicknameEdit.changeValue(
                     customerResponseDTO.getNickname(), true);
             }
 
-            let inputText = inputTextWithRuleElementCustomerNickname.getInputText();
+            let inputText = inputTextWithRuleElementCustomerNicknameEdit.getInputText();
             if (inputText) {
                 let self = this;
                 inputText.addEventListener(_EVENT_NAMES.INPUT.TEXT.INPUT, function() {
@@ -140,18 +141,19 @@ export class FormElementCustomerEditProfile extends FormAbstractElement {
             }
         }
 
-        let textareaWithRuleElementCustomerDescription = this.#textareaWithRuleElementCustomerDescription;
-        if (textareaWithRuleElementCustomerDescription) {
-            if (!textareaWithRuleElementCustomerDescription.getIsPrepared()) {
-                textareaWithRuleElementCustomerDescription.prepare();
+        let textareaWithCounterElementCustomerDescription = this.#textareaWithCounterElementCustomerDescription;
+        if (textareaWithCounterElementCustomerDescription) {
+            if (!textareaWithCounterElementCustomerDescription.getIsPrepared()) {
+                textareaWithCounterElementCustomerDescription.prepare();
+                textareaWithCounterElementCustomerDescription.changeMaxLength(255);
             }
 
             if (customerResponseDTO) {
-                textareaWithRuleElementCustomerDescription.changeValue(
+                textareaWithCounterElementCustomerDescription.changeValue(
                     customerResponseDTO.getDescription(), true);
             }
 
-            let textarea = textareaWithRuleElementCustomerDescription.getTextarea();
+            let textarea = textareaWithCounterElementCustomerDescription.getTextarea();
             if (textarea) {
                 let self = this;
                 textarea.addEventListener(_EVENT_NAMES.TEXTAREA.INPUT, function () {
@@ -169,9 +171,9 @@ export class FormElementCustomerEditProfile extends FormAbstractElement {
         }
 
         let isNicknameCorrect = false;
-        let inputTextWithRuleElementCustomerNickname = this.#inputTextWithRuleElementCustomerNickname;
-        if (inputTextWithRuleElementCustomerNickname) {
-            isNicknameCorrect = await inputTextWithRuleElementCustomerNickname.checkCorrectValue();
+        let inputTextWithRuleElementCustomerNicknameEdit = this.#inputTextWithRuleElementCustomerNicknameEdit;
+        if (inputTextWithRuleElementCustomerNicknameEdit) {
+            isNicknameCorrect = await inputTextWithRuleElementCustomerNicknameEdit.checkCorrectValue();
         }
 
         let isCountryCorrect = false;
@@ -180,13 +182,7 @@ export class FormElementCustomerEditProfile extends FormAbstractElement {
             isCountryCorrect = await selectWithRuleElementCountries.checkCorrectValue();
         }
 
-        let isDescriptionCorrect = false;
-        let textareaWithRuleElementCustomerDescription = this.#textareaWithRuleElementCustomerDescription;
-        if (textareaWithRuleElementCustomerDescription) {
-            isDescriptionCorrect = await textareaWithRuleElementCustomerDescription.checkCorrectValue();
-        }
-
-        return isAvatarCorrect && isNicknameCorrect && isCountryCorrect && isDescriptionCorrect;
+        return isAvatarCorrect && isNicknameCorrect && isCountryCorrect;
     }
 
     async submit() {
@@ -204,9 +200,9 @@ export class FormElementCustomerEditProfile extends FormAbstractElement {
         //---
 
         // Никнейм ---
-        let inputTextWithRuleElementCustomerNickname = this.#inputTextWithRuleElementCustomerNickname;
-        if (inputTextWithRuleElementCustomerNickname) {
-            dto.setNickname(inputTextWithRuleElementCustomerNickname.getValue());
+        let inputTextWithRuleElementCustomerNicknameEdit = this.#inputTextWithRuleElementCustomerNicknameEdit;
+        if (inputTextWithRuleElementCustomerNicknameEdit) {
+            dto.setNickname(inputTextWithRuleElementCustomerNicknameEdit.getValue());
         }
         //---
 
@@ -218,9 +214,9 @@ export class FormElementCustomerEditProfile extends FormAbstractElement {
         //---
 
         // Описание ---
-        let textareaWithRuleElementCustomerDescription = this.#textareaWithRuleElementCustomerDescription;
-        if (textareaWithRuleElementCustomerDescription) {
-            dto.setDescription(textareaWithRuleElementCustomerDescription.getValue());
+        let textareaWithCounterElementCustomerDescription = this.#textareaWithCounterElementCustomerDescription;
+        if (textareaWithCounterElementCustomerDescription) {
+            dto.setDescription(textareaWithCounterElementCustomerDescription.getValue());
         }
         //---
 
@@ -253,9 +249,9 @@ export class FormElementCustomerEditProfile extends FormAbstractElement {
             inputImgElementCustomerAvatar.changeDisabledStatus(isDisabled);
         }
 
-        let inputTextWithRuleElementCustomerNickname = this.#inputTextWithRuleElementCustomerNickname;
-        if (inputTextWithRuleElementCustomerNickname) {
-            inputTextWithRuleElementCustomerNickname.changeDisabledStatus(isDisabled);
+        let inputTextWithRuleElementCustomerNicknameEdit = this.#inputTextWithRuleElementCustomerNicknameEdit;
+        if (inputTextWithRuleElementCustomerNicknameEdit) {
+            inputTextWithRuleElementCustomerNicknameEdit.changeDisabledStatus(isDisabled);
         }
 
         let selectWithRuleElementCountries = this.#selectWithRuleElementCountries;
@@ -263,9 +259,9 @@ export class FormElementCustomerEditProfile extends FormAbstractElement {
             selectWithRuleElementCountries.changeDisabledStatus(isDisabled);
         }
 
-        let textareaWithRuleElementCustomerDescription = this.#textareaWithRuleElementCustomerDescription;
-        if (textareaWithRuleElementCustomerDescription) {
-            textareaWithRuleElementCustomerDescription.changeDisabledStatus(isDisabled);
+        let textareaWithCounterElementCustomerDescription = this.#textareaWithCounterElementCustomerDescription;
+        if (textareaWithCounterElementCustomerDescription) {
+            textareaWithCounterElementCustomerDescription.changeDisabledStatus(isDisabled);
         }
     }
 }

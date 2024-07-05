@@ -60,7 +60,7 @@ public class LangsRestController {
                                         Long lastLangIdOnPreviousPage) {
         if (numberOfItems == null || numberOfItems < 0) {
             ResponseMessageResponseDTO message =
-                    new ResponseMessageResponseDTO(1, "Количество записей не должно быть отрицательным.");
+                    new ResponseMessageResponseDTO(1, "Количество записей не должно быть отрицательным");
             return ResponseEntity.badRequest().body(message);
         }
 
@@ -69,7 +69,7 @@ public class LangsRestController {
             ResponseMessageResponseDTO message =
                     new ResponseMessageResponseDTO(2,
                             "ID последнего языка на предыдущей странице не должен быть отрицательным. " +
-                                    "Если вы хотите отобразить первую страницу, укажите ID = 0.");
+                                    "Если вы хотите отобразить первую страницу, укажите ID = 0");
             return ResponseEntity.badRequest().body(message);
         }
 
@@ -79,7 +79,7 @@ public class LangsRestController {
             return ResponseEntity.ok(responseDTOs);
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    "Языки по указанным фильтрам не найдены.");
+                    "Языки по указанным фильтрам не найдены");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -92,7 +92,7 @@ public class LangsRestController {
             return ResponseEntity.ok(responseDTOs);
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    "Активных входящих языков не найдено.");
+                    "Активных входящих языков не найдено");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -105,7 +105,7 @@ public class LangsRestController {
             return ResponseEntity.ok(responseDTOs);
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    "Активных выходящих языков не найдено.");
+                    "Активных выходящих языков не найдено");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -139,7 +139,7 @@ public class LangsRestController {
         } else if (response.getBody() instanceof ResponseMessageResponseDTO) {
             return response;
         } else {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Неизвестная ошибка обращения к Yandex.API.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Неизвестная ошибка обращения к Yandex.API");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -174,7 +174,7 @@ public class LangsRestController {
         } else if (response.getBody() instanceof ResponseMessageResponseDTO) {
             return response;
         } else {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Неизвестная ошибка обращения к Yandex.API.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Неизвестная ошибка обращения к Yandex.API");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -209,7 +209,7 @@ public class LangsRestController {
             return response;
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    "Не удалось получить языки Yandex.Dictionary.");
+                    "Не удалось получить языки Yandex.Dictionary");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -222,7 +222,7 @@ public class LangsRestController {
             return ResponseEntity.ok(dto);
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    String.format("Язык с кодом '%s' не найден.", code));
+                    String.format("Язык с кодом '%s' не найден", code));
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -234,7 +234,7 @@ public class LangsRestController {
         dto.setAuthKey(validateAuthKey);
 
         // Проверяем авторизированного пользователя
-        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.findExistsByAuthKey(dto.getAuthKey());
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.isExistsByAuthKey(dto.getAuthKey());
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
@@ -242,7 +242,7 @@ public class LangsRestController {
         // Работать с языками могут только суперпользователи
         Customer customer = CUSTOMER_SERVICE.findByAuthKey(dto.getAuthKey());
         if (!CUSTOMER_SERVICE.isSuperUser(customer)) {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "У вас недостаточно прав.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "У вас недостаточно прав");
             return ResponseEntity.badRequest().body(message);
         }
 
@@ -252,7 +252,7 @@ public class LangsRestController {
             return response;
         }
 
-        ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Данные для изменения языка корректны.");
+        ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Данные для изменения языка корректны");
         return ResponseEntity.ok(message);
     }
 
@@ -265,10 +265,10 @@ public class LangsRestController {
 
         Lang lang = LANG_SERVICE.find(code);
         if (lang.isActiveForIn()) {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Язык доступен (входящий).");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Язык доступен (входящий)");
             return ResponseEntity.ok(message);
         } else {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Язык недоступен (входящий).");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Язык недоступен (входящий)");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -282,10 +282,10 @@ public class LangsRestController {
 
         Lang lang = LANG_SERVICE.find(code);
         if (lang.isActiveForOut()) {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Язык доступен (выходящий).");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Язык доступен (выходящий)");
             return ResponseEntity.ok(message);
         } else {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Язык недоступен (выходящий).");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Язык недоступен (выходящий)");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -305,7 +305,7 @@ public class LangsRestController {
 
         // Языки не должны повторяться ---
         if (langInCode.equals(langOutCode)) {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Языки не должны повторяться.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Языки не должны повторяться");
             return ResponseEntity.badRequest().body(message);
         }
         //---
@@ -318,19 +318,19 @@ public class LangsRestController {
                     langIn.getCode(), langOut.getCode());
             if (isCorrect) {
                 ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                        String.format("Пара языков '%s' - '%s' поддерживается.",
+                        String.format("Пара языков '%s' - '%s' поддерживается",
                                 langIn.getTitle(), langOut.getTitle()));
                 return ResponseEntity.ok(message);
             } else {
                 ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(2,
-                        String.format("Пара языков '%s' - '%s' не поддерживается.",
+                        String.format("Пара языков '%s' - '%s' не поддерживается",
                                 langIn.getTitle(), langOut.getTitle()));
                 return ResponseEntity.badRequest().body(message);
             }
         } else if (response.getBody() instanceof ResponseMessageResponseDTO) {
             return response;
         } else {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(3, "Неизвестная ошибка обращения к Yandex.API.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(3, "Неизвестная ошибка обращения к Yandex.API");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -352,7 +352,7 @@ public class LangsRestController {
             return ResponseEntity.ok(responseDTO);
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    String.format("Не удалось изменить активность на вход у языка с кодом '%s'.", dto.getCode()));
+                    String.format("Не удалось изменить активность на вход у языка с кодом '%s'", dto.getCode()));
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -372,7 +372,7 @@ public class LangsRestController {
             return ResponseEntity.ok(responseDTO);
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    String.format("Не удалось изменить активность на выход у языка с кодом '%s'.", dto.getCode()));
+                    String.format("Не удалось изменить активность на выход у языка с кодом '%s'", dto.getCode()));
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -381,7 +381,7 @@ public class LangsRestController {
     public ResponseEntity<?> turnOnSupportedLangsIn(HttpServletRequest request,
                                                     @RequestBody EntityAuthKeyRequestDTO dto) {
         String validateAuthKey = CUSTOMER_SERVICE.validateAuthKey(request, dto.getAuthKey());
-        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.findExistsByAuthKey(validateAuthKey);
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.isExistsByAuthKey(validateAuthKey);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
@@ -389,7 +389,7 @@ public class LangsRestController {
         // Работать с языками могут только суперпользователи
         Customer customer = CUSTOMER_SERVICE.findByAuthKey(validateAuthKey);
         if (!CUSTOMER_SERVICE.isSuperUser(customer)) {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "У вас недостаточно прав.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "У вас недостаточно прав");
             return ResponseEntity.badRequest().body(message);
         }
 
@@ -407,13 +407,13 @@ public class LangsRestController {
             }
 
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    "Входящие поддерживаемые языки успешно включены.");
+                    "Входящие поддерживаемые языки успешно включены");
             return ResponseEntity.ok(message);
         } else if (response.getBody() instanceof ResponseMessageResponseDTO) {
             return response;
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    "Не удалось получить языки Yandex.Dictionary.");
+                    "Не удалось получить языки Yandex.Dictionary");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -422,7 +422,7 @@ public class LangsRestController {
     public ResponseEntity<?> turnOnSupportedLangsOut(HttpServletRequest request,
                                                      @RequestBody EntityAuthKeyRequestDTO dto) {
         String validateAuthKey = CUSTOMER_SERVICE.validateAuthKey(request, dto.getAuthKey());
-        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.findExistsByAuthKey(validateAuthKey);
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.isExistsByAuthKey(validateAuthKey);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
@@ -430,7 +430,7 @@ public class LangsRestController {
         // Работать с языками могут только суперпользователи
         Customer customer = CUSTOMER_SERVICE.findByAuthKey(validateAuthKey);
         if (!CUSTOMER_SERVICE.isSuperUser(customer)) {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "У вас недостаточно прав.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "У вас недостаточно прав");
             return ResponseEntity.badRequest().body(message);
         }
 
@@ -448,13 +448,13 @@ public class LangsRestController {
             }
 
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    "Выходящие поддерживаемые языки успешно включены.");
+                    "Выходящие поддерживаемые языки успешно включены");
             return ResponseEntity.ok(message);
         } else if (response.getBody() instanceof ResponseMessageResponseDTO) {
             return response;
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    "Не удалось получить языки Yandex.Dictionary.");
+                    "Не удалось получить языки Yandex.Dictionary");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -463,7 +463,7 @@ public class LangsRestController {
     public ResponseEntity<?> turnOffUnsupportedLangsIn(HttpServletRequest request,
                                                        @RequestBody EntityAuthKeyRequestDTO dto) {
         String validateAuthKey = CUSTOMER_SERVICE.validateAuthKey(request, dto.getAuthKey());
-        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.findExistsByAuthKey(validateAuthKey);
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.isExistsByAuthKey(validateAuthKey);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
@@ -471,7 +471,7 @@ public class LangsRestController {
         // Работать с языками могут только суперпользователи
         Customer customer = CUSTOMER_SERVICE.findByAuthKey(validateAuthKey);
         if (!CUSTOMER_SERVICE.isSuperUser(customer)) {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "У вас недостаточно прав.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "У вас недостаточно прав");
             return ResponseEntity.badRequest().body(message);
         }
 
@@ -494,13 +494,13 @@ public class LangsRestController {
             }
 
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    "Входящие неподдерживаемые языки успешно отключены.");
+                    "Входящие неподдерживаемые языки успешно отключены");
             return ResponseEntity.ok(message);
         } else if (response.getBody() instanceof ResponseMessageResponseDTO) {
             return response;
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    "Не удалось получить языки Yandex.Dictionary.");
+                    "Не удалось получить языки Yandex.Dictionary");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -509,7 +509,7 @@ public class LangsRestController {
     public ResponseEntity<?> turnOffUnsupportedLangsOut(HttpServletRequest request,
                                                         @RequestBody EntityAuthKeyRequestDTO dto) {
         String validateAuthKey = CUSTOMER_SERVICE.validateAuthKey(request, dto.getAuthKey());
-        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.findExistsByAuthKey(validateAuthKey);
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.isExistsByAuthKey(validateAuthKey);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
@@ -517,7 +517,7 @@ public class LangsRestController {
         // Работать с языками могут только суперпользователи
         Customer customer = CUSTOMER_SERVICE.findByAuthKey(validateAuthKey);
         if (!CUSTOMER_SERVICE.isSuperUser(customer)) {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "У вас недостаточно прав.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "У вас недостаточно прав");
             return ResponseEntity.badRequest().body(message);
         }
 
@@ -540,13 +540,13 @@ public class LangsRestController {
             }
 
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    "Выходящие неподдерживаемые языки успешно отключены.");
+                    "Выходящие неподдерживаемые языки успешно отключены");
             return ResponseEntity.ok(message);
         } else if (response.getBody() instanceof ResponseMessageResponseDTO) {
             return response;
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    "Не удалось получить языки Yandex.Dictionary.");
+                    "Не удалось получить языки Yandex.Dictionary");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -555,7 +555,7 @@ public class LangsRestController {
     public ResponseEntity<?> turnOffLangsIn(HttpServletRequest request,
                                             @RequestBody EntityAuthKeyRequestDTO dto) {
         String validateAuthKey = CUSTOMER_SERVICE.validateAuthKey(request, dto.getAuthKey());
-        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.findExistsByAuthKey(validateAuthKey);
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.isExistsByAuthKey(validateAuthKey);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
@@ -563,13 +563,13 @@ public class LangsRestController {
         // Работать с языками могут только суперпользователи
         Customer customer = CUSTOMER_SERVICE.findByAuthKey(validateAuthKey);
         if (!CUSTOMER_SERVICE.isSuperUser(customer)) {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "У вас недостаточно прав.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "У вас недостаточно прав");
             return ResponseEntity.badRequest().body(message);
         }
 
         LANG_SERVICE.turnOffLangsIn();
 
-        ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Входящие языки успешно отключены.");
+        ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Входящие языки успешно отключены");
         return ResponseEntity.ok(message);
     }
 
@@ -577,7 +577,7 @@ public class LangsRestController {
     public ResponseEntity<?> turnOffLangsOut(HttpServletRequest request,
                                              @RequestBody EntityAuthKeyRequestDTO dto) {
         String validateAuthKey = CUSTOMER_SERVICE.validateAuthKey(request, dto.getAuthKey());
-        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.findExistsByAuthKey(validateAuthKey);
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.isExistsByAuthKey(validateAuthKey);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
@@ -585,13 +585,13 @@ public class LangsRestController {
         // Работать с языками могут только суперпользователи
         Customer customer = CUSTOMER_SERVICE.findByAuthKey(validateAuthKey);
         if (!CUSTOMER_SERVICE.isSuperUser(customer)) {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "У вас недостаточно прав.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "У вас недостаточно прав");
             return ResponseEntity.badRequest().body(message);
         }
 
         LANG_SERVICE.turnOffLangsOut();
 
-        ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Выходящие языки успешно отключены.");
+        ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Выходящие языки успешно отключены");
         return ResponseEntity.ok(message);
     }
 
@@ -606,7 +606,7 @@ public class LangsRestController {
                     return ResponseEntity.ok(yandexLangs);
                 } else {
                     ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                            "Не удалось получить результат обращения к Yandex.API.");
+                            "Не удалось получить результат обращения к Yandex.API");
                     return ResponseEntity.badRequest().body(message);
                 }
             } else {
@@ -615,7 +615,7 @@ public class LangsRestController {
                 return ResponseEntity.badRequest().body(message);
             }
         } else {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(2, "Не удалось обратиться к Yandex.API.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(2, "Не удалось обратиться к Yandex.API");
             return ResponseEntity.badRequest().body(message);
         }
     }

@@ -82,7 +82,7 @@ export class InputTextWithRuleElementWordTitle extends InputTextWithRuleElement 
             if (!value) {
                 isCorrect = false;
                 ruleType = _RULE_TYPES.ERROR;
-                message = "Слово не может быть пустым.";
+                message = "Слово не может быть пустым";
             }
 
             if (isCorrect) {
@@ -90,7 +90,7 @@ export class InputTextWithRuleElementWordTitle extends InputTextWithRuleElement 
                 if (!TITLE_REGEXP.test(value)) {
                     isCorrect = false;
                     ruleType = _RULE_TYPES.ERROR;
-                    message = "Слово не должно содержать пробелов.";
+                    message = "Слово не должно содержать пробелов";
                 }
             }
 

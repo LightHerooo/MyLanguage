@@ -21,7 +21,7 @@ export class UrlPath {
                 window.location.replace(finalUrlStr);
             }
         } else {
-            throw new Error("Variable \'path\' is null.");
+            throw new Error("Variable \'path\' is null");
         }
     }
 }

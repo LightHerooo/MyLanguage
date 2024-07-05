@@ -52,7 +52,7 @@ export class DivElementWorkoutUtils {
     async createDivInfoByDTO(workoutResponseDTOObj, doNeedToShowSpanElementCustomer) {
         let div;
         if (workoutResponseDTOObj) {
-            let divWithImgAndDataBuilderElement = new DivWithImgAndDataBuilderElement();
+            let divWithImgAndDataBuilderElement = new DivWithImgAndDataBuilderElement(false);
 
             let workoutType = workoutResponseDTOObj.getWorkoutType();
             if (workoutType) {
@@ -105,11 +105,11 @@ export class DivElementWorkoutUtils {
             }
             //---
 
-            // Исходящий язык ---
+            // Выходящий язык ---
             let langOut = workoutResponseDTOObj.getLangOut();
             if (langOut) {
                 let leftSpan = document.createElement("span");
-                leftSpan.textContent = "Исходящий язык:";
+                leftSpan.textContent = "Выходящий язык:";
 
                 let spanElementLang = new SpanElementLang(null);
                 spanElementLang.setLangResponseDTO(langOut);

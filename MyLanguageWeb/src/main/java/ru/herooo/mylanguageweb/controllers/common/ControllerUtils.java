@@ -57,12 +57,12 @@ public class ControllerUtils {
 
     public ResponseEntity<?> checkMultipartFile(MultipartFile multipartFile, MimeTypeWithSize[] acceptedMimeTypesWithSize) {
         if (multipartFile == null || multipartFile.isEmpty()) {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Файл пуст.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Файл пуст");
             return ResponseEntity.badRequest().body(message);
         }
 
         if (acceptedMimeTypesWithSize == null || acceptedMimeTypesWithSize.length == 0) {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(2, "Массив разрешенных MIME-типов пуст.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(2, "Массив разрешенных MIME-типов пуст");
             return ResponseEntity.badRequest().body(message);
         }
 
@@ -80,7 +80,7 @@ public class ControllerUtils {
                 FileSize fileSize = mimeTypeWithSize.getFileSize();
                 if (size > fileSize.getNumberOfBytes()) {
                     ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(3,
-                            String.format("Размер файла не должен превышать %s.", fileSize.createSizeStr()));
+                            String.format("Размер файла не должен превышать %s", fileSize.createSizeStr()));
                     return ResponseEntity.badRequest().body(message);
                 }
 
@@ -98,7 +98,7 @@ public class ControllerUtils {
                     FileSize fileSize = mimeTypeWithSize.getFileSize();
                     if (size > fileSize.getNumberOfBytes()) {
                         ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(3,
-                                String.format("Размер изображения не должен превышать %s.", fileSize.createSizeStr()));
+                                String.format("Размер изображения не должен превышать %s", fileSize.createSizeStr()));
                         return ResponseEntity.badRequest().body(message);
                     }
 
@@ -120,7 +120,7 @@ public class ControllerUtils {
                     FileSize fileSize = mimeTypeWithSize.getFileSize();
                     if (size > fileSize.getNumberOfBytes()) {
                         ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(4,
-                                String.format("Размер файла формата %s не должен превышать %s.",
+                                String.format("Размер файла формата %s не должен превышать %s",
                                         multipartFileMimeType.createFormatStr(), fileSize.createSizeStr()));
                         return ResponseEntity.badRequest().body(message);
                     }
@@ -131,12 +131,12 @@ public class ControllerUtils {
 
             if (!isFormatSupport) {
                 ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(5,
-                        String.format("Файл формата %s не поддерживается.", multipartFileMimeType.createFormatStr()));
+                        String.format("Файл формата %s не поддерживается", multipartFileMimeType.createFormatStr()));
                 return ResponseEntity.badRequest().body(message);
             }
         }
 
-        ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Файл успешно проверен.");
+        ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Файл успешно проверен");
         return ResponseEntity.ok(message);
     }
 }

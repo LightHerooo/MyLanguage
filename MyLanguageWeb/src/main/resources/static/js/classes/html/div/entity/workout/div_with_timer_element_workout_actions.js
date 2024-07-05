@@ -167,6 +167,8 @@ export class DivWithTimerElementWorkoutActions extends DivWithTimerAbstractEleme
                     buttonWithImgAndTextElementDoubleClick.changeImgSrc(_IMG_SRCS.OTHER.BOOKS);
                     buttonWithImgAndTextElementDoubleClick.changeSpanText("Создать новую коллекцию на основе слов тренировки");
                     buttonWithImgAndTextElementDoubleClick.setAfterDoubleClickFunction(async function() {
+                        buttonWithImgAndTextElementDoubleClick.turnOff(true);
+
                         let entityIdRequestDTO = new EntityIdRequestDTO();
                         entityIdRequestDTO.setId(workoutResponseDTO.getId());
 
@@ -184,7 +186,6 @@ export class DivWithTimerElementWorkoutActions extends DivWithTimerAbstractEleme
                             buttonWithImgAndTextElementDoubleClick.changeSpanText(message.getMessage());
                         }
 
-                        buttonWithImgAndTextElementDoubleClick.turnOff();
                         buttonWithImgAndTextElementDoubleClick.changeDisabledStatus(false);
                     })
                     buttonWithImgAndTextElementDoubleClick.prepare();

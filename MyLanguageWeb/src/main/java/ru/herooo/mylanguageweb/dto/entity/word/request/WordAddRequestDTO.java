@@ -9,13 +9,13 @@ import ru.herooo.mylanguageutils.StringUtils;
 public class WordAddRequestDTO {
     private final StringUtils STRING_UTILS = new StringUtils();
 
-    @NotBlank(message = "Слово не может быть пустым.")
-    @Size(max = 44, message = "Длина должна быть не более 44-х символов.")
-    @Pattern(regexp = "^[^ ]+$", message = "Слово не должно содержать пробелов.")
+    @NotBlank(message = "Слово не может быть пустым")
+    @Size(max = 44, message = "Длина должна быть не более 44-х символов")
+    @Pattern(regexp = "^[^ ]+$", message = "Слово не должно содержать пробелов")
     @JsonProperty("title")
     private String title;
 
-    @NotBlank(message = "Выберите язык.")
+    @NotBlank(message = "Выберите язык")
     @JsonProperty("lang_code")
     private String langCode;
 

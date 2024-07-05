@@ -62,7 +62,7 @@ export class InputTextElementFinder extends InputTextElement {
 
             this.#isPrepared = true;
         } else {
-            throw new Error("Object \'InputTextElementFinder\' has already been prepared.");
+            throw new Error("Object \'InputTextElementFinder\' has already been prepared");
         }
     }
 }

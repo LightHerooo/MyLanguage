@@ -16,6 +16,8 @@ export class AButtonWithImgElementTypes {
         _IMG_SRCS.BUTTONS.INFO);
     ARROW_RIGHT = new AButtonWithImgElementType(_A_BUTTON_ELEMENT_TYPES.GREEN,
         _IMG_SRCS.BUTTONS.ARROW_RIGHT);
+    EDIT = new AButtonWithImgElementType(_A_BUTTON_ELEMENT_TYPES.BLUE,
+        _IMG_SRCS.BUTTONS.EDIT);
 }
 
 class AButtonWithImgElementType {

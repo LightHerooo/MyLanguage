@@ -3,8 +3,8 @@ package ru.herooo.mylanguageweb.dto.entity.color.response;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import ru.herooo.mylanguageweb.controllers.json.LongDeserializer;
-import ru.herooo.mylanguageweb.controllers.json.LongSerializer;
+import ru.herooo.mylanguageweb.controllers.json.l.LongDeserializer;
+import ru.herooo.mylanguageweb.controllers.json.l.LongSerializer;
 
 public class ColorResponseDTO {
     @JsonSerialize(using = LongSerializer.class)

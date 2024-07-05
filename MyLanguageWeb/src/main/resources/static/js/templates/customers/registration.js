@@ -3,8 +3,8 @@ import {
 } from "../../classes/html/form/entity/customer/form_element_registration.js";
 
 import {
-    InputTextWithRuleElementCustomerNickname
-} from "../../classes/html/input/text/entity/customer/input_text_with_rule_element_customer_nickname.js";
+    InputTextWithRuleElementCustomerNicknameAdd
+} from "../../classes/html/input/text/entity/customer/nickname/input_text_with_rule_element_customer_nickname_add.js";
 
 import {
     InputTextElement
@@ -51,7 +51,7 @@ import {
 } from "../../classes/html/input/password/input_password_with_rule_element.js";
 
 // Элементы формы + форма ---
-let _inputTextWithRuleElementCustomerNickname;
+let _inputTextWithRuleElementCustomerNicknameAdd;
 let _selectWithRuleElementCountries;
 let _inputTextWithRuleElementCustomerEmail;
 let _inputTextWithRuleElementCustomerLogin;
@@ -64,7 +64,7 @@ let _formElementRegistration;
 
 window.onload = async function () {
     // Элементы формы + форма ---
-    prepareInputTextWithRuleElementCustomerNickname();
+    prepareInputTextWithRuleElementCustomerNicknameAdd();
     await prepareSelectWithRuleElementCountries();
     prepareInputTextWithRuleElementCustomerEmail();
     prepareInputTextWithRuleElementCustomerLogin();
@@ -84,13 +84,13 @@ window.onbeforeunload = async function () {
 
 }
 
-function prepareInputTextWithRuleElementCustomerNickname() {
+function prepareInputTextWithRuleElementCustomerNicknameAdd() {
     let inputText = document.getElementById("input_text_nickname");
     if (inputText) {
         let inputTextElement = new InputTextElement(inputText);
         let inputTextWithRuleElement = new InputTextWithRuleElement(inputTextElement, true);
-        _inputTextWithRuleElementCustomerNickname = new InputTextWithRuleElementCustomerNickname(inputTextWithRuleElement);
-        _inputTextWithRuleElementCustomerNickname.prepare();
+        _inputTextWithRuleElementCustomerNicknameAdd = new InputTextWithRuleElementCustomerNicknameAdd(inputTextWithRuleElement);
+        _inputTextWithRuleElementCustomerNicknameAdd.prepare();
     }
 }
 
@@ -169,7 +169,7 @@ async function prepareFormElementRegistration() {
     let divMessageContainer = document.getElementById("div_message_container_registration");
     if (form && buttonSubmit && divMessageContainer) {
         _formElementRegistration = new FormElementRegistration(form, buttonSubmit, divMessageContainer);
-        _formElementRegistration.setInputTextWithRuleElementCustomerNickname(_inputTextWithRuleElementCustomerNickname);
+        _formElementRegistration.setInputTextWithRuleElementCustomerNicknameAdd(_inputTextWithRuleElementCustomerNicknameAdd);
         _formElementRegistration.setSelectWithRuleElementCountries(_selectWithRuleElementCountries);
         _formElementRegistration.setInputTextWithRuleElementCustomerEmail(_inputTextWithRuleElementCustomerEmail);
         _formElementRegistration.setInputTextWithRuleElementCustomerLogin(_inputTextWithRuleElementCustomerLogin);

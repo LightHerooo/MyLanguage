@@ -54,14 +54,8 @@
                                 : ''}"></span>
                     </div>
                     <div class="div-element-horizontal-delimiter"></div>
-                    <div class="div-description-container">
-                        <span th:text="${CURRENT_CUSTOMER.description != null
-                            && CURRENT_CUSTOMER.description.length > 0
-                            ? CURRENT_CUSTOMER.description
-                            : 'Информация отсутствует.'}"></span>
-                    </div>
-
-
+                    <div id="div_customer_description"
+                         class="div-description-container"></div>
                     <div class="div-element-horizontal-delimiter"></div>
                     <div class="div-with-data-builder-element-container">
                         <div class="div-with-data-builder-element-row-container">

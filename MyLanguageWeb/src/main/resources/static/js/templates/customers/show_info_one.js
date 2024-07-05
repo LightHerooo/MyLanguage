@@ -30,10 +30,18 @@ import {
     TableWithTimerElementWorkoutsHistory
 } from "../../classes/html/table/entity/workout/table_with_timer_element_workouts_history.js";
 
+import {
+    DivWithTimerElementCustomerDescription
+} from "../../classes/html/div/entity/customer/div_with_timer_element_customer_description.js";
+
 const _URL_UTILS = new UrlUtils();
 const _BIGINT_UTILS = new BigIntUtils();
 
 const _GENERAL_TIMEOUT = 1000;
+
+// Контейнер "Описание пользователя" ---
+let _divWithTimerElementCustomerDescription;
+//---
 
 // Элементы для поиска в контейнере + контейнер "Статистика тренировок" ---
 let _selectElementWorkoutTypesWorkoutsCustomerStatistic;
@@ -56,7 +64,11 @@ let _currentCustomerId;
 
 window.onload = async function() {
     // Пытаемся получить id владельца профиля ---
-    await tryToGetCurrentCustomerId();
+    tryToGetCurrentCustomerId();
+    //---
+
+    // Контейнер "Описание пользователя" ---
+    await prepareDivWithTimerElementCustomerDescription();
     //---
 
     // Элементы для поиска в контейнере + контейнер "Статистика тренировок" ---
@@ -75,6 +87,10 @@ window.onload = async function() {
     //---
 
     // Запускаем таймеры ---
+    if (_divWithTimerElementCustomerDescription) {
+        _divWithTimerElementCustomerDescription.startToFill();
+    }
+
     if (_divWithTimerElementWorkoutsCustomerStatistic) {
         _divWithTimerElementWorkoutsCustomerStatistic.startToFill();
         _divWithTimerElementWorkoutsCustomerStatistic.changeDisabledStatusToDivInstruments(false);
@@ -87,12 +103,24 @@ window.onload = async function() {
     //---
 }
 
-async function tryToGetCurrentCustomerId() {
+function tryToGetCurrentCustomerId() {
     let pathVariable = _URL_UTILS.getPathVariable();
     if (pathVariable) {
         _currentCustomerId = _BIGINT_UTILS.parse(pathVariable);
     }
 }
+
+// Контейнер "Описание пользователя" ---
+async function prepareDivWithTimerElementCustomerDescription() {
+    let div = document.getElementById("div_customer_description");
+    if (div) {
+        _divWithTimerElementCustomerDescription = new DivWithTimerElementCustomerDescription(div);
+        _divWithTimerElementCustomerDescription.setCustomerId(_currentCustomerId);
+
+        await _divWithTimerElementCustomerDescription.prepare();
+    }
+}
+//---
 
 // Элементы для поиска в контейнере + контейнер "Статистика тренировок" ---
 async function prepareSelectElementWorkoutTypesWorkoutsCustomerStatistic() {

@@ -82,7 +82,7 @@ export class TableWithTimerAbstractElement extends TableAbstractElement {
                 customTimer.start();
             }
         } else {
-            throw new Error("Object \'TableWithTimerAbstractElement\' is not prepared.");
+            throw new Error("Object \'TableWithTimerAbstractElement\' is not prepared");
         }
     }
 
@@ -94,7 +94,7 @@ export class TableWithTimerAbstractElement extends TableAbstractElement {
                 customTimer.stop();
             }
         } else {
-            throw new Error("Object \'TableWithTimerAbstractElement\' is not prepared.");
+            throw new Error("Object \'TableWithTimerAbstractElement\' is not prepared");
         }
     }
 
@@ -115,7 +115,7 @@ export class TableWithTimerAbstractElement extends TableAbstractElement {
                 this.addTr(tr);
             }
         } else {
-            throw new Error("Object \'TableWithTimerAbstractElement\' is not prepared.");
+            throw new Error("Object \'TableWithTimerAbstractElement\' is not prepared");
         }
     }
 
@@ -142,7 +142,7 @@ export class TableWithTimerAbstractElement extends TableAbstractElement {
                 }
             }
         } else {
-            throw new Error("Object \'TableWithTimerAbstractElement\' is not prepared.");
+            throw new Error("Object \'TableWithTimerAbstractElement\' is not prepared");
         }
     }
 

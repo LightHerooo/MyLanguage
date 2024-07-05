@@ -11,16 +11,12 @@ import {
 } from "../../classes/html/select/entity/country/select_with_rule_element_countries.js";
 
 import {
-    InputTextWithRuleElementCustomerNickname
-} from "../../classes/html/input/text/entity/customer/input_text_with_rule_element_customer_nickname.js";
-
-import {
     InputTextElement
 } from "../../classes/html/input/text/input_text_element.js";
 
 import {
     InputImgElementCustomerAvatar
-} from "../../classes/html/input/file/entity/input_img_element_customer_avatar.js";
+} from "../../classes/html/input/file/entity/customer/input_img_element_customer_avatar.js";
 
 import {
     FormElementCustomerEditProfile
@@ -63,10 +59,6 @@ import {
 } from "../../classes/html/textarea/with_counter/textarea_with_counter_element.js";
 
 import {
-    TextareaWithRuleElementCustomerDescription
-} from "../../classes/html/textarea/entity/customer/textarea_element_customer_description.js";
-
-import {
     ProjectCookies
 } from "../../classes/html/project_cookies.js";
 
@@ -79,8 +71,8 @@ import {
 } from "../../classes/html/input/password/input_password_with_rule_element.js";
 
 import {
-    TextareaWithCounterAndRuleElement
-} from "../../classes/html/textarea/with_counter/textarea_with_counter_and_rule_element.js";
+    InputTextWithRuleElementCustomerNicknameEdit
+} from "../../classes/html/input/text/entity/customer/nickname/input_text_with_rule_element_customer_nickname_edit.js";
 
 const _CUSTOMERS_API = new CustomersAPI();
 
@@ -89,9 +81,9 @@ const _HTTP_STATUSES = new HttpStatuses();
 
 // Элементы формы + форма "Изменение профиля пользователя" ---
 let _inputImgElementCustomerAvatar;
-let _inputTextWithRuleElementCustomerNickname;
+let _inputTextWithRuleElementCustomerNicknameEdit;
 let _selectWithRuleElementCountries;
-let _textareaWithRuleElementCustomerDescription;
+let _textareaWithCounterElementCustomerDescription;
 
 let _formElementCustomerEditProfile;
 //---
@@ -114,9 +106,9 @@ window.onload = async function() {
 
     // Элементы формы + форма "Изменение профиля пользователя" ---
     prepareInputImgElementCustomerAvatar();
-    prepareInputTextElementCustomerNickname();
+    prepareInputTextElementCustomerNicknameEdit();
     await prepareSelectWithRuleElementCountries();
-    prepareTextareaWithRuleElementCustomerDescription();
+    prepareTextareaWithCounterCustomerDescription();
 
     await prepareFormElementCustomerEditProfile();
     //---
@@ -168,22 +160,23 @@ function prepareInputImgElementCustomerAvatar() {
         _inputImgElementCustomerAvatar = new InputImgElementCustomerAvatar(divInputImgContainer, img, divInputFileContainer,
             labelContainer, inputFile, buttonDropSelectedFiles, divMessageContainer);
         _inputImgElementCustomerAvatar.setCustomerResponseDTO(_currentCustomer);
+
         _inputImgElementCustomerAvatar.prepare();
     }
 }
 
-function prepareInputTextElementCustomerNickname() {
+function prepareInputTextElementCustomerNicknameEdit() {
     let inputText = document.getElementById("input_text_customer_nickname");
     if (inputText) {
         let inputTextElement = new InputTextElement(inputText);
         let inputTextWithRuleElement = new InputTextWithRuleElement(inputTextElement, true);
-        _inputTextWithRuleElementCustomerNickname = new InputTextWithRuleElementCustomerNickname(inputTextWithRuleElement);
-        _inputTextWithRuleElementCustomerNickname.prepare();
+        _inputTextWithRuleElementCustomerNicknameEdit = new InputTextWithRuleElementCustomerNicknameEdit(inputTextWithRuleElement);
 
         if (_currentCustomer) {
-            _inputTextWithRuleElementCustomerNickname.setCustomerId(_currentCustomer.getId());
-            inputText.value = _currentCustomer.getNickname();
+            _inputTextWithRuleElementCustomerNicknameEdit.setCustomerId(_currentCustomer.getId());
         }
+
+        _inputTextWithRuleElementCustomerNicknameEdit.prepare();
     }
 }
 
@@ -196,30 +189,20 @@ async function prepareSelectWithRuleElementCountries() {
             divContainer, select, spanFlag, true, true);
         _selectWithRuleElementCountries.prepare();
         await _selectWithRuleElementCountries.fill();
-
-        if (_currentCustomer) {
-            let country = _currentCustomer.getCountry();
-            if (country) {
-                _selectWithRuleElementCountries.changeSelectedOptionByValue(
-                    country.getCode(), true);
-            }
-        }
     }
 }
 
-function prepareTextareaWithRuleElementCustomerDescription() {
+function prepareTextareaWithCounterCustomerDescription() {
     let divContainer = document.getElementById("div_textarea_customer_description");
     let textarea = document.getElementById("textarea_customer_description");
     let spanCounter = document.getElementById("span_counter_textarea_customer_description");
     if (divContainer && textarea && spanCounter) {
         let textareaElement = new TextareaElement(textarea);
-        let textareaWithCounterElement = new TextareaWithCounterElement(
+        _textareaWithCounterElementCustomerDescription = new TextareaWithCounterElement(
             divContainer, textareaElement, spanCounter);
-        let textareaWithCounterAndRuleElement = new TextareaWithCounterAndRuleElement(
-            textareaWithCounterElement, false);
-        _textareaWithRuleElementCustomerDescription = new TextareaWithRuleElementCustomerDescription(
-            textareaWithCounterAndRuleElement);
-        _textareaWithRuleElementCustomerDescription.prepare();
+        _textareaWithCounterElementCustomerDescription.changeMaxLength(255);
+
+        _textareaWithCounterElementCustomerDescription.prepare();
     }
 }
 
@@ -230,9 +213,9 @@ async function prepareFormElementCustomerEditProfile() {
     if (form && buttonSubmit && divMessageContainer) {
         _formElementCustomerEditProfile = new FormElementCustomerEditProfile(form, buttonSubmit, divMessageContainer);
         _formElementCustomerEditProfile.setInputImgElementCustomerAvatar(_inputImgElementCustomerAvatar);
-        _formElementCustomerEditProfile.setInputTextWithRuleElementCustomerNickname(_inputTextWithRuleElementCustomerNickname);
+        _formElementCustomerEditProfile.setInputTextWithRuleElementCustomerNicknameEdit(_inputTextWithRuleElementCustomerNicknameEdit);
         _formElementCustomerEditProfile.setSelectWithRuleElementCountries(_selectWithRuleElementCountries);
-        _formElementCustomerEditProfile.setTextareaElementWithRuleCustomerDescription(_textareaWithRuleElementCustomerDescription);
+        _formElementCustomerEditProfile.setTextareaWithCounterElementCustomerDescription(_textareaWithCounterElementCustomerDescription);
         _formElementCustomerEditProfile.setCustomerResponseDTO(_currentCustomer);
 
         await _formElementCustomerEditProfile.prepare();

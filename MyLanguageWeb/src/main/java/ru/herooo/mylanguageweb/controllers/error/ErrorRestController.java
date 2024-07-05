@@ -31,7 +31,7 @@ public class ErrorRestController {
 
         String maxSize = ENVIRONMENT.getProperty("spring.servlet.multipart.max-file-size");
         ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(statusCode.value(),
-                String.format("Максимальный размер файлов, разрешенный на сервере - %s.", maxSize));
+                String.format("Максимальный размер файлов, разрешенный на сервере - %s", maxSize));
 
         return new ResponseEntity<>(message, statusCode);
     }

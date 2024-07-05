@@ -279,10 +279,12 @@ export class TableWithTimerElementWorkoutsNotOver extends TableWithTimerAbstract
     }
 
     buildNewTable() {
+        // Создаём table ---
         let table = document.createElement("table");
         table.classList.add(_CSS_TABLE_ELEMENT.TABLE_ELEMENT_CLASS_ID);
+        //---
 
-        // colgroup таблицы ---
+        // Создаём colgroup ---
         let colgroup = document.createElement("colgroup");
 
         let col = document.createElement("col");
@@ -304,7 +306,7 @@ export class TableWithTimerElementWorkoutsNotOver extends TableWithTimerAbstract
         table.appendChild(colgroup);
         //---
 
-        // thead таблицы ---
+        // Создаём thead ---
         let thead = document.createElement("thead");
         thead.classList.add(_CSS_TABLE_ELEMENT.THEAD_TABLE_ELEMENT_SMALL_CLASS_ID);
 
@@ -329,9 +331,8 @@ export class TableWithTimerElementWorkoutsNotOver extends TableWithTimerAbstract
         table.appendChild(thead);
         //---
 
-        // tbody таблицы ---
+        // Создаём tbody ---
         let tbody = document.createElement("tbody");
-
         table.appendChild(tbody);
         //---
 

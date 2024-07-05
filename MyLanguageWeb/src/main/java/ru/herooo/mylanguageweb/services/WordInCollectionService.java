@@ -72,6 +72,10 @@ public class WordInCollectionService {
         WORD_IN_COLLECTION_CRUD_REPOSITORY.delete(wordInCollection);
     }
 
+    public void deleteAllByCustomerCollection(Long customerCollectionId, Long[] excludedIds) {
+        WORD_IN_COLLECTION_CRUD_REPOSITORY.deleteAllWordsToCustomerCollection(customerCollectionId, excludedIds);
+    }
+
     public void deleteAllWithoutActiveStatus() {
         WORD_IN_COLLECTION_CRUD_REPOSITORY.deleteAllWithoutActiveStatus();
     }

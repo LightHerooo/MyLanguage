@@ -90,7 +90,7 @@ public class CustomerService {
             String fileName = avatar.getOriginalFilename();
             if (fileName != null) {
                 try {
-                    OutsideFolder outsideFolder = OutsideFolders.AVATARS.FOLDER;
+                    OutsideFolder outsideFolder = OutsideFolders.CUSTOMER_AVATARS.FOLDER;
 
                     avatarFile = outsideFolder.createNewFile(avatar.getBytes(), fileName);
                     if (avatarFile != null && avatarFile.exists()) {

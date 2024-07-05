@@ -38,7 +38,7 @@ public class CustomerRolesRestController {
                     .toList();
             return ResponseEntity.ok(responseDTOs);
         } else {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Роли не найдены.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Роли не найдены");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -51,7 +51,7 @@ public class CustomerRolesRestController {
             return ResponseEntity.ok(dto);
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    String.format("Роль с кодом '%s' не найдена.", code));
+                    String.format("Роль с кодом '%s' не найдена", code));
             return ResponseEntity.badRequest().body(message);
         }
     }

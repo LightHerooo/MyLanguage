@@ -21,12 +21,14 @@ span.span-div-with-data-builder-element-row-left-content {
 
 span.span-div-with-data-builder-element-extra-content {
     font-weight: bold;
+    font-size: var(--small-font-size);
 }
 
 span.span-div-with-data-builder-element-show-more {
     cursor: pointer;
     font-style: italic;
     text-decoration: underline;
+    font-size: var(--small-font-size);
 }
 
 
@@ -58,7 +60,15 @@ div.div-with-img-and-data-builder-element-img-container {
     align-items: center;
 }
 
-div.div-with-img-and-data-builder-element-img-container > img {
+img.img-div-with-img-and-data-builder-element-img-with-background {
+    width: 128px;
+    height: 128px;
+
+    border: 2px solid black;
+    background: white;
+}
+
+img.img-div-with-img-and-data-builder-element-img-without-background {
     width: 128px;
     height: 128px;
 }

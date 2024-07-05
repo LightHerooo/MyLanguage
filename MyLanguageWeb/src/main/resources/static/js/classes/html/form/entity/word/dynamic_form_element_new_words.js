@@ -203,7 +203,7 @@ export class DynamicFormElementNewWords extends DynamicFormAbstractElement {
                 //---
 
                 this.showRule(_RULE_TYPES.ERROR,
-                    "Не удалось отправить некоторые слова на проверку. Попробуйте ещё раз.");
+                    "Не удалось отправить некоторые слова на проверку. Попробуйте ещё раз");
             }
         }
 

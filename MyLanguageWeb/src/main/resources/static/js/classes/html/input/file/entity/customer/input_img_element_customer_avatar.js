@@ -1,10 +1,10 @@
 import {
     InputImgElement
-} from "../input_img_element.js";
+} from "../../input_img_element.js";
 
 import {
     UrlPaths
-} from "../../../../url/path/url_paths.js";
+} from "../../../../../url/path/url_paths.js";
 
 const _URL_PATHS = new UrlPaths();
 

@@ -52,7 +52,7 @@ export class InputTextWithRuleElementCustomerLogin extends InputTextWithRuleElem
             if (!value) {
                 isCorrect = false;
                 ruleType = _RULE_TYPES.ERROR;
-                message = "Логин не может быть пустым.";
+                message = "Логин не может быть пустым";
             }
 
             if (isCorrect) {
@@ -60,7 +60,7 @@ export class InputTextWithRuleElementCustomerLogin extends InputTextWithRuleElem
                 if (!LOGIN_REGEXP.test(value)) {
                     isCorrect = false;
                     ruleType = _RULE_TYPES.ERROR;
-                    message = "Логин должен содержать только английские буквы, цифры и знаки подчеркивания [_].";
+                    message = "Логин должен содержать только английские буквы, цифры и знаки подчеркивания [_]";
                 }
             }
 

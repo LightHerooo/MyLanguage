@@ -13,7 +13,7 @@ export class DynamicFormRowDataAbstractElement extends DivAbstractElement {
     changeDisabledStatusToRowDataElements(isDisabled) {
         let isPrepared = this.getIsPrepared();
         if (!isPrepared) {
-            throw new Error("Object \'DynamicFormRowDataAbstractElement\' is not prepared.");
+            throw new Error("Object \'DynamicFormRowDataAbstractElement\' is not prepared");
         }
     }
 }

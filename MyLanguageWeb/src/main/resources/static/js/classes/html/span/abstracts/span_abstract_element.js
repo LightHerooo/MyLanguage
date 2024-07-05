@@ -41,7 +41,7 @@ export class SpanAbstractElement {
         if (!isPrepared) {
             this.#isPrepared = true;
         } else {
-            throw new Error("Object \'SpanAbstractElement\' has already been prepared.");
+            throw new Error("Object \'SpanAbstractElement\' has already been prepared");
         }
     }
 
@@ -54,7 +54,7 @@ export class SpanAbstractElement {
                 span.replaceChildren();
             }
         } else {
-            throw new Error("Object \'SpanAbstractElement\' is not prepared.");
+            throw new Error("Object \'SpanAbstractElement\' is not prepared");
         }
     }
 
@@ -71,7 +71,7 @@ export class SpanAbstractElement {
                 }
             }
         } else {
-            throw new Error("Object \'SpanAbstractElement\' is not prepared.");
+            throw new Error("Object \'SpanAbstractElement\' is not prepared");
         }
     }
 
@@ -86,7 +86,7 @@ export class SpanAbstractElement {
                 span.appendChild(new SpanRuleElement(ruleTypeObj, message).getSpan());
             }
         } else {
-            throw new Error("Object \'SpanAbstractElement\' is not prepared.");
+            throw new Error("Object \'SpanAbstractElement\' is not prepared");
         }
     }
 

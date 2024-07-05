@@ -51,7 +51,7 @@ export class InputPasswordWithRuleElement extends InputPasswordElement {
 
             this.#isPrepared = true;
         } else {
-            throw new Error("Object \'InputPasswordWithRuleElement\' has already been prepared.");
+            throw new Error("Object \'InputPasswordWithRuleElement\' has already been prepared");
         }
     }
 
@@ -74,7 +74,7 @@ export class InputPasswordWithRuleElement extends InputPasswordElement {
 
             this.#spanRuleElement = spanRuleElement;
         } else {
-            throw new Error("Object \'InputPasswordWithRuleElement\' is not prepared.");
+            throw new Error("Object \'InputPasswordWithRuleElement\' is not prepared");
         }
     }
 
@@ -92,7 +92,7 @@ export class InputPasswordWithRuleElement extends InputPasswordElement {
                 }
             }
         } else {
-            throw new Error("Object \'InputPasswordWithRuleElement\' is not prepared.");
+            throw new Error("Object \'InputPasswordWithRuleElement\' is not prepared");
         }
     }
 
@@ -121,7 +121,7 @@ export class InputPasswordWithRuleElement extends InputPasswordElement {
                 this.hideRule();
             }
         } else {
-            throw new Error("Object \'InputPasswordWithRuleElement\' is not prepared.");
+            throw new Error("Object \'InputPasswordWithRuleElement\' is not prepared");
         }
 
         return isCorrect;

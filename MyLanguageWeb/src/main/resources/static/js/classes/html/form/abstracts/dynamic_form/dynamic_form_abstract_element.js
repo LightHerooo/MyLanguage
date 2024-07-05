@@ -197,9 +197,8 @@ export class DynamicFormAbstractElement {
                     if (dynamicFormRowElement) {
                         let buttonWithImgElementDoubleClickDelete = dynamicFormRowElement.getButtonWithImgElementDoubleClickDelete();
                         if (buttonWithImgElementDoubleClickDelete) {
-                            buttonWithImgElementDoubleClickDelete.changeDisabledStatus(true);
+                            buttonWithImgElementDoubleClickDelete.turnOff(true);
                             buttonWithImgElementDoubleClickDelete.changeTitle(minNumberOfRowsMessage);
-                            buttonWithImgElementDoubleClickDelete.turnOff();
                         }
                     }
                 }
@@ -345,7 +344,7 @@ export class DynamicFormAbstractElement {
 
             this.#isPrepared = true;
         } else {
-            throw new Error("Object \'DynamicFormAbstractElement\' has already been prepared.");
+            throw new Error("Object \'DynamicFormAbstractElement\' has already been prepared");
         }
     }
 
@@ -449,7 +448,7 @@ export class DynamicFormAbstractElement {
     }
 
     async submit() {
-        this.showRule("Отправка формы не подготовлена", _RULE_TYPES.ERROR);
+        this.showRule( _RULE_TYPES.ERROR, "Отправка формы не подготовлена");
         return false;
     }
 
@@ -469,7 +468,7 @@ export class DynamicFormAbstractElement {
                 divMessageContainer.appendChild(new SpanLoadingElement(null).getSpan());
             }
         } else {
-            throw new Error("Object \'DynamicFormAbstractElement\' is not prepared.");
+            throw new Error("Object \'DynamicFormAbstractElement\' is not prepared");
         }
     }
 
@@ -483,7 +482,7 @@ export class DynamicFormAbstractElement {
                 divMessageContainer.appendChild(new SpanRuleElement(ruleTypeObj, message).getSpan());
             }
         } else {
-            throw new Error("Object \'DynamicFormAbstractElement\' is not prepared.");
+            throw new Error("Object \'DynamicFormAbstractElement\' is not prepared");
         }
     }
 
@@ -495,7 +494,7 @@ export class DynamicFormAbstractElement {
                 divMessageContainer.replaceChildren();
             }
         } else {
-            throw new Error("Object \'DynamicFormAbstractElement\' is not prepared.");
+            throw new Error("Object \'DynamicFormAbstractElement\' is not prepared");
         }
     }
 
@@ -528,7 +527,7 @@ export class DynamicFormAbstractElement {
             }
             //---
         } else {
-            throw new Error("Object \'DynamicFormAbstractElement\' is not prepared.");
+            throw new Error("Object \'DynamicFormAbstractElement\' is not prepared");
         }
     }
 }

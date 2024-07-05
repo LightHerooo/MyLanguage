@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title th:text="|${WEB_APP_NAME} - Мои коллекции|">Мои коллекции</title>
+    <title th:text="|${WEB_APP_NAME} - Мои коллекции|"></title>
     <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
 
     <link rel="stylesheet" type="text/css" href="/css/root.css">
@@ -17,111 +17,98 @@
     <link rel="stylesheet" type="text/css" href="/css/div/div_element.css">
     <link rel="stylesheet" type="text/css" href="/css/div/div_with_data_builder_element.css">
 
-    <link rel="stylesheet" type="text/css" href="/css/table/table_element.css">
     <link rel="stylesheet" type="text/css" href="/css/table/instruments_for_table.css">
+    <link rel="stylesheet" type="text/css" href="/css/table/table_element.css">
 
-    <link rel="stylesheet" type="text/css" href="/css/a/a_button_element.css">
     <link rel="stylesheet" type="text/css" href="/css/input/input_text_element.css">
     <link rel="stylesheet" type="text/css" href="/css/select/select_element.css">
     <link rel="stylesheet" type="text/css" href="/css/button/button_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/a/a_button_element.css">
 
+    <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_header.css">
     <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_big_header.css">
-    <link rel="stylesheet" type="text/css" href="/css/info_block/info_block.css">
 
     <link rel="stylesheet" type="text/css" href="/css/templates/customer_collections/show.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
 
     <script type="module" src="/js/templates/customer_collections/show.js"></script>
 </head>
-<body>
-    <header>
-        <div th:insert="~{layouts/header}"></div>
-    </header>
-    <main>
-        <div class="div-info-block-big-header-container">
-            <div class="div-info-block-big-header-img-container">
-                <img src="/images/templates/customer_collections/customer_collections.png"
-                     alt="customer_collections.png"/>
-            </div>
-            <div class="div-info-block-big-header-data-container">
-                <h1>Мои коллекции</h1>
-                <div>
-                    <span>
-                        Здесь вы можете посмотреть ваши коллекции со словами. Создавайте новые коллекции,
-                        добавляйте в них слова на странице <a href="/words">"Слова"</a>.
-                    </span>
-                </div>
-                <br>
-                <div id="div_customer_collections_statistic"
-                     style="min-height: 150px">
-                </div>
-                <br>
-            </div>
-        </div>
-        <div class="div-actions-container">
-            <a href="/customer_collections/new" class="a-button-with-img-and-span-element-vertical-128 a-button-element-default">
-                <span>
-                    <img src="/images/templates/customer_collections/new_collection.png"
-                         alt="new_collection.png"/>
-                </span>
-                <span>Создать новые коллекции</span>
-            </a>
-            <a href="/customer_collections/collections_settings" class="a-button-with-img-and-span-element-vertical-128 a-button-element-default">
-                <span>
-                    <img src="/images/templates/customer_collections/collections_settings.png"
+    <body>
+        <header>
+            <div th:insert="~{layouts/header}"></div>
+        </header>
+        <main>
+            <div class="div-info-block-big-header-container">
+                <div class="div-info-block-big-header-img-container">
+                    <img src="/images/templates/customer_collections/customer_collections.png"
                          alt="collections_settings.png"/>
-                </span>
-                <span>Управление коллекциями</span>
-            </a>
-        </div>
-        <div class="div-instruments-for-table-container-margin div-instruments-for-find-words-in-collection-container">
-            <div class="div-instrument-for-table-container">
-                <label for="input_text_finder">Слово</label>
-                <input id="input_text_finder" class="input-text-element" type="text" disabled>
-            </div>
-            <div class="div-instrument-for-table-container">
-                <label for="select_customer_collections">Коллекция</label>
-                <div id="div_select_customer_collections" class="div-select-with-flag-element-container">
-                    <select id="select_customer_collections" class="select-element" disabled></select>
+                </div>
+                <div class="div-info-block-big-header-data-container">
+                    <h1>Мои коллекции</h1>
                     <div>
+                        <span>
+                            На этой странице вы можете управлять своими коллекциями.
+                            У каждой коллекции можно просмотреть слова, которые в ней находятся, нажав на кнопку со стрелкой.
+                        </span>
+                    </div>
+                    <br>
+                    <div id="div_customer_collections_statistic"
+                         style="min-height: 150px">
+                    </div>
+                    <br>
+                </div>
+            </div>
+            <div class="div-info-block-header-container-margin">
+                <img src="/images/templates/customer_collections/customer_collection.png" alt="word.png"/>
+                <h1>Список коллекций</h1>
+            </div>
+            <div class="div-instruments-for-table-container div-instruments-for-find-customer-collections-container">
+                <div class="div-instrument-for-table-container">
+                    <label for="input_text_finder">Название коллекции</label>
+                    <input id="input_text_finder" class="input-text-element" type="text" disabled>
+                </div>
+                <div class="div-instrument-for-table-container">
+                    <label for="select_langs">Язык</label>
+                    <div id="div_select_langs" class="div-select-with-flag-element-container">
+                        <select id="select_langs" class="select-element" disabled></select>
                         <div>
-                            <span id="span_flag_select_customer_collections" ></span>
+                            <div>
+                                <span id="span_flag_select_langs"></span>
+                            </div>
                         </div>
                     </div>
                 </div>
+                <div class="div-instrument-for-table-container">
+                    <label for="select_is_active" class="label-element">Активный</label>
+                    <select id="select_is_active" class="select-element" disabled></select>
+                </div>
+                <div class="div-instrument-for-table-container">
+                    <label for="button_refresh"></label>
+                    <button id="button_refresh"
+                            class="button-with-img-element-32 button-element-default"
+                            title="Обновить" disabled>
+                        <img id="img_button_refresh" src="/images/other/refresh.png" alt="refresh.png"/>
+                    </button>
+                </div>
             </div>
-            <div class="div-instrument-for-table-container">
-                <label for="button_refresh"></label>
-                <button id="button_refresh"
-                        class="button-with-img-element-32 button-element-default"
-                        title="Обновить" disabled>
-                    <img id="img_button_refresh"
-                         src="/images/other/refresh.png"
-                         alt="refresh.png"/>
-                </button>
-            </div>
-        </div>
-        <div id="div_customer_collection_info"
-             class="div-info-block-container"
-             style="min-height: 200px"></div>
-        <table id="table_words_in_collection" class="table-element">
-            <colgroup id="colgroup_words_in_collection">
-                <col style="width: 5%;">
-                <col style="width: 65%;">
-                <col style="width: 30%;">
-                <col style="width: 50px;">
-            </colgroup>
-            <thead id="thead_words_in_collection"
-                   class="thead-table-element-medium">
-            <tr>
-                <th>№</th>
-                <th>Слово</th>
-                <th>Язык</th>
-                <th></th>
-            </tr>
-            </thead>
-            <tbody id="tbody_words_in_collection"></tbody>
-        </table>
-    </main>
-</body>
+            <table id="table_my_customer_collections" class="table-element">
+                <colgroup id="colgroup_my_customer_collections">
+                    <col style="width: 5%;">
+                    <col style="width: 75%;">
+                    <col style="width: 20%;">
+                    <col style="width: 80px;">
+                </colgroup>
+                <thead id="thead_my_customer_collections"
+                       class="thead-table-element-medium">
+                    <tr>
+                        <th>№</th>
+                        <th>Коллекция</th>
+                        <th>Активный</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="tbody_my_customer_collections"></tbody>
+            </table>
+        </main>
+    </body>
 </html>

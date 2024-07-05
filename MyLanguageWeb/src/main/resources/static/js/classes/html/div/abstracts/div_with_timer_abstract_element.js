@@ -71,7 +71,7 @@ export class DivWithTimerAbstractElement extends DivAbstractElement {
                 customTimer.start();
             }
         } else {
-            throw new Error("Object \'DivWithTimerAbstractElement\' is not prepared.");
+            throw new Error("Object \'DivWithTimerAbstractElement\' is not prepared");
         }
     }
     
@@ -83,7 +83,7 @@ export class DivWithTimerAbstractElement extends DivAbstractElement {
                 customTimer.stop();
             }
         } else {
-            throw new Error("Object \'DivWithTimerAbstractElement\' is not prepared.");
+            throw new Error("Object \'DivWithTimerAbstractElement\' is not prepared");
         }
     }
 
@@ -102,7 +102,7 @@ export class DivWithTimerAbstractElement extends DivAbstractElement {
                 div.appendChild(divContentCenter);
             }
         } else {
-            throw new Error("Object \'DivWithTimerAbstractElement\' is not prepared.");
+            throw new Error("Object \'DivWithTimerAbstractElement\' is not prepared");
         }
     }
 
@@ -123,7 +123,7 @@ export class DivWithTimerAbstractElement extends DivAbstractElement {
                 }
             }
         } else {
-            throw new Error("Object \'DivWithTimerAbstractElement\' is not prepared.");
+            throw new Error("Object \'DivWithTimerAbstractElement\' is not prepared");
         }
     }
 }

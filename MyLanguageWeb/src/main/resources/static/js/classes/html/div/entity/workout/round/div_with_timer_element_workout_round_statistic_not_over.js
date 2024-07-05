@@ -292,12 +292,12 @@ class TableElementWorkoutQuestionsWithoutAnswers extends TableAbstractElement {
 
 
     buildNewTable() {
-        // table ---
+        // Создаём table ---
         let table = document.createElement("table");
         table.classList.add(_CSS_TABLE_ELEMENT.TABLE_ELEMENT_CLASS_ID);
         //---
 
-        // thead ---
+        // Создаём thead ---
         let thead = document.createElement("thead");
         thead.classList.add(_CSS_TABLE_ELEMENT.THEAD_TABLE_ELEMENT_SMALL_CLASS_ID);
 
@@ -308,20 +308,12 @@ class TableElementWorkoutQuestionsWithoutAnswers extends TableAbstractElement {
         tr.appendChild(th);
 
         thead.appendChild(tr);
+        table.appendChild(thead);
         //---
 
-        // tbody ---
+        // Создаём tbody ---
         let tbody = document.createElement("tbody");
-        //---
-
-        // Добавляем элеметы в таблицу, если они не имеют родителя ---
-        if (thead && !thead.parentElement) {
-            table.appendChild(thead);
-        }
-
-        if (tbody && !tbody.parentElement) {
-            table.appendChild(tbody);
-        }
+        table.appendChild(tbody);
         //---
 
         this.setTable(table);
@@ -398,12 +390,12 @@ class TableElementWorkoutTrueAnswers extends TableAbstractElement {
 
 
     buildNewTable() {
-        // table ---
+        // Создаём table ---
         let table = document.createElement("table");
         table.classList.add(_CSS_TABLE_ELEMENT.TABLE_ELEMENT_CLASS_ID);
         //---
 
-        // thead
+        // Создаём thead
         let thead = document.createElement("thead");
         thead.classList.add(_CSS_TABLE_ELEMENT.THEAD_TABLE_ELEMENT_SMALL_CLASS_ID);
 
@@ -416,20 +408,12 @@ class TableElementWorkoutTrueAnswers extends TableAbstractElement {
         tr.appendChild(th);
 
         thead.appendChild(tr);
+        table.appendChild(thead);
         //---
 
-        // tbody ---
+        // Создаём tbody ---
         let tbody = document.createElement("tbody");
-        //---
-
-        // Добавляем элеметы в таблицу, если они не имеют родителя ---
-        if (thead && !thead.parentElement) {
-            table.appendChild(thead);
-        }
-
-        if (tbody && !tbody.parentElement) {
-            table.appendChild(tbody);
-        }
+        table.appendChild(tbody);
         //---
 
         this.setTable(table);
@@ -503,12 +487,12 @@ class TableElementWorkoutFalseAnswers extends TableAbstractElement {
 
 
     buildNewTable() {
-        // table ---
+        // Создаём table ---
         let table = document.createElement("table");
         table.classList.add(_CSS_TABLE_ELEMENT.TABLE_ELEMENT_CLASS_ID);
         //---
 
-        // thead ---
+        // Создаём thead ---
         let thead = document.createElement("thead");
         thead.classList.add(_CSS_TABLE_ELEMENT.THEAD_TABLE_ELEMENT_SMALL_CLASS_ID);
 
@@ -520,20 +504,12 @@ class TableElementWorkoutFalseAnswers extends TableAbstractElement {
         tr.appendChild(th);
 
         thead.appendChild(tr);
+        table.appendChild(thead);
         //---
 
-        // tbody ---
+        // Создаём tbody ---
         let tbody = document.createElement("tbody");
-        //---
-
-        // Добавляем элеметы в таблицу, если они не имеют родителя ---
-        if (thead && !thead.parentElement) {
-            table.appendChild(thead);
-        }
-
-        if (tbody && !tbody.parentElement) {
-            table.appendChild(tbody);
-        }
+        table.appendChild(tbody);
         //---
 
         this.setTable(table);
@@ -622,12 +598,12 @@ class TableElementWorkoutSuccessRate extends TableAbstractElement {
 
 
     buildNewTable() {
-        // table ---
+        // Создаём table ---
         let table = document.createElement("table");
         table.classList.add(_CSS_TABLE_ELEMENT.TABLE_ELEMENT_CLASS_ID);
         //---
 
-        // thead ---
+        // Создаём thead ---
         let thead = document.createElement("thead");
         thead.classList.add(_CSS_TABLE_ELEMENT.THEAD_TABLE_ELEMENT_SMALL_CLASS_ID);
 
@@ -641,20 +617,12 @@ class TableElementWorkoutSuccessRate extends TableAbstractElement {
         tr.appendChild(th);
 
         thead.appendChild(tr);
+        table.appendChild(thead);
         //---
 
-        // tbody ---
+        // Создаём tbody ---
         let tbody = document.createElement("tbody");
-        //---
-
-        // Добавляем элеметы в таблицу, если они не имеют родителя ---
-        if (thead && !thead.parentElement) {
-            table.appendChild(thead);
-        }
-
-        if (tbody && !tbody.parentElement) {
-            table.appendChild(tbody);
-        }
+        table.appendChild(tbody);
         //---
 
         this.setTable(table);

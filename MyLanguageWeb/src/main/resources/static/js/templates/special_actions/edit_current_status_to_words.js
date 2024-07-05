@@ -135,9 +135,9 @@ function prepareButtonWithImgAndTextElementDoubleClickDeleteInactiveWordsInColle
 
                 buttonWithImgAndSpanElementDoubleClick.refresh();
             } else {
-                buttonWithImgAndSpanElementDoubleClick.turnOff();
-                buttonWithImgAndSpanElementDoubleClick.changeTo(_BUTTON_WITH_IMG_AND_SPAN_ELEMENT_TYPES.DENY);
+                buttonWithImgAndSpanElementDoubleClick.turnOff(true);
 
+                buttonWithImgAndSpanElementDoubleClick.changeTo(_BUTTON_WITH_IMG_AND_SPAN_ELEMENT_TYPES.DENY);
                 buttonWithImgAndSpanElementDoubleClick.changeSpanText(
                     new ResponseMessageResponseDTO(jsonResponse.getJson()).getMessage());
             }
@@ -166,7 +166,7 @@ function prepareButtonWithImgAndTextElementDoubleClickDeleteAllUnclaimedWords() 
 
                 buttonWithImgAndSpanElementDoubleClick.refresh();
             } else {
-                buttonWithImgAndSpanElementDoubleClick.turnOff();
+                buttonWithImgAndSpanElementDoubleClick.turnOff(true);
                 buttonWithImgAndSpanElementDoubleClick.changeTo(_BUTTON_WITH_IMG_AND_SPAN_ELEMENT_TYPES.DENY);
 
                 buttonWithImgAndSpanElementDoubleClick.changeSpanText(
@@ -199,7 +199,7 @@ function prepareButtonWithImgAndTextElementDoubleClickAddWordStatusToWordsWithou
 
                 buttonWithImgAndSpanElementDoubleClick.refresh();
             } else {
-                buttonWithImgAndSpanElementDoubleClick.turnOff();
+                buttonWithImgAndSpanElementDoubleClick.turnOff(true);
                 buttonWithImgAndSpanElementDoubleClick.changeTo(
                     _BUTTON_WITH_IMG_AND_SPAN_ELEMENT_TYPES.DENY);
 

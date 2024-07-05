@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.validation.constraints.Size;
 import ru.herooo.mylanguageutils.StringUtils;
-import ru.herooo.mylanguageweb.controllers.json.LongDeserializer;
-import ru.herooo.mylanguageweb.controllers.json.LongSerializer;
+import ru.herooo.mylanguageweb.controllers.json.l.LongDeserializer;
+import ru.herooo.mylanguageweb.controllers.json.l.LongSerializer;
 
 public class WorkoutItemEditAnswerRequestDTO {
     private final StringUtils STRING_UTILS = new StringUtils();
@@ -15,7 +15,7 @@ public class WorkoutItemEditAnswerRequestDTO {
     @JsonDeserialize(using = LongDeserializer.class)
     private long id;
 
-    @Size(max = 44, message = "Длина ответа должна быть не более 44-х символов.")
+    @Size(max = 44, message = "Длина ответа должна быть не более 44-х символов")
     @JsonProperty("answer")
     private String answer;
 

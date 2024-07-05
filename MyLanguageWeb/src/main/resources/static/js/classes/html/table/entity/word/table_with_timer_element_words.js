@@ -47,10 +47,6 @@ import {
 } from "../../../../dto/entity/word_in_collection/response/word_in_collection_response_dto.js";
 
 import {
-    ButtonElementWordInCollectionAction
-} from "../../../button/entity/word_in_collection/button_element_word_in_collection_action.js";
-
-import {
     CustomerCollectionResponseDTO
 } from "../../../../dto/entity/customer_collection/response/customer_collection_response_dto.js";
 
@@ -70,6 +66,18 @@ import {
     EventNames
 } from "../../../event_names.js";
 
+import {
+    ButtonWithImgElement
+} from "../../../button/with_img/button_with_img_element.js";
+
+import {
+    ButtonWithImgElementTypes
+} from "../../../button/with_img/button_with_img_element_types.js";
+
+import {
+    EntityIdRequestDTO
+} from "../../../../dto/other/request/entity/entity_id_request_dto.js";
+
 const _WORDS_API = new WordsAPI();
 const _WORDS_IN_COLLECTION_API = new WordsInCollectionAPI();
 const _CUSTOMER_COLLECTIONS_API = new CustomerCollectionsAPI();
@@ -81,6 +89,7 @@ const _WORD_STATUSES = new WordStatuses();
 const _HTTP_STATUSES = new HttpStatuses();
 const _PROJECT_COOKIES = new ProjectCookies();
 const _BUTTON_WITH_IMG_ELEMENT_SIZES = new ButtonWithImgElementSizes();
+const _BUTTON_WITH_IMG_ELEMENT_TYPES = new ButtonWithImgElementTypes();
 const _EVENT_NAMES = new EventNames();
 
 export class TableWithTimerElementWords extends TableWithTimerAbstractElement {
@@ -211,14 +220,14 @@ export class TableWithTimerElementWords extends TableWithTimerAbstractElement {
         return tr;
     }
 
-    async #createButtonWordInCollectionAction(wordInCollectionRequestDTOObj) {
+    async #createButtonWordInCollectionAction(wordInCollectionAddRequestDTOObj) {
         let button;
-        if (wordInCollectionRequestDTOObj) {
+        if (wordInCollectionAddRequestDTOObj) {
             // Проводим предварительные проверки ---
             let isCorrect = true;
             let title;
 
-            let customerCollectionId = wordInCollectionRequestDTOObj.getCustomerCollectionId();
+            let customerCollectionId = wordInCollectionAddRequestDTOObj.getCustomerCollectionId();
             if (!customerCollectionId) {
                 isCorrect = false;
                 title = "Выберите коллекцию, чтобы взаимодействовать с ней";
@@ -227,32 +236,31 @@ export class TableWithTimerElementWords extends TableWithTimerAbstractElement {
 
             // Проверяем, нет ли слова в коллекции ---
             if (isCorrect) {
-                let wordId = wordInCollectionRequestDTOObj.getWordId();
+                let wordId = wordInCollectionAddRequestDTOObj.getWordId();
                 let jsonResponse = await _WORDS_IN_COLLECTION_API.GET.findWordInCollection(wordId, customerCollectionId);
                 if (jsonResponse.getStatus() === _HTTP_STATUSES.OK) {
                     let wordInCollection = new WordInCollectionResponseDTO(jsonResponse.getJson());
-                    wordInCollectionRequestDTOObj.setId(wordInCollection.getId());
+                    wordInCollectionAddRequestDTOObj.setId(wordInCollection.getId());
                 }
             }
             //---
 
             // Генерируем кнопку ---
-            let buttonElementWordInCollectionAction =
-                new ButtonElementWordInCollectionAction(null, null);
-            buttonElementWordInCollectionAction.setWordInCollectionAddRequestDTO(wordInCollectionRequestDTOObj);
-            buttonElementWordInCollectionAction.changeButtonWithImgElementSize(_BUTTON_WITH_IMG_ELEMENT_SIZES.SIZE_16);
+            let buttonWithImgElement = new ButtonWithImgElement(null, null);
+            buttonWithImgElement.changeButtonWithImgElementSize(_BUTTON_WITH_IMG_ELEMENT_SIZES.SIZE_16);
             if (isCorrect) {
-                if (!wordInCollectionRequestDTOObj.getId()) {
-                    await buttonElementWordInCollectionAction.changeToAdd();
+                if (!wordInCollectionAddRequestDTOObj.getId()) {
+                    await this.#changeToAddWordAction(buttonWithImgElement, wordInCollectionAddRequestDTOObj);
                 } else {
-                    await buttonElementWordInCollectionAction.changeToDelete();
+                    await this.#changeToDeleteWordAction(buttonWithImgElement, wordInCollectionAddRequestDTOObj);
                 }
             } else {
-                buttonElementWordInCollectionAction.changeToDisabled(title)
+                buttonWithImgElement.changeDisabledStatus(true);
+                buttonWithImgElement.changeTo(_BUTTON_WITH_IMG_ELEMENT_TYPES.DEFAULT)
+                buttonWithImgElement.changeTitle(title);
             }
-            //---
 
-            button = buttonElementWordInCollectionAction.getButton();
+            button = buttonWithImgElement.getButton();
             if (button) {
                 let self = this;
                 button.addEventListener(_EVENT_NAMES.BUTTON.CLICK, function () {
@@ -263,9 +271,109 @@ export class TableWithTimerElementWords extends TableWithTimerAbstractElement {
                     }
                 });
             }
+            //---
         }
 
         return button;
+    }
+
+    async #changeToAddWordAction(buttonWithImgElementObj, wordInCollectionAddRequestDTOObj) {
+        if (buttonWithImgElementObj) {
+            buttonWithImgElementObj.changeDisabledStatus(true);
+            buttonWithImgElementObj.changeTo(_BUTTON_WITH_IMG_ELEMENT_TYPES.ADD);
+            buttonWithImgElementObj.changeTitle("Добавить слово в коллекцию");
+
+            if (wordInCollectionAddRequestDTOObj) {
+                let jsonResponse = await _WORDS_IN_COLLECTION_API.POST.validateBeforeAdd(wordInCollectionAddRequestDTOObj);
+                if (jsonResponse.getStatus() === _HTTP_STATUSES.OK) {
+                    let button = buttonWithImgElementObj.getButton();
+                    if (button) {
+                        let self = this;
+                        button.onclick = async function () {
+                            buttonWithImgElementObj.changeDisabledStatus(true);
+
+                            let jsonResponse = await _WORDS_IN_COLLECTION_API.POST.add(wordInCollectionAddRequestDTOObj);
+                            if (jsonResponse.getStatus() === _HTTP_STATUSES.OK) {
+                                let wordInCollection = new WordInCollectionResponseDTO(jsonResponse.getJson());
+                                wordInCollectionAddRequestDTOObj.setId(wordInCollection.getId());
+
+                                let word = wordInCollection.getWord();
+                                if (wordInCollection) {
+                                    wordInCollectionAddRequestDTOObj.setWordId(word.getId());
+                                }
+
+                                let customerCollection = wordInCollection.getCustomerCollection();
+                                if (customerCollection) {
+                                    wordInCollectionAddRequestDTOObj.setCustomerCollectionId(customerCollection.getId());
+                                }
+
+                                await self.#changeToDeleteWordAction(buttonWithImgElementObj, wordInCollectionAddRequestDTOObj);
+                            } else {
+                                buttonWithImgElementObj.changeTitle(new ResponseMessageResponseDTO(
+                                    jsonResponse.getJson()).getMessage());
+                                button.onclick = null;
+                            }
+                        };
+
+                        buttonWithImgElementObj.changeDisabledStatus(false);
+                    }
+                } else {
+                    buttonWithImgElementObj.changeDisabledStatus(true);
+                    buttonWithImgElementObj.changeTitle(new ResponseMessageResponseDTO(jsonResponse.getJson()).getMessage());
+
+                    let button = buttonWithImgElementObj.getButton();
+                    if (button) {
+                        button.onclick = null;
+                    }
+                }
+            }
+        }
+    }
+
+    async #changeToDeleteWordAction(buttonWithImgElementObj, wordInCollectionAddRequestDTOObj) {
+        if (buttonWithImgElementObj) {
+            buttonWithImgElementObj.changeDisabledStatus(true);
+            buttonWithImgElementObj.changeTo(_BUTTON_WITH_IMG_ELEMENT_TYPES.DELETE);
+            buttonWithImgElementObj.changeTitle("Удалить слово из коллекцию");
+
+            if (wordInCollectionAddRequestDTOObj) {
+                let entityIdRequestDTO = new EntityIdRequestDTO();
+                entityIdRequestDTO.setId(wordInCollectionAddRequestDTOObj.getId());
+
+                let jsonResponse = await _WORDS_IN_COLLECTION_API.POST.validateBeforeDelete(entityIdRequestDTO);
+                if (jsonResponse.getStatus() === _HTTP_STATUSES.OK) {
+                    let button = buttonWithImgElementObj.getButton();
+                    if (button) {
+                        let self = this;
+                        button.onclick = async function() {
+                            buttonWithImgElementObj.changeDisabledStatus(true);
+
+                            if (wordInCollectionAddRequestDTOObj) {
+                                let jsonResponse = await _WORDS_IN_COLLECTION_API.DELETE.delete(entityIdRequestDTO);
+                                if (jsonResponse.getStatus() === _HTTP_STATUSES.OK) {
+                                    await self.#changeToAddWordAction(buttonWithImgElementObj, wordInCollectionAddRequestDTOObj);
+                                } else {
+                                    buttonWithImgElementObj.changeTitle(new ResponseMessageResponseDTO(
+                                        jsonResponse.getJson()).getMessage());
+                                    button.onclick = null;
+                                }
+                            }
+                        };
+
+                        buttonWithImgElementObj.changeDisabledStatus(false);
+                    }
+                } else {
+                    buttonWithImgElementObj.changeDisabledStatus(true);
+                    buttonWithImgElementObj.changeTitle(new ResponseMessageResponseDTO(
+                        jsonResponse.getJson()).getMessage());
+
+                    let button = buttonWithImgElementObj.getButton();
+                    if (button) {
+                        button.onclick = null;
+                    }
+                }
+            }
+        }
     }
 
 

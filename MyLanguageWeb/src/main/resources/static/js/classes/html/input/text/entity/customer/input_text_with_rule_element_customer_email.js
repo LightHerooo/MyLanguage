@@ -52,7 +52,7 @@ export class InputTextWithRuleElementCustomerEmail extends InputTextWithRuleElem
             if (!value) {
                 isCorrect = false;
                 ruleType = _RULE_TYPES.ERROR;
-                message = "Электронная почта не может быть пустой.";
+                message = "Электронная почта не может быть пустой";
             }
 
             if (isCorrect) {
@@ -60,7 +60,7 @@ export class InputTextWithRuleElementCustomerEmail extends InputTextWithRuleElem
                 if (!EMAIL_REGEXP.test(value)) {
                     isCorrect = false;
                     ruleType = _RULE_TYPES.ERROR;
-                    message = "Некорректная электронная почта.";
+                    message = "Некорректная электронная почта";
                 }
             }
 

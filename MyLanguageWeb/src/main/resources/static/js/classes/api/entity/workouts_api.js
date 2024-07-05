@@ -30,6 +30,7 @@ const _URL_TO_API_WORKOUTS_ADD = `${_URL_TO_API_WORKOUTS}/add`;
 const _URL_TO_API_WORKOUTS_EDIT = `${_URL_TO_API_WORKOUTS}/edit`;
 const _URL_TO_API_WORKOUTS_DELETE = `${_URL_TO_API_WORKOUTS}/delete`;
 
+
 export class WorkoutsAPI {
     GET = new WorkoutsGETRequests();
     POST = new WorkoutsPOSTRequests();

@@ -18,14 +18,14 @@ class ButtonsFolder {
     ARROW_RIGHT = `${this.#PATH_TO_FOLDER}/arrow_right.png`;
     ARROW_DOWN = `${this.#PATH_TO_FOLDER}/arrow_down.png`;
     REFRESH = `${this.#PATH_TO_FOLDER}/refresh.png`;
+    EDIT = `${this.#PATH_TO_FOLDER}/edit.png`;
+    WAIT = `${this.#PATH_TO_FOLDER}/wait.png`;
 }
 
 class OtherFolder {
     #PATH_TO_FOLDER = _PATH_TO_IMAGES_FOLDER + "/other";
 
     FLAME = `${this.#PATH_TO_FOLDER}/flame.png`;
-    HISTORY = `${this.#PATH_TO_FOLDER}/history.png`;
-    LOADING = `${this.#PATH_TO_FOLDER}/loading.gif`;
     BOOKS = `${this.#PATH_TO_FOLDER}/books.png`;
     ACCEPT = `${this.#PATH_TO_FOLDER}/accept.png`;
     DENY = `${this.#PATH_TO_FOLDER}/deny.png`;

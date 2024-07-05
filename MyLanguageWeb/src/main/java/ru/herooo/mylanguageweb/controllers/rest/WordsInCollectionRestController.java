@@ -82,7 +82,7 @@ public class WordsInCollectionRestController {
 
         if (numberOfItems == null || numberOfItems < 0) {
             ResponseMessageResponseDTO message =
-                    new ResponseMessageResponseDTO(1, "Количество записей не должно быть отприцательным.");
+                    new ResponseMessageResponseDTO(1, "Количество записей не должно быть отприцательным");
             return ResponseEntity.badRequest().body(message);
         }
 
@@ -90,7 +90,7 @@ public class WordsInCollectionRestController {
             ResponseMessageResponseDTO message =
                     new ResponseMessageResponseDTO(2,
                     "ID последнего слова в коллекции предыдущей страницы не должен быть отрицательным. " +
-                            "Если вы хотите отобразить первую страницу, укажите ID = 0.");
+                            "Если вы хотите отобразить первую страницу, укажите ID = 0");
             return ResponseEntity.badRequest().body(message);
         }
 
@@ -102,7 +102,7 @@ public class WordsInCollectionRestController {
             return ResponseEntity.ok(wordsDTO);
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(5,
-                    "Слова в коллекции по указанным фильтрам не найдены.");
+                    "Слова в коллекции по указанным фильтрам не найдены");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -141,7 +141,7 @@ public class WordsInCollectionRestController {
                     .mapToResponseDTO(wordInCollection);
             return ResponseEntity.ok(dto);
         } else {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Указанного слова нет в коллекции.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Указанного слова нет в коллекции");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -162,7 +162,7 @@ public class WordsInCollectionRestController {
             return ResponseEntity.ok(responseDTO);
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(2,
-                    "Произошла ошибка при добавлении слова в коллекцию.");
+                    "Произошла ошибка при добавлении слова в коллекцию");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -173,7 +173,7 @@ public class WordsInCollectionRestController {
         String validateAuthKey = CUSTOMER_SERVICE.validateAuthKey(request, dto.getAuthKey());
         dto.setAuthKey(validateAuthKey);
 
-        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.findExistsByAuthKey(dto.getAuthKey());
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.isExistsByAuthKey(dto.getAuthKey());
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
@@ -224,11 +224,11 @@ public class WordsInCollectionRestController {
         // Проверяем наличие слова в коллекции
         response = find(dto.getWordId(), dto.getCustomerCollectionId());
         if (response.getStatusCode() == HttpStatus.OK) {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(999, "Это слово уже есть в коллекции.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(999, "Это слово уже есть в коллекции");
             return ResponseEntity.badRequest().body(message);
         }
 
-        ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Данные для добавления корректны.");
+        ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Данные для добавления корректны");
         return ResponseEntity.ok(message);
     }
 
@@ -238,7 +238,7 @@ public class WordsInCollectionRestController {
         String validateAuthKey = CUSTOMER_SERVICE.validateAuthKey(request, dto.getAuthKey());
         dto.setAuthKey(validateAuthKey);
 
-        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.findExistsByAuthKey(dto.getAuthKey());
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.isExistsByAuthKey(dto.getAuthKey());
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
@@ -265,7 +265,7 @@ public class WordsInCollectionRestController {
             return response;
         }
 
-        ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Данные для удаления корректны.");
+        ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Данные для удаления корректны");
         return ResponseEntity.ok(message);
     }
     
@@ -283,7 +283,7 @@ public class WordsInCollectionRestController {
         WORD_IN_COLLECTION_SERVICE.delete(wordInCollection);
 
         ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                String.format("Слово '%s' успешно удалено из коллекции '%s'.",
+                String.format("Слово '%s' успешно удалено из коллекции '%s'",
                         wordInCollection.getWord().getTitle(), wordInCollection.getCustomerCollection().getTitle()));
         return ResponseEntity.ok(message);
     }
@@ -292,20 +292,20 @@ public class WordsInCollectionRestController {
     public ResponseEntity<?> deleteAllWithoutActiveStatus(HttpServletRequest request,
                                                           @RequestBody EntityAuthKeyRequestDTO dto) {
         String validateAuthKey = CUSTOMER_SERVICE.validateAuthKey(request, dto.getAuthKey());
-        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.findExistsByAuthKey(validateAuthKey);
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.isExistsByAuthKey(validateAuthKey);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
 
         Customer customer = CUSTOMER_SERVICE.findByAuthKey(validateAuthKey);
         if (!CUSTOMER_SERVICE.isSuperUser(customer)) {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "У вас недостаточно прав.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "У вас недостаточно прав");
             return ResponseEntity.badRequest().body(message);
         }
 
         WORD_IN_COLLECTION_SERVICE.deleteAllWithoutActiveStatus();
         ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                "Неактивные слова в коллекциях пользователей успешно удалены.");
+                "Неактивные слова в коллекциях пользователей успешно удалены");
         return ResponseEntity.ok(message);
     }
 }

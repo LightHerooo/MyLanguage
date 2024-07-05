@@ -84,7 +84,7 @@ public class WordStatusHistoriesRestController {
 
         if (numberOfItems == null || numberOfItems < 0) {
             ResponseMessageResponseDTO message =
-                    new ResponseMessageResponseDTO(1, "Количество записей не должно быть отрицательным.");
+                    new ResponseMessageResponseDTO(1, "Количество записей не должно быть отрицательным");
             return ResponseEntity.badRequest().body(message);
         }
 
@@ -93,7 +93,7 @@ public class WordStatusHistoriesRestController {
             ResponseMessageResponseDTO message =
                     new ResponseMessageResponseDTO(2,
                             "ID последнего слова на предыдущей странице не должен быть отрицательным. " +
-                                    "Если вы хотите отобразить первую страницу, укажите ID = 0.");
+                                    "Если вы хотите отобразить первую страницу, укажите ID = 0");
             return ResponseEntity.badRequest().body(message);
         }
 
@@ -128,7 +128,7 @@ public class WordStatusHistoriesRestController {
             return ResponseEntity.ok(responseDTOs);
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    String.format("История изменений слова с id = '%d' не найдена.", wordId));
+                    String.format("История изменений слова с id = '%d' не найдена", wordId));
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -141,7 +141,7 @@ public class WordStatusHistoriesRestController {
         String validateAuthKey = CUSTOMER_SERVICE.validateAuthKey(request, dto.getAuthKey());
         dto.setAuthKey(validateAuthKey);
 
-        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.findExistsByAuthKey(validateAuthKey);
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.isExistsByAuthKey(validateAuthKey);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
@@ -156,10 +156,10 @@ public class WordStatusHistoriesRestController {
         if (CUSTOMER_SERVICE.isSuperUser(customer)) {
             WORD_STATUS_HISTORY_SERVICE.addWordStatusToWordsWithoutStatus(wordStatusCode);
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    "Статусы к словам без статуса успешно добавлены.");
+                    "Статусы к словам без статуса успешно добавлены");
             return ResponseEntity.ok(message);
         } else {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "У вас недостаточно прав.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "У вас недостаточно прав");
             return ResponseEntity.badRequest().body(message);
         }
     }

@@ -14,14 +14,20 @@ import {
     HttpMethods
 } from "../classes/http/http_methods.js";
 
+import {
+    FormDataUtils
+} from "../utils/form_data_utils.js";
+
 const _JSON_UTILS = new JSONUtils();
 const _XML_UTILS = new XmlUtils();
 const _HTTP_METHODS = new HttpMethods();
+const _FORM_DATA_UTILS = new FormDataUtils();
 
 const _URL_TO_API_CUSTOMER_COLLECTIONS = `${new UrlToAPI().VALUE}/customer_collections`;
 const _URL_TO_API_CUSTOMER_COLLECTIONS_GET = `${_URL_TO_API_CUSTOMER_COLLECTIONS}/get`;
 const _URL_TO_API_CUSTOMER_COLLECTIONS_COUNT = `${_URL_TO_API_CUSTOMER_COLLECTIONS}/count`;
 const _URL_TO_API_CUSTOMER_COLLECTIONS_FIND = `${_URL_TO_API_CUSTOMER_COLLECTIONS}/find`;
+const _URL_TO_API_CUSTOMER_COLLECTIONS_EXISTS = `${_URL_TO_API_CUSTOMER_COLLECTIONS}/exists`;
 const _URL_TO_API_CUSTOMER_COLLECTIONS_VALIDATE = `${_URL_TO_API_CUSTOMER_COLLECTIONS}/validate`;
 const _URL_TO_API_CUSTOMER_COLLECTIONS_ADD = `${_URL_TO_API_CUSTOMER_COLLECTIONS}/add`;
 const _URL_TO_API_CUSTOMER_COLLECTIONS_EDIT = `${_URL_TO_API_CUSTOMER_COLLECTIONS}/edit`;
@@ -92,6 +98,22 @@ class CustomerCollectionsGETRequests {
         return await _XML_UTILS.sendGET(requestURL);
     }
 
+    async findByCustomerAndTitle(customerId, title) {
+        let requestURL = new URL(`${_URL_TO_API_CUSTOMER_COLLECTIONS_FIND}/by_customer_and_title`);
+        requestURL.searchParams.set("customer_id", customerId);
+        requestURL.searchParams.set("title", title);
+
+        return await _XML_UTILS.sendGET(requestURL);
+    }
+
+    async isExistsByCustomerAndTitle(customerId, title) {
+        let requestURL = new URL(`${_URL_TO_API_CUSTOMER_COLLECTIONS_EXISTS}/by_customer_and_title`);
+        requestURL.searchParams.set("customer_id", customerId);
+        requestURL.searchParams.set("title", title);
+
+        return await _XML_UTILS.sendGET(requestURL);
+    }
+
     async validateIsAuthor(customerId, customerCollectionId) {
         let requestURL = new URL(`${_URL_TO_API_CUSTOMER_COLLECTIONS_VALIDATE}/is_author`);
         requestURL.searchParams.set("customer_id", customerId);
@@ -150,6 +172,27 @@ class CustomerCollectionsPOSTRequests {
 
 class CustomerCollectionsPATCHRequests {
     #currentHttpMethod = _HTTP_METHODS.PATCH;
+
+    async edit(fileObjImage, customerCollectionEditRequestDTOObj) {
+        let requestURL = new URL(_URL_TO_API_CUSTOMER_COLLECTIONS_EDIT);
+
+        let jsonStr = _JSON_UTILS.stringify({
+            'id': customerCollectionEditRequestDTOObj.getId(),
+            'title': customerCollectionEditRequestDTOObj.getTitle(),
+            'is_active_for_author': customerCollectionEditRequestDTOObj.getIsActiveForAuthor(),
+            'description': customerCollectionEditRequestDTOObj.getDescription(),
+            'do_need_to_delete_all_words': customerCollectionEditRequestDTOObj.getDoNeedToDeleteAllWords(),
+            'excluded_word_in_collection_ids': customerCollectionEditRequestDTOObj.getExcludedWordInCollectionIdsArr()
+        });
+
+        let formData = new FormData();
+        if (fileObjImage) {
+            formData.set("image", fileObjImage);
+        }
+        formData.set("customer_collection", _FORM_DATA_UTILS.createBlobByJsonStr(jsonStr));
+
+        return await _XML_UTILS.sendFormData(requestURL, this.#currentHttpMethod, formData);
+    }
 
     async editIsActiveForAuthor(entityEditValueByIdRequestDTOObj) {
         let requestURL = new URL(`${_URL_TO_API_CUSTOMER_COLLECTIONS_EDIT}/is_active_for_author`);

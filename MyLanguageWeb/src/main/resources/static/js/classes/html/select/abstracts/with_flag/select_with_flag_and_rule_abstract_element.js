@@ -76,7 +76,7 @@ export class SelectWithFlagAndRuleAbstractElement extends SelectWithFlagAbstract
 
             this.#spanRuleElement = spanRuleElement;
         } else {
-            throw new Error("Object \'SelectWithFlagAndRuleAbstractElement\' is not prepared.");
+            throw new Error("Object \'SelectWithFlagAndRuleAbstractElement\' is not prepared");
         }
     }
 
@@ -94,7 +94,7 @@ export class SelectWithFlagAndRuleAbstractElement extends SelectWithFlagAbstract
                 }
             }
         } else {
-            throw new Error("Object \'SelectWithFlagAndRuleAbstractElement\' is not prepared.");
+            throw new Error("Object \'SelectWithFlagAndRuleAbstractElement\' is not prepared");
         }
     }
 
@@ -123,7 +123,7 @@ export class SelectWithFlagAndRuleAbstractElement extends SelectWithFlagAbstract
                 this.hideRule();
             }
         } else {
-            throw new Error("Object \'SelectWithFlagAndRuleAbstractElement\' is not prepared.");
+            throw new Error("Object \'SelectWithFlagAndRuleAbstractElement\' is not prepared");
         }
 
         return isCorrect;

@@ -10,4 +10,6 @@ export class CssDivWithDataBuilderElement {
 
     DIV_WITH_IMG_AND_DATA_BUILDER_ELEMENT_CONTAINER_CLASS_ID = "div-with-img-and-data-builder-element-container";
     DIV_WITH_IMG_AND_DATA_BUILDER_ELEMENT_IMG_CONTAINER_CLASS_ID = "div-with-img-and-data-builder-element-img-container";
+    IMG_DIV_WITH_IMG_AND_DATA_BUILDER_ELEMENT_IMG_WITH_BACKGROUND_CLASS_ID = "img-div-with-img-and-data-builder-element-img-with-background";
+    IMG_DIV_WITH_IMG_AND_DATA_BUILDER_ELEMENT_IMG_WITHOUT_BACKGROUND_CLASS_ID = "img-div-with-img-and-data-builder-element-img-without-background";
 }

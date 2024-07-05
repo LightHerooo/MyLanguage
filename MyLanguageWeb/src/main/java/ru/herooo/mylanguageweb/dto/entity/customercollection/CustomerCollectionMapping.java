@@ -11,9 +11,12 @@ import ru.herooo.mylanguagedb.repositories.WordInCollectionCrudRepository;
 import ru.herooo.mylanguageutils.StringUtils;
 import ru.herooo.mylanguageweb.dto.entity.customer.CustomerMapping;
 import ru.herooo.mylanguageweb.dto.entity.customercollection.request.CustomerCollectionAddRequestDTO;
+import ru.herooo.mylanguageweb.dto.entity.customercollection.request.CustomerCollectionEditRequestDTO;
 import ru.herooo.mylanguageweb.dto.entity.customercollection.response.CustomerCollectionResponseDTO;
 import ru.herooo.mylanguageweb.dto.entity.lang.LangMapping;
 import ru.herooo.mylanguageweb.dto.entity.lang.response.LangResponseDTO;
+
+import java.io.File;
 
 @Service
 public class CustomerCollectionMapping {
@@ -51,6 +54,8 @@ public class CustomerCollectionMapping {
         dto.setTitle(customerCollection.getTitle());
         dto.setDateOfCreate(customerCollection.getDateOfCreate());
         dto.setIsActiveForAuthor(customerCollection.isActiveForAuthor());
+        dto.setPathToImage(customerCollection.getPathToImage());
+        dto.setDescription(customerCollection.getDescription());
 
         long numberOfWords = WORD_IN_COLLECTION_CRUD_REPOSITORY.count(customerCollection.getId()).orElse(0L);
         dto.setNumberOfWords(numberOfWords);
@@ -67,36 +72,53 @@ public class CustomerCollectionMapping {
         return dto;
     }
 
-    // Маппинг для добавления (все вносимые поля не могут быть изменены)
     public CustomerCollection mapToCustomerCollection(CustomerCollectionAddRequestDTO dto) {
-        CustomerCollection collection = new CustomerCollection();
+        CustomerCollection customerCollection = new CustomerCollection();
 
         String authKey = dto.getAuthKey();
         if (!STRING_UTILS.isStringVoid(authKey)) {
             Customer customer = CUSTOMER_CRUD_REPOSITORY.findByAuthKey(authKey).orElse(null);
-            collection.setCustomer(customer);
+            customerCollection.setCustomer(customer);
         }
 
         String langCode = dto.getLangCode();
         if (!STRING_UTILS.isStringVoid(langCode)) {
             Lang lang = LANG_CRUD_REPOSITORY.findByCode(langCode).orElse(null);
-            collection.setLang(lang);
+            customerCollection.setLang(lang);
         }
 
-        return mapToCustomerCollection(collection, dto);
-    }
-
-    // Маппинг для изменения (все вносимые поля могут быть изменены)
-    public CustomerCollection mapToCustomerCollection(CustomerCollection oldCollection,
-                                                      CustomerCollectionAddRequestDTO dto) {
         String title = dto.getTitle();
         if (!STRING_UTILS.isStringVoid(title)) {
             title = title.trim();
             if (!STRING_UTILS.isStringVoid(title)) {
-                oldCollection.setTitle(title);
+                customerCollection.setTitle(title);
             }
         }
 
-        return oldCollection;
+        return customerCollection;
+    }
+
+    public CustomerCollection mapToCustomerCollection(CustomerCollection customerCollection,
+                                                      File imageFile,
+                                                      CustomerCollectionEditRequestDTO dto) {
+        if (customerCollection != null) {
+            if (imageFile != null && imageFile.exists()) {
+                customerCollection.setPathToImage("/customer_collections/images/" + imageFile.getName());
+            }
+
+            String title = dto.getTitle();
+            if (!STRING_UTILS.isStringVoid(title)) {
+                title = title.trim();
+                customerCollection.setTitle(title);
+            }
+
+            boolean isActiveForAuthor = dto.getIsActiveForAuthor();
+            customerCollection.setActiveForAuthor(isActiveForAuthor);
+
+            String description = dto.getDescription();
+            customerCollection.setDescription(description);
+        }
+
+        return customerCollection;
     }
 }

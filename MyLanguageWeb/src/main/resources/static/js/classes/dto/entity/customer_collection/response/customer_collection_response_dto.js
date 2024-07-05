@@ -11,6 +11,8 @@ export class CustomerCollectionResponseDTO {
     #title;
     #numberOfWords;
     #isActiveForAuthor;
+    #pathToImage;
+    #description;
     #dateOfCreate;
     #customer;
     #lang;
@@ -21,6 +23,8 @@ export class CustomerCollectionResponseDTO {
             this.#title = json["title"];
             this.#numberOfWords = json["number_of_words"];
             this.#isActiveForAuthor = json["is_active_for_author"];
+            this.#pathToImage = json["path_to_image"];
+            this.#description = json["description"];
 
             let dateOfCreate = json["date_of_create"];
             if (dateOfCreate) {
@@ -57,6 +61,14 @@ export class CustomerCollectionResponseDTO {
 
     getIsActiveForAuthor() {
         return this.#isActiveForAuthor;
+    }
+
+    getPathToImage() {
+        return this.#pathToImage;
+    }
+
+    getDescription() {
+        return this.#description;
     }
 
     getCustomer() {

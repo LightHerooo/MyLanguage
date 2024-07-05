@@ -12,7 +12,7 @@ import {
 
 import {
     SelectElementBoolean
-} from "../../classes/html/select/elements/select_element_boolean.js";
+} from "../../classes/html/select/elements/boolean/select_element_boolean.js";
 
 import {
     ButtonWithImgElement
@@ -139,7 +139,7 @@ function prepareButtonWithImgAndTextElementDoubleClickTurnOnSupportedLangsIn() {
 
                 buttonWithImgAndSpanElementDoubleClick.refresh();
             } else {
-                buttonWithImgAndSpanElementDoubleClick.turnOff();
+                buttonWithImgAndSpanElementDoubleClick.turnOff(true);
                 buttonWithImgAndSpanElementDoubleClick.changeTo(
                     _BUTTON_WITH_IMG_AND_SPAN_ELEMENT_TYPES.DENY);
 
@@ -170,10 +170,10 @@ function prepareButtonWithImgAndTextElementDoubleClickTurnOffUnsupportedLangsIn(
 
                 buttonWithImgAndSpanElementDoubleClick.refresh();
             } else {
-                buttonWithImgAndSpanElementDoubleClick.turnOff();
+                buttonWithImgAndSpanElementDoubleClick.turnOff(true);
+
                 buttonWithImgAndSpanElementDoubleClick.changeTo(
                     _BUTTON_WITH_IMG_AND_SPAN_ELEMENT_TYPES.DENY);
-
                 buttonWithImgAndSpanElementDoubleClick.changeSpanText(
                     new ResponseMessageResponseDTO(jsonResponse.getJson()).getMessage());
             }
@@ -201,10 +201,10 @@ function prepareButtonWithImgAndTextElementDoubleClickTurnOffLangsIn() {
 
                 buttonWithImgAndSpanElementDoubleClick.refresh();
             } else {
-                buttonWithImgAndSpanElementDoubleClick.turnOff();
+                buttonWithImgAndSpanElementDoubleClick.turnOff(true);
+
                 buttonWithImgAndSpanElementDoubleClick.changeTo(
                     _BUTTON_WITH_IMG_AND_SPAN_ELEMENT_TYPES.DENY);
-
                 buttonWithImgAndSpanElementDoubleClick.changeSpanText(
                     new ResponseMessageResponseDTO(jsonResponse.getJson()).getMessage());
             }
@@ -232,10 +232,10 @@ function prepareButtonWithImgAndTextElementDoubleClickTurnOnSupportedLangsOut() 
 
                 buttonWithImgAndSpanElementDoubleClick.refresh();
             } else {
-                buttonWithImgAndSpanElementDoubleClick.turnOff();
+                buttonWithImgAndSpanElementDoubleClick.turnOff(true);
+
                 buttonWithImgAndSpanElementDoubleClick.changeTo(
                     _BUTTON_WITH_IMG_AND_SPAN_ELEMENT_TYPES.DENY);
-
                 buttonWithImgAndSpanElementDoubleClick.changeSpanText(
                     new ResponseMessageResponseDTO(jsonResponse.getJson()).getMessage());
             }
@@ -263,10 +263,10 @@ function prepareButtonWithImgAndTextElementDoubleClickTurnOffUnsupportedLangsOut
 
                 buttonWithImgAndSpanElementDoubleClick.refresh();
             } else {
-                buttonWithImgAndSpanElementDoubleClick.turnOff();
+                buttonWithImgAndSpanElementDoubleClick.turnOff(true);
+
                 buttonWithImgAndSpanElementDoubleClick.changeTo(
                     _BUTTON_WITH_IMG_AND_SPAN_ELEMENT_TYPES.DENY);
-
                 buttonWithImgAndSpanElementDoubleClick.changeSpanText(
                     new ResponseMessageResponseDTO(jsonResponse.getJson()).getMessage());
             }
@@ -294,10 +294,10 @@ function prepareButtonWithImgAndTextElementDoubleClickTurnOffLangsOut() {
 
                 buttonWithImgAndSpanElementDoubleClick.refresh();
             } else {
-                buttonWithImgAndSpanElementDoubleClick.turnOff();
+                buttonWithImgAndSpanElementDoubleClick.turnOff(true);
+
                 buttonWithImgAndSpanElementDoubleClick.changeTo(
                     _BUTTON_WITH_IMG_AND_SPAN_ELEMENT_TYPES.DENY);
-
                 buttonWithImgAndSpanElementDoubleClick.changeSpanText(
                     new ResponseMessageResponseDTO(jsonResponse.getJson()).getMessage());
             }

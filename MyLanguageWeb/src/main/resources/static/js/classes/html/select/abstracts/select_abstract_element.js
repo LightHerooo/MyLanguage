@@ -114,7 +114,7 @@ export class SelectAbstractElement {
 
             this.#isPrepared = true;
         } else {
-            throw new Error("Object \'SelectAbstractElement\' has already been prepared.");
+            throw new Error("Object \'SelectAbstractElement\' has already been prepared");
         }
     }
 
@@ -128,7 +128,7 @@ export class SelectAbstractElement {
             this.#changeBackgroundBySelectedOption();
             //---
         } else {
-            throw new Error("Object \'SelectAbstractElement\' is not prepared.");
+            throw new Error("Object \'SelectAbstractElement\' is not prepared");
         }
     }
 
@@ -149,7 +149,7 @@ export class SelectAbstractElement {
             this.#changeBackgroundBySelectedOption();
             //---
         } else {
-            throw new Error("Object \'SelectAbstractElement\' is not prepared.");
+            throw new Error("Object \'SelectAbstractElement\' is not prepared");
         }
     }
 
@@ -165,7 +165,7 @@ export class SelectAbstractElement {
                 }
             }
         } else {
-            throw new Error("Object \'SelectAbstractElement\' is not prepared.");
+            throw new Error("Object \'SelectAbstractElement\' is not prepared");
         }
 
         return selectedOption;
@@ -180,7 +180,7 @@ export class SelectAbstractElement {
                 selectedValue = selectedOption.value;
             }
         } else {
-            throw new Error("Object \'SelectAbstractElement\' is not prepared.");
+            throw new Error("Object \'SelectAbstractElement\' is not prepared");
         }
 
         return selectedValue;
@@ -195,7 +195,7 @@ export class SelectAbstractElement {
                 select.replaceChildren();
             }
         } else {
-            throw new Error("Object \'SelectAbstractElement\' is not prepared.");
+            throw new Error("Object \'SelectAbstractElement\' is not prepared");
         }
     }
 
@@ -207,7 +207,7 @@ export class SelectAbstractElement {
                 select.appendChild(option);
             }
         } else {
-            throw new Error("Object \'SelectAbstractElement\' is not prepared.");
+            throw new Error("Object \'SelectAbstractElement\' is not prepared");
         }
     }
 
@@ -232,7 +232,7 @@ export class SelectAbstractElement {
                 }
             }
         } else {
-            throw new Error("Object \'SelectAbstractElement\' is not prepared.");
+            throw new Error("Object \'SelectAbstractElement\' is not prepared");
         }
     }
 
@@ -248,7 +248,7 @@ export class SelectAbstractElement {
                 }
             }
         } else {
-            throw new Error("Object \'SelectAbstractElement\' is not prepared.");
+            throw new Error("Object \'SelectAbstractElement\' is not prepared");
         }
     }
 
@@ -260,7 +260,7 @@ export class SelectAbstractElement {
                 select.title = title;
             }
         } else {
-            throw new Error("Object \'SelectAbstractElement\' is not prepared.");
+            throw new Error("Object \'SelectAbstractElement\' is not prepared");
         }
     }
 
@@ -272,7 +272,7 @@ export class SelectAbstractElement {
                 select.disabled = isDisabled;
             }
         } else {
-            throw new Error("Object \'SelectAbstractElement\' is not prepared.");
+            throw new Error("Object \'SelectAbstractElement\' is not prepared");
         }
     }
 
@@ -284,7 +284,7 @@ export class SelectAbstractElement {
                 select.readOnly = isReadOnly;
             }
         } else {
-            throw new Error("Object \'SelectAbstractElement\' is not prepared.");
+            throw new Error("Object \'SelectAbstractElement\' is not prepared");
         }
     }
 
@@ -297,7 +297,7 @@ export class SelectAbstractElement {
                 _HTML_UTILS.callEvent(select, eventName);
             }
         } else {
-            throw new Error("Object \'SelectAbstractElement\' is not prepared.");
+            throw new Error("Object \'SelectAbstractElement\' is not prepared");
         }
     }
 

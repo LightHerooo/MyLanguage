@@ -74,7 +74,7 @@ export class ButtonElementRefresh extends ButtonWithImgElement {
 
             this.#isPrepared = true;
         } else {
-            throw new Error("Object \'ButtonElementRefresh\' has already been prepared.");
+            throw new Error("Object \'ButtonElementRefresh\' has already been prepared");
         }
     }
 }

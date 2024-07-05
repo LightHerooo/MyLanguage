@@ -112,7 +112,7 @@ export class InputCheckboxElement {
 
             this.#isPrepared = true;
         } else {
-            throw new Error("Object \'InputCheckboxElement\' has already been prepared.");
+            throw new Error("Object \'InputCheckboxElement\' has already been prepared");
         }
     }
 
@@ -125,7 +125,7 @@ export class InputCheckboxElement {
                 label.textContent = str;
             }
         } else {
-            throw new Error("Object \'InputCheckboxElement\' is not prepared.");
+            throw new Error("Object \'InputCheckboxElement\' is not prepared");
         }
     }
 
@@ -137,7 +137,7 @@ export class InputCheckboxElement {
                 inputCheckbox.checked = isChecked;
             }
         } else {
-            throw new Error("Object \'InputCheckboxElement\' is not prepared.");
+            throw new Error("Object \'InputCheckboxElement\' is not prepared");
         }
     }
 
@@ -160,7 +160,7 @@ export class InputCheckboxElement {
                 }
             }
         } else {
-            throw new Error("Object \'InputCheckboxElement\' is not prepared.");
+            throw new Error("Object \'InputCheckboxElement\' is not prepared");
         }
     }
 }

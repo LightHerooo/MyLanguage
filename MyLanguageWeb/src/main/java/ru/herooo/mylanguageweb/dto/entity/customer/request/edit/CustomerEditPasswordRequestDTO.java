@@ -9,12 +9,12 @@ public class CustomerEditPasswordRequestDTO {
     @JsonProperty("old_password")
     private String oldPassword;
 
-    @NotBlank(message = "Пароль не может быть пустым.")
-    @Size(min = 8, message = "Минимальная длина пароля - 8 символов.")
+    @NotBlank(message = "Пароль не может быть пустым")
+    @Size(min = 8, message = "Минимальная длина пароля - 8 символов")
     @Pattern.List({
-            @Pattern(regexp = "^.*[0-9]+.*$", message = "Пароль должен содержать хотя бы одну цифру."),
+            @Pattern(regexp = "^.*[0-9]+.*$", message = "Пароль должен содержать хотя бы одну цифру"),
             @Pattern(regexp = "^.*[%$?~#]+.*$",
-                    message = "Пароль должен содержать хотя бы один специальный символ (%, $, ?, ~, #).")
+                    message = "Пароль должен содержать хотя бы один специальный символ (%, $, ?, ~, #)")
     })
     @JsonProperty("new_password")
     private String newPassword;

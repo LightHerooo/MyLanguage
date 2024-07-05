@@ -196,7 +196,7 @@ export class TableAbstractElement {
         if (!isPrepared) {
             this.#isPrepared = true;
         } else {
-            throw new Error("Object \'TableAbstractElement\' has already been prepared.");
+            throw new Error("Object \'TableAbstractElement\' has already been prepared");
         }
     }
 
@@ -218,7 +218,7 @@ export class TableAbstractElement {
                 tbody.replaceChildren();
             }
         } else {
-            throw new Error("Object \'TableAbstractElement\' is not prepared.");
+            throw new Error("Object \'TableAbstractElement\' is not prepared");
         }
     }
 
@@ -245,7 +245,7 @@ export class TableAbstractElement {
                 this.addTr(tr);
             }
         } else {
-            throw new Error("Object \'TableAbstractElement\' is not prepared.");
+            throw new Error("Object \'TableAbstractElement\' is not prepared");
         }
     }
 
@@ -258,7 +258,7 @@ export class TableAbstractElement {
                 tbody.appendChild(tr);
             }
         } else {
-            throw new Error("Object \'TableAbstractElement\' is not prepared.");
+            throw new Error("Object \'TableAbstractElement\' is not prepared");
         }
     }
 
@@ -279,7 +279,7 @@ export class TableAbstractElement {
                 }
             }
         } else {
-            throw new Error("Object \'TableAbstractElement\' is not prepared.");
+            throw new Error("Object \'TableAbstractElement\' is not prepared");
         }
     }
 
@@ -296,7 +296,7 @@ export class TableAbstractElement {
                 }
             });
         } else {
-            throw new Error("Object \'TableAbstractElement\' is not prepared.");
+            throw new Error("Object \'TableAbstractElement\' is not prepared");
         }
     }
 

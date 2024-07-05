@@ -1,6 +1,6 @@
 import {
     DynamicFormElementNewCustomerCollections
-} from "../../classes/html/form/entity/customer_collection/dynamic_form_element_new_customer_collections.js";
+} from "../../classes/html/form/entity/customer_collection/new/dynamic_form_element_new_customer_collections.js";
 
 // Динамическая форма ---
 let _dynamicFormElementNewCustomerCollections;

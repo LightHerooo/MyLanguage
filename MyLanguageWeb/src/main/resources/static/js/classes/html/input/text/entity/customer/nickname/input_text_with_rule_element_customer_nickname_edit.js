@@ -1,37 +1,43 @@
 import {
     InputTextWithRuleElement
-} from "../../input_text_with_rule_element.js";
+} from "../../../input_text_with_rule_element.js";
 
 import {
     RuleTypes
-} from "../../../../span/elements/rule/rule_types.js";
+} from "../../../../../span/elements/rule/rule_types.js";
 
 import {
     CustomTimer
-} from "../../../../../timer/custom_timer.js";
+} from "../../../../../../timer/custom_timer.js";
 
 import {
     CustomersAPI
-} from "../../../../../api/entity/customers_api.js";
+} from "../../../../../../api/entity/customers_api.js";
 
 import {
     HttpStatuses
-} from "../../../../../api/classes/http/http_statuses.js";
+} from "../../../../../../api/classes/http/http_statuses.js";
 
 import {
     ResponseMessageResponseDTO
-} from "../../../../../dto/other/response/response_message_response_dto.js";
+} from "../../../../../../dto/other/response/response_message_response_dto.js";
+
+import {
+    InputTextElementCustomerNicknameUtils
+} from "./input_text_element_customer_nickname_utils.js";
 
 import {
     CustomerResponseDTO
-} from "../../../../../dto/entity/customer/response/customer_response_dto.js";
+} from "../../../../../../dto/entity/customer/response/customer_response_dto.js";
 
 const _CUSTOMERS_API = new CustomersAPI();
 
 const _RULE_TYPES = new RuleTypes();
 const _HTTP_STATUSES = new HttpStatuses();
 
-export class InputTextWithRuleElementCustomerNickname extends InputTextWithRuleElement {
+const _INPUT_TEXT_ELEMENT_CUSTOMER_NICKNAME_UTILS = new InputTextElementCustomerNicknameUtils();
+
+export class InputTextWithRuleElementCustomerNicknameEdit extends InputTextWithRuleElement {
     #customerId;
 
     #customTimer = new CustomTimer();
@@ -44,13 +50,9 @@ export class InputTextWithRuleElementCustomerNickname extends InputTextWithRuleE
         this.#customerId = customerId;
     }
 
-
     async checkCorrectValue() {
         let isCorrect = await super.checkCorrectValue();
         if (isCorrect) {
-            let ruleType;
-            let message;
-
             // Останавливаем таймер, чтобы завершить предыдущие проверки ---
             let customTimer = this.#customTimer;
             if (customTimer) {
@@ -58,25 +60,15 @@ export class InputTextWithRuleElementCustomerNickname extends InputTextWithRuleE
             }
             //---
 
-            let value = this.getValue();
-            if (!value) {
-                isCorrect = false;
-                ruleType = _RULE_TYPES.ERROR;
-                message = "Никнейм не может быть пустым.";
-            }
-
-            if (isCorrect) {
-                const NICKNAME_MIN_SIZE = 3;
-                const NICKNAME_MAX_SIZE = 15;
-                if (value.length < NICKNAME_MIN_SIZE || value.length > NICKNAME_MAX_SIZE) {
-                    isCorrect = false;
-                    ruleType = _RULE_TYPES.ERROR;
-                    message = `Никнейм должен быть от ${NICKNAME_MIN_SIZE} до ${NICKNAME_MAX_SIZE} символов.`;
-                }
-            }
+            // Проводим общие проверки ---
+            isCorrect = _INPUT_TEXT_ELEMENT_CUSTOMER_NICKNAME_UTILS.checkCorrectValue(this);
+            //---
 
             if (isCorrect) {
                 this.hideRule();
+
+                let ruleType;
+                let message;
 
                 let self = this;
                 let customTimerPromise = new Promise(resolve => {
@@ -84,13 +76,15 @@ export class InputTextWithRuleElementCustomerNickname extends InputTextWithRuleE
                     if (customTimer) {
                         customTimer.setTimeout(250);
                         customTimer.setHandler(async function() {
+                            let value = self.getValue();
+
                             let jsonResponse = await _CUSTOMERS_API.GET.isExistsByNickname(value);
                             if (jsonResponse.getStatus() === _HTTP_STATUSES.OK) {
                                 isCorrect = false;
                                 ruleType = _RULE_TYPES.ERROR;
                                 message = new ResponseMessageResponseDTO(jsonResponse.getJson()).getMessage();
 
-                                // Если указан id пользователя, то мы должны проверить совпадение по его никнейму ---
+                                // Сравниваем никнейм пользователя с введённым никнеймом ---
                                 let customerId = self.#customerId;
                                 if (customerId && customTimer.getIsActive()) {
                                     jsonResponse = await _CUSTOMERS_API.GET.findByNickname(value);
@@ -106,6 +100,7 @@ export class InputTextWithRuleElementCustomerNickname extends InputTextWithRuleE
 
                             resolve();
                         });
+
                         customTimer.start();
                     } else {
                         resolve();
@@ -113,12 +108,13 @@ export class InputTextWithRuleElementCustomerNickname extends InputTextWithRuleE
                 });
 
                 await customTimerPromise;
-            }
+                //---
 
-            if (!isCorrect) {
-                this.showRule(ruleType, message);
-            } else {
-                this.hideRule();
+                if (!isCorrect) {
+                    this.showRule(ruleType, message);
+                } else {
+                    this.hideRule();
+                }
             }
         }
 

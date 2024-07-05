@@ -107,7 +107,7 @@ public class WordsRestController {
 
         if (numberOfItems == null || numberOfItems < 0) {
             ResponseMessageResponseDTO message =
-                    new ResponseMessageResponseDTO(1, "Количество записей не должно быть отрицательным.");
+                    new ResponseMessageResponseDTO(1, "Количество записей не должно быть отрицательным");
             return ResponseEntity.badRequest().body(message);
         }
 
@@ -116,7 +116,7 @@ public class WordsRestController {
             ResponseMessageResponseDTO message =
                     new ResponseMessageResponseDTO(2,
                             "ID последнего слова на предыдущей странице не должен быть отрицательным. " +
-                                    "Если вы хотите отобразить первую страницу, укажите ID = 0.");
+                                    "Если вы хотите отобразить первую страницу, укажите ID = 0");
             return ResponseEntity.badRequest().body(message);
         }
 
@@ -126,7 +126,7 @@ public class WordsRestController {
             List<WordResponseDTO> wordsDTOs = words.stream().map(WORD_MAPPING::mapToResponseDTO).toList();
             return ResponseEntity.ok(wordsDTOs);
         } else {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Слова по указанным фильтрам не найдены.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Слова по указанным фильтрам не найдены");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -142,7 +142,7 @@ public class WordsRestController {
             return ResponseEntity.ok(responseDTOs);
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    "Не удалось получить статистику слов по статусам слов.");
+                    "Не удалось получить статистику слов по статусам слов");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -164,7 +164,7 @@ public class WordsRestController {
             return ResponseEntity.ok(responseDTOs);
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    String.format("Не удалось получить статистику слов пользователя с id = '%d' по статусам слов.",
+                    String.format("Не удалось получить статистику слов пользователя с id = '%d' по статусам слов",
                             customerId));
             return ResponseEntity.badRequest().body(message);
         }
@@ -177,7 +177,7 @@ public class WordsRestController {
             date = LocalDate.parse(dateOfCreate);
         } catch (Throwable e) {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    "Введена некорректная дата. Введите дату в формате 'yyyy-MM-dd'.");
+                    "Введена некорректная дата. Введите дату в формате 'yyyy-MM-dd'");
             return ResponseEntity.badRequest().body(message);
         }
 
@@ -194,7 +194,7 @@ public class WordsRestController {
             return ResponseEntity.ok(wordResponseDTO);
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(2,
-                    String.format("Слово с id = '%d' не найдено.", id));
+                    String.format("Слово с id = '%d' не найдено", id));
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -222,7 +222,7 @@ public class WordsRestController {
             return ResponseEntity.ok(responseDTO);
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    "Произошла ошибка при добавлении слова.");
+                    "Произошла ошибка при добавлении слова");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -234,7 +234,7 @@ public class WordsRestController {
         dto.setAuthKey(validateAuthKey);
 
         // Проверяем авторизированного пользователя
-        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.findExistsByAuthKey(dto.getAuthKey());
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.isExistsByAuthKey(dto.getAuthKey());
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
@@ -268,7 +268,7 @@ public class WordsRestController {
         List<Word> blockedWords = WORD_SERVICE.findAllWithCurrentTitle(dto.getTitle(),
                 WordStatuses.BLOCKED.CODE);
         if (blockedWords.size() > 0) {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(4, "Это слово запрещено.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(4, "Это слово запрещено");
             return ResponseEntity.badRequest().body(message);
         }
 
@@ -282,15 +282,15 @@ public class WordsRestController {
             WordStatusHistory wordStatusHistory = WORD_STATUS_HISTORY_SERVICE.findCurrent(word.getId());
             if (wordStatusHistory != null
                     && wordStatusHistory.getWordStatus().getId() == WordStatuses.NEW.ID) {
-                message = new ResponseMessageResponseDTO(5, "Это слово уже предложено и находится на рассмотрении.");
+                message = new ResponseMessageResponseDTO(5, "Это слово уже предложено и находится на рассмотрении");
             } else {
-                message = new ResponseMessageResponseDTO(6, "Это слово уже существует.");
+                message = new ResponseMessageResponseDTO(6, "Это слово уже существует");
             }
 
             return ResponseEntity.badRequest().body(message);
         }
 
-        ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Данные для добавления слова корректны.");
+        ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Данные для добавления слова корректны");
         return ResponseEntity.ok(message);
     }
 
@@ -303,7 +303,7 @@ public class WordsRestController {
         dto.setAuthKey(validateAuthKey);
 
         // Проверяем авторизированного пользователя
-        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.findExistsByAuthKey(dto.getAuthKey());
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.isExistsByAuthKey(dto.getAuthKey());
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
@@ -311,7 +311,7 @@ public class WordsRestController {
         // Изменять статус словам может только суперпользователь
         Customer customer = CUSTOMER_SERVICE.findByAuthKey(dto.getAuthKey());
         if (!CUSTOMER_SERVICE.isSuperUser(customer)) {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "У вас недостаточно прав.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "У вас недостаточно прав");
             return ResponseEntity.badRequest().body(message);
         }
 
@@ -342,7 +342,7 @@ public class WordsRestController {
         if (blockedWords.size() > 0 && wordStatus.getId() != WordStatuses.UNCLAIMED.ID) {
             WordStatus unclaimedWordStatus = WORD_STATUS_SERVICE.find(WordStatuses.UNCLAIMED);
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(3,
-                    String.format("Это слово уже запрещено. Установите этому слову статус '%s'.",
+                    String.format("Это слово уже запрещено. Установите этому слову статус '%s'",
                             unclaimedWordStatus.getTitle()));
             return ResponseEntity.badRequest().body(message);
         }
@@ -353,12 +353,12 @@ public class WordsRestController {
             WORD_STATUS_HISTORY_SERVICE.addWordStatusToWord(word.getId(), wordStatus.getCode());
 
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    String.format("Статус слова c id = '%d' успешно изменён на '%s'.",
+                    String.format("Статус слова c id = '%d' успешно изменён на '%s'",
                             word.getId(), wordStatus.getTitle()));
             return ResponseEntity.ok(message);
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    String.format("Слово уже имеет статус '%s'. Выберите другой статус.", wordStatus.getTitle()));
+                    String.format("Слово уже имеет статус '%s'. Выберите другой статус", wordStatus.getTitle()));
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -369,7 +369,7 @@ public class WordsRestController {
     public ResponseEntity<?> deleteAllUnclaimed(HttpServletRequest request,
                                                 @RequestBody EntityAuthKeyRequestDTO dto) {
         String validateAuthKey = CUSTOMER_SERVICE.validateAuthKey(request, dto.getAuthKey());
-        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.findExistsByAuthKey(validateAuthKey);
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.isExistsByAuthKey(validateAuthKey);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
@@ -378,10 +378,10 @@ public class WordsRestController {
         if (CUSTOMER_SERVICE.isSuperUser(customer)) {
             WORD_SERVICE.deleteAllUnclaimed();
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    "Все невостребованные слова успешно удалены.");
+                    "Все невостребованные слова успешно удалены");
             return ResponseEntity.ok(message);
         } else {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "У вас недостаточно прав.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "У вас недостаточно прав");
             return ResponseEntity.badRequest().body(message);
         }
     }

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${WEB_APP_NAME} + ' - Изменение коллекции №' + ${CUSTOMER_COLLECTION_ID}"></title>
+    <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
+
+    <link rel="stylesheet" type="text/css" href="/css/root.css">
+    <link rel="stylesheet" type="text/css" href="/css/main.css">
+    <link rel="stylesheet" type="text/css" href="/css/img_sizes.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/span/span_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/span/span_flag_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/span/span_loading_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/span/span_rule_element.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/input/input_text_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/input/input_file_element.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/table/table_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/table/instruments_for_table.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/form/form_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/label/label_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/textarea/textarea_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/div/div_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/select/select_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/button/button_element.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/info_block/info_block.css">
+    <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_header.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/templates/customer_collections/edit.css">
+    <script type="module" src="/js/templates/customer_collections/edit.js"></script>
+</head>
+<body>
+    <header>
+        <div th:insert="~{layouts/header}"></div>
+    </header>
+    <main>
+        <div class="div-info-block-header-container">
+            <img src="/images/other/pencil.png" alt="">
+            <h1 th:text="'Изменение коллекции №' + ${CUSTOMER_COLLECTION_ID}"></h1>
+        </div>
+        <div class="div-info-block-container">
+            <form id="form_customer_collection_edit"
+                  action="/customer_collections"
+                  class="form-element">
+                  <div class="div-customer-collection-edit-container">
+                      <div id="div_input_img_customer_collection_image"
+                           class="div-input-img-element-container">
+                          <img id="img_customer_collection_image"
+                               src="#"
+                               alt="#"/>
+                          <div class="div-form-element-item">
+                              <label for="input_file_customer_collection_image"
+                                     class="label-element">Изображение</label>
+                              <div id="div_input_file_customer_collection_image"
+                                   class="div-input-file-element-container">
+                                  <div class="div-input-file-element-actions-container">
+                                      <label id="label_input_file_customer_collection_image"
+                                             class="label-input-file-element-container-disabled">
+                                          <input id="input_file_customer_collection_image"
+                                                 type="file" disabled>
+                                          <span>Выберите изображение</span>
+                                      </label>
+                                      <button id="button_drop_selected_files_customer_collection_image"
+                                              class="button-drop-selected-files"
+                                              type="button" disabled>
+                                          <img src="/images/buttons/delete.png"
+                                               alt="delete.png"/>
+                                      </button>
+                                  </div>
+                                  <div id="div_input_file_message_container_customer_collection_image"
+                                       class="div-input-file-element-message-container"></div>
+                              </div>
+
+                          </div>
+                      </div>
+                      <div class="div-customer-collection-edit-required-data-container">
+                          <div class="div-form-element-item">
+                              <label for="input_text_customer_collection_title"
+                                     class="label-required-element">
+                                  <span>Название</span>
+                                  <span> </span>
+                                  <span class="span-label-required-element-red-star">*</span>
+                              </label>
+                              <input id="input_text_customer_collection_title"
+                                     class="input-text-element" disabled>
+                          </div>
+                          <div class="div-form-element-item">
+                              <label for="select_customer_collection_is_active"
+                                     class="label-required-element">
+                                  <span>Активный</span>
+                                  <span> </span>
+                                  <span class="span-label-required-element-red-star">*</span>
+                              </label>
+                              <select id="select_customer_collection_is_active"
+                                     class="select-element" disabled></select>
+                          </div>
+                      </div>
+                      <div style="grid-column: 1 / 3">
+                          <div class="div-form-element-item">
+                              <label for="textarea_customer_collection_description"
+                                     class="label-element">Описание</label>
+                              <div id="div_textarea_customer_collection_description"
+                                   class="div-textarea-with-counter-element-container">
+                                        <textarea id="textarea_customer_collection_description"
+                                                  class="textarea-element" disabled
+                                                  style="min-height: 200px"></textarea>
+                                  <div>
+                                      <span id="span_counter_textarea_customer_collection_description"></span>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="div-element-horizontal-delimiter"></div>
+                  <div class="div-form-element-with-delete-actions-container">
+                      <div id="div_message_container_customer_collection_edit"
+                           class="div-form-element-with-delete-message-container"></div>
+                      <button id="button_delete_customer_collection_edit"
+                              class="button-delete"
+                              type="button">Удалить</button>
+                      <button id="button_submit_customer_collection_edit"
+                              class="button-submit"
+                              type="submit">Сохранить</button>
+                  </div>
+            </form>
+        </div>
+
+        <div class="div-info-block-header-container-margin">
+            <img src="/images/templates/words/word.png" alt="">
+            <h1>Список слов в коллекции</h1>
+        </div>
+        <div class="div-actions-container">
+            <button id="button_select_all_words_for_delete"
+                    class="button-with-img-and-span-element-horizontal-32 button-element-green" disabled>
+                <span id="span_select_all_words_for_delete">Выделить все слова на удаление</span>
+                <span>
+                    <img id="img_select_all_words_for_delete"
+                         src="/images/buttons/accept.png"
+                         alt="">
+                </span>
+            </button>
+            <button id="button_deselect_all_words_for_delete"
+                    class="button-with-img-and-span-element-horizontal-32 button-element-red" disabled>
+                <span id="span_deselect_all_words_for_delete">Снять выделение на удаление со всех слов</span>
+                <span>
+                    <img id="img_deselect_all_words_for_delete"
+                         src="/images/buttons/deny.png"
+                         alt="">
+                </span>
+            </button>
+        </div>
+        <div class="div-instruments-for-table-container div-instruments-for-find-words-in-collection-container">
+            <div class="div-instrument-for-table-container">
+                <label for="input_text_finder_words_in_collection">Слово</label>
+                <input id="input_text_finder_words_in_collection"
+                       type="text"
+                       class="input-text-element" disabled>
+            </div>
+            <div class="div-instrument-for-table-container">
+                <label></label>
+                <button id="button_refresh_words_in_collection"
+                        class="button-with-img-element-32 button-element-default"
+                        title="Обновить" disabled>
+                    <img id="img_refresh_words_in_collection"
+                         src="/images/buttons/refresh.png"
+                         alt="refresh.png"/>
+                </button>
+            </div>
+        </div>
+        <table id="table_words_in_collection_edit"
+               class="table-element">
+            <colgroup id="colgroup_words_in_collection_edit">
+                <col style="width: 5%;">
+                <col style="width: 65%;">
+                <col style="width: 30%;">
+                <col style="width: 50px;">
+            </colgroup>
+            <thead id="thead_words_in_collection_edit"
+                   class="thead-table-element-medium">
+            <tr>
+                <th>№</th>
+                <th>Слово</th>
+                <th>Язык</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody id="tbody_words_in_collection_edit"></tbody>
+        </table>
+    </main>
+</body>
+</html>

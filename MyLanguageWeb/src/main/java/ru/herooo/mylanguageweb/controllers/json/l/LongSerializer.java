@@ -1,4 +1,4 @@
-package ru.herooo.mylanguageweb.controllers.json;
+package ru.herooo.mylanguageweb.controllers.json.l;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;

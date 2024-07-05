@@ -1,40 +1,36 @@
 package ru.herooo.mylanguageweb.dto.entity.customer.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.validation.constraints.*;
-import ru.herooo.mylanguageweb.controllers.json.LongDeserializer;
-import ru.herooo.mylanguageweb.controllers.json.LongSerializer;
 
 public class CustomerAddRequestDTO {
-    @NotBlank(message = "Никнейм не может быть пустым.")
-    @Size(min = 3, max = 30, message = "Длина никнейма должен быть от 3-х до 30-ти символов.")
+    @NotBlank(message = "Никнейм не может быть пустым")
+    @Size(min = 3, max = 30, message = "Длина никнейма должен быть от 3-х до 30-ти символов")
     @JsonProperty("nickname")
     private String nickname;
 
-    @NotBlank(message = "Электронная почта не может быть пустой.")
-    @Email(message = "Некорректная электронная почта.")
+    @NotBlank(message = "Электронная почта не может быть пустой")
+    @Email(message = "Некорректная электронная почта")
     @JsonProperty("email")
     private String email;
 
-    @NotBlank(message = "Логин не может быть пустым.")
-    @Size(min = 3, max = 15, message = "Длина логина должен быть от 3-х до 15-ти символов.")
-    @Pattern(regexp = "^[A-Za-z0-9_]+$", message = "Логин должен содержать только английские буквы и цифры.")
+    @NotBlank(message = "Логин не может быть пустым")
+    @Size(min = 3, max = 15, message = "Длина логина должен быть от 3-х до 15-ти символов")
+    @Pattern(regexp = "^[A-Za-z0-9_]+$", message = "Логин должен содержать только английские буквы и цифры")
     @JsonProperty("login")
     private String login;
 
-    @NotBlank(message = "Пароль не может быть пустым.")
-    @Size(min = 8, message = "Минимальная длина пароля - 8 символов.")
+    @NotBlank(message = "Пароль не может быть пустым")
+    @Size(min = 8, message = "Минимальная длина пароля - 8 символов")
     @Pattern.List({
-        @Pattern(regexp = "^.*[0-9]+.*$", message = "Пароль должен содержать хотя бы одну цифру."),
+        @Pattern(regexp = "^.*[0-9]+.*$", message = "Пароль должен содержать хотя бы одну цифру"),
         @Pattern(regexp = "^.*[%$?~#]+.*$",
-                message = "Пароль должен содержать хотя бы один специальный символ (%, $, ?, ~, #).")
+                message = "Пароль должен содержать хотя бы один специальный символ (%, $, ?, ~, #)")
     })
     @JsonProperty("password")
     private String password;
 
-    @NotBlank(message = "Выберите страну.")
+    @NotBlank(message = "Выберите страну")
     @JsonProperty("country_code")
     private String countryCode;
 

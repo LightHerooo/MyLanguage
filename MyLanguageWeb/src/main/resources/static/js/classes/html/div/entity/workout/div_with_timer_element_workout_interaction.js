@@ -759,7 +759,7 @@ export class DivWithTimerElementWorkoutInteraction extends DivWithTimerAbstractE
 
             this.removeInfoBlockContainerClassStyle();
         } else {
-            throw new Error("Object \'DivWithTimerElementWorkoutInteraction\' is not prepared.");
+            throw new Error("Object \'DivWithTimerElementWorkoutInteraction\' is not prepared");
         }
     }
 

@@ -30,6 +30,8 @@ export class ButtonWithImgElementTypes {
         _IMG_SRCS.BUTTONS.ARROW_DOWN);
     REFRESH = new ButtonWithImgElementType(_BUTTON_ELEMENT_TYPES.DEFAULT,
         _IMG_SRCS.BUTTONS.REFRESH);
+    WAIT = new ButtonWithImgElementType(_BUTTON_ELEMENT_TYPES.YELLOW,
+        _IMG_SRCS.BUTTONS.WAIT);
 }
 
 class ButtonWithImgElementType {

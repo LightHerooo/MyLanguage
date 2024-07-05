@@ -21,9 +21,9 @@ public enum Views {
     CUSTOMERS_SHOW_INFO_ONE("customers/show_info_one"),
     CUSTOMERS_EDIT("customers/edit"),
 
-    CUSTOMER_COLLECTIONS_SHOW("customer_collections/show"),
     CUSTOMER_COLLECTIONS_NEW("customer_collections/new"),
-    CUSTOMER_COLLECTIONS_COLLECTIONS_SETTINGS("customer_collections/collections_settings"),
+    CUSTOMER_COLLECTIONS_EDIT("customer_collections/edit"),
+    CUSTOMER_COLLECTIONS_COLLECTIONS_SHOW("customer_collections/show"),
 
     SPECIAL_ACTIONS_SHOW("special_actions/show"),
     SPECIAL_ACTIONS_EDIT_CURRENT_STATUS_TO_WORDS("special_actions/actions/edit_current_status_to_words"),

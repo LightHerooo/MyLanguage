@@ -17,22 +17,33 @@ import {
 import {
     SpanElementLang
 } from "../../../span/entity/lang/span_element_lang.js";
+
 import {
     CustomerCollectionResponseDTO
 } from "../../../../dto/entity/customer_collection/response/customer_collection_response_dto.js";
 
 import {
-    ImgSrcs
-} from "../../../img_srcs.js";
-
-import {
     DateParts
 } from "../../../date_parts.js";
 
+import {
+    UrlPaths
+} from "../../../../url/path/url_paths.js";
+
+import {
+    DivWithTimerAbstractElement
+} from "../../abstracts/div_with_timer_abstract_element.js";
+
+import {
+    CssRoot
+} from "../../../../css/css_root.js";
+
 const _CUSTOMER_COLLECTIONS_API = new CustomerCollectionsAPI();
 
-const _IMG_SRCS = new ImgSrcs();
+const _CSS_ROOT = new CssRoot();
+
 const _HTTP_STATUSES = new HttpStatuses();
+const _URL_PATHS = new UrlPaths();
 
 export class DivElementCustomerCollectionUtils {
     async createDivInfoById(customerCollectionId) {
@@ -51,8 +62,14 @@ export class DivElementCustomerCollectionUtils {
     }
 
     async createDivInfoByDTO(customerCollectionResponseDTOObj) {
-        let divWithImgAndDataBuilderElement = new DivWithImgAndDataBuilderElement();
-        divWithImgAndDataBuilderElement.setImageSrc(_IMG_SRCS.OTHER.BOOKS);
+        let divWithImgAndDataBuilderElement = new DivWithImgAndDataBuilderElement(true);
+
+        // Изображение ---
+        let pathToImage = customerCollectionResponseDTOObj.getPathToImage();
+        divWithImgAndDataBuilderElement.setImageSrc(pathToImage
+            ? pathToImage
+            : _URL_PATHS.CUSTOMER_COLLECTIONS.IMAGE_DEFAULT.getPath());
+        //---
 
         let spanElementCustomerCollection = new SpanElementCustomerCollection(null);
         spanElementCustomerCollection.setCustomerCollectionResponseDTO(customerCollectionResponseDTOObj);
@@ -96,6 +113,48 @@ export class DivElementCustomerCollectionUtils {
             customerCollectionResponseDTOObj.getNumberOfWords());
         //---
 
+        // Описание ---
+        let description = customerCollectionResponseDTOObj.getDescription();
+        if (description) {
+            let divWithTimerElementCustomerCollectionDescription =
+                new DivWithTimerElementCustomerCollectionDescription(null);
+            divWithTimerElementCustomerCollectionDescription.setDescription(description);
+            await divWithTimerElementCustomerCollectionDescription.prepare();
+
+            divWithImgAndDataBuilderElement.addSpanShowMore(divWithTimerElementCustomerCollectionDescription
+                , "Показать описание...", "Скрыть описание...");
+        }
+        //---
+
         return divWithImgAndDataBuilderElement.getDivWithImgAndDataContainer();
+    }
+}
+
+class DivWithTimerElementCustomerCollectionDescription extends DivWithTimerAbstractElement {
+    #description;
+
+    constructor(div) {
+        super(div);
+    }
+
+    setDescription(description) {
+        this.#description = description;
+    }
+
+    async tryToCreateContent() {
+        let div;
+
+        let description = this.#description;
+        if (description) {
+            div = document.createElement("div");
+            div.style.fontSize = _CSS_ROOT.SMALL_FONT_SIZE_STYLE_ID;
+            div.style.whiteSpace = "pre-wrap";
+
+            div.textContent = description;
+        } else {
+            this.showMessage("Описание отсутствует", _CSS_ROOT.SMALL_FONT_SIZE_STYLE_ID);
+        }
+
+        return div;
     }
 }

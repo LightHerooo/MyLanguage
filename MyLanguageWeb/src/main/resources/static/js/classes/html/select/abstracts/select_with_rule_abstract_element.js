@@ -74,7 +74,7 @@ export class SelectWithRuleAbstractElement extends SelectAbstractElement {
 
             this.#spanRuleElement = spanRuleElement;
         } else {
-            throw new Error("Object \'SelectWithRuleAbstractElement\' is not prepared.");
+            throw new Error("Object \'SelectWithRuleAbstractElement\' is not prepared");
         }
     }
 
@@ -92,7 +92,7 @@ export class SelectWithRuleAbstractElement extends SelectAbstractElement {
                 }
             }
         } else {
-            throw new Error("Object \'SelectWithRuleAbstractElement\' is not prepared.");
+            throw new Error("Object \'SelectWithRuleAbstractElement\' is not prepared");
         }
     }
 
@@ -121,7 +121,7 @@ export class SelectWithRuleAbstractElement extends SelectAbstractElement {
                 this.hideRule();
             }
         } else {
-            throw new Error("Object \'SelectWithRuleAbstractElement\' is not prepared.");
+            throw new Error("Object \'SelectWithRuleAbstractElement\' is not prepared");
         }
 
         return isCorrect;

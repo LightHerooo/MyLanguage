@@ -51,6 +51,12 @@
                     <br>
                 </div>
             </div>
+
+            <div class="div-info-block-header-container-margin">
+                <img src="/images/templates/langs/lang.png"
+                     alt="lang.png"/>
+                <h1>Список языков</h1>
+            </div>
             <div class="div-actions-container">
                 <button id="button_turn_on_supported_langs_in"
                         class="button-with-img-and-span-element-horizontal-32 button-element-green" disabled>
@@ -108,12 +114,6 @@
                     </span>
                 </button>
             </div>
-
-            <div class="div-info-block-header-container-margin">
-                <img src="/images/logo/logo.png"
-                     alt="logo.png"/>
-                <h1 th:text="'Языки, присутствующие в базе ' + ${WEB_APP_NAME}"></h1>
-            </div>
             <div class="div-instruments-for-table-container div-instruments-for-find-langs-container">
                 <div class="div-instrument-for-table-container">
                     <label for="input_text_finder_langs">Название языка</label>
@@ -164,8 +164,8 @@
             </table>
 
             <div class="div-info-block-header-container-margin">
-                <img src="/images/logo/logo.png" alt="logo.png"/>
-                <h1 th:text="'Языки, отсутствующие в базе ' + ${WEB_APP_NAME}"></h1>
+                <img src="/images/templates/langs/lang.png" alt="lang.png"/>
+                <h1>Список новых языков Yandex.Dictionary</h1>
             </div>
             <div class="div-instruments-for-table-container div-instruments-for-find-new-langs-container">
                 <div class="div-instrument-for-table-container">
@@ -194,7 +194,7 @@
                        class="thead-table-element-medium">
                 <tr>
                     <th>№</th>
-                    <th>Код языка переводчика</th>
+                    <th>Код языка</th>
                     <th>Поддержка на вход</th>
                     <th>Поддержка на выход</th>
                 </tr>

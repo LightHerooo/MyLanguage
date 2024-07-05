@@ -1,6 +1,6 @@
 import {
     DynamicFormAbstractElement
-} from "../../abstracts/dynamic_form/dynamic_form_abstract_element.js";
+} from "../../../abstracts/dynamic_form/dynamic_form_abstract_element.js";
 
 import {
     DynamicFormRowElementNewCustomerCollection
@@ -8,23 +8,23 @@ import {
 
 import {
     RuleTypes
-} from "../../../span/elements/rule/rule_types.js";
+} from "../../../../span/elements/rule/rule_types.js";
 
 import {
     CustomerCollectionsAPI
-} from "../../../../api/entity/customer_collections_api.js";
+} from "../../../../../api/entity/customer_collections_api.js";
 
 import {
     HttpStatuses
-} from "../../../../api/classes/http/http_statuses.js";
+} from "../../../../../api/classes/http/http_statuses.js";
 
 import {
     CustomerCollectionAddRequestDTO
-} from "../../../../dto/entity/customer_collection/request/customer_collection_add_request_dto.js";
+} from "../../../../../dto/entity/customer_collection/request/customer_collection_add_request_dto.js";
 
 import {
     EventNames
-} from "../../../event_names.js";
+} from "../../../../event_names.js";
 
 const _CUSTOMER_COLLECTIONS_API = new CustomerCollectionsAPI();
 
@@ -50,9 +50,9 @@ export class DynamicFormElementNewCustomerCollections extends DynamicFormAbstrac
                 if (iDynamicFormRowElement) {
                     let iDynamicFormRowDataElement = iDynamicFormRowElement.getDynamicFormRowDataElement();
                     if (iDynamicFormRowDataElement) {
-                        let iInputTextWithRuleElementCustomerCollectionTitle =
-                            iDynamicFormRowDataElement.getInputTextWithRuleElementCustomerCollectionTitle();
-                        if (iInputTextWithRuleElementCustomerCollectionTitle) {
+                        let iInputTextWithRuleElementCustomerCollectionTitleAdd =
+                            iDynamicFormRowDataElement.getInputTextWithRuleElementCustomerCollectionTitleAdd();
+                        if (iInputTextWithRuleElementCustomerCollectionTitleAdd) {
                             for (let jKey of dynamicFormRowElementsMap.keys()) {
                                 if (iKey === jKey) continue;
 
@@ -60,18 +60,18 @@ export class DynamicFormElementNewCustomerCollections extends DynamicFormAbstrac
                                 if (jDynamicFormRowElement) {
                                     let jDynamicFormRowDataElement = jDynamicFormRowElement.getDynamicFormRowDataElement();
                                     if (jDynamicFormRowDataElement) {
-                                        let jInputTextWithRuleElementCustomerCollectionTitle =
-                                            jDynamicFormRowDataElement.getInputTextWithRuleElementCustomerCollectionTitle();
-                                        if (jInputTextWithRuleElementCustomerCollectionTitle) {
-                                            let iTitle = iInputTextWithRuleElementCustomerCollectionTitle.getValue();
-                                            let jTitle = jInputTextWithRuleElementCustomerCollectionTitle.getValue();
+                                        let jInputTextWithRuleElementCustomerCollectionTitleAdd =
+                                            jDynamicFormRowDataElement.getInputTextWithRuleElementCustomerCollectionTitleAdd();
+                                        if (jInputTextWithRuleElementCustomerCollectionTitleAdd) {
+                                            let iTitle = iInputTextWithRuleElementCustomerCollectionTitleAdd.getValue();
+                                            let jTitle = jInputTextWithRuleElementCustomerCollectionTitleAdd.getValue();
                                             if (iTitle.toLowerCase() === jTitle.toLowerCase()) {
                                                 isCorrect = false;
                                                 let ruleType = _RULE_TYPES.ERROR;
                                                 let message = "Названия коллекций не могут повторяться";
 
-                                                iInputTextWithRuleElementCustomerCollectionTitle.showRule(ruleType, message);
-                                                jInputTextWithRuleElementCustomerCollectionTitle.showRule(ruleType, message);
+                                                iInputTextWithRuleElementCustomerCollectionTitleAdd.showRule(ruleType, message);
+                                                jInputTextWithRuleElementCustomerCollectionTitleAdd.showRule(ruleType, message);
                                             }
                                         }
                                     }
@@ -93,9 +93,9 @@ export class DynamicFormElementNewCustomerCollections extends DynamicFormAbstrac
 
         let dynamicFormRowDataElement = dynamicFormRowElementNewCustomerCollection.getDynamicFormRowDataElement();
         if (dynamicFormRowDataElement) {
-            let inputTextWithRuleElementCustomerCollectionTitle = dynamicFormRowDataElement.getInputTextWithRuleElementCustomerCollectionTitle();
-            if (inputTextWithRuleElementCustomerCollectionTitle) {
-                let inputText = inputTextWithRuleElementCustomerCollectionTitle.getInputText();
+            let inputTextWithRuleElementCustomerCollectionTitleAdd = dynamicFormRowDataElement.getInputTextWithRuleElementCustomerCollectionTitleAdd();
+            if (inputTextWithRuleElementCustomerCollectionTitleAdd) {
+                let inputText = inputTextWithRuleElementCustomerCollectionTitleAdd.getInputText();
                 if (inputText) {
                     let self = this;
                     inputText.addEventListener(_EVENT_NAMES.INPUT.TEXT.INPUT, function() {
@@ -132,9 +132,10 @@ export class DynamicFormElementNewCustomerCollections extends DynamicFormAbstrac
                     let dynamicFormRowDataElement = dynamicFormRowElement.getDynamicFormRowDataElement();
                     if (dynamicFormRowDataElement) {
                         let isTitleCorrect = false;
-                        let inputTextWithRuleElementCustomerCollectionTitle = dynamicFormRowDataElement.getInputTextWithRuleElementCustomerCollectionTitle();
-                        if (inputTextWithRuleElementCustomerCollectionTitle) {
-                            isTitleCorrect = await inputTextWithRuleElementCustomerCollectionTitle.checkCorrectValue();
+                        let inputTextWithRuleElementCustomerCollectionTitleAdd = dynamicFormRowDataElement
+                            .getInputTextWithRuleElementCustomerCollectionTitleAdd();
+                        if (inputTextWithRuleElementCustomerCollectionTitleAdd) {
+                            isTitleCorrect = await inputTextWithRuleElementCustomerCollectionTitleAdd.checkCorrectValue();
                         }
 
                         let isLangCorrect = false;
@@ -173,9 +174,10 @@ export class DynamicFormElementNewCustomerCollections extends DynamicFormAbstrac
                     if (dynamicFormRowDataElement) {
                         let customerCollectionAddRequestDTO = new CustomerCollectionAddRequestDTO();
 
-                        let inputTextWithRuleElementCustomerCollectionTitle = dynamicFormRowDataElement.getInputTextWithRuleElementCustomerCollectionTitle();
-                        if (inputTextWithRuleElementCustomerCollectionTitle) {
-                            customerCollectionAddRequestDTO.setTitle(inputTextWithRuleElementCustomerCollectionTitle.getValue());
+                        let inputTextWithRuleElementCustomerCollectionTitleAdd = dynamicFormRowDataElement
+                            .getInputTextWithRuleElementCustomerCollectionTitleAdd();
+                        if (inputTextWithRuleElementCustomerCollectionTitleAdd) {
+                            customerCollectionAddRequestDTO.setTitle(inputTextWithRuleElementCustomerCollectionTitleAdd.getValue());
                         }
 
                         let selectWithRuleElementLangsIn = dynamicFormRowDataElement.getSelectWithRuleElementLangsIn();
@@ -201,7 +203,7 @@ export class DynamicFormElementNewCustomerCollections extends DynamicFormAbstrac
                 //---
 
                 this.showRule(_RULE_TYPES.ERROR,
-                    "Не удалось создать некоторые коллекции. Попробуйте ещё раз.");
+                    "Не удалось создать некоторые коллекции. Попробуйте ещё раз");
             }
         }
 

@@ -140,7 +140,7 @@ export class TableWithTimerElementCustomers extends TableWithTimerAbstractElemen
                 if (customerId === customerResponseDTOObj.getId()) {
                     isCorrect = false;
                     selectElementCustomerRoles.changeDisabledStatus(true);
-                    selectElementCustomerRoles.changeTitle("Нельзя изменить роль самому себе.");
+                    selectElementCustomerRoles.changeTitle("Нельзя изменить роль самому себе");
                 }
                 //---
 

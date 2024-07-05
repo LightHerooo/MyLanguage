@@ -195,7 +195,7 @@ export class TableWithTimerElementNewLangs extends TableWithTimerAbstractElement
                     }
                 }
             } else if (giveAccessToShowMessage) {
-                this.showMessage("Новых языков не найдено.", _CSS_ROOT.SMALL_FONT_SIZE_STYLE_ID);
+                this.showMessage("Новых языков не найдено", _CSS_ROOT.SMALL_FONT_SIZE_STYLE_ID);
             }
         } else if (giveAccessToShowMessage) {
             this.showMessage(new ResponseMessageResponseDTO(jsonResponse.getJson()).getMessage(),

@@ -25,8 +25,9 @@
     <link rel="stylesheet" type="text/css" href="/css/select/select_element.css">
     <link rel="stylesheet" type="text/css" href="/css/button/button_element.css">
 
-    <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_big_header.css">
     <link rel="stylesheet" type="text/css" href="/css/info_block/info_block.css">
+    <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_header.css">
+    <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_big_header.css">
 
     <link rel="stylesheet" type="text/css" href="/css/templates/words/show.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
@@ -80,6 +81,11 @@
                 </span>
                 <span>История моих предложенных слов</span>
             </a>
+        </div>
+        <div class="div-info-block-header-container-margin">
+            <img src="/images/templates/words/word.png"
+                 alt=""/>
+            <h1>Список слов</h1>
         </div>
         <div th:class="${AUTH_CUSTOMER != null
             ? 'div-instruments-for-table-container-margin div-instruments-for-find-words-container-auth'

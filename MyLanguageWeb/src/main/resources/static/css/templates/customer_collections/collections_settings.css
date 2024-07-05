@@ -1,8 +1,0 @@
-main {
-    min-height: 1500px;
-}
-
-div.div-instruments-for-find-customer-collections-container {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 60px;
-}

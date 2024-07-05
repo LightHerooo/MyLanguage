@@ -51,7 +51,7 @@ export class ButtonWithImgElementDoubleClick extends ButtonWithImgElement {
             let self = this;
             firstClickFunction = async function() {
                 // Сохраняем стили, чтобы вернуть их в случае неудачи ---
-                self.#saveSettingsBeforeFirstClick();
+                self.#saveStylesBeforeFirstClick();
                 //---
 
                 let button = self.getButton();
@@ -83,7 +83,7 @@ export class ButtonWithImgElementDoubleClick extends ButtonWithImgElement {
         this.#firstClickFunction = firstClickFunction;
     }
 
-    #saveSettingsBeforeFirstClick() {
+    #saveStylesBeforeFirstClick() {
         let button = this.getButton();
         if (button) {
             this.#buttonClassNameBeforeFirstClick = button.className;
@@ -96,7 +96,7 @@ export class ButtonWithImgElementDoubleClick extends ButtonWithImgElement {
         }
     }
 
-    #returnSettingsBeforeFirstClick() {
+    #returnStylesBeforeFirstClick() {
         let button = this.getButton();
         if (button) {
             let className = this.#buttonClassNameBeforeFirstClick;
@@ -137,7 +137,7 @@ export class ButtonWithImgElementDoubleClick extends ButtonWithImgElement {
                             customTimerTicker.stop(false);
 
                             // Возвращаем стили до первого нажатия ---
-                            self.#returnSettingsBeforeFirstClick();
+                            self.#returnStylesBeforeFirstClick();
                             //---
 
                             // Вешаем событие первого нажатия ---
@@ -164,7 +164,7 @@ export class ButtonWithImgElementDoubleClick extends ButtonWithImgElement {
 
             this.#isPrepared = true;
         } else {
-            throw new Error("Object \'ButtonWithImgElementDoubleClick\' has already been prepared.");
+            throw new Error("Object \'ButtonWithImgElementDoubleClick\' has already been prepared");
         }
     }
 
@@ -175,7 +175,7 @@ export class ButtonWithImgElementDoubleClick extends ButtonWithImgElement {
             this.changeDisabledStatus(true);
 
             // Возвращаем стили до первого нажатия ---
-            this.#returnSettingsBeforeFirstClick();
+            this.#returnStylesBeforeFirstClick();
             //---
 
             // Вешаем событие первого нажатия ---
@@ -188,21 +188,25 @@ export class ButtonWithImgElementDoubleClick extends ButtonWithImgElement {
 
             this.changeDisabledStatus(false);
         } else {
-            throw new Error("Object \'ButtonWithImgElementDoubleClick\' is not prepared.");
+            throw new Error("Object \'ButtonWithImgElementDoubleClick\' is not prepared");
         }
     }
 
-    turnOff() {
+    turnOff(isDisabled) {
         let isPrepared = this.getIsPrepared();
         if (isPrepared) {
-            this.changeDisabledStatus(true);
+            this.changeDisabledStatus(isDisabled);
+
+            // Возвращаем стили до первого нажатия ---
+            this.#returnStylesBeforeFirstClick();
+            //---
 
             let button = this.getButton();
             if (button) {
                 button.onclick = null;
             }
         } else {
-            throw new Error("Object \'ButtonWithImgElementDoubleClick\' is not prepared.");
+            throw new Error("Object \'ButtonWithImgElementDoubleClick\' is not prepared");
         }
     }
 }

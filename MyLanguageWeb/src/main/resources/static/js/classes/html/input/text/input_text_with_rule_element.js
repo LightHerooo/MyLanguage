@@ -51,7 +51,7 @@ export class InputTextWithRuleElement extends InputTextElement {
 
             this.#isPrepared = true;
         } else {
-            throw new Error("Object \'InputTextWithRuleElement\' has already been prepared.");
+            throw new Error("Object \'InputTextWithRuleElement\' has already been prepared");
         }
     }
 
@@ -74,7 +74,7 @@ export class InputTextWithRuleElement extends InputTextElement {
 
             this.#spanRuleElement = spanRuleElement;
         } else {
-            throw new Error("Object \'InputTextWithRuleElement\' is not prepared.");
+            throw new Error("Object \'InputTextWithRuleElement\' is not prepared");
         }
     }
 
@@ -92,7 +92,7 @@ export class InputTextWithRuleElement extends InputTextElement {
                 }
             }
         } else {
-            throw new Error("Object \'InputTextWithRuleElement\' is not prepared.");
+            throw new Error("Object \'InputTextWithRuleElement\' is not prepared");
         }
     }
 
@@ -121,7 +121,7 @@ export class InputTextWithRuleElement extends InputTextElement {
                 this.hideRule();
             }
         } else {
-            throw new Error("Object \'InputTextWithRuleElement\' is not prepared.");
+            throw new Error("Object \'InputTextWithRuleElement\' is not prepared");
         }
 
         return isCorrect;

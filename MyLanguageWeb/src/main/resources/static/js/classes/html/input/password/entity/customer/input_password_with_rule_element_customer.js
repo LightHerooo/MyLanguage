@@ -33,7 +33,7 @@ export class InputPasswordWithRuleElementCustomerPassword extends InputPasswordW
                 if (!PASSWORD_REGEXP_DIGITS.test(value)) {
                     isCorrect = false;
                     ruleType = _RULE_TYPES.ERROR;
-                    message = "Пароль должен содержать минимум одну цифру [0-9].";
+                    message = "Пароль должен содержать минимум одну цифру [0-9]";
                 }
             }
 

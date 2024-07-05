@@ -3,8 +3,8 @@ package ru.herooo.mylanguageweb.dto.entity.customercollection.response;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import ru.herooo.mylanguageweb.controllers.json.LongDeserializer;
-import ru.herooo.mylanguageweb.controllers.json.LongSerializer;
+import ru.herooo.mylanguageweb.controllers.json.l.LongDeserializer;
+import ru.herooo.mylanguageweb.controllers.json.l.LongSerializer;
 import ru.herooo.mylanguageweb.dto.entity.customer.response.CustomerResponseDTO;
 import ru.herooo.mylanguageweb.dto.entity.lang.response.LangResponseDTO;
 
@@ -27,6 +27,12 @@ public class CustomerCollectionResponseDTO {
 
     @JsonProperty("is_active_for_author")
     private boolean isActiveForAuthor;
+
+    @JsonProperty("path_to_image")
+    private String pathToImage;
+
+    @JsonProperty("description")
+    private String description;
 
     @JsonProperty("customer")
     private CustomerResponseDTO customer;
@@ -88,5 +94,21 @@ public class CustomerCollectionResponseDTO {
 
     public void setNumberOfWords(long numberOfWords) {
         this.numberOfWords = numberOfWords;
+    }
+
+    public String getPathToImage() {
+        return pathToImage;
+    }
+
+    public void setPathToImage(String pathToImage) {
+        this.pathToImage = pathToImage;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

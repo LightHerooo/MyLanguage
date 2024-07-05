@@ -40,7 +40,7 @@ import {
 
 import {
     SelectElementBoolean
-} from "../../../select/elements/select_element_boolean.js";
+} from "../../../select/elements/boolean/select_element_boolean.js";
 
 import {
     ButtonWithImgElement
@@ -59,14 +59,6 @@ import {
 } from "../../../../dto/other/response/response_message_response_dto.js";
 
 import {
-    ButtonWithImgElementDoubleClick
-} from "../../../button/with_img/button_with_img_element_double_click.js";
-
-import {
-    EntityIdRequestDTO
-} from "../../../../dto/other/request/entity/entity_id_request_dto.js";
-
-import {
     TableWithTimerElementWordsInCollection
 } from "../word_in_collection/table_with_timer_element_words_in_collection.js";
 
@@ -78,6 +70,26 @@ import {
     ProjectCookies
 } from "../../../project_cookies.js";
 
+import {
+    AButtonWithImgElement
+} from "../../../a/a_button/with_img/a_button_with_img_element.js";
+
+import {
+    AButtonWithImgElementTypes
+} from "../../../a/a_button/with_img/a_button_with_img_element_types.js";
+
+import {
+    AButtonWithImgElementSizes
+} from "../../../a/a_button/with_img/a_button_with_img_element_sizes.js";
+
+import {
+    UrlPaths
+} from "../../../../url/path/url_paths.js";
+
+import {
+    HrefTypes
+} from "../../../a/href_types.js";
+
 const _CUSTOMER_COLLECTIONS_API = new CustomerCollectionsAPI();
 
 const _CSS_ROOT = new CssRoot();
@@ -88,8 +100,12 @@ const _PROJECT_COOKIES = new ProjectCookies();
 const _HTTP_STATUSES = new HttpStatuses();
 const _BUTTON_WITH_IMG_ELEMENT_SIZES = new ButtonWithImgElementSizes();
 const _BUTTON_WITH_IMG_ELEMENT_TYPES = new ButtonWithImgElementTypes();
+const _A_BUTTON_WITH_IMG_ELEMENT_TYPES = new AButtonWithImgElementTypes();
+const _A_BUTTON_WITH_IMG_ELEMENT_SIZES = new AButtonWithImgElementSizes();
 const _EVENT_NAMES = new EventNames();
 const _TABLE_UTILS = new TableUtils();
+const _URL_PATHS = new UrlPaths();
+const _HREF_TYPES = new HrefTypes();
 
 export class TableWithTimerElementMyCustomerCollections extends TableWithTimerAbstractElement {
     #divWithTimerElementCustomerCollectionsStatistic;
@@ -279,62 +295,17 @@ export class TableWithTimerElementMyCustomerCollections extends TableWithTimerAb
             divActions.style.grid = "1fr 1fr / 1fr";
             divActions.style.gap = "5px";
 
-            // Удаление коллекции
-            let self = this;
-            let buttonWithImgElement = new ButtonWithImgElement(null, null);
-            let buttonWithImgElementDoubleClickDeleteCollection =
-                new ButtonWithImgElementDoubleClick(buttonWithImgElement);
-            buttonWithImgElementDoubleClickDeleteCollection.changeButtonWithImgElementSize(
-                _BUTTON_WITH_IMG_ELEMENT_SIZES.SIZE_32);
-            buttonWithImgElementDoubleClickDeleteCollection.setAfterDoubleClickFunction(async function() {
-                // Удаляем коллекцию, отображаем результат в кнопке ---
-                let entityIdRequestDTO = new EntityIdRequestDTO();
-                entityIdRequestDTO.setId(customerCollectionResponseDTOObj.getId());
+            // Изменение коллекции
+            let aButtonWithImgElement = new AButtonWithImgElement(null, null);
+            aButtonWithImgElement.changeTo(_A_BUTTON_WITH_IMG_ELEMENT_TYPES.EDIT);
+            aButtonWithImgElement.changeAButtonWithImgElementSize(_A_BUTTON_WITH_IMG_ELEMENT_SIZES.SIZE_32);
+            aButtonWithImgElement.changeTitle("Изменить коллекцию");
+            aButtonWithImgElement.changeHref(`${_URL_PATHS.CUSTOMER_COLLECTIONS.EDIT.getPath()}/${customerCollectionResponseDTOObj.getId()}`);
+            aButtonWithImgElement.changeHrefType(_HREF_TYPES.OPEN_IN_THIS_PAGE);
 
-                let jsonResponse = await _CUSTOMER_COLLECTIONS_API.DELETE.delete(entityIdRequestDTO);
-                if (jsonResponse.getStatus() === _HTTP_STATUSES.OK) {
-                    let message = new ResponseMessageResponseDTO(jsonResponse.getJson()).getMessage();
-
-                    buttonWithImgElementDoubleClickDeleteCollection.changeTo(_BUTTON_WITH_IMG_ELEMENT_TYPES.ACCEPT);
-                    buttonWithImgElementDoubleClickDeleteCollection.changeTitle(message);
-
-                    // Отключаем кнопку отображения слов в коллекции ---
-                    self.#changeToHideWordsInCollectionAction(buttonWithImgElementShowWordsInCollection,
-                        customerCollectionResponseDTOObj.getId());
-                    buttonWithImgElementShowWordsInCollection.callEvent(_EVENT_NAMES.BUTTON.CLICK);
-                    buttonWithImgElementShowWordsInCollection.changeDisabledStatus(true);
-                    buttonWithImgElementShowWordsInCollection.changeTitle(message);
-                    //---
-
-                    // Отключаем выпадающий список изменения активности ---
-                    selectElementBooleanIsActive.changeDisabledStatus(true);
-                    selectElementBooleanIsActive.changeTitle(message);
-                    //---
-
-                    // Запускаем поиск статистики ---
-                    let divWithFinderElementCollectionsStatistic = self.#divWithTimerElementCustomerCollectionsStatistic;
-                    if (divWithFinderElementCollectionsStatistic) {
-                        divWithFinderElementCollectionsStatistic.startToFill();
-                    }
-                    //----
-                } else {
-                    let message = new ResponseMessageResponseDTO(jsonResponse.getJson()).getMessage();
-
-                    buttonWithImgElementDoubleClickDeleteCollection.changeTo(_BUTTON_WITH_IMG_ELEMENT_TYPES.DENY);
-                    buttonWithImgElementDoubleClickDeleteCollection.changeTitle(message);
-                }
-
-                buttonWithImgElementDoubleClickDeleteCollection.turnOff();
-                buttonWithImgElementDoubleClickDeleteCollection.changeDisabledStatus(false);
-                //---
-            });
-            buttonWithImgElementDoubleClickDeleteCollection.changeTo(_BUTTON_WITH_IMG_ELEMENT_TYPES.DELETE);
-            buttonWithImgElementDoubleClickDeleteCollection.changeTitle("Удалить коллекцию");
-            buttonWithImgElementDoubleClickDeleteCollection.prepare();
-
-            let button = buttonWithImgElementDoubleClickDeleteCollection.getButton();
-            if (button) {
-                divActions.appendChild(button);
+            let a = aButtonWithImgElement.getA();
+            if (a) {
+                divActions.appendChild(a);
             }
 
             // Список слов в коллекции
@@ -351,7 +322,7 @@ export class TableWithTimerElementMyCustomerCollections extends TableWithTimerAb
                 buttonWithImgElementShowWordsInCollection.changeTitle("Коллекция пуста");
             }
 
-            button = buttonWithImgElementShowWordsInCollection.getButton();
+            let button = buttonWithImgElementShowWordsInCollection.getButton();
             if (button) {
                 divActions.appendChild(button);
             }

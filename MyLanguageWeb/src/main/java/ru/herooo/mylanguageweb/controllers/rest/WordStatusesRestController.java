@@ -48,7 +48,7 @@ public class WordStatusesRestController {
             return ResponseEntity.ok(dto);
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    String.format("Статус слова с кодом '%s' не найден.", code));
+                    String.format("Статус слова с кодом '%s' не найден", code));
             return ResponseEntity.badRequest().body(message);
         }
     }

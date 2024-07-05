@@ -88,7 +88,7 @@ public class CustomersRestController {
                                         Long lastCustomerIdOnPreviousPage) {
         if (numberOfItems == null || numberOfItems < 0) {
             ResponseMessageResponseDTO message =
-                    new ResponseMessageResponseDTO(1, "Количество записей не должно быть отрицательным.");
+                    new ResponseMessageResponseDTO(1, "Количество записей не должно быть отрицательным");
             return ResponseEntity.badRequest().body(message);
         }
 
@@ -96,7 +96,7 @@ public class CustomersRestController {
             ResponseMessageResponseDTO message =
                     new ResponseMessageResponseDTO(2,
                             "ID последнего пользователя на предыдущей странице не должен быть отрицательным. " +
-                                    "Если вы хотите отобразить первую страницу, укажите ID = 0.");
+                                    "Если вы хотите отобразить первую страницу, укажите ID = 0");
             return ResponseEntity.badRequest().body(message);
         }
 
@@ -110,7 +110,7 @@ public class CustomersRestController {
             return ResponseEntity.ok(responseDTOs);
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    "Пользователи по указанным фильтрам не найдены.");
+                    "Пользователи по указанным фильтрам не найдены");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -123,7 +123,7 @@ public class CustomersRestController {
             return ResponseEntity.ok(dto);
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    String.format("Пользователя с id = '%s' не найдено.", id));
+                    String.format("Пользователя с id = '%s' не найдено", id));
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -136,58 +136,58 @@ public class CustomersRestController {
             return ResponseEntity.ok(dto);
         } else {
             ResponseMessageResponseDTO crm = new ResponseMessageResponseDTO(1,
-                    String.format("Пользователя с никнеймом '%s' не существует.", nickname));
+                    String.format("Пользователя с никнеймом '%s' не существует", nickname));
             return ResponseEntity.badRequest().body(crm);
         }
     }
 
     @GetMapping("/exists/by_nickname")
-    public ResponseEntity<?> findExistsByNickname(@RequestParam("nickname") String nickname) {
+    public ResponseEntity<?> isExistsByNickname(@RequestParam("nickname") String nickname) {
         Customer customer = CUSTOMER_SERVICE.findByNickname(nickname);
         if (customer != null) {
-            ResponseMessageResponseDTO crm = new ResponseMessageResponseDTO(1, "Этот никнейм уже занят.");
+            ResponseMessageResponseDTO crm = new ResponseMessageResponseDTO(1, "Этот никнейм уже занят");
             return ResponseEntity.ok(crm);
         } else {
             ResponseMessageResponseDTO crm = new ResponseMessageResponseDTO(1,
-                    String.format("Пользователя с никнеймом '%s' не существует.", nickname));
+                    String.format("Пользователя с никнеймом '%s' не существует", nickname));
             return ResponseEntity.badRequest().body(crm);
         }
     }
 
     @GetMapping("/exists/by_login")
-    public ResponseEntity<?> findExistsByLogin(@RequestParam("login") String login) {
+    public ResponseEntity<?> isExistsByLogin(@RequestParam("login") String login) {
         Customer customer = CUSTOMER_SERVICE.findByLogin(login);
         if (customer != null) {
-            ResponseMessageResponseDTO crm = new ResponseMessageResponseDTO(1, "Этот логин уже занят.");
+            ResponseMessageResponseDTO crm = new ResponseMessageResponseDTO(1, "Этот логин уже занят");
             return ResponseEntity.ok(crm);
         } else {
             ResponseMessageResponseDTO crm = new ResponseMessageResponseDTO(1,
-                    String.format("Пользователя с логином '%s' не существует.", login));
+                    String.format("Пользователя с логином '%s' не существует", login));
             return ResponseEntity.badRequest().body(crm);
         }
     }
 
     @GetMapping("/exists/by_email")
-    public ResponseEntity<?> findExistsByEmail(@RequestParam("email") String email) {
+    public ResponseEntity<?> isExistsByEmail(@RequestParam("email") String email) {
         Customer customer = CUSTOMER_SERVICE.findByEmail(email);
         if (customer != null) {
-            ResponseMessageResponseDTO crm = new ResponseMessageResponseDTO(1, "Эта почта уже занята.");
+            ResponseMessageResponseDTO crm = new ResponseMessageResponseDTO(1, "Эта почта уже занята");
             return ResponseEntity.ok(crm);
         } else {
             ResponseMessageResponseDTO crm = new ResponseMessageResponseDTO(1,
-                    String.format("Пользователя с электронной почтой '%s' не существует.", email));
+                    String.format("Пользователя с электронной почтой '%s' не существует", email));
             return ResponseEntity.badRequest().body(crm);
         }
     }
 
     @GetMapping("/exists/by_auth_key")
-    public ResponseEntity<?> findExistsByAuthKey(@RequestParam("auth_key") String authKey) {
+    public ResponseEntity<?> isExistsByAuthKey(@RequestParam("auth_key") String authKey) {
         Customer customer = CUSTOMER_SERVICE.findByAuthKey(authKey);
         if (customer != null) {
-            ResponseMessageResponseDTO crm = new ResponseMessageResponseDTO(1, "Код валиден.");
+            ResponseMessageResponseDTO crm = new ResponseMessageResponseDTO(1, "Код валиден");
             return ResponseEntity.ok(crm);
         } else {
-            ResponseMessageResponseDTO crm = new ResponseMessageResponseDTO(1, "Недействительный код авторизации.");
+            ResponseMessageResponseDTO crm = new ResponseMessageResponseDTO(1, "Недействительный код авторизации");
             return ResponseEntity.badRequest().body(crm);
         }
     }
@@ -232,21 +232,21 @@ public class CustomersRestController {
         }
 
         // Ищем похожий никнейм
-        ResponseEntity<?> response = findExistsByNickname(customerAddRequestDTO.getNickname());
+        ResponseEntity<?> response = isExistsByNickname(customerAddRequestDTO.getNickname());
         if (response.getStatusCode() == HttpStatus.OK) {
             ResponseMessageResponseDTO message = (ResponseMessageResponseDTO) response.getBody();
             return ResponseEntity.badRequest().body(message);
         }
 
         // Ищем похожую почту
-        response = findExistsByEmail(customerAddRequestDTO.getEmail());
+        response = isExistsByEmail(customerAddRequestDTO.getEmail());
         if (response.getStatusCode() == HttpStatus.OK) {
             ResponseMessageResponseDTO message = (ResponseMessageResponseDTO) response.getBody();
             return ResponseEntity.badRequest().body(message);
         }
 
         // Ищем похожий логин
-        response = findExistsByLogin(customerAddRequestDTO.getLogin());
+        response = isExistsByLogin(customerAddRequestDTO.getLogin());
         if (response.getStatusCode() == HttpStatus.OK) {
             ResponseMessageResponseDTO message = (ResponseMessageResponseDTO) response.getBody();
             return ResponseEntity.badRequest().body(message);
@@ -277,7 +277,7 @@ public class CustomersRestController {
             return ResponseEntity.ok(dto);
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    "Произошла ошибка регистрации пользователя.");
+                    "Произошла ошибка регистрации пользователя");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -292,7 +292,7 @@ public class CustomersRestController {
         String validateAuthKey = CUSTOMER_SERVICE.validateAuthKey(request, dto.getAuthKey());
         dto.setAuthKey(validateAuthKey);
 
-        ResponseEntity<?> response = findExistsByAuthKey(dto.getAuthKey());
+        ResponseEntity<?> response = isExistsByAuthKey(dto.getAuthKey());
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
@@ -319,7 +319,7 @@ public class CustomersRestController {
 
         // Проверяем никнейм (если пользователь тот же, не выдаём ошибку)
         Customer customer = CUSTOMER_SERVICE.findByAuthKey(dto.getAuthKey());
-        response = findExistsByNickname(dto.getNickname());
+        response = isExistsByNickname(dto.getNickname());
         if (response.getStatusCode() == HttpStatus.OK) {
             Customer customerByNickname = CUSTOMER_SERVICE.findByNickname(dto.getNickname());
             if (!customer.equals(customerByNickname)) {
@@ -336,10 +336,10 @@ public class CustomersRestController {
 
         customer = CUSTOMER_SERVICE.edit(customer, avatar, dto);
         if (customer != null) {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Данные пользователя успешно изменены.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Данные пользователя успешно изменены");
             return ResponseEntity.ok(message);
         } else {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(5, "Произошла ошибка изменения данных пользователя.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(5, "Произошла ошибка изменения данных пользователя");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -352,7 +352,7 @@ public class CustomersRestController {
         String validateAuthKey = CUSTOMER_SERVICE.validateAuthKey(request, dto.getAuthKey());
         dto.setAuthKey(validateAuthKey);
 
-        ResponseEntity<?> responseEntity = findExistsByAuthKey(dto.getAuthKey());
+        ResponseEntity<?> responseEntity = isExistsByAuthKey(dto.getAuthKey());
         if (responseEntity.getStatusCode() != HttpStatus.OK) {
             return responseEntity;
         }
@@ -381,10 +381,10 @@ public class CustomersRestController {
             // Обновляем куки
             CUSTOMER_SERVICE.entry(response, customer);
 
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Пароль успешно изменён.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Пароль успешно изменён");
             return ResponseEntity.ok(message);
         } else {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(3, "Произошла ошибка изменения пароля.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(3, "Произошла ошибка изменения пароля");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -395,7 +395,7 @@ public class CustomersRestController {
         String validateAuthKey = CUSTOMER_SERVICE.validateAuthKey(request, dto.getAuthKey());
         dto.setAuthKey(validateAuthKey);
 
-        ResponseEntity<?> response = findExistsByAuthKey(dto.getAuthKey());
+        ResponseEntity<?> response = isExistsByAuthKey(dto.getAuthKey());
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
@@ -403,7 +403,7 @@ public class CustomersRestController {
         // Менять роль может только администратор
         Customer authCustomer = CUSTOMER_SERVICE.findByAuthKey(dto.getAuthKey());
         if (!CUSTOMER_SERVICE.isAdmin(authCustomer)) {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "У вас недостаточно прав.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "У вас недостаточно прав");
             return ResponseEntity.badRequest().body(message);
         }
 
@@ -417,7 +417,7 @@ public class CustomersRestController {
         Customer customer = CUSTOMER_SERVICE.find(dto.getId());
         if (authCustomer.equals(customer)) {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(2,
-                    "Нельзя изменить роль своему пользователю.");
+                    "Нельзя изменить роль своему пользователю");
             return ResponseEntity.badRequest().body(message);
         }
 
@@ -434,7 +434,7 @@ public class CustomersRestController {
             return ResponseEntity.ok(responseDTO);
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(3,
-                    String.format("Не удалось изменить роль пользователя с id = '%d'.", dto.getId()));
+                    String.format("Не удалось изменить роль пользователя с id = '%d'", dto.getId()));
             return ResponseEntity.badRequest().body(message);
         }
     }

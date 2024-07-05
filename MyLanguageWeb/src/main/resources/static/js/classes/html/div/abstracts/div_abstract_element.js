@@ -57,7 +57,7 @@ export class DivAbstractElement {
         if (!isPrepared) {
             this.#isPrepared = true;
         } else {
-            throw new Error("Object \'DivAbstractElement\' has already been prepared.");
+            throw new Error("Object \'DivAbstractElement\' has already been prepared");
         }
     }
 
@@ -70,7 +70,7 @@ export class DivAbstractElement {
                 div.replaceChildren();
             }
         } else {
-            throw new Error("Object \'DivAbstractElement\' is not prepared.");
+            throw new Error("Object \'DivAbstractElement\' is not prepared");
         }
     }
 
@@ -88,7 +88,7 @@ export class DivAbstractElement {
                 }
             }
         } else {
-            throw new Error("Object \'DivAbstractElement\' is not prepared.");
+            throw new Error("Object \'DivAbstractElement\' is not prepared");
         }
     }
 
@@ -129,7 +129,7 @@ export class DivAbstractElement {
                 div.appendChild(divMessage);
             }
         } else {
-            throw new Error("Object \'DivAbstractElement\' is not prepared.");
+            throw new Error("Object \'DivAbstractElement\' is not prepared");
         }
     }
 
@@ -147,7 +147,7 @@ export class DivAbstractElement {
                 div.appendChild(divContentCenter);
             }
         } else {
-            throw new Error("Object \'DivAbstractElement\' is not prepared.");
+            throw new Error("Object \'DivAbstractElement\' is not prepared");
         }
     }
 

@@ -148,7 +148,7 @@ public class WorkoutsRestController {
                 dateOfEnd = LocalDate.parse(dateOfEndStr);
             } catch (Throwable e ){
                 ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                        "Введена некорректная дата. Введите дату в формате 'yyyy-MM-dd'.");
+                        "Введена некорректная дата. Введите дату в формате 'yyyy-MM-dd'");
                 return ResponseEntity.badRequest().body(message);
             }
         }
@@ -206,7 +206,7 @@ public class WorkoutsRestController {
             return ResponseEntity.ok(responseDTOs);
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(999,
-                    String.format("Не удалось найти незавершённые тренировки режима '%s' у пользователя с id = '%d'.",
+                    String.format("Не удалось найти незавершённые тренировки режима '%s' у пользователя с id = '%d'",
                             workoutTypeCode, customerId));
             return ResponseEntity.badRequest().body(message);
         }
@@ -220,7 +220,7 @@ public class WorkoutsRestController {
             return ResponseEntity.ok(dto);
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    String.format("Тренировка с id = '%d' не найдена.", id));
+                    String.format("Тренировка с id = '%d' не найдена", id));
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -248,7 +248,7 @@ public class WorkoutsRestController {
             return ResponseEntity.ok(dto);
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    String.format("Тренировка с кодом '%s' у пользователя с id = '%d' не найдена.",
+                    String.format("Тренировка с кодом '%s' у пользователя с id = '%d' не найдена",
                             workoutTypeCode, customerId));
             return ResponseEntity.badRequest().body(message);
         }
@@ -267,7 +267,7 @@ public class WorkoutsRestController {
             return ResponseEntity.ok(intResponseDTO);
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(999,
-                    String.format("Текущий раунд у тренировки с id = '%d' не найден.", id));
+                    String.format("Текущий раунд у тренировки с id = '%d' не найден", id));
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -308,7 +308,7 @@ public class WorkoutsRestController {
             return ResponseEntity.ok(dateResponseDTO);
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    "Не удалось найти максимальную дату окончания тренировки.");
+                    "Не удалось найти максимальную дату окончания тренировки");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -323,7 +323,7 @@ public class WorkoutsRestController {
             previousDateOfEnd = LocalDate.parse(previousDateOfEndStr);
         } catch (Throwable e ){
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    "Введена некорректная дата. Введите дату в формате 'yyyy-MM-dd'.");
+                    "Введена некорректная дата. Введите дату в формате 'yyyy-MM-dd'");
             return ResponseEntity.badRequest().body(message);
         }
 
@@ -347,7 +347,7 @@ public class WorkoutsRestController {
             return ResponseEntity.ok(dateResponseDTO);
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    "Не удалось найти следующую дату окончания тренировки.");
+                    "Не удалось найти следующую дату окончания тренировки");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -534,14 +534,14 @@ public class WorkoutsRestController {
         }
     }
 
-    @GetMapping("/find/exists/by_auth_key")
-    public ResponseEntity<?> findExistsByAuthKey(@RequestParam("auth_key") String authKey) {
+    @GetMapping("/exists/by_auth_key")
+    public ResponseEntity<?> isExistsByAuthKey(@RequestParam("auth_key") String authKey) {
         Workout workout = WORKOUT_SERVICE.findByAuthKey(authKey);
         if (workout != null) {
-            ResponseMessageResponseDTO crm = new ResponseMessageResponseDTO(1, "Код валиден.");
+            ResponseMessageResponseDTO crm = new ResponseMessageResponseDTO(1, "Код валиден");
             return ResponseEntity.ok(crm);
         } else {
-            ResponseMessageResponseDTO crm = new ResponseMessageResponseDTO(1, "Недействительный код тренировки.");
+            ResponseMessageResponseDTO crm = new ResponseMessageResponseDTO(1, "Недействительный код тренировки");
             return ResponseEntity.badRequest().body(crm);
         }
     }
@@ -555,10 +555,10 @@ public class WorkoutsRestController {
 
         Workout workout = WORKOUT_SERVICE.find(id);
         if (workout.getDateOfEnd() != null) {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Тренировка завершена.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Тренировка завершена");
             return ResponseEntity.ok(message);
         } else {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Тренировка не завершена.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Тренировка не завершена");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -572,10 +572,10 @@ public class WorkoutsRestController {
 
         Workout workout = WORKOUT_SERVICE.find(id);
         if (workout.getDateOfEnd() == null) {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Тренировка не завершена.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Тренировка не завершена");
             return ResponseEntity.ok(message);
         } else {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Тренировка завершена.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Тренировка завершена");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -596,10 +596,10 @@ public class WorkoutsRestController {
         Customer customer = CUSTOMER_SERVICE.find(customerId);
         Workout workout = WORKOUT_SERVICE.find(workoutId);
         if (customer.equals(workout.getCustomer())) {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Коллекция принадлежит вам.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Коллекция принадлежит вам");
             return ResponseEntity.ok(message);
         } else {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Коллекция не принадлежит вам.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Коллекция не принадлежит вам");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -615,7 +615,7 @@ public class WorkoutsRestController {
 
         if (roundNumber == null || roundNumber < 0) {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    "Номер раунда не должен быть отрицательным.");
+                    "Номер раунда не должен быть отрицательным");
             return ResponseEntity.badRequest().body(message);
         }
 
@@ -626,7 +626,7 @@ public class WorkoutsRestController {
             return ResponseEntity.badRequest().body(message);
         }
 
-        ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Номер раунда корректен.");
+        ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Номер раунда корректен");
         return ResponseEntity.ok(message);
     }
 
@@ -651,7 +651,7 @@ public class WorkoutsRestController {
         if (days < 0) {
             ResponseMessageResponseDTO messageResponseDTO = new ResponseMessageResponseDTO(1,
                     "Количество дней не должно быть отрицательным. Если вы хотите вывести статистику за всё время, " +
-                            "игнорируйте этот параметр или введите 0.");
+                            "игнорируйте этот параметр или введите 0");
             return ResponseEntity.badRequest().body(messageResponseDTO);
         } else if (IntStream.of(POSSIBLE_DAYS).noneMatch(x -> x == days)) {
             String possibleDaysStr = Arrays.stream(POSSIBLE_DAYS)
@@ -659,7 +659,7 @@ public class WorkoutsRestController {
                     .collect(Collectors.joining(", "));
 
             ResponseMessageResponseDTO messageResponseDTO = new ResponseMessageResponseDTO(2,
-                    String.format("Некорректное количество дней. Разрешенные значения: [%s].", possibleDaysStr));
+                    String.format("Некорректное количество дней. Разрешенные значения: [%s]", possibleDaysStr));
             return ResponseEntity.badRequest().body(messageResponseDTO);
         }
 
@@ -688,7 +688,7 @@ public class WorkoutsRestController {
             return ResponseEntity.ok(message);
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    String.format("Достигнуто максимальное количество незавершённых тренировок (%d из %d) в режиме '%s'.",
+                    String.format("Достигнуто максимальное количество незавершённых тренировок (%d из %d) в режиме '%s'",
                             countNotOver, MAX_NUMBER_OF_NOT_OVER_WORKOUTS, workoutType.getTitle()));
             return ResponseEntity.badRequest().body(message);
         }
@@ -719,7 +719,7 @@ public class WorkoutsRestController {
 
                 String possibleNumbersStr = String.join(", ", possibleNumbers);
                 ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                        String.format("В режиме '%s' разрешено количество из следующих значений: [%s].",
+                        String.format("В режиме '%s' разрешено количество из следующих значений: [%s]",
                                 workoutType.getTitle(), possibleNumbersStr));
                 return ResponseEntity.badRequest().body(message);
             }
@@ -727,7 +727,7 @@ public class WorkoutsRestController {
             final long MIN_NUMBER_OF_WORDS = 10;
             if (numberOfWords < MIN_NUMBER_OF_WORDS) {
                 ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(2,
-                        String.format("Минимальное количество слов в режиме '%s' - %d.",
+                        String.format("Минимальное количество слов в режиме '%s' - %d",
                                 workoutType.getTitle(), MIN_NUMBER_OF_WORDS));
                 return ResponseEntity.badRequest().body(message);
             }
@@ -752,7 +752,7 @@ public class WorkoutsRestController {
             Lang langIn = LANG_SERVICE.find(langInCode);
 
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(3, String.format(
-                    "В языке '%s' недостаточно слов для генерации (в наличии: %d, указанное количество: %d).",
+                    "В языке '%s' недостаточно слов для генерации (в наличии: %d, указанное количество: %d)",
                     langIn.getTitle(), count, numberOfWords));
             return ResponseEntity.badRequest().body(message);
         }
@@ -801,7 +801,7 @@ public class WorkoutsRestController {
             }
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(2,
-                    "Произошла ошибка при создании тренировки.");
+                    "Произошла ошибка при создании тренировки");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -853,7 +853,7 @@ public class WorkoutsRestController {
             }
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(2,
-                    "Произошла ошибка при создании тренировки.");
+                    "Произошла ошибка при создании тренировки");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -865,7 +865,7 @@ public class WorkoutsRestController {
         dto.setAuthKey(validateAuthKey);
 
         // Проверяем пользователя
-        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.findExistsByAuthKey(validateAuthKey);
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.isExistsByAuthKey(validateAuthKey);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
@@ -927,7 +927,7 @@ public class WorkoutsRestController {
         dto.setAuthKey(validateAuthKey);
 
         // Проверяем пользователя
-        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.findExistsByAuthKey(validateAuthKey);
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.isExistsByAuthKey(validateAuthKey);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
@@ -947,7 +947,7 @@ public class WorkoutsRestController {
         }
 
         ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                "Данные для изменения тренировки корректны.");
+                "Данные для изменения тренировки корректны");
         return ResponseEntity.ok(message);
     }
 
@@ -959,7 +959,7 @@ public class WorkoutsRestController {
         dto.setCustomerAuthKey(validateCustomerAuthKey);
 
         // Проверяем пользователя
-        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.findExistsByAuthKey(validateCustomerAuthKey);
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.isExistsByAuthKey(validateCustomerAuthKey);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
@@ -968,7 +968,7 @@ public class WorkoutsRestController {
         dto.setWorkoutAuthKey(validateWorkoutAuthKey);
 
         // Проверяем тренировку
-        response = findExistsByAuthKey(validateWorkoutAuthKey);
+        response = isExistsByAuthKey(validateWorkoutAuthKey);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
@@ -988,7 +988,7 @@ public class WorkoutsRestController {
         }
 
         ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                "Данные для изменения тренировки корректны.");
+                "Данные для изменения тренировки корректны");
         return ResponseEntity.ok(message);
     }
 
@@ -1018,7 +1018,7 @@ public class WorkoutsRestController {
         long currentMilliseconds = dto.getValue();
         if (currentMilliseconds < 0) {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    "Количество миллисекунд не должно быть отрицательным.");
+                    "Количество миллисекунд не должно быть отрицательным");
             return ResponseEntity.badRequest().body(message);
         }
 
@@ -1029,7 +1029,7 @@ public class WorkoutsRestController {
             return ResponseEntity.ok(responseDTO);
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(3,
-                    "Не удалось установить текущее время.");
+                    "Не удалось установить текущее время");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -1060,7 +1060,7 @@ public class WorkoutsRestController {
             return ResponseEntity.ok(responseDTO);
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    "Не удалось завершить тренировку.");
+                    "Не удалось завершить тренировку");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -1079,7 +1079,7 @@ public class WorkoutsRestController {
         Workout workout = WORKOUT_SERVICE.find(dto.getId());
         WORKOUT_SERVICE.delete(workout);
 
-        ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Тренировка успешно удалена.");
+        ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Тренировка успешно удалена");
         return ResponseEntity.ok(message);
     }
 }

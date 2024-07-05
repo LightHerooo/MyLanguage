@@ -89,7 +89,9 @@ export class DivWithDataBuilderElement {
         }
     }
 
-    addSpanShowMore(divWithTimerElementObj) {
+
+
+    addSpanShowMore(divWithTimerElementObj, spanShowMessage, spanHideMessage) {
         let div = this.getDivContainer();
         if (div && divWithTimerElementObj) {
             // Создаем дополнительный контейнер для генерации контента внутри вне зависимости от его позиции ---
@@ -109,7 +111,14 @@ export class DivWithDataBuilderElement {
             let divForShowMoreContent = document.createElement("div");
             divForShowMoreContent.style.marginLeft = "15px";
 
-            let showStr = "Показать больше...";
+            if (!spanShowMessage) {
+                spanShowMessage = "Показать больше...";
+            }
+
+            if (!spanHideMessage) {
+                spanHideMessage = "Скрыть..."
+            }
+
             let showFunction = function() {
                 // Генерируем выпадающий контейнер ---
                 divForShowMoreContent.replaceChildren();
@@ -136,11 +145,10 @@ export class DivWithDataBuilderElement {
                 divWithTimerElementObj.startToFill();
                 //---
 
-                spanShowMore.textContent = hideStr;
+                spanShowMore.textContent = spanHideMessage;
                 spanShowMore.onclick = hideFunction;
             }
 
-            let hideStr = "Скрыть...";
             let hideFunction = function() {
                 divWithTimerElementObj.stopToFill();
 
@@ -149,7 +157,7 @@ export class DivWithDataBuilderElement {
                     parentElement.removeChild(divForShowMoreContent);
                 }
 
-                spanShowMore.textContent = showStr;
+                spanShowMore.textContent = spanShowMessage;
                 spanShowMore.onclick = showFunction;
             }
 
@@ -157,7 +165,7 @@ export class DivWithDataBuilderElement {
             //---
 
             // Вешаем события на строку "Показать больше" ---
-            spanShowMore.textContent = showStr;
+            spanShowMore.textContent = spanShowMessage;
             spanShowMore.onclick = showFunction;
             //---
 

@@ -17,8 +17,27 @@ div.div-form-element-actions-container {
     gap: 5px;
 }
 
+div.div-form-element-message-container {
+    display: grid;
+    justify-content: center;
+    align-items: center;
+}
+
+div.div-form-element-with-delete-actions-container {
+    display: grid;
+    grid: 1fr / 1fr 400px 400px;
+    gap: 5px;
+}
+
+div.div-form-element-with-delete-message-container {
+    display: grid;
+    justify-content: left;
+    align-items: center;
+}
+
 button.button-submit,
-button.button-reset {
+button.button-reset,
+button.button-delete {
     min-height: 50px;
 
     display: grid;
@@ -37,22 +56,18 @@ button.button-reset {
     text-align: center;
 }
 button.button-submit:hover,
-button.button-reset:hover {
+button.button-reset:hover,
+button.button-delete:hover {
     background: var(--main-third-color);
 }
 
 button.button-submit:disabled,
-button.button-reset:disabled {
+button.button-reset:disabled,
+button.button-delete:disabled {
     opacity: 0.6;
 }
 
 button.button-reset > img {
     width: 32px;
     height: 32px;
-}
-
-div.div-form-element-message-container {
-    display: grid;
-    justify-content: center;
-    align-items: center;
 }

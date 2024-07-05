@@ -82,7 +82,7 @@ public class CustomerMapping {
     public Customer mapToCustomer(Customer customer, File avatarFile, CustomerEditRequestDTO dto) {
         if (customer != null) {
             if (avatarFile != null && avatarFile.exists()) {
-                customer.setPathToAvatar("/customers/avatar/" + avatarFile.getName());
+                customer.setPathToAvatar("/customers/avatars/" + avatarFile.getName());
             }
 
             String nickname = dto.getNickname();

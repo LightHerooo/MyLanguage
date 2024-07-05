@@ -140,7 +140,7 @@ export class TableWithTimerElementWordsInCollection extends TableWithTimerAbstra
 
         if (!customerCollectionId) {
             isCorrect = false;
-            this.showMessage("Выберите коллекцию, чтобы увидеть слова в ней.", _CSS_ROOT.SMALL_FONT_SIZE_STYLE_ID);
+            this.showMessage("Выберите коллекцию, чтобы увидеть слова в ней", _CSS_ROOT.SMALL_FONT_SIZE_STYLE_ID);
         }
 
         return isCorrect;

@@ -144,7 +144,7 @@ export class TextareaWithCounterElement extends TextareaElement {
 
             this.#isPrepared = true;
         } else {
-            throw new Error("Object \'TextareaWithCounterElement\' has already been prepared.");
+            throw new Error("Object \'TextareaWithCounterElement\' has already been prepared");
         }
     }
 }

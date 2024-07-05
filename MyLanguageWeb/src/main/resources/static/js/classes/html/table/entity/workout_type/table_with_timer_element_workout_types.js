@@ -16,7 +16,7 @@ import {
 
 import {
     SelectElementBoolean
-} from "../../../select/elements/select_element_boolean.js";
+} from "../../../select/elements/boolean/select_element_boolean.js";
 
 import {
     DivElementWorkoutType

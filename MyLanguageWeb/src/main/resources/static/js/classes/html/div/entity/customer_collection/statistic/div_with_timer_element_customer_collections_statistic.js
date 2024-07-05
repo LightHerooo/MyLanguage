@@ -122,7 +122,8 @@ export class DivWithTimerElementCustomerCollectionsStatistic extends DivWithTime
                     divWithTimerElementShowMoreCustomerCollectionsStatistic.setStartIndex(maxRowsInStatistic);
                     await divWithTimerElementShowMoreCustomerCollectionsStatistic.prepare();
 
-                    divWithHeaderAndDataBuilderElement.addSpanShowMore(divWithTimerElementShowMoreCustomerCollectionsStatistic);
+                    divWithHeaderAndDataBuilderElement.addSpanShowMore(
+                        divWithTimerElementShowMoreCustomerCollectionsStatistic, null, null);
                 }
 
                 divWithHeaderAndDataBuilderElement.addBr();
@@ -213,7 +214,7 @@ class ElementsForDivWithDataBuilderByCustomerCollectionStatistic extends Element
 
             this.#isPrepared = true;
         } else {
-            throw new Error("Object \'ElementsForDivWithDataBuilderByCustomerCollectionStatistic\' has already been prepared.");
+            throw new Error("Object \'ElementsForDivWithDataBuilderByCustomerCollectionStatistic\' has already been prepared");
         }
     }
 }

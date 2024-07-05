@@ -160,7 +160,7 @@ export class FormAbstractElement {
 
             this.#isPrepared = true;
         } else {
-            throw new Error("Object \'FormAbstractElement\' has already been prepared.");
+            throw new Error("Object \'FormAbstractElement\' has already been prepared");
         }
     }
 
@@ -175,7 +175,7 @@ export class FormAbstractElement {
                 divMessageContainer.appendChild(new SpanLoadingElement(null).getSpan());
             }
         } else {
-            throw new Error("Object \'FormAbstractElement\' is not prepared.");
+            throw new Error("Object \'FormAbstractElement\' is not prepared");
         }
     }
 
@@ -189,7 +189,7 @@ export class FormAbstractElement {
                 divMessageContainer.appendChild(new SpanRuleElement(ruleTypeObj, message).getSpan());
             }
         } else {
-            throw new Error("Object \'FormAbstractElement\' is not prepared.");
+            throw new Error("Object \'FormAbstractElement\' is not prepared");
         }
     }
 
@@ -201,7 +201,7 @@ export class FormAbstractElement {
                 divMessageContainer.replaceChildren();
             }
         } else {
-            throw new Error("Object \'FormAbstractElement\' is not prepared.");
+            throw new Error("Object \'FormAbstractElement\' is not prepared");
         }
     }
 
@@ -218,7 +218,7 @@ export class FormAbstractElement {
                 buttonReset.disabled = isDisabled;
             }
         } else {
-            throw new Error("Object \'FormAbstractElement\' is not prepared.");
+            throw new Error("Object \'FormAbstractElement\' is not prepared");
         }
     }
 
@@ -228,11 +228,11 @@ export class FormAbstractElement {
     }
 
     async submit() {
-        this.showRule("Отправка формы не подготовлена", _RULE_TYPES.ERROR);
+        this.showRule( _RULE_TYPES.ERROR, "Отправка формы не подготовлена");
         return false;
     }
 
     async reset() {
-        this.showRule("Сброс формы не подготовлен", _RULE_TYPES.ERROR);
+        this.showRule(_RULE_TYPES.ERROR, "Сброс формы не подготовлен");
     }
 }

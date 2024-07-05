@@ -128,10 +128,10 @@ public class CustomersController {
         return Views.CUSTOMERS_EDIT.PATH_TO_FILE;
     }
 
-    @GetMapping("/avatar/{avatar_name}")
+    @GetMapping("/avatars/{avatar_name}")
     @ResponseBody
     public ResponseEntity<?> getAvatar(@PathVariable("avatar_name") String avatarName) {
-        OutsideFolder currentFolder = OutsideFolders.AVATARS.FOLDER;
+        OutsideFolder currentFolder = OutsideFolders.CUSTOMER_AVATARS.FOLDER;
 
         File file = currentFolder.getFile(avatarName);
         if (file == null || !file.exists()) {
@@ -142,7 +142,7 @@ public class CustomersController {
         try (FileInputStream fis = new FileInputStream(file.getPath())) {
             bytes = fis.readAllBytes();
         } catch (IOException e) {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Не удалось прочитать аватар.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Не удалось прочитать аватар");
             return ResponseEntity.badRequest().body(message);
         }
 

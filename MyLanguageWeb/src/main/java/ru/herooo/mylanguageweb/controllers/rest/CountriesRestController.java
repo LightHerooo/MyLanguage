@@ -39,7 +39,7 @@ public class CountriesRestController {
                     .toList();
             return ResponseEntity.ok(responseDTOs);
         } else {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Страны не найдены.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Страны не найдены");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -52,7 +52,7 @@ public class CountriesRestController {
             return ResponseEntity.ok(dto);
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    String.format("Страна с кодом '%s' не найдена.", code));
+                    String.format("Страна с кодом '%s' не найдена", code));
             return ResponseEntity.badRequest().body(message);
         }
     }

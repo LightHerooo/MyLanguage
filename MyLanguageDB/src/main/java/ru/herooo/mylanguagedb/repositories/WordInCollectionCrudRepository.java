@@ -1,10 +1,12 @@
 package ru.herooo.mylanguagedb.repositories;
 
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.herooo.mylanguagedb.entities.customer_collection.CustomerCollection;
 import ru.herooo.mylanguagedb.entities.word.Word;
 import ru.herooo.mylanguagedb.entities.WordInCollection;
@@ -36,6 +38,13 @@ public interface WordInCollectionCrudRepository extends CrudRepository<WordInCol
     Optional<Long> count(@Param("customer_collection_id") Long customerCollectionId);
 
 
+    /*@Modifying
+    @Transactional
+    @Query("DELETE FROM WordInCollection wic " +
+            "WHERE wic.customerCollection.id = :customer_collection_id " +
+            "AND wic.id NOT IN (:excluded_ids)")*/
+    @Procedure("delete_all_words_to_customer_collection")
+    void deleteAllWordsToCustomerCollection(Long customerCollectionId, Long[] excludedIds);
 
     @Procedure("delete_words_in_collections_without_active_status")
     void deleteAllWithoutActiveStatus();

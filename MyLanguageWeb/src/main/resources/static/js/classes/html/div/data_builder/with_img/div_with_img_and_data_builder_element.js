@@ -9,11 +9,16 @@ import {
 const _CSS_DIV_WITH_DATA_BUILDER_ELEMENT = new CssDivWithDataBuilderElement();
 
 export class DivWithImgAndDataBuilderElement extends DivWithHeaderAndDataBuilderElement {
+    #doNeedImgBackground;
+
     #divWithImgAndDataContainer;
     #img;
 
-    constructor() {
+    constructor(doNeedImgBackground) {
         super();
+
+        this.#doNeedImgBackground = doNeedImgBackground;
+
         this.#tryToSetDefaultValues();
     }
 
@@ -33,6 +38,9 @@ export class DivWithImgAndDataBuilderElement extends DivWithHeaderAndDataBuilder
         let img = this.#img;
         if (!img) {
             img = document.createElement("img");
+            img.classList.add(this.#doNeedImgBackground
+                ? _CSS_DIV_WITH_DATA_BUILDER_ELEMENT.IMG_DIV_WITH_IMG_AND_DATA_BUILDER_ELEMENT_IMG_WITH_BACKGROUND_CLASS_ID
+                : _CSS_DIV_WITH_DATA_BUILDER_ELEMENT.IMG_DIV_WITH_IMG_AND_DATA_BUILDER_ELEMENT_IMG_WITHOUT_BACKGROUND_CLASS_ID);
         }
         //---
 

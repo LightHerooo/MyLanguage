@@ -53,7 +53,7 @@ public class WorkoutTypesRestController {
                                         Long lastWorkoutTypeIdOnPreviousPage) {
         if (numberOfItems == null || numberOfItems < 0) {
             ResponseMessageResponseDTO message =
-                    new ResponseMessageResponseDTO(1, "Количество записей не должно быть отрицательным.");
+                    new ResponseMessageResponseDTO(1, "Количество записей не должно быть отрицательным");
             return ResponseEntity.badRequest().body(message);
         }
 
@@ -62,7 +62,7 @@ public class WorkoutTypesRestController {
             ResponseMessageResponseDTO message =
                     new ResponseMessageResponseDTO(2,
                             "ID последнего режима тренировки на предыдущей странице не должен быть отрицательным. " +
-                                    "Если вы хотите отобразить первую страницу, укажите ID = 0.");
+                                    "Если вы хотите отобразить первую страницу, укажите ID = 0");
             return ResponseEntity.badRequest().body(message);
         }
 
@@ -76,7 +76,7 @@ public class WorkoutTypesRestController {
             return ResponseEntity.ok(workoutTypeDTOs);
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    "Режимы тренировок по указанным фильтрам не найдены.");
+                    "Режимы тренировок по указанным фильтрам не найдены");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -89,7 +89,7 @@ public class WorkoutTypesRestController {
             return ResponseEntity.ok(dto);
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    String.format("Режим тренировки с кодом '%s' не найден.", code));
+                    String.format("Режим тренировки с кодом '%s' не найден", code));
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -138,7 +138,7 @@ public class WorkoutTypesRestController {
     public ResponseEntity<?> editIsActive(HttpServletRequest request,
                                           @RequestBody EntityEditBooleanByCodeRequestDTO dto) {
         String validateAuthKey = CUSTOMER_SERVICE.validateAuthKey(request, dto.getAuthKey());
-        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.findExistsByAuthKey(validateAuthKey);
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.isExistsByAuthKey(validateAuthKey);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
@@ -146,7 +146,7 @@ public class WorkoutTypesRestController {
         // Менять статус режимов тренировок могут только суперпользователи
         Customer customer = CUSTOMER_SERVICE.findByAuthKey(validateAuthKey);
         if (!CUSTOMER_SERVICE.isSuperUser(customer)) {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "У вас недостаточно прав.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "У вас недостаточно прав");
             return ResponseEntity.badRequest().body(message);
         }
 
@@ -172,7 +172,7 @@ public class WorkoutTypesRestController {
     public ResponseEntity<?> switchAll(HttpServletRequest request,
                                        @RequestBody EntityBooleanRequestDTO dto) {
         String validateAuthKey = CUSTOMER_SERVICE.validateAuthKey(request, dto.getAuthKey());
-        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.findExistsByAuthKey(validateAuthKey);
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.isExistsByAuthKey(validateAuthKey);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
@@ -180,7 +180,7 @@ public class WorkoutTypesRestController {
         // Переключать режимамы тренировок могут только суперпользователи
         Customer customer = CUSTOMER_SERVICE.findByAuthKey(validateAuthKey);
         if (!CUSTOMER_SERVICE.isSuperUser(customer)) {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "У вас недостаточно прав.");
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "У вас недостаточно прав");
             return ResponseEntity.badRequest().body(message);
         }
 
@@ -188,8 +188,8 @@ public class WorkoutTypesRestController {
         WORKOUT_TYPE_SERVICE.switchWorkoutTypes(isActive);
 
         String messageStr = isActive
-                ? "Все режимы тренировок успешно включены."
-                : "Все режимы тренировок успешно отключены.";
+                ? "Все режимы тренировок успешно включены"
+                : "Все режимы тренировок успешно отключены";
 
         ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, messageStr);
         return ResponseEntity.ok(message);

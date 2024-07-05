@@ -43,7 +43,7 @@ div.div-dynamic-form-element-submit-container {
     min-height: 50px;
 
     display: grid;
-    grid: 1fr / 1fr 200px;
+    grid: 1fr / 1fr 400px;
     align-items: center;
     gap: 10px;
 

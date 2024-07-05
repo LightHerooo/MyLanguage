@@ -1,18 +1,18 @@
 import {
-    SelectElementCustomerCollections
-} from "../../classes/html/select/entity/customer_collection/select_element_customer_collections.js";
+    SelectElementBoolean
+} from "../../classes/html/select/elements/boolean/select_element_boolean.js";
 
 import {
-    InputTextElementFinder
-} from "../../classes/html/input/text/elements/input_text_element_finder.js";
-
-import {
-    DivWithTimerElementCustomerCollectionInfo
-} from "../../classes/html/div/entity/customer_collection/info/div_with_timer_element_customer_collection_info.js";
+    SelectElementLangsIn
+} from "../../classes/html/select/entity/lang/in/select_element_langs_in.js";
 
 import {
     DivWithTimerElementCustomerCollectionsStatistic
 } from "../../classes/html/div/entity/customer_collection/statistic/div_with_timer_element_customer_collections_statistic.js";
+
+import {
+    InputTextElementFinder
+} from "../../classes/html/input/text/elements/input_text_element_finder.js";
 
 import {
     InputTextElement
@@ -27,8 +27,8 @@ import {
 } from "../../classes/html/button/elements/button_element_refresh.js";
 
 import {
-    TableWithTimerElementWordsInCollection
-} from "../../classes/html/table/entity/word_in_collection/table_with_timer_element_words_in_collection.js";
+    TableWithTimerElementMyCustomerCollections
+} from "../../classes/html/table/entity/customer_collection/table_with_timer_element_my_customer_collections.js";
 
 const _GENERAL_TIMEOUT = 1000;
 
@@ -36,33 +36,27 @@ const _GENERAL_TIMEOUT = 1000;
 let _divWithTimerElementCustomerCollectionsStatistic;
 //---
 
-// Контейнер "Информация о коллекции" ---
-let _divWithTimerElementCustomerCollectionInfo;
-//---
-
-// Элементы для поиска в таблице + таблица "Слова в коллекции" ---
+// Элементы для поиска в таблице + таблица "Мои коллекции" ---
 let _inputTextElementFinder;
-let _selectElementCustomerCollections;
+let _selectElementLangsIn;
+let _selectElementBooleanIsActive;
 let _buttonElementRefresh;
 
-let _tableWithTimerElementWordsInCollection;
+let _tableWithTimerElementMyCustomerCollections;
 //---
 
-window.onload = async function () {
+window.onload = async function() {
     // Контейнер "Статистика коллекций" ---
     await prepareDivWithTimerElementCustomerCollectionsStatistic();
     //---
 
-    // Контейнер "Информация о коллекции" ---
-    await prepareSelectElementCustomerCollections();
-    await prepareDivWithTimerElementCustomerCollectionInfo();
-    //---
-
     // Элементы для поиска в таблице + таблица ---
     prepareInputTextElementFinder();
+    await prepareSelectElementLangsIn();
+    await prepareSelectElementBooleanIsActive();
     prepareButtonElementRefresh();
 
-    await prepareTableWithTimerWordsInCollection();
+    await prepareTableWithTimerElementMyCustomerCollections();
     //---
 
     // Запускаем таймеры ---
@@ -70,53 +64,25 @@ window.onload = async function () {
         _divWithTimerElementCustomerCollectionsStatistic.startToFill();
     }
 
-    if (_divWithTimerElementCustomerCollectionInfo) {
-        _divWithTimerElementCustomerCollectionInfo.startToFill();
-    }
-
-    if (_tableWithTimerElementWordsInCollection) {
-        _tableWithTimerElementWordsInCollection.startToFill();
-        _tableWithTimerElementWordsInCollection.changeDisabledStatusToTableInstruments(false);
+    if (_tableWithTimerElementMyCustomerCollections) {
+        _tableWithTimerElementMyCustomerCollections.startToFill();
+        _tableWithTimerElementMyCustomerCollections.changeDisabledStatusToTableInstruments(false);
     }
     //---
 }
 
-// Контейнер "Статистика коллекций" ---
+// Статистика ---
 async function prepareDivWithTimerElementCustomerCollectionsStatistic() {
     let div = document.getElementById("div_customer_collections_statistic");
     if (div) {
-        _divWithTimerElementCustomerCollectionsStatistic = new DivWithTimerElementCustomerCollectionsStatistic(div);
+        _divWithTimerElementCustomerCollectionsStatistic = new DivWithTimerElementCustomerCollectionsStatistic(div, true);
         _divWithTimerElementCustomerCollectionsStatistic.setTimeout(_GENERAL_TIMEOUT);
         await _divWithTimerElementCustomerCollectionsStatistic.prepare();
     }
 }
 //---
 
-// Контейнер "Информация о коллекции" ---
-async function prepareSelectElementCustomerCollections() {
-    let divContainer = document.getElementById("div_select_customer_collections");
-    let select = document.getElementById("select_customer_collections");
-    let spanFlag = document.getElementById("span_flag_select_customer_collections");
-    if (divContainer && select && spanFlag) {
-        _selectElementCustomerCollections =
-            new SelectElementCustomerCollections(divContainer, select, spanFlag, true);
-        _selectElementCustomerCollections.prepare();
-        await _selectElementCustomerCollections.fill();
-    }
-}
-
-async function prepareDivWithTimerElementCustomerCollectionInfo() {
-    let div = document.getElementById("div_customer_collection_info");
-    if (div) {
-        _divWithTimerElementCustomerCollectionInfo = new DivWithTimerElementCustomerCollectionInfo(div);
-        _divWithTimerElementCustomerCollectionInfo.setSelectElementCustomerCollections(_selectElementCustomerCollections);
-        _divWithTimerElementCustomerCollectionInfo.setTimeout(_GENERAL_TIMEOUT);
-        await _divWithTimerElementCustomerCollectionInfo.prepare();
-    }
-}
-//---
-
-// Слова в коллекции ---
+// Элементы для поиска в таблице + таблица "Мои коллекции" ---
 function prepareInputTextElementFinder() {
     let inputText = document.getElementById("input_text_finder");
     if (inputText) {
@@ -126,31 +92,53 @@ function prepareInputTextElementFinder() {
     }
 }
 
+async function prepareSelectElementLangsIn() {
+    let divContainer = document.getElementById("div_select_langs");
+    let select = document.getElementById("select_langs");
+    let spanFlag = document.getElementById("span_flag_select_langs");
+    if (divContainer && select && spanFlag) {
+        _selectElementLangsIn = new SelectElementLangsIn(
+            divContainer, select, spanFlag, true);
+        _selectElementLangsIn.prepare();
+        await _selectElementLangsIn.fill();
+    }
+}
+
+async function prepareSelectElementBooleanIsActive() {
+    let select = document.getElementById("select_is_active");
+    if (select) {
+        _selectElementBooleanIsActive = new SelectElementBoolean(select, true);
+        _selectElementBooleanIsActive.prepare();
+        await _selectElementBooleanIsActive.fill();
+    }
+}
+
 function prepareButtonElementRefresh() {
     let button = document.getElementById("button_refresh");
     let img = document.getElementById("img_button_refresh");
     if (button && img) {
-        let buttonWithImgElement = new ButtonWithImgElement(button, img)
+        let buttonWithImgElement = new ButtonWithImgElement(button, img);
         _buttonElementRefresh = new ButtonElementRefresh(buttonWithImgElement);
         _buttonElementRefresh.prepare();
     }
 }
 
-async function prepareTableWithTimerWordsInCollection() {
-    let table = document.getElementById("table_words_in_collection");
-    let colgroup = document.getElementById("colgroup_words_in_collection");
-    let thead = document.getElementById("thead_words_in_collection");
-    let tbody = document.getElementById("tbody_words_in_collection");
+async function prepareTableWithTimerElementMyCustomerCollections() {
+    let table = document.getElementById("table_my_customer_collections");
+    let colgroup = document.getElementById("colgroup_my_customer_collections");
+    let thead = document.getElementById("thead_my_customer_collections");
+    let tbody = document.getElementById("tbody_my_customer_collections");
     if (table && colgroup && thead && tbody) {
-        _tableWithTimerElementWordsInCollection = new TableWithTimerElementWordsInCollection(
-            table, colgroup, thead, tbody, true);
-        _tableWithTimerElementWordsInCollection.setTimeout(_GENERAL_TIMEOUT);
-        _tableWithTimerElementWordsInCollection.setDivWithTimerElementCustomerCollectionsStatistic(_divWithTimerElementCustomerCollectionsStatistic);
-        _tableWithTimerElementWordsInCollection.setInputTextElementFinder(_inputTextElementFinder);
-        _tableWithTimerElementWordsInCollection.setSelectElementCustomerCollections(_selectElementCustomerCollections);
-        _tableWithTimerElementWordsInCollection.setButtonElementRefresh(_buttonElementRefresh);
-        _tableWithTimerElementWordsInCollection.setDivWithTimerElementCustomerCollectionInfo(_divWithTimerElementCustomerCollectionInfo);
-        await _tableWithTimerElementWordsInCollection.prepare();
+        _tableWithTimerElementMyCustomerCollections =
+            new TableWithTimerElementMyCustomerCollections(table, colgroup, thead, tbody);
+        _tableWithTimerElementMyCustomerCollections.setTimeout(_GENERAL_TIMEOUT);
+        _tableWithTimerElementMyCustomerCollections.setDivWithTimerElementCustomerCollectionsStatistic(
+            _divWithTimerElementCustomerCollectionsStatistic);
+        _tableWithTimerElementMyCustomerCollections.setInputTextElementFinder(_inputTextElementFinder);
+        _tableWithTimerElementMyCustomerCollections.setSelectElementLangsIn(_selectElementLangsIn);
+        _tableWithTimerElementMyCustomerCollections.setSelectElementBooleanIsActive(_selectElementBooleanIsActive);
+        _tableWithTimerElementMyCustomerCollections.setButtonElementRefresh(_buttonElementRefresh);
+        await _tableWithTimerElementMyCustomerCollections.prepare();
     }
 }
 //---
