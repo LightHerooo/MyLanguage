@@ -8,7 +8,7 @@ import {
 
 import {
     CssInputFilesElement
-} from "../../../css/input/css_input_files_element.js";
+} from "../../../css/elements/input/css_input_files_element.js";
 
 import {
     FileMimeTypes
@@ -136,7 +136,7 @@ export class InputFileElement {
             buttonDropSelectedFiles.classList.add(_CSS_INPUT_FILES_ELEMENT.BUTTON_DROP_SELECTED_FILES_CLASS_ID);
 
             let img = document.createElement("img");
-            img.src = _IMG_SRCS.BUTTONS.DELETE;
+            img.src = _IMG_SRCS.ELEMENTS.BUTTON.DELETE;
 
             buttonDropSelectedFiles.appendChild(img);
         }

@@ -7,10 +7,6 @@ import {
 } from "../../../../span/elements/rule/rule_types.js";
 
 import {
-    CustomTimer
-} from "../../../../../timer/custom_timer.js";
-
-import {
     WordsAPI
 } from "../../../../../api/entity/words_api.js";
 
@@ -38,8 +34,6 @@ const _EVENT_NAMES = new EventNames();
 
 export class InputTextWithRuleElementWordTitle extends InputTextWithRuleElement {
     #selectElementLangsIn;
-
-    #customTimer = new CustomTimer();
 
     constructor(inputTextWithRuleElementObj) {
         super(inputTextWithRuleElementObj, inputTextWithRuleElementObj.getIsRequired());
@@ -71,27 +65,12 @@ export class InputTextWithRuleElementWordTitle extends InputTextWithRuleElement 
             let ruleType;
             let message;
 
-            // Останавливаем таймер, чтобы завершить предыдущие проверки ---
-            let customTimer = this.#customTimer;
-            if (customTimer) {
-                customTimer.stop();
-            }
-            //---
-
             let value = this.getValue();
-            if (!value) {
+            const TITLE_REGEXP = /^[^ ]+$/;
+            if (!TITLE_REGEXP.test(value)) {
                 isCorrect = false;
                 ruleType = _RULE_TYPES.ERROR;
-                message = "Слово не может быть пустым";
-            }
-
-            if (isCorrect) {
-                const TITLE_REGEXP = /^[^ ]+$/;
-                if (!TITLE_REGEXP.test(value)) {
-                    isCorrect = false;
-                    ruleType = _RULE_TYPES.ERROR;
-                    message = "Слово не должно содержать пробелов";
-                }
+                message = "Слово не должно содержать пробелов";
             }
 
             if (isCorrect) {
@@ -107,11 +86,10 @@ export class InputTextWithRuleElementWordTitle extends InputTextWithRuleElement 
                 this.hideRule();
 
                 let self = this;
-                let customTimerPromise = new Promise(resolve => {
-                    let customTimer = self.#customTimer;
-                    if (customTimer) {
-                        customTimer.setTimeout(250);
-                        customTimer.setHandler(async function() {
+                let customTimerCheckerPromise = new Promise(resolve => {
+                    let customTimerChecker = self.getCustomTimerChecker();
+                    if (customTimerChecker) {
+                        customTimerChecker.setHandler(async function() {
                             let wordAddRequestDTO = new WordAddRequestDTO();
                             wordAddRequestDTO.setTitle(value);
 
@@ -129,13 +107,13 @@ export class InputTextWithRuleElementWordTitle extends InputTextWithRuleElement 
 
                             resolve();
                         });
-                        customTimer.start();
+                        customTimerChecker.start();
                     } else {
                         resolve();
                     }
                 });
 
-                await customTimerPromise;
+                await customTimerCheckerPromise;
             }
 
             if (!isCorrect) {

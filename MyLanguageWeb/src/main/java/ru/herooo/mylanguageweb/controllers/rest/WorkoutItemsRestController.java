@@ -253,15 +253,15 @@ public class WorkoutItemsRestController {
             // Мы должны добавить слово в следующий раунд, если ответ неверный (не для всех режимов)
             boolean isCorrect = answerInfoResponseDTO.getIsCorrect();
             if (!isCorrect) {
-                // Ответ переносится в следующий раунд, если переводы были найдены
-                List<String> possibleAnswers = answerInfoResponseDTO.getPossibleAnswers();
-                if (possibleAnswers != null && possibleAnswers.size() > 0) {
-                    Workout workout = workoutItem.getWorkout();
-                    if (workout != null) {
-                        WorkoutType workoutType = workout.getWorkoutType();
-                        if (workoutType != null &&
-                                (workoutType.getId() == WorkoutTypes.RANDOM_WORDS.ID
-                                        || workoutType.getId() == WorkoutTypes.COLLECTION_WORKOUT.ID)) {
+                Workout workout = workoutItem.getWorkout();
+                if (workout != null) {
+                    WorkoutType workoutType = workout.getWorkoutType();
+                    if (workoutType != null &&
+                            (workoutType.getId() == WorkoutTypes.RANDOM_WORDS.ID
+                            || workoutType.getId() == WorkoutTypes.COLLECTION_WORKOUT.ID)) {
+                        // Ответ переносится в следующий раунд, если переводы были найдены
+                        List<String> possibleAnswers = answerInfoResponseDTO.getPossibleAnswers();
+                        if (possibleAnswers != null && possibleAnswers.size() > 0) {
                             WorkoutItem workoutItemToNextRound = WORKOUT_ITEM_SERVICE.copyToNextRound(workoutItem);
                             if (workoutItemToNextRound == null) {
                                 ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(3,

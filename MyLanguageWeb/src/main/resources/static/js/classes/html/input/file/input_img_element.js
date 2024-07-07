@@ -4,7 +4,7 @@ import {
 
 import {
     CssInputFilesElement
-} from "../../../css/input/css_input_files_element.js";
+} from "../../../css/elements/input/css_input_files_element.js";
 
 import {
     FileSize

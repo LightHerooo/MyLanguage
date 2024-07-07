@@ -7,10 +7,6 @@ import {
 } from "../../../../../span/elements/rule/rule_types.js";
 
 import {
-    CustomTimer
-} from "../../../../../../timer/custom_timer.js";
-
-import {
     CustomersAPI
 } from "../../../../../../api/entity/customers_api.js";
 
@@ -34,8 +30,6 @@ const _HTTP_STATUSES = new HttpStatuses();
 const _INPUT_TEXT_ELEMENT_CUSTOMER_NICKNAME_UTILS = new InputTextElementCustomerNicknameUtils();
 
 export class InputTextWithRuleElementCustomerNicknameAdd extends InputTextWithRuleElement {
-    #customTimer = new CustomTimer();
-
     constructor(inputTextWithRuleElementObj) {
         super(inputTextWithRuleElementObj, inputTextWithRuleElementObj.getIsRequired());
     }
@@ -43,13 +37,6 @@ export class InputTextWithRuleElementCustomerNicknameAdd extends InputTextWithRu
     async checkCorrectValue() {
         let isCorrect = await super.checkCorrectValue();
         if (isCorrect) {
-            // Останавливаем таймер, чтобы завершить предыдущие проверки ---
-            let customTimer = this.#customTimer;
-            if (customTimer) {
-                customTimer.stop();
-            }
-            //---
-
             // Проводим общие проверки ---
             isCorrect = _INPUT_TEXT_ELEMENT_CUSTOMER_NICKNAME_UTILS.checkCorrectValue(this);
             //---
@@ -61,11 +48,10 @@ export class InputTextWithRuleElementCustomerNicknameAdd extends InputTextWithRu
                 let message;
 
                 let self = this;
-                let customTimerPromise = new Promise(resolve => {
-                    let customTimer = self.#customTimer;
-                    if (customTimer) {
-                        customTimer.setTimeout(250);
-                        customTimer.setHandler(async function() {
+                let customTimerCheckerPromise = new Promise(resolve => {
+                    let customTimerChecker = self.getCustomTimerChecker();
+                    if (customTimerChecker) {
+                        customTimerChecker.setHandler(async function() {
                             let value = self.getValue();
 
                             let jsonResponse = await _CUSTOMERS_API.GET.isExistsByNickname(value);
@@ -78,13 +64,13 @@ export class InputTextWithRuleElementCustomerNicknameAdd extends InputTextWithRu
                             resolve();
                         });
 
-                        customTimer.start();
+                        customTimerChecker.start();
                     } else {
                         resolve();
                     }
                 });
 
-                await customTimerPromise;
+                await customTimerCheckerPromise;
                 //---
 
                 if (!isCorrect) {

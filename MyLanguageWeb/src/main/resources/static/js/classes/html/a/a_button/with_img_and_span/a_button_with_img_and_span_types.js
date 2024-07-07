@@ -11,7 +11,7 @@ const _IMG_SRCS = new ImgSrcs();
 
 export class AButtonWithImgAndSpanElementTypes {
     DEFAULT = new AButtonWithImgAndSpanType(_A_BUTTON_ELEMENT_TYPES.DEFAULT,
-        _IMG_SRCS.BUTTONS.QUESTION);
+        _IMG_SRCS.ELEMENTS.BUTTON.QUESTION);
 }
 
 class AButtonWithImgAndSpanType {

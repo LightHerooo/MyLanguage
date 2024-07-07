@@ -3,10 +3,6 @@ import {
 } from "../../input_text_with_rule_element.js";
 
 import {
-    CustomTimer
-} from "../../../../../timer/custom_timer.js";
-
-import {
     RuleTypes
 } from "../../../../span/elements/rule/rule_types.js";
 
@@ -28,8 +24,6 @@ const _RULE_TYPES = new RuleTypes();
 const _HTTP_STATUSES = new HttpStatuses();
 
 export class InputTextWithRuleElementCustomerLogin extends InputTextWithRuleElement {
-    #customTimer = new CustomTimer();
-
     constructor(inputTextWithRuleElementObj) {
         super(inputTextWithRuleElementObj, inputTextWithRuleElementObj.getIsRequired());
     }
@@ -41,27 +35,12 @@ export class InputTextWithRuleElementCustomerLogin extends InputTextWithRuleElem
             let ruleType;
             let message;
 
-            // Останавливаем таймер, чтобы завершить предыдущие проверки ---
-            let customTimer = this.#customTimer;
-            if (customTimer) {
-                customTimer.stop();
-            }
-            //---
-
             let value = this.getValue();
-            if (!value) {
+            const LOGIN_REGEXP = /^[A-Za-z0-9_]+$/;
+            if (!LOGIN_REGEXP.test(value)) {
                 isCorrect = false;
                 ruleType = _RULE_TYPES.ERROR;
-                message = "Логин не может быть пустым";
-            }
-
-            if (isCorrect) {
-                const LOGIN_REGEXP = /^[A-Za-z0-9_]+$/;
-                if (!LOGIN_REGEXP.test(value)) {
-                    isCorrect = false;
-                    ruleType = _RULE_TYPES.ERROR;
-                    message = "Логин должен содержать только английские буквы, цифры и знаки подчеркивания [_]";
-                }
+                message = "Логин должен содержать только английские буквы, цифры и знаки подчеркивания [_]";
             }
 
             if (isCorrect) {
@@ -78,11 +57,10 @@ export class InputTextWithRuleElementCustomerLogin extends InputTextWithRuleElem
                 this.hideRule();
 
                 let self = this;
-                let customTimerPromise = new Promise(resolve => {
-                    let customTimer = self.#customTimer;
-                    if (customTimer) {
-                        customTimer.setTimeout(250);
-                        customTimer.setHandler(async function() {
+                let customTimerCheckerPromise = new Promise(resolve => {
+                    let customTimerChecker = self.getCustomTimerChecker();
+                    if (customTimerChecker) {
+                        customTimerChecker.setHandler(async function() {
                             let jsonResponse = await _CUSTOMERS_API.GET.isExistsByLogin(value);
                             if (jsonResponse.getStatus() === _HTTP_STATUSES.OK) {
                                 isCorrect = false;
@@ -91,13 +69,13 @@ export class InputTextWithRuleElementCustomerLogin extends InputTextWithRuleElem
                             }
                             resolve();
                         })
-                        customTimer.start();
+                        customTimerChecker.start();
                     } else {
                         resolve();
                     }
                 });
 
-                await customTimerPromise;
+                await customTimerCheckerPromise;
             }
 
             if (!isCorrect) {

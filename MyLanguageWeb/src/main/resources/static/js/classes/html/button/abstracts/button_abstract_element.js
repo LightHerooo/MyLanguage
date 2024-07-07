@@ -1,6 +1,6 @@
 import {
     CssButtonElement
-} from "../../../css/button/css_button_element.js";
+} from "../../../css/elements/button/css_button_element.js";
 
 import {
     HtmlUtils

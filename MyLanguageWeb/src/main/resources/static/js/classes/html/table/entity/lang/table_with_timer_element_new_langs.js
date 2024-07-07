@@ -8,7 +8,7 @@ import {
 
 import {
     CssDivElement
-} from "../../../../css/div/css_div_element.js";
+} from "../../../../css/elements/div/css_div_element.js";
 
 import {
     CssImgSizes
@@ -23,8 +23,8 @@ import {
 } from "../../abstracts/table_with_timer_abstract_element.js";
 
 import {
-    YandexDictionaryLangsResponseDTO
-} from "../../../../dto/entity/lang/other/yandex_dictionary_langs.js";
+    YandexLangsResponseDTO
+} from "../../../../dto/entity/lang/other/yandex_langs_response_dto.js";
 
 import {
     LangResponseDTO
@@ -38,6 +38,26 @@ import {
     ImgSrcs
 } from "../../../img_srcs.js";
 
+import {
+    AButtonWithImgElement
+} from "../../../a/a_button/with_img/a_button_with_img_element.js";
+
+import {
+    AButtonWithImgElementTypes
+} from "../../../a/a_button/with_img/a_button_with_img_element_types.js";
+
+import {
+    AButtonWithImgElementSizes
+} from "../../../a/a_button/with_img/a_button_with_img_element_sizes.js";
+
+import {
+    UrlPaths
+} from "../../../../url/path/url_paths.js";
+
+import {
+    HrefTypes
+} from "../../../a/href_types.js";
+
 const _LANGS_API = new LangsAPI();
 
 const _CSS_ROOT = new CssRoot();
@@ -46,6 +66,10 @@ const _CSS_IMG_SIZES = new CssImgSizes();
 
 const _HTTP_STATUSES = new HttpStatuses();
 const _IMG_SRCS = new ImgSrcs();
+const _A_BUTTON_WTIH_IMG_ELEMENT_TYPES = new AButtonWithImgElementTypes();
+const _A_BUTTON_WTIH_IMG_ELEMENT_SIZES = new AButtonWithImgElementSizes();
+const _URL_PATHS = new UrlPaths();
+const _HREF_TYPES = new HrefTypes();
 
 export class TableWithTimerElementNewLangs extends TableWithTimerAbstractElement {
     #buttonElementRefresh;
@@ -87,6 +111,14 @@ export class TableWithTimerElementNewLangs extends TableWithTimerAbstractElement
             //---
 
             // Подсказка поддержки на вход ---
+            td = document.createElement("td");
+
+            td.style.background = doesSupportForIn !== null && doesSupportForIn !== undefined
+                ? doesSupportForIn
+                    ? _CSS_ROOT.GREEN_LIGHT_COLOR_STYLE_ID
+                    : _CSS_ROOT.RED_LIGHT_COLOR_STYLE_ID
+                : _CSS_ROOT.YELLOW_LIGHT_COLOR_STYLE_ID;
+
             let divContentCenter = document.createElement("div");
             divContentCenter.classList.add(_CSS_DIV_ELEMENT.DIV_ELEMENT_CONTENT_CENTER_CLASS_ID);
 
@@ -99,18 +131,19 @@ export class TableWithTimerElementNewLangs extends TableWithTimerAbstractElement
                 : img.src = _IMG_SRCS.OTHER.QUESTION;
             divContentCenter.appendChild(img);
 
-            td = document.createElement("td");
-            td.style.background = doesSupportForIn !== null && doesSupportForIn !== undefined
-                ? doesSupportForIn
-                    ? _CSS_ROOT.GREEN_LIGHT_COLOR_STYLE_ID
-                    : _CSS_ROOT.RED_LIGHT_COLOR_STYLE_ID
-                : _CSS_ROOT.YELLOW_LIGHT_COLOR_STYLE_ID;
             td.appendChild(divContentCenter);
-
             tr.appendChild(td);
             //---
 
             // Подсказка поддержки на выход ---
+            td = document.createElement("td");
+
+            td.style.background = doesSupportForOut !== null && doesSupportForOut !== undefined
+                ? doesSupportForOut
+                    ? _CSS_ROOT.GREEN_LIGHT_COLOR_STYLE_ID
+                    : _CSS_ROOT.RED_LIGHT_COLOR_STYLE_ID
+                : _CSS_ROOT.YELLOW_LIGHT_COLOR_STYLE_ID;
+
             divContentCenter = divContentCenter.cloneNode(false);
 
             img = img.cloneNode(false);
@@ -121,14 +154,30 @@ export class TableWithTimerElementNewLangs extends TableWithTimerAbstractElement
                 : img.src = _IMG_SRCS.OTHER.QUESTION;
             divContentCenter.appendChild(img);
 
-            td = document.createElement("td");
-            td.style.background = doesSupportForOut !== null && doesSupportForOut !== undefined
-                ? doesSupportForOut
-                    ? _CSS_ROOT.GREEN_LIGHT_COLOR_STYLE_ID
-                    : _CSS_ROOT.RED_LIGHT_COLOR_STYLE_ID
-                : _CSS_ROOT.YELLOW_LIGHT_COLOR_STYLE_ID;
             td.appendChild(divContentCenter);
+            tr.appendChild(td);
+            //---
 
+            // Действия ---
+            td = document.createElement("td");
+
+            divContentCenter = divContentCenter.cloneNode(false);
+
+            let aButtonWithImgElementNew = new AButtonWithImgElement(null, null);
+            aButtonWithImgElementNew.changeAButtonWithImgElementSize(_A_BUTTON_WTIH_IMG_ELEMENT_SIZES.SIZE_32);
+            aButtonWithImgElementNew.changeTo(_A_BUTTON_WTIH_IMG_ELEMENT_TYPES.ADD);
+            aButtonWithImgElementNew.changeTitle("Добавить новый язык");
+
+            let path = _URL_PATHS.SPECIAL_ACTIONS.LANGS.ADD.getPath();
+            aButtonWithImgElementNew.changeHref(`${path}/${langCode}`);
+            aButtonWithImgElementNew.changeHrefType(_HREF_TYPES.OPEN_IN_THIS_PAGE);
+
+            let a = aButtonWithImgElementNew.getA();
+            if (a) {
+                divContentCenter.appendChild(a);
+            }
+
+            td.appendChild(divContentCenter);
             tr.appendChild(td);
             //---
         }
@@ -166,7 +215,7 @@ export class TableWithTimerElementNewLangs extends TableWithTimerAbstractElement
         // Ищем языки Yandex.Dictionary, чтобы выводить подскази по поддержке языков ---
         let jsonResponse = await _LANGS_API.GET.getYandexDictionaryLangs();
         if (jsonResponse.getStatus() === _HTTP_STATUSES.OK) {
-            let yandexDictionaryLangsResponseDTO = new YandexDictionaryLangsResponseDTO(jsonResponse.getJson());
+            let yandexDictionaryLangsResponseDTO = new YandexLangsResponseDTO(jsonResponse.getJson());
 
             // Мы должны оставить только те языки, которые отсутствуют в базе ---
             let langCodes = yandexDictionaryLangsResponseDTO.getLangCodes();

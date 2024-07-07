@@ -4,7 +4,7 @@ import {
 
 import {
     CssInputTextElement
-} from "../../../../css/input/css_input_text_element.js";
+} from "../../../../css/elements/input/css_input_text_element.js";
 
 import {
     SpanFlagElement

@@ -8,7 +8,7 @@ import {
 
 import {
     CssInputCheckboxElement
-} from "../../../css/input/css_input_checkbox_element.js";
+} from "../../../css/elements/input/css_input_checkbox_element.js";
 
 const _CSS_INPUT_CHECKBOX_ELEMENT = new CssInputCheckboxElement();
 

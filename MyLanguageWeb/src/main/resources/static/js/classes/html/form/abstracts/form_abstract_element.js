@@ -1,6 +1,6 @@
 import {
     CssFormElement
-} from "../../../css/form/css_form_element.js";
+} from "../../../css/elements/form/css_form_element.js";
 
 import {
     RuleTypes
@@ -16,7 +16,7 @@ import {
 
 import {
     CssDivElement
-} from "../../../css/div/css_div_element.js";
+} from "../../../css/elements/div/css_div_element.js";
 
 import {
     EventNames

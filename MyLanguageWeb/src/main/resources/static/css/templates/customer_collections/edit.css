@@ -1,3 +1,7 @@
+main {
+    min-height: 1500px;
+}
+
 div.div-customer-collection-edit-container {
     display: grid;
     grid-auto-flow: row;
@@ -10,10 +14,6 @@ div.div-customer-collection-edit-required-data-container {
     display: flex;
     flex-direction: column;
     gap: 15px;
-}
-
-main {
-    min-height: 1500px;
 }
 
 div.div-instruments-for-find-words-in-collection-container {

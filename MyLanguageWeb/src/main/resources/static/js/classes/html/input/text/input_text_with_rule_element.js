@@ -14,6 +14,10 @@ import {
     EventNames
 } from "../../event_names.js";
 
+import {
+    CustomTimer
+} from "../../../timer/custom_timer.js";
+
 const _RULE_TYPES = new RuleTypes();
 const _EVENT_NAMES = new EventNames();
 
@@ -21,6 +25,7 @@ export class InputTextWithRuleElement extends InputTextElement {
     #isRequired = false;
 
     #isPrepared = false;
+    #customTimerChecker = new CustomTimer();
     #spanRuleElement;
 
     constructor(inputTextElementObj, isRequired) {
@@ -37,6 +42,10 @@ export class InputTextWithRuleElement extends InputTextElement {
         return this.#isRequired;
     }
 
+    getCustomTimerChecker() {
+        return this.#customTimerChecker;
+    }
+
 
     prepare() {
         let isPrepared = this.#isPrepared;
@@ -48,6 +57,13 @@ export class InputTextWithRuleElement extends InputTextElement {
                     await self.checkCorrectValue();
                 })
             }
+
+            // Устанавливаем задержку таймеру ---
+            let customTimerChecker = this.#customTimerChecker;
+            if (customTimerChecker) {
+                customTimerChecker.setTimeout(250);
+            }
+            //---
 
             this.#isPrepared = true;
         } else {
@@ -104,6 +120,13 @@ export class InputTextWithRuleElement extends InputTextElement {
             isCorrect = true;
             let ruleType;
             let message;
+
+            // Останавливаем таймер от предыдущих проверок ---
+            let customTimerChecker = this.#customTimerChecker;
+            if (customTimerChecker) {
+                customTimerChecker.stop();
+            }
+            //---
 
             let isRequired = this.#isRequired;
             if (isRequired) {

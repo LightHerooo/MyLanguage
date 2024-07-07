@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title th:text="|${WEB_APP_NAME} - Новый язык|"></title>
+        <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
+
+        <link rel="stylesheet" type="text/css" href="/css/root.css">
+        <link rel="stylesheet" type="text/css" href="/css/main.css">
+        <link rel="stylesheet" type="text/css" href="/css/img_sizes.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/elements/span/span_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/elements/span/span_loading_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/elements/span/span_flag_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/elements/span/span_rule_element.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/elements/input/input_text_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/elements/select/select_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/elements/label/label_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/elements/form/form_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/elements/div/div_element.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/info_block/info_block.css">
+        <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_header.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/templates/special_actions/langs/edit.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
+
+        <script type="module" src="/js/templates/special_actions/langs/edit.js"></script>
+    </head>
+    <body>
+        <header>
+            <div th:insert="~{layouts/header}"></div>
+        </header>
+        <main>
+            <div class="div-edit-lang-container">
+                <div class="div-info-block-header-container">
+                    <img src="/images/templates/langs/edit_lang.png"
+                         alt="entry.png"/>
+                    <h1>Изменение языка</h1>
+                </div>
+                <div class="div-info-block-container">
+                    <form id="form_lang_edit"
+                          action="/special_actions/langs/show"
+                          class="form-element">
+                        <div class="div-form-element-item">
+                            <label class="label-required-element">
+                                <span>Код</span>
+                                <span> </span>
+                                <span class="span-label-required-element-red-star">*</span>
+                            </label>
+                            <input type="text"
+                                   class="input-text-element"
+                                   th:value="${LANG_CODE}"
+                                   disabled/>
+                        </div>
+                        <div class="div-form-element-item">
+                            <label for="input_text_lang_title"
+                                   class="label-required-element">
+                                <span>Название</span>
+                                <span> </span>
+                                <span class="span-label-required-element-red-star">*</span>
+                            </label>
+                            <input id="input_text_lang_title"
+                                   type="text"
+                                   class="input-text-element" disabled/>
+                        </div>
+                        <div class="div-form-element-item">
+                            <label for="select_countries" class="label-required-element">
+                                <span>Страна</span>
+                                <span> </span>
+                                <span class="span-label-required-element-red-star">*</span>
+                            </label>
+                            <div id="div_select_countries" class="div-select-with-flag-element-container">
+                                <select id="select_countries" class="select-element" disabled></select>
+                                <div>
+                                    <div>
+                                        <span id="span_flag_select_countries"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="div-form-element-item">
+                            <label for="select_is_active_for_in" class="label-required-element">
+                                <span>Активный на вход</span>
+                                <span> </span>
+                                <span class="span-label-required-element-red-star">*</span>
+                            </label>
+                            <select id="select_is_active_for_in" class="select-element" disabled></select>
+                        </div>
+                        <div class="div-form-element-item">
+                            <label for="select_is_active_for_out" class="label-required-element">
+                                <span>Активный на выход</span>
+                                <span> </span>
+                                <span class="span-label-required-element-red-star">*</span>
+                            </label>
+                            <select id="select_is_active_for_out" class="select-element" disabled></select>
+                        </div>
+                        <div class="div-element-horizontal-delimiter"></div>
+                        <button id="button_submit_lang_edit"
+                                type="submit"
+                                class="button-submit"
+                                disabled>Изменить</button>
+                        <div id="div_message_container_lang_edit"
+                             class="div-form-element-message-container"></div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </body>
+</html>

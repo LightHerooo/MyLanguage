@@ -9,7 +9,8 @@ import java.util.Objects;
 public class Lang {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "lang_id_seq")
+    @SequenceGenerator(name = "lang_id_seq", sequenceName = "lang_id_seq", allocationSize = 1)
     private long id;
 
     @Column(name="title")
@@ -85,4 +86,6 @@ public class Lang {
     public void setCountry(Country country) {
         this.country = country;
     }
+
+
 }

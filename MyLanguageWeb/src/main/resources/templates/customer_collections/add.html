@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="|${WEB_APP_NAME} - Создание новых коллекций|">Создание новых коллекций</title>
+    <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
+
+    <link rel="stylesheet" type="text/css" href="/css/root.css">
+    <link rel="stylesheet" type="text/css" href="/css/main.css">
+    <link rel="stylesheet" type="text/css" href="/css/img_sizes.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/elements/span/span_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/elements/span/span_flag_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/elements/span/span_loading_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/elements/span/span_rule_element.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/elements/label/label_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/elements/input/input_text_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/elements/select/select_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/elements/button/button_element.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_big_header.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/elements/form/dynamic_form_element.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
+
+    <script type="module" src="/js/templates/customer_collections/add.js"></script>
+</head>
+<body>
+    <header>
+        <div th:insert="~{layouts/header}"></div>
+    </header>
+    <main>
+        <div class="div-info-block-big-header-container">
+            <div class="div-info-block-big-header-img-container">
+                <img src="/images/templates/customer_collections/new_collection.png"
+                     alt="new_collection.png"/>
+            </div>
+            <div class="div-info-block-big-header-data-container">
+                <h1>Создание новых коллекций</h1>
+                <div class="big-info-block-text">
+                    <span>
+                        Создавайте коллекции слов для изучения и тренировки.
+                    </span>
+                </div>
+                <br>
+            </div>
+        </div>
+        <form id="form_customer_collections_add"
+              method="GET"
+              action="/customer_collections"
+              class="form-dynamic-form-element">
+            <div id="div_rows_container_customer_collections_add"
+                 class="div-dynamic-form-element-rows-container"></div>
+            <div id="div_button_add_row_container_customer_collections_add"
+                 class="div-dynamic-form-element-button-add-row-container"></div>
+            <div class="div-dynamic-form-element-submit-container">
+                <div id="div_message_container_customer_collections_add"
+                     class="div-dynamic-form-element-message-container"></div>
+                <button id="button_submit_customer_collections_add"
+                        type="submit"
+                        class="button-submit" disabled>Создать</button>
+            </div>
+        </form>
+    </main>
+</body>
+</html>

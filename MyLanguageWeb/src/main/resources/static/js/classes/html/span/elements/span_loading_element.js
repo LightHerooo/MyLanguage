@@ -1,6 +1,6 @@
 import {
     CssWithLoadingElement
-} from "../../../css/span/css_span_loading_element.js";
+} from "../../../css/elements/span/css_span_loading_element.js";
 
 const _CSS_SPAN_LOADING_ELEMENT = new CssWithLoadingElement();
 

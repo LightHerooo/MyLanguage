@@ -24,7 +24,7 @@ import {
 
 import {
     CssTableElement
-} from "../../../../../css/table/css_table_element.js";
+} from "../../../../../css/elements/table/css_table_element.js";
 
 import {
     CssRoot

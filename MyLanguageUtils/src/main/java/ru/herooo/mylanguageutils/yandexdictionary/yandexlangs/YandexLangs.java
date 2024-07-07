@@ -105,7 +105,7 @@ public class YandexLangs {
         return result;
     }
 
-    public boolean checkLangCoupleSupport(String langInCode, String langOutCode) {
+    public boolean isCoupleSupport(String langInCode, String langOutCode) {
         boolean areLanguagesSupported = false;
         if (!langInCode.equals(langOutCode)) {
             if (langCodeCouples != null && langCodeCouples.length > 0) {

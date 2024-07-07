@@ -3,8 +3,8 @@ package ru.herooo.mylanguageweb.dto.entity.wordincollection.response;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import ru.herooo.mylanguageweb.controllers.json.l.LongDeserializer;
-import ru.herooo.mylanguageweb.controllers.json.l.LongSerializer;
+import ru.herooo.mylanguageweb.json.l.LongDeserializer;
+import ru.herooo.mylanguageweb.json.l.LongSerializer;
 import ru.herooo.mylanguageweb.dto.entity.customercollection.response.CustomerCollectionResponseDTO;
 import ru.herooo.mylanguageweb.dto.entity.word.response.WordResponseDTO;
 

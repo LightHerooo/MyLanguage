@@ -28,6 +28,6 @@ div.div-actions-container {
     min-height: 300px;
 
     display: grid;
-    grid: 1fr / 1fr 1fr 1fr 1fr;
+    grid: 1fr / 1fr 1fr 1fr;
     gap: 10px;
 }

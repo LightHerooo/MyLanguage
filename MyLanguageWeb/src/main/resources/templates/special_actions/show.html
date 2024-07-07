@@ -9,8 +9,8 @@
         <link rel="stylesheet" type="text/css" href="/css/main.css">
         <link rel="stylesheet" type="text/css" href="/css/img_sizes.css">
 
-        <link rel="stylesheet" type="text/css" href="/css/a/a_button_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/span/span_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/elements/a/a_button_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/elements/span/span_element.css">
 
         <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_big_header.css">
         <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_header.css">
@@ -59,48 +59,48 @@
                 <h1>Слова</h1>
             </div>
             <div class="word-actions-for-admin-container" th:if="${IS_ADMIN == true}">
-                <a href="/special_actions/edit_current_status_to_words"
+                <a href="/special_actions/words/show_with_current_status"
                    class="a-button-with-img-and-span-element-vertical-128 a-button-element-default">
                     <span>
                         <img src="/images/templates/words/word.png"
                              alt="cards.png">
                     </span>
-                    <span>Изменение текущего статуса в словах</span>
+                    <span>Слова с текущим статусом</span>
                 </a>
                 <a class="a-button-with-img-and-span-element-vertical-128 a-button-element-default a-button-element-disabled">
                     <span>
-                        <img src="/images/buttons/question.png"
+                        <img src="/images/elements/button/question.png"
                              alt="question.png"/>
                     </span>
                     <span>...</span>
                 </a>
                 <a class="a-button-with-img-and-span-element-vertical-128 a-button-element-default a-button-element-disabled">
                     <span>
-                        <img src="/images/buttons/question.png"
+                        <img src="/images/elements/button/question.png"
                              alt="question.png"/>
                     </span>
                     <span>...</span>
                 </a>
             </div>
             <div class="word-actions-for-moderator-container" th:if="${IS_MODERATOR == true}">
-                <a href="/special_actions/edit_current_status_to_words"
+                <a href="/special_actions/words/show_with_current_status"
                    class="a-button-with-img-and-span-element-vertical-128 a-button-element-default">
                     <span>
                         <img src="/images/templates/words/word.png"
                              alt="cards.png">
                     </span>
-                    <span>Изменение текущего статуса в словах</span>
+                    <span>Слова с текущим статусом</span>
                 </a>
                 <a class="a-button-with-img-and-span-element-vertical-128 a-button-element-default a-button-element-disabled">
                     <span>
-                        <img src="/images/buttons/question.png"
+                        <img src="/images/elements/button/question.png"
                              alt="question.png"/>
                     </span>
                     <span>...</span>
                 </a>
                 <a class="a-button-with-img-and-span-element-vertical-128 a-button-element-default a-button-element-disabled">
                     <span>
-                        <img src="/images/buttons/question.png"
+                        <img src="/images/elements/button/question.png"
                              alt="question.png"/>
                     </span>
                     <span>...</span>
@@ -113,47 +113,49 @@
                 <h1>Языки</h1>
             </div>
             <div class="lang-actions-for-admin-container" th:if="${IS_ADMIN == true}">
-                <a href="/special_actions/edit_active_statuses_to_langs"
+                <a href="/special_actions/langs/show"
                    class="a-button-with-img-and-span-element-vertical-128 a-button-element-default">
                     <span>
                         <img src="/images/templates/langs/lang.png"
                              alt="langs.png">
                     </span>
-                    <span>Изменение статусов активности в языках</span>
+                    <span>Языки</span>
                 </a>
-                <a class="a-button-with-img-and-span-element-vertical-128 a-button-element-default a-button-element-disabled">
+                <a href="/special_actions/langs/show_new"
+                   class="a-button-with-img-and-span-element-vertical-128 a-button-element-default a-button-element">
                     <span>
-                        <img src="/images/buttons/question.png"
-                             alt="question.png"/>
+                        <img src="/images/templates/langs/lang.png"
+                             alt="langs.png">
                     </span>
-                    <span>...</span>
+                    <span>Новые языки</span>
                 </a>
                 <a class="a-button-with-img-and-span-element-vertical-128 a-button-element-default a-button-element-disabled">
                     <span>
-                        <img src="/images/buttons/question.png"
+                        <img src="/images/elements/button/question.png"
                              alt="question.png"/>
                     </span>
                     <span>...</span>
                 </a>
             </div>
             <div class="lang-actions-for-moderator-container" th:if="${IS_MODERATOR == true}">
-                <a href="/special_actions/edit_active_statuses_to_langs"
+                <a href="/special_actions/langs/show"
                    class="a-button-with-img-and-span-element-vertical-128 a-button-element-default">
                     <span>
                         <img src="/images/templates/langs/lang.png"
                              alt="langs.png">
                     </span>
-                    <span>Изменение статусов активности в языках</span>
+                    <span>Языки</span>
                 </a>
-                <a class="a-button-with-img-and-span-element-vertical-128 a-button-element-default a-button-element-disabled">
+                <a href="/special_actions/langs/show_new"
+                   class="a-button-with-img-and-span-element-vertical-128 a-button-element-default a-button-element">
                     <span>
-                        <img src="/images/buttons/question.png"
-                             alt="question.png"/>
+                        <img src="/images/templates/langs/lang.png"
+                             alt="langs.png">
                     </span>
-                    <span>...</span>
+                    <span>Новые языки</span>
                 </a>
                 <a class="a-button-with-img-and-span-element-vertical-128 a-button-element-default a-button-element-disabled">
-                    <img src="/images/buttons/question.png"
+                    <img src="/images/elements/button/question.png"
                          alt="question.png"/>
                     <span>...</span>
                 </a>
@@ -165,48 +167,48 @@
                 <h1>Режимы тренировок</h1>
             </div>
             <div class="workout-type-actions-for-admin-container" th:if="${IS_ADMIN == true}">
-                <a href="/special_actions/edit_active_status_to_workout_types"
+                <a href="/special_actions/workout_types/show"
                    class="a-button-with-img-and-span-element-vertical-128 a-button-element-default">
                     <span>
                         <img src="/images/templates/workouts/workout.png"
                              alt="brain.png">
                     </span>
-                    <span>Изменение статуса активности в режимах тренировок</span>
+                    <span>Режимы тренировок</span>
                 </a>
                 <a class="a-button-with-img-and-span-element-vertical-128 a-button-element-default a-button-element-disabled">
                     <span>
-                        <img src="/images/buttons/question.png"
+                        <img src="/images/elements/button/question.png"
                              alt="question.png"/>
                     </span>
                     <span>...</span>
                 </a>
                 <a class="a-button-with-img-and-span-element-vertical-128 a-button-element-default a-button-element-disabled">
                     <span>
-                        <img src="/images/buttons/question.png"
+                        <img src="/images/elements/button/question.png"
                              alt="question.png"/>
                     </span>
                     <span>...</span>
                 </a>
             </div>
             <div class="workout-type-actions-for-moderator-container" th:if="${IS_MODERATOR == true}">
-                <a href="/special_actions/edit_active_status_to_workout_types"
+                <a href="/special_actions/workout_types/show"
                    class="a-button-with-img-and-span-element-vertical-128 a-button-element-default">
                     <span>
                         <img src="/images/templates/workouts/workout.png"
                              alt="brain.png">
                     </span>
-                    <span>Изменение статуса активности в режимах тренировок</span>
+                    <span>Режимы тренировок</span>
                 </a>
                 <a class="a-button-with-img-and-span-element-vertical-128 a-button-element-default a-button-element-disabled">
                     <span>
-                        <img src="/images/buttons/question.png"
+                        <img src="/images/elements/button/question.png"
                              alt="question.png"/>
                     </span>
                     <span>...</span>
                 </a>
                 <a class="a-button-with-img-and-span-element-vertical-128 a-button-element-default a-button-element-disabled">
                     <span>
-                        <img src="/images/buttons/question.png"
+                        <img src="/images/elements/button/question.png"
                              alt="question.png"/>
                     </span>
                     <span>...</span>
@@ -214,29 +216,29 @@
             </div>
 
             <div class="div-info-block-header-container-margin" th:if="${IS_ADMIN == true}">
-                <img src="/images/customer_roles/customer.png"
+                <img src="/images/entity/customer_role/customer.png"
                      alt="customer.png"/>
                 <h1>Пользователи</h1>
             </div>
             <div class="customer-actions-for-admin-container" th:if="${IS_ADMIN == true}">
-                <a href="/special_actions/edit_role_to_customers"
+                <a href="/special_actions/customers/show_with_current_role"
                    class="a-button-with-img-and-span-element-vertical-128 a-button-element-default">
                     <span>
-                        <img src="/images/customer_roles/customer.png"
+                        <img src="/images/entity/customer_role/customer.png"
                              alt="customer.png">
                     </span>
-                    <span>Изменение роли у пользователей</span>
+                    <span>Пользователи с текущей ролью</span>
                 </a>
                 <a class="a-button-with-img-and-span-element-vertical-128 a-button-element-default a-button-element-disabled">
                     <span>
-                        <img src="/images/buttons/question.png"
+                        <img src="/images/elements/button/question.png"
                              alt="question.png"/>
                     </span>
                     <span>...</span>
                 </a>
                 <a class="a-button-with-img-and-span-element-vertical-128 a-button-element-default a-button-element-disabled">
                     <span>
-                        <img src="/images/buttons/question.png"
+                        <img src="/images/elements/button/question.png"
                              alt="question.png"/>
                     </span>
                     <span>...</span>

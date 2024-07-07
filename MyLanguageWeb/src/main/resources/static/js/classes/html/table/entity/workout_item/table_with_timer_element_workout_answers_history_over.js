@@ -12,11 +12,11 @@ import {
 
 import {
     CssDivElement
-} from "../../../../css/div/css_div_element.js";
+} from "../../../../css/elements/div/css_div_element.js";
 
 import {
     CssSpanElement
-} from "../../../../css/span/css_span_element.js";
+} from "../../../../css/elements/span/css_span_element.js";
 
 import {
     CssImgSizes

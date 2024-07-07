@@ -1,6 +1,6 @@
 import {
     CssSpanRuleElement
-} from "../../../../css/span/css_span_rule_element.js";
+} from "../../../../css/elements/span/css_span_rule_element.js";
 
 const _CSS_SPAN_RULE_ELEMENT = new CssSpanRuleElement();
 

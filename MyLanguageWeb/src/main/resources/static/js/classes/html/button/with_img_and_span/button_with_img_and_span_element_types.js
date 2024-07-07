@@ -11,17 +11,17 @@ const _IMG_SRCS = new ImgSrcs();
 
 export class ButtonWithImgAndSpanElementTypes {
     DEFAULT = new ButtonWithImgAndSpanType(_BUTTON_ELEMENT_TYPES.DEFAULT,
-        _IMG_SRCS.BUTTONS.QUESTION);
+        _IMG_SRCS.ELEMENTS.BUTTON.QUESTION);
     ACCEPT = new ButtonWithImgAndSpanType(_BUTTON_ELEMENT_TYPES.GREEN,
-        _IMG_SRCS.BUTTONS.ACCEPT);
+        _IMG_SRCS.ELEMENTS.BUTTON.ACCEPT);
     DENY = new ButtonWithImgAndSpanType(_BUTTON_ELEMENT_TYPES.RED,
-        _IMG_SRCS.BUTTONS.DENY);
+        _IMG_SRCS.ELEMENTS.BUTTON.DENY);
     ADD = new ButtonWithImgAndSpanType(_BUTTON_ELEMENT_TYPES.GREEN,
-        _IMG_SRCS.BUTTONS.ADD);
+        _IMG_SRCS.ELEMENTS.BUTTON.ADD);
     DELETE = new ButtonWithImgAndSpanType(_BUTTON_ELEMENT_TYPES.RED,
-        _IMG_SRCS.BUTTONS.DELETE);
+        _IMG_SRCS.ELEMENTS.BUTTON.DELETE);
     QUESTION = new ButtonWithImgAndSpanType(_BUTTON_ELEMENT_TYPES.YELLOW,
-        _IMG_SRCS.BUTTONS.QUESTION);
+        _IMG_SRCS.ELEMENTS.BUTTON.QUESTION);
 }
 
 class ButtonWithImgAndSpanType {

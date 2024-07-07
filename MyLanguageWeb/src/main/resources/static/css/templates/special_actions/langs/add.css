@@ -1,0 +1,14 @@
+main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+div.div-add-lang-container {
+    width: 700px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+

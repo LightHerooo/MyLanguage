@@ -32,8 +32,6 @@ import ru.herooo.mylanguageweb.dto.entity.workout.types.favourite.workout_type.F
 import ru.herooo.mylanguageweb.dto.entity.workout.types.statistic.customer.WorkoutsCustomerStatisticMapping;
 import ru.herooo.mylanguageweb.dto.entity.workout.types.statistic.customer.WorkoutsCustomerStatisticResponseDTO;
 import ru.herooo.mylanguageweb.dto.other.request.entity.EntityIdRequestDTO;
-import ru.herooo.mylanguageweb.dto.other.request.entity.value.EntityStringRequestDTO;
-import ru.herooo.mylanguageweb.dto.other.request.entity.edit.b.EntityEditBooleanByIdRequestDTO;
 import ru.herooo.mylanguageweb.dto.other.response.ResponseMessageResponseDTO;
 import ru.herooo.mylanguageweb.dto.other.response.value.DateResponseDTO;
 import ru.herooo.mylanguageweb.dto.other.response.value.IntResponseDTO;
@@ -749,7 +747,7 @@ public class WorkoutsRestController {
         // Количество слов по конкретному языку должно быть больше минимального количества
         long count = WORD_SERVICE.countByLangCode(langInCode);
         if (count < numberOfWords) {
-            Lang langIn = LANG_SERVICE.find(langInCode);
+            Lang langIn = LANG_SERVICE.findByCode(langInCode);
 
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(3, String.format(
                     "В языке '%s' недостаточно слов для генерации (в наличии: %d, указанное количество: %d)",

@@ -4,6 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.herooo.mylanguagedb.entities.Lang;
 import ru.herooo.mylanguagedb.repositories.LangCrudRepository;
+import ru.herooo.mylanguageweb.dto.entity.lang.LangMapping;
+import ru.herooo.mylanguageweb.dto.entity.lang.request.LangAddRequestDTO;
+import ru.herooo.mylanguageweb.dto.entity.lang.request.LangEditRequestDTO;
 
 import java.util.List;
 
@@ -11,9 +14,15 @@ import java.util.List;
 public class LangService {
     private final LangCrudRepository LANG_CRUD_REPOSITORY;
 
+    private final LangMapping LANG_MAPPING;
+
     @Autowired
-    public LangService(LangCrudRepository langCrudRepository) {
+    public LangService(LangCrudRepository langCrudRepository,
+
+                       LangMapping langMapping) {
         this.LANG_CRUD_REPOSITORY = langCrudRepository;
+
+        this.LANG_MAPPING = langMapping;
     }
 
     public List<Lang> findAll(String title, Boolean isActiveForIn, Boolean isActiveForOut, Long numberOfItems,
@@ -35,8 +44,22 @@ public class LangService {
 
 
 
-    public Lang find(String code) {
+    public Lang findByCode(String code) {
         return LANG_CRUD_REPOSITORY.findByCode(code).orElse(null);
+    }
+
+    public Lang findByTitle(String title) {
+        return LANG_CRUD_REPOSITORY.findByTitleIgnoreCase(title).orElse(null);
+    }
+
+    public Lang add(LangAddRequestDTO dto) {
+        Lang lang = LANG_MAPPING.mapToLang(dto);
+        return LANG_CRUD_REPOSITORY.save(lang);
+    }
+
+    public Lang edit(Lang lang, LangEditRequestDTO dto) {
+        Lang result = LANG_MAPPING.mapToLang(lang, dto);
+        return LANG_CRUD_REPOSITORY.save(result);
     }
 
     public Lang editIsActiveForIn(Lang lang, boolean isActiveForIn) {

@@ -9,20 +9,20 @@
     <link rel="stylesheet" type="text/css" href="/css/main.css">
     <link rel="stylesheet" type="text/css" href="/css/img_sizes.css">
 
-    <link rel="stylesheet" type="text/css" href="/css/span/span_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/span/span_flag_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/span/span_loading_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/span/span_rule_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/elements/span/span_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/elements/span/span_flag_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/elements/span/span_loading_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/elements/span/span_rule_element.css">
 
-    <link rel="stylesheet" type="text/css" href="/css/table/table_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/table/instruments_for_table.css">
+    <link rel="stylesheet" type="text/css" href="/css/elements/table/table_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/elements/table/instruments_for_table.css">
 
-    <link rel="stylesheet" type="text/css" href="/css/div/div_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/div/div_with_data_builder_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/elements/div/div_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/elements/div/div_with_data_builder_element.css">
 
-    <link rel="stylesheet" type="text/css" href="/css/a/a_button_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/select/select_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/button/button_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/elements/a/a_button_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/elements/select/select_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/elements/button/button_element.css">
 
     <link rel="stylesheet" type="text/css" href="/css/info_block/info_block.css">
     <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_header.css">
@@ -43,7 +43,7 @@
                      src="#"
                      th:src="${CURRENT_CUSTOMER.pathToAvatar != null
                     ? CURRENT_CUSTOMER.pathToAvatar
-                    : '/customers/avatar/0'}" alt="customer.png"/>
+                    : '/customers/avatars/0'}" alt="customer.png"/>
                 <div class="div-customer-data-container">
                     <div class="div-nickname-container">
                         <span th:class="'fi fi-' + ${CURRENT_CUSTOMER.country.code}"

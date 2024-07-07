@@ -9,23 +9,23 @@
     <link rel="stylesheet" type="text/css" href="/css/main.css">
     <link rel="stylesheet" type="text/css" href="/css/img_sizes.css">
 
-    <link rel="stylesheet" type="text/css" href="/css/span/span_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/span/span_flag_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/span/span_loading_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/span/span_rule_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/elements/span/span_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/elements/span/span_flag_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/elements/span/span_loading_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/elements/span/span_rule_element.css">
 
-    <link rel="stylesheet" type="text/css" href="/css/input/input_text_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/input/input_file_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/elements/input/input_text_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/elements/input/input_file_element.css">
 
-    <link rel="stylesheet" type="text/css" href="/css/table/table_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/table/instruments_for_table.css">
+    <link rel="stylesheet" type="text/css" href="/css/elements/table/table_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/elements/table/instruments_for_table.css">
 
-    <link rel="stylesheet" type="text/css" href="/css/form/form_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/label/label_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/textarea/textarea_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/div/div_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/select/select_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/button/button_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/elements/form/form_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/elements/label/label_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/elements/textarea/textarea_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/elements/div/div_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/elements/select/select_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/elements/button/button_element.css">
 
     <link rel="stylesheet" type="text/css" href="/css/info_block/info_block.css">
     <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_header.css">
@@ -39,7 +39,7 @@
     </header>
     <main>
         <div class="div-info-block-header-container">
-            <img src="/images/other/pencil.png" alt="">
+            <img src="/images/templates/customer_collections/edit_customer_collection.png" alt="">
             <h1 th:text="'Изменение коллекции №' + ${CUSTOMER_COLLECTION_ID}"></h1>
         </div>
         <div class="div-info-block-container">
@@ -67,7 +67,7 @@
                                       <button id="button_drop_selected_files_customer_collection_image"
                                               class="button-drop-selected-files"
                                               type="button" disabled>
-                                          <img src="/images/buttons/delete.png"
+                                          <img src="/images/elements/button/delete.png"
                                                alt="delete.png"/>
                                       </button>
                                   </div>
@@ -139,7 +139,7 @@
                 <span id="span_select_all_words_for_delete">Выделить все слова на удаление</span>
                 <span>
                     <img id="img_select_all_words_for_delete"
-                         src="/images/buttons/accept.png"
+                         src="/images/elements/button/accept.png"
                          alt="">
                 </span>
             </button>
@@ -148,7 +148,7 @@
                 <span id="span_deselect_all_words_for_delete">Снять выделение на удаление со всех слов</span>
                 <span>
                     <img id="img_deselect_all_words_for_delete"
-                         src="/images/buttons/deny.png"
+                         src="/images/elements/button/deny.png"
                          alt="">
                 </span>
             </button>
@@ -166,7 +166,7 @@
                         class="button-with-img-element-32 button-element-default"
                         title="Обновить" disabled>
                     <img id="img_refresh_words_in_collection"
-                         src="/images/buttons/refresh.png"
+                         src="/images/elements/button/refresh.png"
                          alt="refresh.png"/>
                 </button>
             </div>

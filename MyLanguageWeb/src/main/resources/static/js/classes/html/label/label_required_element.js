@@ -1,6 +1,6 @@
 import {
     CssLabelElement
-} from "../../css/label/css_label_element.js";
+} from "../../css/elements/label/css_label_element.js";
 
 const _CSS_LABEL_ELEMENT = new CssLabelElement();
 

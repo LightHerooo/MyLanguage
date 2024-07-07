@@ -12,7 +12,7 @@ import {
 
 import {
     CssSpanElement
-} from "../../../../css/span/css_span_element.js";
+} from "../../../../css/elements/span/css_span_element.js";
 
 import {
     ResponseMessageResponseDTO

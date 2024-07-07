@@ -1,6 +1,6 @@
 import {
     CssSpanFlagElement
-} from "../../../css/span/css_span_flag_element.js";
+} from "../../../css/elements/span/css_span_flag_element.js";
 
 const _CSS_SPAN_FLAG_ELEMENT = new CssSpanFlagElement();
 

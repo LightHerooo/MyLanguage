@@ -4,7 +4,7 @@ import {
 
 import {
     CssDivElement
-} from "../../../css/div/css_div_element.js";
+} from "../../../css/elements/div/css_div_element.js";
 
 import {
     CssRoot

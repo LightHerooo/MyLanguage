@@ -1,6 +1,6 @@
 import {
     CssDivWithDataBuilderElement
-} from "../../../../css/div/css_div_with_data_builder_element.js";
+} from "../../../../css/elements/div/css_div_with_data_builder_element.js";
 
 import {
     DivWithDataBuilderElement

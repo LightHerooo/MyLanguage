@@ -28,7 +28,7 @@ import {
 
 import {
     CssDivElement
-} from "../../../../css/div/css_div_element.js";
+} from "../../../../css/elements/div/css_div_element.js";
 
 import {
     ButtonWithTextElement
@@ -730,7 +730,7 @@ export class DivWithTimerElementWorkoutInteraction extends DivWithTimerAbstractE
                 if (button) {
                     let self = this;
                     button.addEventListener(_EVENT_NAMES.BUTTON.CLICK, function() {
-                        let path = _URL_PATHS.WORKOUTS.MAIN.getPath();
+                        let path = _URL_PATHS.WORKOUTS.PREPARE.getPath();
 
                         let workoutResponseDTO = self.#workoutResponseDTO;
                         if (workoutResponseDTO) {
@@ -738,6 +738,8 @@ export class DivWithTimerElementWorkoutInteraction extends DivWithTimerAbstractE
                             if (workoutType) {
                                 path = `${path}/${workoutType.getCode()}`;
                             }
+                        } else {
+                            path = _URL_PATHS.WORKOUTS.MAIN.getPath();
                         }
 
                         let urlPath = new UrlPath(path);

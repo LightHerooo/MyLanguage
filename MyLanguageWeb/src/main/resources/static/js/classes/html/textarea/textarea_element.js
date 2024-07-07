@@ -1,6 +1,6 @@
 import {
     CssTextareaElement
-} from "../../css/textarea/css_textarea.js";
+} from "../../css/elements/textarea/css_textarea.js";
 
 import {
     HtmlUtils

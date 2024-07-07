@@ -9,7 +9,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import ru.herooo.mylanguageutils.StringUtils;
-import ru.herooo.mylanguageweb.controllers.common.ControllerUtils;
+import ru.herooo.mylanguageweb.controllers.usual.utils.ControllerUtils;
 import ru.herooo.mylanguageweb.dto.other.response.ResponseMessageResponseDTO;
 
 @ControllerAdvice

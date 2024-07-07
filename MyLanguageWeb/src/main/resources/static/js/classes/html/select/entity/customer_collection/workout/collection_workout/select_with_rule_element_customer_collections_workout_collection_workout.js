@@ -13,8 +13,8 @@ import {
 const _SELECT_ELEMENT_CUSTOMER_COLLECTIONS_UTILS = new SelectElementCustomerCollectionsUtils();
 const _EVENT_NAMES = new EventNames();
 
-export class SelectWithRuleElementCustomerCollectionsWorkoutCollectionWorkout extends SelectWithRuleElementCustomerCollections {
-    #selectWithRuleElementLangsOutWorkoutCollectionWorkout;
+export class SelectWithRuleElementCustomerCollectionsPrepareWorkoutCollectionWorkout extends SelectWithRuleElementCustomerCollections {
+    #selectWithRuleElementLangsOutPrepareWorkoutCollectionWorkout;
 
     constructor(selectWithRuleElementCustomerCollectionsObj) {
         super(selectWithRuleElementCustomerCollectionsObj.getDivContainer(),
@@ -24,19 +24,20 @@ export class SelectWithRuleElementCustomerCollectionsWorkoutCollectionWorkout ex
             selectWithRuleElementCustomerCollectionsObj.getIsRequired());
     }
 
-    setSelectWithRuleElementLangsOutWorkoutCollectionWorkout(selectWithRuleElementLangsOutWorkoutCollectionWorkoutObj) {
-        this.#selectWithRuleElementLangsOutWorkoutCollectionWorkout =
-            selectWithRuleElementLangsOutWorkoutCollectionWorkoutObj;
+    setSelectWithRuleElementLangsOutPrepareWorkoutCollectionWorkout(
+        selectWithRuleElementLangsOutPrepareWorkoutCollectionWorkoutObj) {
+        this.#selectWithRuleElementLangsOutPrepareWorkoutCollectionWorkout =
+            selectWithRuleElementLangsOutPrepareWorkoutCollectionWorkoutObj;
     }
 
 
     async createOptionsArr() {
         let optionsArr = [];
 
-        let selectWithRuleElementLangsOutWorkoutCollectionWorkout =
-            this.#selectWithRuleElementLangsOutWorkoutCollectionWorkout;
-        if (selectWithRuleElementLangsOutWorkoutCollectionWorkout) {
-            let langOutCode = selectWithRuleElementLangsOutWorkoutCollectionWorkout.getSelectedValue();
+        let selectWithRuleElementLangsOutPrepareWorkoutCollectionWorkout =
+            this.#selectWithRuleElementLangsOutPrepareWorkoutCollectionWorkout;
+        if (selectWithRuleElementLangsOutPrepareWorkoutCollectionWorkout) {
+            let langOutCode = selectWithRuleElementLangsOutPrepareWorkoutCollectionWorkout.getSelectedValue();
             optionsArr = langOutCode
                 ? _SELECT_ELEMENT_CUSTOMER_COLLECTIONS_UTILS.createOptionArrByLangOutCode(langOutCode)
                 : _SELECT_ELEMENT_CUSTOMER_COLLECTIONS_UTILS.createOptionsArr();
@@ -52,12 +53,12 @@ export class SelectWithRuleElementCustomerCollectionsWorkoutCollectionWorkout ex
         if (select) {
             let self = this;
             select.addEventListener(_EVENT_NAMES.SELECT.CHANGE, async function() {
-                let selectWithRuleElementLangsOutWorkoutCollectionWorkout =
-                    self.#selectWithRuleElementLangsOutWorkoutCollectionWorkout;
-                if (selectWithRuleElementLangsOutWorkoutCollectionWorkout) {
-                    selectWithRuleElementLangsOutWorkoutCollectionWorkout.changeDisabledStatus(true);
-                    await selectWithRuleElementLangsOutWorkoutCollectionWorkout.refresh(true);
-                    selectWithRuleElementLangsOutWorkoutCollectionWorkout.changeDisabledStatus(false);
+                let selectWithRuleElementLangsOutPrepareWorkoutCollectionWorkout =
+                    self.#selectWithRuleElementLangsOutPrepareWorkoutCollectionWorkout;
+                if (selectWithRuleElementLangsOutPrepareWorkoutCollectionWorkout) {
+                    selectWithRuleElementLangsOutPrepareWorkoutCollectionWorkout.changeDisabledStatus(true);
+                    await selectWithRuleElementLangsOutPrepareWorkoutCollectionWorkout.refresh(true);
+                    selectWithRuleElementLangsOutPrepareWorkoutCollectionWorkout.changeDisabledStatus(false);
                 }
             })
         }

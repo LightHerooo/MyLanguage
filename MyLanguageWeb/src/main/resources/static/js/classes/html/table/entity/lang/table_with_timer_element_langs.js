@@ -8,7 +8,7 @@ import {
 
 import {
     CssDivElement
-} from "../../../../css/div/css_div_element.js";
+} from "../../../../css/elements/div/css_div_element.js";
 
 import {
     CssImgSizes
@@ -39,8 +39,8 @@ import {
 } from "../../../../dto/other/response/response_message_response_dto.js";
 
 import {
-    YandexDictionaryLangsResponseDTO
-} from "../../../../dto/entity/lang/other/yandex_dictionary_langs.js";
+    YandexLangsResponseDTO
+} from "../../../../dto/entity/lang/other/yandex_langs_response_dto.js";
 
 import {
     LangResponseDTO
@@ -54,6 +54,26 @@ import {
     ImgSrcs
 } from "../../../img_srcs.js";
 
+import {
+    AButtonWithImgElementSizes
+} from "../../../a/a_button/with_img/a_button_with_img_element_sizes.js";
+
+import {
+    AButtonWithImgElementTypes
+} from "../../../a/a_button/with_img/a_button_with_img_element_types.js";
+
+import {
+    UrlPaths
+} from "../../../../url/path/url_paths.js";
+
+import {
+    HrefTypes
+} from "../../../a/href_types.js";
+
+import {
+    AButtonWithImgElement
+} from "../../../a/a_button/with_img/a_button_with_img_element.js";
+
 const _LANGS_API = new LangsAPI();
 
 const _CSS_ROOT = new CssRoot();
@@ -63,6 +83,10 @@ const _CSS_IMG_SIZES = new CssImgSizes();
 const _HTTP_STATUSES = new HttpStatuses();
 const _IMG_SRCS = new ImgSrcs();
 const _EVENT_NAMES = new EventNames();
+const _A_BUTTON_WITH_IMG_ELEMENT_SIZES = new AButtonWithImgElementSizes();
+const _A_BUTTON_WITH_IMG_ELEMENT_TYPES = new AButtonWithImgElementTypes();
+const _URL_PATHS = new UrlPaths();
+const _HREF_TYPES = new HrefTypes();
 
 export class TableWithTimerElementLangs extends TableWithTimerAbstractElement {
     #inputTextElementFinder;
@@ -93,16 +117,16 @@ export class TableWithTimerElementLangs extends TableWithTimerAbstractElement {
     }
 
 
-    async #createTr(langResponseDTOObj, yandexDictionaryLangsResponseDTOObj) {
+    async #createTr(langResponseDTOObj, yandexLangsResponseDTOObj) {
         let tr;
-        if (langResponseDTOObj && yandexDictionaryLangsResponseDTOObj) {
-            const ROW_HEIGHT = "70px";
+        if (langResponseDTOObj && yandexLangsResponseDTOObj) {
+            const ROW_HEIGHT = "85px";
 
             // Проверяем поддержку на вход и выход с помощью Yandex.Dictionary ---
             let langCode = langResponseDTOObj.getCode();
 
-            let doesSupportForIn = yandexDictionaryLangsResponseDTOObj.isExistsLangInCode(langCode);
-            let doesSupportForOut = yandexDictionaryLangsResponseDTOObj.isExistsLangOutCode(langCode);
+            let doesSupportForIn = yandexLangsResponseDTOObj.isExistsLangInCode(langCode);
+            let doesSupportForOut = yandexLangsResponseDTOObj.isExistsLangOutCode(langCode);
             //---
 
             tr = document.createElement("tr");
@@ -154,27 +178,19 @@ export class TableWithTimerElementLangs extends TableWithTimerAbstractElement {
                 select.style.width = "100%";
 
                 select.addEventListener(_EVENT_NAMES.SELECT.CHANGE, async function() {
-                    let isActiveForIn = selectElementBooleanIsActiveForIn.getSelectedValue();
-                    if (doesSupportForIn || !isActiveForIn) {
-                        // Переключение активности доступно только при поддержке на вход ---
-                        selectElementBooleanIsActiveForIn.changeDisabledStatus(true);
+                    selectElementBooleanIsActiveForIn.changeDisabledStatus(true);
 
-                        let dto = new EntityEditValueByCodeRequestDTO();
-                        dto.setCode(langResponseDTOObj.getCode());
-                        dto.setValue(isActiveForIn);
+                    let dto = new EntityEditValueByCodeRequestDTO();
+                    dto.setCode(langResponseDTOObj.getCode());
+                    dto.setValue(selectElementBooleanIsActiveForIn.getSelectedValue());
 
-                        let jsonResponse = await _LANGS_API.PATCH.editIsActiveForIn(dto);
-                        if (jsonResponse.getStatus() === _HTTP_STATUSES.OK) {
-                            selectElementBooleanIsActiveForIn.changeDisabledStatus(false);
-                        } else {
-                            selectElementBooleanIsActiveForIn.changeTitle(
-                                new ResponseMessageResponseDTO(jsonResponse.getJson()).getMessage());
-                        }
-                        //---
+                    let jsonResponse = await _LANGS_API.PATCH.editIsActiveForIn(dto);
+                    if (jsonResponse.getStatus() === _HTTP_STATUSES.OK) {
+                        selectElementBooleanIsActiveForIn.changeDisabledStatus(false);
                     } else {
                         selectElementBooleanIsActiveForIn.changeDisabledStatus(true);
                         selectElementBooleanIsActiveForIn.changeTitle(
-                            `Нельзя изменить статус активности языка '${langResponseDTOObj.getTitle()}', так как он не поддерживается на вход`)
+                            new ResponseMessageResponseDTO(jsonResponse.getJson()).getMessage());
                     }
                 });
 
@@ -203,27 +219,21 @@ export class TableWithTimerElementLangs extends TableWithTimerAbstractElement {
                 select.style.width = "100%";
 
                 select.addEventListener(_EVENT_NAMES.SELECT.CHANGE, async function() {
+                    selectElementBooleanIsActiveForOut.changeDisabledStatus(true);
+
                     let isActiveForOut = selectElementBooleanIsActiveForOut.getSelectedValue();
-                    if (doesSupportForOut || !isActiveForOut) {
-                        // Переключение активности доступно только при поддержке на выход (или если мы отключаем язык) ---
-                        selectElementBooleanIsActiveForOut.changeDisabledStatus(true);
 
-                        let dto = new EntityEditValueByCodeRequestDTO();
-                        dto.setCode(langResponseDTOObj.getCode());
-                        dto.setValue(isActiveForOut);
+                    let dto = new EntityEditValueByCodeRequestDTO();
+                    dto.setCode(langResponseDTOObj.getCode());
+                    dto.setValue(isActiveForOut);
 
-                        let jsonResponse = await _LANGS_API.PATCH.editIsActiveForOut(dto);
-                        if (jsonResponse.getStatus() === _HTTP_STATUSES.OK) {
-                            selectElementBooleanIsActiveForOut.changeDisabledStatus(false);
-                        } else {
-                            selectElementBooleanIsActiveForOut.changeTitle(
-                                new ResponseMessageResponseDTO(jsonResponse.getJson()).getMessage());
-                        }
-                        //---
+                    let jsonResponse = await _LANGS_API.PATCH.editIsActiveForOut(dto);
+                    if (jsonResponse.getStatus() === _HTTP_STATUSES.OK) {
+                        selectElementBooleanIsActiveForOut.changeDisabledStatus(false);
                     } else {
                         selectElementBooleanIsActiveForOut.changeDisabledStatus(true);
                         selectElementBooleanIsActiveForOut.changeTitle(
-                            `Нельзя изменить статус активности языка '${langResponseDTOObj.getTitle()}', так как он не поддерживается на выход`);
+                            new ResponseMessageResponseDTO(jsonResponse.getJson()).getMessage());
                     }
                 });
 
@@ -234,8 +244,16 @@ export class TableWithTimerElementLangs extends TableWithTimerAbstractElement {
             //---
 
             // Подсказка поддержки на вход ---
+            td = document.createElement("td");
+
             let divContentCenter = document.createElement("div");
             divContentCenter.classList.add(_CSS_DIV_ELEMENT.DIV_ELEMENT_CONTENT_CENTER_CLASS_ID);
+
+            td.style.background = doesSupportForIn !== null && doesSupportForIn !== undefined
+                ? doesSupportForIn
+                    ? _CSS_ROOT.GREEN_LIGHT_COLOR_STYLE_ID
+                    : _CSS_ROOT.RED_LIGHT_COLOR_STYLE_ID
+                : _CSS_ROOT.YELLOW_LIGHT_COLOR_STYLE_ID;
 
             let img = document.createElement("img");
             img.classList.add(_CSS_IMG_SIZES.IMG_SIZE_32_CLASS_ID)
@@ -246,18 +264,19 @@ export class TableWithTimerElementLangs extends TableWithTimerAbstractElement {
                 : img.src = _IMG_SRCS.OTHER.QUESTION;
             divContentCenter.appendChild(img);
 
-            td = document.createElement("td");
-            td.style.background = doesSupportForIn !== null && doesSupportForIn !== undefined
-                ? doesSupportForIn
-                    ? _CSS_ROOT.GREEN_LIGHT_COLOR_STYLE_ID
-                    : _CSS_ROOT.RED_LIGHT_COLOR_STYLE_ID
-                : _CSS_ROOT.YELLOW_LIGHT_COLOR_STYLE_ID;
             td.appendChild(divContentCenter);
-
             tr.appendChild(td);
             //---
 
             // Подсказка поддержки на выход ---
+            td = document.createElement("td");
+
+            td.style.background = doesSupportForOut !== null && doesSupportForOut !== undefined
+                ? doesSupportForOut
+                    ? _CSS_ROOT.GREEN_LIGHT_COLOR_STYLE_ID
+                    : _CSS_ROOT.RED_LIGHT_COLOR_STYLE_ID
+                : _CSS_ROOT.YELLOW_LIGHT_COLOR_STYLE_ID;
+
             divContentCenter = divContentCenter.cloneNode(false);
 
             img = img.cloneNode(false);
@@ -268,14 +287,30 @@ export class TableWithTimerElementLangs extends TableWithTimerAbstractElement {
                 : img.src = _IMG_SRCS.OTHER.QUESTION;
             divContentCenter.appendChild(img);
 
-            td = document.createElement("td");
-            td.style.background = doesSupportForOut !== null && doesSupportForOut !== undefined
-                ? doesSupportForOut
-                    ? _CSS_ROOT.GREEN_LIGHT_COLOR_STYLE_ID
-                    : _CSS_ROOT.RED_LIGHT_COLOR_STYLE_ID
-                : _CSS_ROOT.YELLOW_LIGHT_COLOR_STYLE_ID;
             td.appendChild(divContentCenter);
+            tr.appendChild(td);
+            //---
 
+            // Действия ---
+            td = document.createElement("td");
+
+            divContentCenter = divContentCenter.cloneNode(false);
+
+            let aButtonWithImgElementEdit = new AButtonWithImgElement(null, null);
+            aButtonWithImgElementEdit.changeAButtonWithImgElementSize(_A_BUTTON_WITH_IMG_ELEMENT_SIZES.SIZE_32);
+            aButtonWithImgElementEdit.changeTo(_A_BUTTON_WITH_IMG_ELEMENT_TYPES.EDIT);
+            aButtonWithImgElementEdit.changeTitle("Изменить язык");
+
+            let path = _URL_PATHS.SPECIAL_ACTIONS.LANGS.EDIT.getPath();
+            aButtonWithImgElementEdit.changeHref(`${path}/${langCode}`);
+            aButtonWithImgElementEdit.changeHrefType(_HREF_TYPES.OPEN_IN_THIS_PAGE);
+
+            let a = aButtonWithImgElementEdit.getA();
+            if (a) {
+                divContentCenter.appendChild(a);
+            }
+
+            td.appendChild(divContentCenter);
             tr.appendChild(td);
             //---
         }
@@ -390,17 +425,17 @@ export class TableWithTimerElementLangs extends TableWithTimerAbstractElement {
         //---
 
         // Ищем языки Yandex.Dictionary, чтобы выводить подсказки по поддержке языков ---
-        let yandexDictionaryLangsResponseDTO;
+        let yandexLangsResponseDTO;
         let jsonResponse = await _LANGS_API.GET.getYandexDictionaryLangs();
         if (jsonResponse.getStatus() === _HTTP_STATUSES.OK) {
-            yandexDictionaryLangsResponseDTO = new YandexDictionaryLangsResponseDTO(jsonResponse.getJson());
+            yandexLangsResponseDTO = new YandexLangsResponseDTO(jsonResponse.getJson());
         } else {
             this.showMessage(new ResponseMessageResponseDTO(jsonResponse.getJson()).getMessage(),
                 _CSS_ROOT.SMALL_FONT_SIZE_STYLE_ID);
         }
         //---
 
-        if (yandexDictionaryLangsResponseDTO) {
+        if (yandexLangsResponseDTO) {
             jsonResponse = await _LANGS_API.GET.getAll(
                 title, isActiveForIn, isActiveForOut, maxNumberOfLangsOnPage, lastLangIdOnPreviousPage);
             if (jsonResponse.getStatus() === _HTTP_STATUSES.OK) {
@@ -411,7 +446,7 @@ export class TableWithTimerElementLangs extends TableWithTimerAbstractElement {
                     if (!this.getFindStatus()) break;
                     let langResponseDTO = new LangResponseDTO(json[i]);
 
-                    let tr = await this.#createTr(langResponseDTO, yandexDictionaryLangsResponseDTO);
+                    let tr = await this.#createTr(langResponseDTO, yandexLangsResponseDTO);
                     if (tr) {
                         trsArr.push(tr);
                     }

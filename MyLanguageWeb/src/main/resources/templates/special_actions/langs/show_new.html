@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title th:text="|${WEB_APP_NAME} - Новые языки|"></title>
+        <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
+
+        <link rel="stylesheet" type="text/css" href="/css/root.css">
+        <link rel="stylesheet" type="text/css" href="/css/main.css">
+        <link rel="stylesheet" type="text/css" href="/css/img_sizes.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/elements/span/span_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/elements/span/span_loading_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/elements/span/span_flag_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/elements/span/span_rule_element.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/elements/table/table_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/elements/table/instruments_for_table.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/elements/button/button_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/elements/a/a_button_element.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_big_header.css">
+        <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_header.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/templates/special_actions/langs/show_new.css">
+
+        <script type="module" src="/js/templates/special_actions/langs/show_new.js"></script>
+    </head>
+    <body>
+        <header>
+            <div th:insert="~{layouts/header}"></div>
+        </header>
+        <main>
+            <div class="div-info-block-big-header-container">
+                <div class="div-info-block-big-header-img-container">
+                    <img src="/images/logo/logo.png"
+                         alt="logo.png"/>
+                </div>
+                <div class="div-info-block-big-header-data-container">
+                    <h1>Новые языки</h1>
+                    <div>
+                        <span>
+                            В таблице перечислены языки, которых ещё нет в базе, но они поддерживаются <b>Yandex.Dictionary</b>.
+                            Изменение добавленных языков доступно на странице
+                            <a href="/special_actions/langs/show">"Языки"</a>.
+                        </span>
+                    </div>
+                    <br>
+                </div>
+            </div>
+
+            <div class="div-info-block-header-container-margin">
+                <img src="/images/templates/langs/lang.png" alt="lang.png"/>
+                <h1>Список новых языков</h1>
+            </div>
+            <div class="div-instruments-for-table-container div-instruments-for-find-new-langs-container">
+                <div class="div-instrument-for-table-container">
+                    <label></label>
+                    <label></label>
+                </div>
+                <div class="div-instrument-for-table-container">
+                    <label for="button_refresh_new_langs"></label>
+                    <button id="button_refresh_new_langs"
+                            class="button-with-img-element-32 button-element-default"
+                            title="Обновить" disabled>
+                        <img id="img_button_refresh_new_langs"
+                             src="/images/other/refresh.png"
+                             alt="refresh.png"/>
+                    </button>
+                </div>
+            </div>
+            <table id="table_new_langs" class="table-element">
+                <colgroup id="colgroup_new_langs">
+                    <col style="width: 5%;">
+                    <col style="width: 65%;">
+                    <col style="width: 15%;">
+                    <col style="width: 15%;">
+                    <col style="width: 80px;">
+                </colgroup>
+                <thead id="thead_new_langs"
+                       class="thead-table-element-medium">
+                <tr>
+                    <th>№</th>
+                    <th>Код языка</th>
+                    <th>Поддержка на вход</th>
+                    <th>Поддержка на выход</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody id="tbody_new_langs"></tbody>
+            </table>
+        </main>
+    </body>
+</html>

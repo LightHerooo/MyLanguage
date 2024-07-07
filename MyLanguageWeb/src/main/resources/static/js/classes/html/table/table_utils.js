@@ -1,10 +1,10 @@
 import {
     CssDivElement
-} from "../../css/div/css_div_element.js";
+} from "../../css/elements/div/css_div_element.js";
 
 import {
     CssTableElement
-} from "../../css/table/css_table_element.js";
+} from "../../css/elements/table/css_table_element.js";
 
 import {
     SpanLoadingElement
@@ -16,7 +16,7 @@ import {
 
 import {
     CssSpanElement
-} from "../../css/span/css_span_element.js";
+} from "../../css/elements/span/css_span_element.js";
 
 import {
     EventNames

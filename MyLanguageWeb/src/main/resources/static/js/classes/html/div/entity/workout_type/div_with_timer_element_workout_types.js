@@ -141,7 +141,7 @@ export class DivWithTimerElementWorkoutTypes extends DivWithTimerAbstractElement
                             aButtonWithImgAndSpanElement.changeTitle(description);
 
                             aButtonWithImgAndSpanElement.changeHref(
-                                `${_URL_PATHS.WORKOUTS.MAIN.getPath()}/${workoutType.getCode()}`);
+                                `${_URL_PATHS.WORKOUTS.PREPARE.getPath()}/${workoutType.getCode()}`);
                             aButtonWithImgAndSpanElement.changeHrefType(_HREF_TYPES.OPEN_IN_THIS_PAGE);
                         } else {
                             aButtonWithImgAndSpanElement.changeDisabledStatus(true, true);

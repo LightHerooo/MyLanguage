@@ -3,8 +3,8 @@ package ru.herooo.mylanguageweb.dto.other.request.entity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import ru.herooo.mylanguageweb.controllers.json.l.LongDeserializer;
-import ru.herooo.mylanguageweb.controllers.json.l.LongSerializer;
+import ru.herooo.mylanguageweb.json.l.LongDeserializer;
+import ru.herooo.mylanguageweb.json.l.LongSerializer;
 
 public class EntityIdRequestDTO {
     @JsonSerialize(using = LongSerializer.class)

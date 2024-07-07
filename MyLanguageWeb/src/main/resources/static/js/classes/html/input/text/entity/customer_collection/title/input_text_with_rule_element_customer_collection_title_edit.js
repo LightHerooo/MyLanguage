@@ -3,10 +3,6 @@ import {
 } from "../../../input_text_with_rule_element.js";
 
 import {
-    CustomTimer
-} from "../../../../../../timer/custom_timer.js";
-
-import {
     RuleTypes
 } from "../../../../../span/elements/rule/rule_types.js";
 
@@ -39,8 +35,6 @@ const _INPUT_TEXT_ELEMENT_CUSTOMER_COLLECTION_TITLE_UTILS = new InputTextElement
 export class InputTextWithRuleElementCustomerCollectionTitleEdit extends InputTextWithRuleElement {
     #customerCollectionResponseDTO;
 
-    #customTimer = new CustomTimer();
-
     constructor(inputTextWithRuleElementObj) {
         super(inputTextWithRuleElementObj, inputTextWithRuleElementObj.getIsRequired());
     }
@@ -52,13 +46,6 @@ export class InputTextWithRuleElementCustomerCollectionTitleEdit extends InputTe
     async checkCorrectValue() {
         let isCorrect = await super.checkCorrectValue();
         if (isCorrect) {
-            // Останавливаем таймер, чтобы завершить предыдущие проверки ---
-            let customTimer = this.#customTimer;
-            if (customTimer) {
-                customTimer.stop();
-            }
-            //---
-
             // Проводим общие проверки ---
             isCorrect = _INPUT_TEXT_ELEMENT_CUSTOMER_COLLECTION_TITLE_UTILS.checkCorrectValue(this);
             //---
@@ -70,11 +57,10 @@ export class InputTextWithRuleElementCustomerCollectionTitleEdit extends InputTe
                 let message;
 
                 let self = this;
-                let customTimerPromise = new Promise(resolve => {
-                    let customTimer = self.#customTimer;
-                    if (customTimer) {
-                        customTimer.setTimeout(250);
-                        customTimer.setHandler(async function() {
+                let customTimerCheckerPromise = new Promise(resolve => {
+                    let customTimerChecker = self.getCustomTimerChecker();
+                    if (customTimerChecker) {
+                        customTimerChecker.setHandler(async function() {
                             let value = self.getValue();
 
                             let customerCollectionResponseDTO = self.#customerCollectionResponseDTO;
@@ -105,13 +91,13 @@ export class InputTextWithRuleElementCustomerCollectionTitleEdit extends InputTe
 
                             resolve();
                         });
-                        customTimer.start();
+                        customTimerChecker.start();
                     } else {
                         resolve();
                     }
                 });
 
-                await customTimerPromise;
+                await customTimerCheckerPromise;
 
                 if (!isCorrect) {
                     this.showRule(ruleType, message);

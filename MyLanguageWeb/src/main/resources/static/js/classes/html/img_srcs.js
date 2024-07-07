@@ -1,12 +1,17 @@
-const _PATH_TO_IMAGES_FOLDER = "/images";
+const _MAIN_PATH_TO_FOLDER = "/images";
 
 export class ImgSrcs {
+    ELEMENTS = new ImgSrcsElements();
     OTHER = new OtherFolder();
-    BUTTONS = new ButtonsFolder();
 }
 
-class ButtonsFolder {
-    #PATH_TO_FOLDER = _PATH_TO_IMAGES_FOLDER + "/buttons";
+// Элементы ---
+class ImgSrcsElements {
+    BUTTON = new ImgSrcsButton();
+}
+
+class ImgSrcsButton {
+    #PATH_TO_FOLDER = `${_MAIN_PATH_TO_FOLDER}/elements/button`;
 
     ACCEPT = `${this.#PATH_TO_FOLDER}/accept.png`;
     DENY = `${this.#PATH_TO_FOLDER}/deny.png`;
@@ -21,9 +26,10 @@ class ButtonsFolder {
     EDIT = `${this.#PATH_TO_FOLDER}/edit.png`;
     WAIT = `${this.#PATH_TO_FOLDER}/wait.png`;
 }
+//---
 
 class OtherFolder {
-    #PATH_TO_FOLDER = _PATH_TO_IMAGES_FOLDER + "/other";
+    #PATH_TO_FOLDER = _MAIN_PATH_TO_FOLDER + "/other";
 
     FLAME = `${this.#PATH_TO_FOLDER}/flame.png`;
     BOOKS = `${this.#PATH_TO_FOLDER}/books.png`;

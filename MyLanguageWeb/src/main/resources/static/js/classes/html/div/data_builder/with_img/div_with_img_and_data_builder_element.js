@@ -4,7 +4,7 @@ import {
 
 import {
     CssDivWithDataBuilderElement
-} from "../../../../css/div/css_div_with_data_builder_element.js";
+} from "../../../../css/elements/div/css_div_with_data_builder_element.js";
 
 const _CSS_DIV_WITH_DATA_BUILDER_ELEMENT = new CssDivWithDataBuilderElement();
 

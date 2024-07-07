@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="|${WEB_APP_NAME} - Предложение новых слов|">Предложение новых слов</title>
+    <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
+
+    <link rel="stylesheet" type="text/css" href="/css/root.css">
+    <link rel="stylesheet" type="text/css" href="/css/main.css">
+    <link rel="stylesheet" type="text/css" href="/css/img_sizes.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/elements/span/span_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/elements/span/span_flag_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/elements/span/span_loading_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/elements/span/span_rule_element.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/elements/label/label_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/elements/input/input_text_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/elements/select/select_element.css">
+    <link rel="stylesheet" type="text/css" href="/css/elements/button/button_element.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_big_header.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/elements/form/dynamic_form_element.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
+
+    <script type="module" src="/js/templates/words/add.js"></script>
+</head>
+<body>
+    <header>
+        <div th:insert="~{layouts/header}"></div>
+    </header>
+    <main>
+        <div class="div-info-block-big-header-container">
+            <div class="div-info-block-big-header-img-container">
+                <img src="/images/templates/words/new_words.png"
+                     alt="new_words.png"/>
+            </div>
+            <div class="div-info-block-big-header-data-container">
+                <h1>Предложение новых слов</h1>
+                <div>
+                    <span>
+                        Предлагайте новые слова для добавления в базу <span style="font-weight: bold"
+                                                                            th:text="${WEB_APP_NAME}"/>.
+                        Предложенные слова появятся в базе не сразу, сначала их проверят модераторы.
+                        Чтобы проверить статус предложенного слова, посетите страницу
+                        <a href="/words/my_words_history">"История моих предложенных слов"</a>.
+                    </span>
+                </div>
+                <br>
+            </div>
+        </div>
+        <form id="form_words_add"
+              method="GET"
+              action="/words"
+              class="form-dynamic-form-element">
+            <div id="div_rows_container_words_add"
+                 class="div-dynamic-form-element-rows-container"></div>
+            <div id="div_button_add_row_container_words_add"
+                 class="div-dynamic-form-element-button-add-row-container"></div>
+            <div class="div-dynamic-form-element-submit-container">
+                <div id="div_message_container_words_add"
+                     class="div-dynamic-form-element-message-container"></div>
+                <button id="button_submit_words_add"
+                        type="submit"
+                        class="button-submit" disabled>Предложить</button>
+            </div>
+        </form>
+    </main>
+</body>
+</html>

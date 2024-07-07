@@ -17,7 +17,7 @@ import ru.herooo.mylanguageutils.file.MimeTypeWithSize;
 import ru.herooo.mylanguageutils.file.filesize.FileSize;
 import ru.herooo.mylanguageutils.file.filesize.FileSizeUnits;
 import ru.herooo.mylanguageutils.file.mimetype.ImageMimeTypes;
-import ru.herooo.mylanguageweb.controllers.common.ControllerUtils;
+import ru.herooo.mylanguageweb.controllers.usual.utils.ControllerUtils;
 import ru.herooo.mylanguageweb.dto.entity.customer.*;
 import ru.herooo.mylanguageweb.dto.entity.customer.request.edit.CustomerEditPasswordRequestDTO;
 import ru.herooo.mylanguageweb.dto.entity.customer.request.edit.CustomerEditRequestDTO;

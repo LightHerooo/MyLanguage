@@ -1,6 +1,6 @@
 import {
     CssDynamicFormElement
-} from "../../../../css/form/css_dynamic_form_element.js";
+} from "../../../../css/elements/form/css_dynamic_form_element.js";
 
 import {
     ButtonWithImgElement

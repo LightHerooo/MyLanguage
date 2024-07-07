@@ -1,6 +1,6 @@
 import {
     CssPasswordElement
-} from "../../../css/input/css_input_password_element.js";
+} from "../../../css/elements/input/css_input_password_element.js";
 
 import {
     HtmlUtils

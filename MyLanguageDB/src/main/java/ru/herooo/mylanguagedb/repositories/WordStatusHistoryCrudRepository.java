@@ -41,7 +41,4 @@ public interface WordStatusHistoryCrudRepository extends CrudRepository<WordStat
 
     @Procedure("add_word_status_to_word")
     void addWordStatusToWord(Long wordId, String wordStatusCode);
-
-    @Procedure("add_word_status_to_words_without_status")
-    void addWordStatusToWordsWithoutStatus(String wordStatusCode);
 }

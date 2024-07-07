@@ -71,6 +71,24 @@ public class StringUtils {
         return result;
     }
 
+    public String createStrTrimFirstUpper(String str) {
+        String result = null;
+
+        if (!isStringVoid(str)) {
+            result = str.trim();
+
+            String firstSymbol = String.valueOf(result.charAt(0)).toUpperCase();
+            String otherStr = "";
+            if (result.length() > 1) {
+                otherStr = result.substring(1).toLowerCase();
+            }
+
+            result = String.format("%s%s", firstSymbol, otherStr);
+        }
+
+        return result;
+    }
+
     public boolean isStringVoid(String value) {
         return value == null || value.isEmpty() || value.isBlank();
     }

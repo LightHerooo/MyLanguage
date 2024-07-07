@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.validation.constraints.Size;
 import ru.herooo.mylanguageutils.StringUtils;
-import ru.herooo.mylanguageweb.controllers.json.l.LongDeserializer;
-import ru.herooo.mylanguageweb.controllers.json.l.LongSerializer;
+import ru.herooo.mylanguageweb.json.l.LongDeserializer;
+import ru.herooo.mylanguageweb.json.l.LongSerializer;
 
 public class WorkoutItemEditAnswerRequestDTO {
     private final StringUtils STRING_UTILS = new StringUtils();

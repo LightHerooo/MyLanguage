@@ -19,7 +19,6 @@ import java.io.File;
 
 @Service
 public class CustomerMapping {
-    private final CustomerRoleService CUSTOMER_ROLE_SERVICE;
     private final CountryService COUNTRY_SERVICE;
 
     private final CustomerRoleMapping CUSTOMER_ROLE_MAPPING;
@@ -28,14 +27,12 @@ public class CustomerMapping {
     private final StringUtils STRING_UTILS;
 
     @Autowired
-    public CustomerMapping(CustomerRoleService customerRoleService,
-                           CountryService countryService,
+    public CustomerMapping(CountryService countryService,
 
                            CustomerRoleMapping customerRoleMapping,
                            CountryMapping countryMapping,
 
                            StringUtils stringUtils) {
-        this.CUSTOMER_ROLE_SERVICE = customerRoleService;
         this.COUNTRY_SERVICE = countryService;
 
         this.CUSTOMER_ROLE_MAPPING = customerRoleMapping;

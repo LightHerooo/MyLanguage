@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title th:text="|${WEB_APP_NAME} - Слова с текущим статусом|"></title>
+        <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
+
+        <link rel="stylesheet" type="text/css" href="/css/root.css">
+        <link rel="stylesheet" type="text/css" href="/css/main.css">
+        <link rel="stylesheet" type="text/css" href="/css/img_sizes.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/elements/span/span_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/elements/span/span_flag_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/elements/span/span_loading_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/elements/span/span_rule_element.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/elements/table/table_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/elements/table/instruments_for_table.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/elements/input/input_text_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/elements/select/select_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/elements/button/button_element.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_header.css">
+        <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_big_header.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/templates/special_actions/words/show_with_current_status.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
+
+        <script type="module" src="/js/templates/special_actions/words/show_with_current_status.js"></script>
+    </head>
+    <body>
+        <header>
+            <div th:insert="~{layouts/header}"></div>
+        </header>
+        <main>
+            <div class="div-info-block-big-header-container">
+                <div class="div-info-block-big-header-img-container">
+                    <img src="/images/templates/words/word.png"
+                         alt="cards.png"/>
+                </div>
+                <div class="div-info-block-big-header-data-container">
+                    <h1>Слова с текущим статусом</h1>
+                    <div>
+                        <span>
+                            Изменяйте статус словам, чтобы контролировать их использование пользователями ресурса.
+                            Изменение статуса слова мгновенно изменяет его в базе данных.
+                        </span>
+                    </div>
+                    <br>
+                    <div>
+                        <span style="font-weight: bold">Статусы слов:</span>
+                        <div th:each="wordStatus: ${WORD_STATUSES}">
+                            <span class="span-element-for-hint"
+                                  th:style="'color: #' + ${wordStatus.color.hexCode}"
+                                  th:text="${wordStatus.title}"
+                                  th:title="${wordStatus.description}"/>
+                            -
+                            <span th:text="${wordStatus.description}"/>
+                        </div>
+                    </div>
+                    <br>
+                </div>
+            </div>
+
+            <div class="div-info-block-header-container-margin">
+                <img src="/images/templates/words/word.png" alt="logo.png"/>
+                <h1>Список слов</h1>
+            </div>
+            <div class="div-actions-container">
+                <button id="button_delete_inactive_words_in_collections"
+                        class="button-with-img-and-span-element-horizontal-32 button-element-red" disabled>
+                    <span id="span_delete_inactive_words_in_collections">
+                        Удалить слова со статусом, отличным от "Активный", из коллекций пользователей</span>
+                    <span>
+                        <img id="img_delete_inactive_words_in_collections"
+                             src="/images/elements/button/delete.png"
+                             alt="delete.png"/>
+                    </span>
+                </button>
+                <button id="button_delete_all_unclaimed_words"
+                        class="button-with-img-and-span-element-horizontal-32 button-element-red" disabled>
+                    <span id="span_delete_all_unclaimed_words">Удалить все слова со статусом "Невостребованный"</span>
+                    <span>
+                        <img id="img_delete_all_unclaimed_words"
+                             src="/images/elements/button/delete.png"
+                             alt="delete.png"/>
+                    </span>
+                </button>
+            </div>
+            <div class="div-instruments-for-table-container div-instruments-for-find-words-container">
+                <div class="div-instrument-for-table-container">
+                    <label for="input_text_finder">Слово</label>
+                    <input id="input_text_finder" class="input-text-element" type="text" disabled>
+                </div>
+                <div class="div-instrument-for-table-container">
+                    <label for="select_langs">Язык</label>
+                    <div id="div_select_langs" class="div-select-with-flag-element-container">
+                        <select id="select_langs" class="select-element" disabled></select>
+                        <div>
+                            <div>
+                                <span id="span_flag_select_langs"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="div-instrument-for-table-container">
+                    <label for="select_word_statuses">Статус</label>
+                    <select id="select_word_statuses" class="select-element" disabled></select>
+                </div>
+                <div class="div-instrument-for-table-container">
+                    <label for="button_refresh"></label>
+                    <button id="button_refresh"
+                            class="button-with-img-element-32 button-element-default"
+                            title="Обновить" disabled>
+                        <img id="img_button_refresh"
+                             src="/images/other/refresh.png"
+                             alt="refresh.png"/>
+                    </button>
+                </div>
+            </div>
+            <table id="table_words_with_current_status" class="table-element">
+                <colgroup id="colgroup_words_with_current_status">
+                    <col style="width: 5%;">
+                    <col style="width: 45%;">
+                    <col style="width: 25%;">
+                    <col style="width: 25%;">
+                </colgroup>
+                <thead id="thead_words_with_current_status"
+                       class="thead-table-element-medium">
+                <tr>
+                    <th>№</th>
+                    <th>Слово</th>
+                    <th>Язык</th>
+                    <th>Статус</th>
+                </tr>
+                </thead>
+                <tbody id="tbody_words_with_current_status"></tbody>
+            </table>
+        </main>
+    </body>
+</html>

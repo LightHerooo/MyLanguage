@@ -6,10 +6,10 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import ru.herooo.mylanguageutils.StringUtils;
-import ru.herooo.mylanguageweb.controllers.json.l.LongDeserializer;
-import ru.herooo.mylanguageweb.controllers.json.l.LongSerializer;
-import ru.herooo.mylanguageweb.controllers.json.l.array.LongArrayDeserializer;
-import ru.herooo.mylanguageweb.controllers.json.l.array.LongArraySerializer;
+import ru.herooo.mylanguageweb.json.l.LongDeserializer;
+import ru.herooo.mylanguageweb.json.l.LongSerializer;
+import ru.herooo.mylanguageweb.json.l.array.LongArrayDeserializer;
+import ru.herooo.mylanguageweb.json.l.array.LongArraySerializer;
 
 public class CustomerCollectionEditRequestDTO {
     private final StringUtils STRING_UTILS = new StringUtils();

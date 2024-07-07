@@ -18,7 +18,6 @@ import ru.herooo.mylanguageweb.dto.other.response.value.LongResponseDTO;
 import ru.herooo.mylanguageweb.dto.entity.word.request.WordAddRequestDTO;
 import ru.herooo.mylanguageweb.dto.entity.word.response.WordResponseDTO;
 import ru.herooo.mylanguageweb.dto.entity.word.WordMapping;
-import ru.herooo.mylanguageweb.dto.entity.wordstatushistory.request.WordStatusHistoryAddRequestDTO;
 import ru.herooo.mylanguageweb.dto.entity.word.types.statistic.WordsStatisticMapping;
 import ru.herooo.mylanguageweb.dto.entity.word.types.statistic.WordsStatisticResponseDTO;
 import ru.herooo.mylanguageweb.services.*;
@@ -212,12 +211,6 @@ public class WordsRestController {
 
         Word word = WORD_SERVICE.add(dto);
         if (word != null) {
-            // Добавляем новый статус слова
-            WordStatusHistoryAddRequestDTO requestDTO = new WordStatusHistoryAddRequestDTO();
-            requestDTO.setWordId(word.getId());
-            requestDTO.setWordStatusCode(WordStatuses.NEW.CODE);
-            WORD_STATUS_HISTORY_SERVICE.add(requestDTO);
-
             WordResponseDTO responseDTO = WORD_MAPPING.mapToResponseDTO(word);
             return ResponseEntity.ok(responseDTO);
         } else {
@@ -273,7 +266,7 @@ public class WordsRestController {
         }
 
         // Проверяем, нет ли уже в базе слова с таким же названием и языком
-        Lang lang = LANG_SERVICE.find(dto.getLangCode());
+        Lang lang = LANG_SERVICE.findByCode(dto.getLangCode());
         Word word = WORD_SERVICE
                 .findFirstByTitleIgnoreCaseAndLang(dto.getTitle(), lang);
         if (word != null) {

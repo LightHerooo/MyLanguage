@@ -23,6 +23,10 @@ public interface LangCrudRepository extends CrudRepository<Lang, Long> {
 
     Optional<Lang> findByCode(String code);
 
+    Optional<Lang> findByTitleIgnoreCase(String title);
+
+
+
     @Query(nativeQuery = true, value =
             "SELECT COUNT(*) " +
             "FROM get_langs(null, :is_active_for_in, null)")

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title th:text="|${WEB_APP_NAME} - История моих предложенных слов|">История моих предложенных слов</title>
+        <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
+
+        <link rel="stylesheet" type="text/css" href="/css/root.css">
+        <link rel="stylesheet" type="text/css" href="/css/main.css">
+        <link rel="stylesheet" type="text/css" href="/css/img_sizes.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/elements/span/span_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/elements/span/span_flag_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/elements/span/span_loading_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/elements/span/span_rule_element.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/elements/div/div_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/elements/div/div_with_data_builder_element.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/elements/table/instruments_for_table.css">
+        <link rel="stylesheet" type="text/css" href="/css/elements/table/table_element.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/elements/input/input_text_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/elements/select/select_element.css">
+        <link rel="stylesheet" type="text/css" href="/css/elements/button/button_element.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_header.css">
+        <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_big_header.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/templates/words/show_my_words_history.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
+
+        <script type="module" src="/js/templates/words/show_my_words_history.js"></script>
+    </head>
+    <body>
+        <header>
+            <div th:insert="~{layouts/header}"></div>
+        </header>
+        <main>
+            <div class="div-info-block-big-header-container">
+                <div class="div-info-block-big-header-img-container">
+                    <img src="/images/templates/words/my_words_history.png"
+                         alt="my_words_history.png"/>
+                </div>
+                <div class="div-info-block-big-header-data-container">
+                    <h1>История моих предложенных слов</h1>
+                    <div>
+                        <span>
+                            На странице находятся все слова, которые вы предлагали для добавления.
+                            Вы можете посмотреть историю изменений статусов слов, нажав на кнопку рядом со строкой слова.
+                            Помните, что слова со статусом
+                            <span class="span-element-for-hint"
+                               th:style="'color: #' + ${UNCLAIMED_WORD_STATUS.color.hexCode}"
+                               th:text="'&quot;' + ${UNCLAIMED_WORD_STATUS.title} + '&quot;'"
+                               th:title="${UNCLAIMED_WORD_STATUS.description}"/>
+                            со временем удаляются из базы, из-за чего просмотр изменения статуса слова в таких словах
+                            <span style="font-weight: bold" >станет недоступна</span>.
+                        </span>
+                    </div>
+                    <br>
+                    <div id="div_words_statistic"
+                         style="min-height: 150px">
+                    </div>
+                    <br>
+                </div>
+            </div>
+            <div class="div-info-block-header-container-margin">
+                <img src="/images/templates/words/word.png" alt="word.png"/>
+                <h1>Список предложенных слов</h1>
+            </div>
+            <div class="div-instruments-for-table-container div-instruments-for-find-word-histories-container">
+                <div class="div-instrument-for-table-container">
+                    <label for="input_text_finder">Слово</label>
+                    <input id="input_text_finder" class="input-text-element" type="text" disabled>
+                </div>
+                <div id="div_select_langs" class="div-instrument-for-table-container">
+                    <label for="select_langs">Язык</label>
+                    <div class="div-select-with-flag-element-container">
+                        <select id="select_langs" class="select-element" disabled></select>
+                        <div>
+                            <div>
+                                <span id="span_flag_select_langs"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="div-instrument-for-table-container">
+                    <label for="select_word_statuses">Статус</label>
+                    <select id="select_word_statuses" class="select-element" disabled></select>
+                </div>
+                <div class="div-instrument-for-table-container">
+                    <label for="btn_refresh"></label>
+                    <button id="btn_refresh"
+                            class="button-with-img-element-32 button-element-default"
+                            title="Обновить" disabled>
+                        <img id="img_button_refresh"
+                             src="/images/other/refresh.png"
+                             alt="refresh.png"/>
+                    </button>
+                </div>
+            </div>
+            <table id="table_my_words_history" class="table-element">
+                <colgroup id="colgroup_my_words_history">
+                    <col style="width: 5%;">
+                    <col style="width: 35%;">
+                    <col style="width: 20%;">
+                    <col style="width: 20%;">
+                    <col style="width: 20%;">
+                    <col style="width: 50px;">
+                </colgroup>
+                <thead id="thead_my_words_history"
+                       class="thead-table-element-medium">
+                    <tr>
+                        <th>№</th>
+                        <th>Слово</th>
+                        <th>Язык</th>
+                        <th>Статус</th>
+                        <th>Дата изменения</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="tbody_my_words_history"></tbody>
+            </table>
+        </main>
+    </body>
+</html>

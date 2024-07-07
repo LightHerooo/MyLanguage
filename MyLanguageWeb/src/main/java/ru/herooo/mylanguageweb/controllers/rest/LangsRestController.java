@@ -1,9 +1,11 @@
 package ru.herooo.mylanguageweb.controllers.rest;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.herooo.mylanguagedb.entities.Customer;
 import ru.herooo.mylanguagedb.entities.Lang;
@@ -11,9 +13,12 @@ import ru.herooo.mylanguageutils.http.HttpJsonResponse;
 import ru.herooo.mylanguageutils.yandexdictionary.YandexDictionaryError;
 import ru.herooo.mylanguageutils.yandexdictionary.yandexlangs.YandexLangs;
 import ru.herooo.mylanguageutils.yandexdictionary.yandexlangs.YandexLangsUtils;
+import ru.herooo.mylanguageweb.dto.entity.lang.request.LangAddRequestDTO;
+import ru.herooo.mylanguageweb.dto.entity.lang.request.LangEditRequestDTO;
 import ru.herooo.mylanguageweb.dto.other.request.entity.EntityAuthKeyRequestDTO;
+import ru.herooo.mylanguageweb.dto.other.request.entity.EntityCodeRequestDTO;
 import ru.herooo.mylanguageweb.dto.other.request.entity.edit.b.EntityEditBooleanByCodeRequestDTO;
-import ru.herooo.mylanguageweb.dto.entity.lang.other.YandexDictionaryLangsResponseDTO;
+import ru.herooo.mylanguageweb.dto.entity.lang.other.YandexLangsResponseDTO;
 import ru.herooo.mylanguageweb.dto.other.response.ResponseMessageResponseDTO;
 import ru.herooo.mylanguageweb.dto.entity.lang.LangMapping;
 import ru.herooo.mylanguageweb.dto.entity.lang.response.LangResponseDTO;
@@ -27,6 +32,7 @@ import java.util.List;
 @RequestMapping("/api/langs")
 public class LangsRestController {
     private final CustomersRestController CUSTOMERS_REST_CONTROLLER;
+    private final CountriesRestController COUNTRIES_REST_CONTROLLER;
 
     private final LangService LANG_SERVICE;
     private final CustomerService CUSTOMER_SERVICE;
@@ -36,6 +42,7 @@ public class LangsRestController {
 
     @Autowired
     public LangsRestController(CustomersRestController customersRestController,
+                               CountriesRestController countriesRestController,
 
                                LangService langService,
                                CustomerService customerService,
@@ -43,6 +50,7 @@ public class LangsRestController {
                                LangMapping langMapping,
                                YandexLangsUtils yandexLangsUtils) {
         this.CUSTOMERS_REST_CONTROLLER = customersRestController;
+        this.COUNTRIES_REST_CONTROLLER = countriesRestController;
 
         this.LANG_SERVICE = langService;
         this.CUSTOMER_SERVICE = customerService;
@@ -121,7 +129,7 @@ public class LangsRestController {
         if (response.getBody() instanceof YandexLangs yandexLangs) {
             List<Lang> langs = LANG_SERVICE.findAllForIn(true);
 
-            Lang langOut = LANG_SERVICE.find(langOutCode);
+            Lang langOut = LANG_SERVICE.findByCode(langOutCode);
             List<String> langInCodes = yandexLangs.getLangInCodes(langOut.getCode());
 
             List<Lang> result = new ArrayList<>();
@@ -155,7 +163,7 @@ public class LangsRestController {
         if (response.getBody() instanceof YandexLangs yandexLangs) {
             List<Lang> langs = LANG_SERVICE.findAllForOut(true);
 
-            Lang langIn = LANG_SERVICE.find(langInCode);
+            Lang langIn = LANG_SERVICE.findByCode(langInCode);
             List<String> langOutCodes = yandexLangs
                     .getLangOutCodes(langIn.getCode());
 
@@ -183,7 +191,7 @@ public class LangsRestController {
     public ResponseEntity<?> getYandexLangs() {
         ResponseEntity<?> response = tryToCreateYandexLangs();
         if (response.getBody() instanceof YandexLangs yandexLangs) {
-            YandexDictionaryLangsResponseDTO dto = new YandexDictionaryLangsResponseDTO();
+            YandexLangsResponseDTO dto = new YandexLangsResponseDTO();
             String[] langCodeCouples = yandexLangs.getLangCodeCouples();
             if (langCodeCouples != null && langCodeCouples.length > 0) {
                 dto.setLangCodeCouples(langCodeCouples);
@@ -216,7 +224,7 @@ public class LangsRestController {
 
     @GetMapping("/find/by_code")
     public ResponseEntity<?> find(@RequestParam("code") String code) {
-        Lang lang = LANG_SERVICE.find(code);
+        Lang lang = LANG_SERVICE.findByCode(code);
         if (lang != null) {
             LangResponseDTO dto = LANG_MAPPING.mapToResponseDTO(lang);
             return ResponseEntity.ok(dto);
@@ -227,9 +235,22 @@ public class LangsRestController {
         }
     }
 
-    @GetMapping("/validate/before_update")
-    public ResponseEntity<?> validateBeforeUpdate(HttpServletRequest request,
-                                                  @RequestBody EntityEditBooleanByCodeRequestDTO dto) {
+    @GetMapping("/find/by_title")
+    public ResponseEntity<?> findByTitle(@RequestParam("title") String title) {
+        Lang lang = LANG_SERVICE.findByTitle(title);
+        if (lang != null) {
+            LangResponseDTO responseDTO = LANG_MAPPING.mapToResponseDTO(lang);
+            return ResponseEntity.ok(responseDTO);
+        } else {
+            ResponseMessageResponseDTO responseDTO = new ResponseMessageResponseDTO(1,
+                    String.format("Языка с названием '%s' не существует.", title));
+            return ResponseEntity.badRequest().body(responseDTO);
+        }
+    }
+
+    @GetMapping("/validate/before_edit")
+    public ResponseEntity<?> validateBeforeEdit(HttpServletRequest request,
+                                                @RequestBody EntityCodeRequestDTO dto) {
         String validateAuthKey = CUSTOMER_SERVICE.validateAuthKey(request, dto.getAuthKey());
         dto.setAuthKey(validateAuthKey);
 
@@ -263,7 +284,7 @@ public class LangsRestController {
             return response;
         }
 
-        Lang lang = LANG_SERVICE.find(code);
+        Lang lang = LANG_SERVICE.findByCode(code);
         if (lang.isActiveForIn()) {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Язык доступен (входящий)");
             return ResponseEntity.ok(message);
@@ -280,12 +301,94 @@ public class LangsRestController {
             return response;
         }
 
-        Lang lang = LANG_SERVICE.find(code);
+        Lang lang = LANG_SERVICE.findByCode(code);
         if (lang.isActiveForOut()) {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Язык доступен (выходящий)");
             return ResponseEntity.ok(message);
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Язык недоступен (выходящий)");
+            return ResponseEntity.badRequest().body(message);
+        }
+    }
+
+    @GetMapping("/validate/is_support_for_in")
+    public ResponseEntity<?> validateIsSupportForIn(@RequestParam("code") String code) {
+        ResponseEntity<?> response = find(code);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        response = tryToCreateYandexLangs();
+        if (response.getBody() instanceof YandexLangs yandexLangs) {
+            boolean isSupport = false;
+
+            List<String> langInCodes = yandexLangs.getLangInCodes();
+            if (langInCodes != null && langInCodes.size() > 0) {
+                for (String langInCode: yandexLangs.getLangInCodes()) {
+                    if (langInCode != null) {
+                        if (langInCode.equalsIgnoreCase(code)) {
+                            isSupport = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (isSupport) {
+                ResponseMessageResponseDTO responseDTO = new ResponseMessageResponseDTO(1,
+                        "Язык поддерживается (входящий)");
+                return ResponseEntity.ok(responseDTO);
+            } else {
+                ResponseMessageResponseDTO responseDTO = new ResponseMessageResponseDTO(2,
+                        "Язык не поддерживается (входящий)");
+                return ResponseEntity.badRequest().body(responseDTO);
+            }
+        } else if (response.getBody() instanceof ResponseMessageResponseDTO) {
+            return response;
+        } else {
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
+                    "Не удалось получить языки Yandex.Dictionary");
+            return ResponseEntity.badRequest().body(message);
+        }
+    }
+
+    @GetMapping("/validate/is_support_for_out")
+    public ResponseEntity<?> validateIsSupportForOut(@RequestParam("code") String code) {
+        ResponseEntity<?> response = find(code);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        response = tryToCreateYandexLangs();
+        if (response.getBody() instanceof YandexLangs yandexLangs) {
+            boolean isSupport = false;
+
+            List<String> langOutCodes = yandexLangs.getLangOutCodes();
+            if (langOutCodes != null && langOutCodes.size() > 0) {
+                for (String langOutCode: yandexLangs.getLangInCodes()) {
+                    if (langOutCode != null) {
+                        if (langOutCode.equalsIgnoreCase(code)) {
+                            isSupport = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (isSupport) {
+                ResponseMessageResponseDTO responseDTO = new ResponseMessageResponseDTO(1,
+                        "Язык поддерживается (выходящий)");
+                return ResponseEntity.ok(responseDTO);
+            } else {
+                ResponseMessageResponseDTO responseDTO = new ResponseMessageResponseDTO(2,
+                        "Язык не поддерживается (выходящий)");
+                return ResponseEntity.badRequest().body(responseDTO);
+            }
+        } else if (response.getBody() instanceof ResponseMessageResponseDTO) {
+            return response;
+        } else {
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
+                    "Не удалось получить языки Yandex.Dictionary");
             return ResponseEntity.badRequest().body(message);
         }
     }
@@ -310,11 +413,11 @@ public class LangsRestController {
         }
         //---
 
-        Lang langIn = LANG_SERVICE.find(langInCode);
-        Lang langOut = LANG_SERVICE.find(langOutCode);
+        Lang langIn = LANG_SERVICE.findByCode(langInCode);
+        Lang langOut = LANG_SERVICE.findByCode(langOutCode);
         response = tryToCreateYandexLangs();
         if (response.getBody() instanceof YandexLangs yandexLangs) {
-            boolean isCorrect = yandexLangs.checkLangCoupleSupport(
+            boolean isCorrect = yandexLangs.isCoupleSupport(
                     langIn.getCode(), langOut.getCode());
             if (isCorrect) {
                 ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
@@ -335,18 +438,190 @@ public class LangsRestController {
         }
     }
 
+    @GetMapping("/exists/by_title")
+    public ResponseEntity<?> isExistsByTitle(@RequestParam("title") String title) {
+        Lang lang = LANG_SERVICE.findByTitle(title);
+        if (lang != null) {
+            ResponseMessageResponseDTO responseDTO = new ResponseMessageResponseDTO(1,
+                    "Язык с таким названием уже существует.");
+            return ResponseEntity.ok(responseDTO);
+        } else {
+            ResponseMessageResponseDTO responseDTO = new ResponseMessageResponseDTO(1,
+                    String.format("Языка с названием '%s' не существует.", title));
+            return ResponseEntity.badRequest().body(responseDTO);
+        }
+    }
 
 
-    @PatchMapping("/edit/is_active_for_in")
-    public ResponseEntity<?> editIsActiveForIn(HttpServletRequest request,
-                                               @RequestBody EntityEditBooleanByCodeRequestDTO dto) {
-        ResponseEntity<?> response = validateBeforeUpdate(request, dto);
+
+    @PostMapping("/add")
+    public ResponseEntity<?> add(HttpServletRequest request,
+                                 @Valid @RequestBody LangAddRequestDTO dto,
+                                 BindingResult bindingResult) {
+        String validateAuthKey = CUSTOMER_SERVICE.validateAuthKey(request, dto.getAuthKey());
+        dto.setAuthKey(validateAuthKey);
+
+        // Проверяем авторизированного пользователя
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.isExistsByAuthKey(dto.getAuthKey());
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
 
-        Lang lang = LANG_SERVICE.find(dto.getCode());
-        lang = LANG_SERVICE.editIsActiveForIn(lang, dto.getValue());
+        // Работать с языками могут только суперпользователи
+        Customer customer = CUSTOMER_SERVICE.findByAuthKey(dto.getAuthKey());
+        if (!CUSTOMER_SERVICE.isSuperUser(customer)) {
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "У вас недостаточно прав");
+            return ResponseEntity.badRequest().body(message);
+        }
+
+        // Проверяем наличие ошибок привязки DTO
+        if (bindingResult.hasErrors()) {
+            String errorMessage = bindingResult
+                    .getAllErrors()
+                    .stream()
+                    .findFirst()
+                    .get()
+                    .getDefaultMessage();
+
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(2, errorMessage);
+            return ResponseEntity.badRequest().body(message);
+        }
+
+        // Ищем язык с похожим кодом
+        response = find(dto.getLangCode());
+        if (response.getStatusCode() == HttpStatus.OK) {
+            ResponseMessageResponseDTO responseDTO = new ResponseMessageResponseDTO(3,
+                    String.format("Язык с кодом '%s' уже существует.", dto.getLangCode()));
+            return ResponseEntity.badRequest().body(responseDTO);
+        }
+
+        // Ищем язык с похожим названием
+        response = isExistsByTitle(dto.getTitle());
+        if (response.getStatusCode() == HttpStatus.OK) {
+            ResponseMessageResponseDTO responseDTO = (ResponseMessageResponseDTO) response.getBody();
+            return ResponseEntity.badRequest().body(responseDTO);
+        }
+
+        // Проверяем страну
+        /*response = COUNTRIES_REST_CONTROLLER.find(dto.getCountryCode());
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }*/
+
+        Lang lang = LANG_SERVICE.add(dto);
+        if (lang != null) {
+            LangResponseDTO responseDTO = LANG_MAPPING.mapToResponseDTO(lang);
+            return ResponseEntity.ok(responseDTO);
+        } else {
+            ResponseMessageResponseDTO responseDTO = new ResponseMessageResponseDTO(4, "Не удалось добавить язык.");
+            return ResponseEntity.badRequest().body(responseDTO);
+        }
+    }
+
+
+
+    @PatchMapping("/edit")
+    public ResponseEntity<?> edit(HttpServletRequest request,
+                                  @Valid @RequestBody LangEditRequestDTO dto,
+                                  BindingResult bindingResult) {
+        // Проводим первоначальные проверки
+        EntityCodeRequestDTO entityCodeRequestDTO = new EntityCodeRequestDTO();
+        entityCodeRequestDTO.setCode(dto.getLangCode());
+        entityCodeRequestDTO.setAuthKey(dto.getAuthKey());
+
+        ResponseEntity<?> response = validateBeforeEdit(request, entityCodeRequestDTO);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        dto.setAuthKey(entityCodeRequestDTO.getAuthKey());
+
+        // Проверяем наличие ошибок привязки DTO
+        if (bindingResult.hasErrors()) {
+            String errorMessage = bindingResult
+                    .getAllErrors()
+                    .stream()
+                    .findFirst()
+                    .get()
+                    .getDefaultMessage();
+
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(2, errorMessage);
+            return ResponseEntity.badRequest().body(message);
+        }
+
+        // Ищем язык с похожим названием (если язык тот же, не выдаём ошибку)
+        String langCode = dto.getLangCode();
+        Lang lang = LANG_SERVICE.findByCode(langCode);
+        response = isExistsByTitle(dto.getTitle());
+        if (response.getStatusCode() == HttpStatus.OK) {
+            Lang langByTitle = LANG_SERVICE.findByTitle(dto.getTitle());
+            if (!lang.equals(langByTitle)) {
+                ResponseMessageResponseDTO responseDTO = (ResponseMessageResponseDTO) response.getBody();
+                return ResponseEntity.badRequest().body(responseDTO);
+            }
+        }
+
+        // Проверяем страну
+        response = COUNTRIES_REST_CONTROLLER.find(dto.getCountryCode());
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        // Проверяем поддержку языка на вход, если пользователь хочет изменить его на true
+        boolean isActiveForIn = dto.getIsActiveForIn();
+        if (isActiveForIn) {
+            response = this.validateIsSupportForIn(langCode);
+            if (response.getStatusCode() != HttpStatus.OK) {
+                return response;
+            }
+        }
+
+        // Проверяем поддержку языка на выход, если пользователь хочет изменить его на true
+        boolean isActiveForOut = dto.getIsActiveForOut();
+        if (isActiveForOut) {
+            response = this.validateIsSupportForOut(langCode);
+            if (response.getStatusCode() != HttpStatus.OK) {
+                return response;
+            }
+        }
+
+        lang = LANG_SERVICE.edit(lang, dto);
+        if (lang != null) {
+            LangResponseDTO responseDTO = LANG_MAPPING.mapToResponseDTO(lang);
+            return ResponseEntity.ok(responseDTO);
+        } else {
+            ResponseMessageResponseDTO responseDTO = new ResponseMessageResponseDTO(4, "Не удалось изменить язык.");
+            return ResponseEntity.badRequest().body(responseDTO);
+        }
+    }
+
+    @PatchMapping("/edit/is_active_for_in")
+    public ResponseEntity<?> editIsActiveForIn(HttpServletRequest request,
+                                  @RequestBody EntityEditBooleanByCodeRequestDTO dto) {
+        // Проводим первоначальные проверки
+        EntityCodeRequestDTO entityCodeRequestDTO = new EntityCodeRequestDTO();
+        entityCodeRequestDTO.setCode(dto.getCode());
+        entityCodeRequestDTO.setAuthKey(dto.getAuthKey());
+
+        ResponseEntity<?> response = validateBeforeEdit(request, entityCodeRequestDTO);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        dto.setAuthKey(entityCodeRequestDTO.getAuthKey());
+
+        // Проверяем поддержку языка на вход, если пользователь хочет изменить его на true
+        String langCode = dto.getCode();
+        boolean isActive = dto.getValue();
+        if (isActive) {
+            response = this.validateIsSupportForIn(langCode);
+            if (response.getStatusCode() != HttpStatus.OK) {
+                return response;
+            }
+        }
+
+        Lang lang = LANG_SERVICE.findByCode(langCode);
+        lang = LANG_SERVICE.editIsActiveForIn(lang, isActive);
         if (lang != null) {
             LangResponseDTO responseDTO = LANG_MAPPING.mapToResponseDTO(lang);
             return ResponseEntity.ok(responseDTO);
@@ -360,12 +635,29 @@ public class LangsRestController {
     @PatchMapping("/edit/is_active_for_out")
     public ResponseEntity<?> changeActivityForOut(HttpServletRequest request,
                                                   @RequestBody EntityEditBooleanByCodeRequestDTO dto) {
-        ResponseEntity<?> response = validateBeforeUpdate(request, dto);
+        // Проводим первоначальные проверки
+        EntityCodeRequestDTO entityCodeRequestDTO = new EntityCodeRequestDTO();
+        entityCodeRequestDTO.setCode(dto.getCode());
+        entityCodeRequestDTO.setAuthKey(dto.getAuthKey());
+
+        ResponseEntity<?> response = validateBeforeEdit(request, entityCodeRequestDTO);
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
 
-        Lang lang = LANG_SERVICE.find(dto.getCode());
+        dto.setAuthKey(entityCodeRequestDTO.getAuthKey());
+
+        // Проверяем поддержку языка на выход, если пользователь хочет изменить его на true
+        String langCode = dto.getCode();
+        boolean isActive = dto.getValue();
+        if (isActive) {
+            response = this.validateIsSupportForOut(langCode);
+            if (response.getStatusCode() != HttpStatus.OK) {
+                return response;
+            }
+        }
+
+        Lang lang = LANG_SERVICE.findByCode(dto.getCode());
         lang = LANG_SERVICE.editIsActiveForOut(lang, dto.getValue());
         if (lang != null) {
             LangResponseDTO responseDTO = LANG_MAPPING.mapToResponseDTO(lang);

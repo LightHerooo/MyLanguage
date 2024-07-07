@@ -1,6 +1,5 @@
 package ru.herooo.mylanguageweb.controllers;
 
-// Перечисление путей к @Mapping-методам контроллеров
 public enum Redirects {
     INDEX ("/"),
     ENTRY ("/customers/entry"),

@@ -172,6 +172,13 @@ export class FormElementCustomerCollectionEdit extends FormWithDeleteAbstractEle
     }
 
     async checkCorrectValues() {
+        // Мы должны отобразить загрузку на время проверок ---
+        let tableWithTimerElementWordsInCollectionEdit = this.#tableWithTimerElementWordsInCollectionEdit;
+        if (tableWithTimerElementWordsInCollectionEdit) {
+            tableWithTimerElementWordsInCollectionEdit.showLoading();
+        }
+        //---
+
         let isImageCorrect = false;
         let inputImgElementCustomerCollectionImage = this.#inputImgElementCustomerCollectionImage;
         if (inputImgElementCustomerCollectionImage) {
@@ -190,10 +197,22 @@ export class FormElementCustomerCollectionEdit extends FormWithDeleteAbstractEle
             isActiveForAuthorCorrect = await selectWithRuleElementBooleanCustomerCollectionIsActive.checkCorrectValue();
         }
 
+        let isCorrect = isImageCorrect && isTitleCorrect && isActiveForAuthorCorrect;
+        if (!isCorrect && tableWithTimerElementWordsInCollectionEdit) {
+            tableWithTimerElementWordsInCollectionEdit.startToFill();
+        }
+
         return isImageCorrect && isTitleCorrect && isActiveForAuthorCorrect;
     }
 
     async submit() {
+        // Мы должны отобразить загрузку на время отправки формы ---
+        let tableWithTimerElementWordsInCollectionEdit = this.#tableWithTimerElementWordsInCollectionEdit;
+        if (tableWithTimerElementWordsInCollectionEdit) {
+            tableWithTimerElementWordsInCollectionEdit.showLoading();
+        }
+        //---
+
         let dto = new CustomerCollectionEditRequestDTO();
 
         // Изображение ---
@@ -232,7 +251,7 @@ export class FormElementCustomerCollectionEdit extends FormWithDeleteAbstractEle
         }
         //---
 
-        let tableWithTimerElementWordsInCollectionEdit = this.#tableWithTimerElementWordsInCollectionEdit;
+        // Берем данные из таблицы ---
         if (tableWithTimerElementWordsInCollectionEdit) {
             // Нужно ли удалять все слова в коллекции ---
             dto.setDoNeedToDeleteAllWords(
@@ -244,6 +263,7 @@ export class FormElementCustomerCollectionEdit extends FormWithDeleteAbstractEle
                 tableWithTimerElementWordsInCollectionEdit.getExcludedWordInCollectionIdsArr());
             //---
         }
+        //---
 
         // Пробуем изменить коллекцию ---
         let isCorrect = true;
@@ -260,12 +280,23 @@ export class FormElementCustomerCollectionEdit extends FormWithDeleteAbstractEle
 
         if (!isCorrect) {
             this.showRule(ruleType, message);
+
+            if (tableWithTimerElementWordsInCollectionEdit) {
+                tableWithTimerElementWordsInCollectionEdit.startToFill();
+            }
         }
 
         return isCorrect;
     }
 
     async delete() {
+        // Отображаем загрузку в таблице слов в коллекциии ---
+        let tableWithTimerElementWordsInCollectionEdit = this.#tableWithTimerElementWordsInCollectionEdit;
+        if (tableWithTimerElementWordsInCollectionEdit) {
+            tableWithTimerElementWordsInCollectionEdit.showLoading();
+        }
+        //---
+
         let entityIdRequestDTO = new EntityIdRequestDTO();
         entityIdRequestDTO.setId(this.#customerCollectionId);
 
@@ -284,6 +315,10 @@ export class FormElementCustomerCollectionEdit extends FormWithDeleteAbstractEle
 
         if (!isCorrect) {
             this.showRule(ruleType, message);
+
+            if (tableWithTimerElementWordsInCollectionEdit) {
+                tableWithTimerElementWordsInCollectionEdit.startToFill();
+            }
         }
 
         return isCorrect;

@@ -19,7 +19,7 @@ import ru.herooo.mylanguageutils.file.filesize.FileSize;
 import ru.herooo.mylanguageutils.file.filesize.FileSizeUnits;
 import ru.herooo.mylanguageutils.file.mimetype.ImageMimeTypes;
 import ru.herooo.mylanguageutils.yandexdictionary.yandexlangs.YandexLangs;
-import ru.herooo.mylanguageweb.controllers.common.ControllerUtils;
+import ru.herooo.mylanguageweb.controllers.usual.utils.ControllerUtils;
 import ru.herooo.mylanguageweb.dto.entity.customercollection.request.CustomerCollectionEditRequestDTO;
 import ru.herooo.mylanguageweb.dto.other.request.entity.EntityIdRequestDTO;
 import ru.herooo.mylanguageweb.dto.other.request.entity.edit.b.EntityEditBooleanByIdRequestDTO;
@@ -163,7 +163,7 @@ public class CustomerCollectionsRestController {
             List<CustomerCollection> collections = CUSTOMER_COLLECTION_SERVICE.findAll(
                     null,null, true, customerId);
 
-            Lang langOut = LANG_SERVICE.find(langOutCode);
+            Lang langOut = LANG_SERVICE.findByCode(langOutCode);
             List<String> langInCodes = yandexLangs
                     .getLangInCodes(langOut.getCode());
 
@@ -340,9 +340,45 @@ public class CustomerCollectionsRestController {
     public ResponseEntity<?> add(HttpServletRequest request,
                                  @Valid @RequestBody CustomerCollectionAddRequestDTO dto,
                                  BindingResult bindingResult) {
-        ResponseEntity<?> response = validateBeforeAdd(request, dto, bindingResult);
+        String validateAuthKey = CUSTOMER_SERVICE.validateAuthKey(request, dto.getAuthKey());
+        dto.setAuthKey(validateAuthKey);
+
+        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.isExistsByAuthKey(dto.getAuthKey());
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
+        }
+
+        // Проверяем наличие ошибок привязки DTO
+        if (bindingResult.hasErrors()) {
+            String errorMessage = bindingResult
+                    .getAllErrors()
+                    .stream()
+                    .findAny()
+                    .get()
+                    .getDefaultMessage();
+
+            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, errorMessage);
+            return ResponseEntity.badRequest().body(message);
+        }
+
+        // Проверяем язык
+        response = LANGS_REST_CONTROLLER.find(dto.getLangCode());
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        // Проверяем язык на активность
+        response = LANGS_REST_CONTROLLER.validateIsActiveForIn(dto.getLangCode());
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+
+        // Проверяем наличие коллекции с таким же названием у создающего
+        Customer customer = CUSTOMER_SERVICE.findByAuthKey(dto.getAuthKey());
+        response = this.isExistsByCustomerAndTitle(customer.getId(), dto.getTitle());
+        if (response.getStatusCode() == HttpStatus.OK) {
+            ResponseMessageResponseDTO message = (ResponseMessageResponseDTO) response.getBody();
+            return ResponseEntity.badRequest().body(message);
         }
 
         CustomerCollection collection = CUSTOMER_COLLECTION_SERVICE.add(dto);
@@ -433,64 +469,6 @@ public class CustomerCollectionsRestController {
                     "Неизвестная ошибка создания коллекции по коду тренировки");
             return ResponseEntity.badRequest().body(message);
         }
-    }
-
-    @PostMapping("/validate/before_add")
-    public ResponseEntity<?> validateBeforeAdd(HttpServletRequest request,
-                                               @Valid @RequestBody CustomerCollectionAddRequestDTO dto,
-                                               BindingResult bindingResult) {
-        String validateAuthKey = CUSTOMER_SERVICE.validateAuthKey(request, dto.getAuthKey());
-        dto.setAuthKey(validateAuthKey);
-
-        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.isExistsByAuthKey(dto.getAuthKey());
-        if (response.getStatusCode() != HttpStatus.OK) {
-            return response;
-        }
-
-        // Проверяем наличие ошибок привязки DTO
-        if (bindingResult.hasErrors()) {
-            String errorMessage = bindingResult
-                    .getAllErrors()
-                    .stream()
-                    .findAny()
-                    .get()
-                    .getDefaultMessage();
-
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, errorMessage);
-            return ResponseEntity.badRequest().body(message);
-        }
-
-        // Проверяем язык
-        response = LANGS_REST_CONTROLLER.find(dto.getLangCode());
-        if (response.getStatusCode() != HttpStatus.OK) {
-            return response;
-        }
-
-        // Проверяем язык на активность
-        response = LANGS_REST_CONTROLLER.validateIsActiveForIn(dto.getLangCode());
-        if (response.getStatusCode() != HttpStatus.OK) {
-            return response;
-        }
-
-        // Проверяем наличие коллекции с таким же названием у создающего
-        Customer customer = CUSTOMER_SERVICE.findByAuthKey(dto.getAuthKey());
-        response = this.isExistsByCustomerAndTitle(customer.getId(), dto.getTitle());
-        if (response.getStatusCode() == HttpStatus.OK) {
-            ResponseMessageResponseDTO message = (ResponseMessageResponseDTO) response.getBody();
-            return ResponseEntity.badRequest().body(message);
-        }
-
-        CustomerCollection collection =
-                CUSTOMER_COLLECTION_SERVICE.findByCustomerAndTitle(customer, dto.getTitle());
-        if (collection != null) {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(2,
-                    "У вас уже есть коллекция с таким названием");
-            return ResponseEntity.badRequest().body(message);
-        }
-
-        ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                "Данные для добавления коллекции корректны");
-        return ResponseEntity.ok(message);
     }
 
     @PostMapping("/validate/before_add/workout")

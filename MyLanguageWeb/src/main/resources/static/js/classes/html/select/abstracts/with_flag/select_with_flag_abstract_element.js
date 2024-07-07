@@ -4,7 +4,7 @@ import {
 
 import {
     CssSelectElement
-} from "../../../../css/select/css_select_element.js";
+} from "../../../../css/elements/select/css_select_element.js";
 
 import {
     SelectAbstractElement

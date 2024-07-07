@@ -132,35 +132,4 @@ public class WordStatusHistoriesRestController {
             return ResponseEntity.badRequest().body(message);
         }
     }
-
-
-
-    @PostMapping("/add/word_status_to_words_without_status")
-    public ResponseEntity<?> addWordStatusToWordsWithoutStatus(HttpServletRequest request,
-                                                               @RequestBody EntityStringRequestDTO dto) {
-        String validateAuthKey = CUSTOMER_SERVICE.validateAuthKey(request, dto.getAuthKey());
-        dto.setAuthKey(validateAuthKey);
-
-        ResponseEntity<?> response = CUSTOMERS_REST_CONTROLLER.isExistsByAuthKey(validateAuthKey);
-        if (response.getStatusCode() != HttpStatus.OK) {
-            return response;
-        }
-
-        String wordStatusCode = dto.getValue();
-        response = WORD_STATUSES_REST_CONTROLLER.find(wordStatusCode);
-        if (response.getStatusCode() != HttpStatus.OK) {
-            return response;
-        }
-
-        Customer customer = CUSTOMER_SERVICE.findByAuthKey(validateAuthKey);
-        if (CUSTOMER_SERVICE.isSuperUser(customer)) {
-            WORD_STATUS_HISTORY_SERVICE.addWordStatusToWordsWithoutStatus(wordStatusCode);
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    "Статусы к словам без статуса успешно добавлены");
-            return ResponseEntity.ok(message);
-        } else {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "У вас недостаточно прав");
-            return ResponseEntity.badRequest().body(message);
-        }
-    }
 }

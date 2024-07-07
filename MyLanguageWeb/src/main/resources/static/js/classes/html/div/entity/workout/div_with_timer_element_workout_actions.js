@@ -133,13 +133,15 @@ export class DivWithTimerElementWorkoutActions extends DivWithTimerAbstractEleme
 
                 let pathToImage;
                 let spanText = "Новая тренировка";
-                let href = _URL_PATHS.WORKOUTS.MAIN.getPath();
+                let href = _URL_PATHS.WORKOUTS.PREPARE.getPath();
 
                 let workoutType = workoutResponseDTO.getWorkoutType();
                 if (workoutType) {
                     pathToImage = workoutType.getPathToImage();
                     spanText = `${spanText} "${workoutType.getTitle()}"`;
                     href = `${href}/${workoutType.getCode()}`;
+                } else {
+                    let href = _URL_PATHS.WORKOUTS.MAIN.getPath();
                 }
 
                 if (pathToImage) {

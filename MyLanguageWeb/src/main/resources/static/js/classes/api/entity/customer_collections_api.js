@@ -158,16 +158,6 @@ class CustomerCollectionsPOSTRequests {
 
         return await _XML_UTILS.sendJson(requestURL, this.#currentHttpMethod, jsonStr);
     }
-
-    async validateBeforeAdd(customerCollectionAddRequestDTOObj) {
-        let requestURL = new URL(`${_URL_TO_API_CUSTOMER_COLLECTIONS_VALIDATE}/before_add`);
-        let jsonStr = _JSON_UTILS.stringify({
-            'title': customerCollectionAddRequestDTOObj.getTitle(),
-            'lang_code': customerCollectionAddRequestDTOObj.getLangCode()
-        });
-
-        return await _XML_UTILS.sendJson(requestURL, this.#currentHttpMethod, jsonStr);
-    }
 }
 
 class CustomerCollectionsPATCHRequests {
