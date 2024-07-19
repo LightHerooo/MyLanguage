@@ -3,12 +3,12 @@ import {
 } from "../utils/xml_utils.js";
 
 import {
-    UrlToAPI
-} from "../url_to_api.js";
+    UrlPaths
+} from "../../url/path/url_paths.js";
 
 const _XML_UTILS = new XmlUtils();
 
-const _URL_TO_API_COUNTRIES = `${new UrlToAPI().VALUE}/countries`;
+const _URL_TO_API_COUNTRIES = `${new UrlPaths().API.createFullPath()}/countries`;
 const _URL_TO_API_COUNTRIES_GET = `${_URL_TO_API_COUNTRIES}/get`;
 const _URL_TO_API_COUNTRIES_FIND = `${_URL_TO_API_COUNTRIES}/find`;
 

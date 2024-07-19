@@ -65,11 +65,11 @@ public class YandexLangsUtils {
             }
         }
 
-        String message = "Неизвестная ошибка обращения к языкам API словаря.";
+        String message = "Неизвестная ошибка обращения к языкам API словаря";
         if (yandexDictionaryError != null) {
             switch (yandexDictionaryError.getCode()) {
-                case 401 -> message = "Ключ API невалиден.";
-                case 402 -> message = "Ключ API заблокирован.";
+                case 401 -> message = "Ключ API невалиден";
+                case 402 -> message = "Ключ API заблокирован";
             }
 
             yandexDictionaryError.setMessage(message);

@@ -12,7 +12,7 @@ export class SpanLoadingElement {
         if (message) {
             this.#message = message;
         } else {
-            let rndMessagesArr = ["Загружаем..", "Идёт загрузка..", "Загрузка..", "Подождите.."];
+            let rndMessagesArr = ["Загружаем...", "Идёт загрузка...", "Загрузка...", "Подождите..."];
             this.#message = rndMessagesArr[Math.floor(Math.random() * rndMessagesArr.length)];
         }
 

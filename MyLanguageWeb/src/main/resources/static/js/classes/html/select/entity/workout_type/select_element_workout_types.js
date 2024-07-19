@@ -18,6 +18,10 @@ import {
     ImgSrcs
 } from "../../../img_srcs.js";
 
+import {
+    UrlPath
+} from "../../../../url/path/url_path.js";
+
 const _WORKOUT_TYPES_API = new WorkoutTypesAPI();
 
 const _IMG_SRCS = new ImgSrcs();
@@ -68,7 +72,7 @@ export class SelectElementWorkoutTypes extends SelectWithImgAbstractElement {
                 if (jsonResponse.getStatus() === _HTTP_STATUSES.OK) {
                     let workoutType = new WorkoutTypeResponseDTO(jsonResponse.getJson());
 
-                    src = workoutType.getPathToImage();
+                    src = new UrlPath(workoutType.getPathToImage()).createFullPath();
                     title = workoutType.getTitle();
                 }
             }

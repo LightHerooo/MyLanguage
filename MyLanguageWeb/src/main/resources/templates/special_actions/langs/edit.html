@@ -3,30 +3,30 @@
     <head>
         <meta charset="UTF-8">
         <title th:text="|${WEB_APP_NAME} - Новый язык|"></title>
-        <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
+        <link rel="icon" type="image/x-icon" th:href="@{/images/logo/logo.ico}">
 
-        <link rel="stylesheet" type="text/css" href="/css/root.css">
-        <link rel="stylesheet" type="text/css" href="/css/main.css">
-        <link rel="stylesheet" type="text/css" href="/css/img_sizes.css">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/root.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/img_sizes.css}">
 
-        <link rel="stylesheet" type="text/css" href="/css/elements/span/span_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/span/span_loading_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/span/span_flag_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/span/span_rule_element.css">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_loading_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_flag_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_rule_element.css}">
 
-        <link rel="stylesheet" type="text/css" href="/css/elements/input/input_text_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/select/select_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/label/label_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/form/form_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/div/div_element.css">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/input/input_text_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/select/select_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/label/label_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/form/form_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/div/div_element.css}">
 
-        <link rel="stylesheet" type="text/css" href="/css/info_block/info_block.css">
-        <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_header.css">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/info_block/info_block.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/info_block/info_block_header.css}">
 
-        <link rel="stylesheet" type="text/css" href="/css/templates/special_actions/langs/edit.css">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/templates/special_actions/langs/edit.css}">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
 
-        <script type="module" src="/js/templates/special_actions/langs/edit.js"></script>
+        <script type="module" th:src="@{/js/templates/special_actions/langs/edit.js}"></script>
     </head>
     <body>
         <header>
@@ -35,13 +35,14 @@
         <main>
             <div class="div-edit-lang-container">
                 <div class="div-info-block-header-container">
-                    <img src="/images/templates/langs/edit_lang.png"
-                         alt="entry.png"/>
+                    <img th:src="@{/images/templates/langs/edit_lang.png}"
+                         src=""
+                         alt=""/>
                     <h1>Изменение языка</h1>
                 </div>
                 <div class="div-info-block-container">
                     <form id="form_lang_edit"
-                          action="/special_actions/langs/show"
+                          th:action="@{/special_actions/langs/show}"
                           class="form-element">
                         <div class="div-form-element-item">
                             <label class="label-required-element">

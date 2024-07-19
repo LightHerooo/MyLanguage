@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import ru.herooo.mylanguageutils.StringUtils;
 import ru.herooo.mylanguageutils.file.FileUtils;
+import ru.herooo.mylanguageutils.yandexdictionary.YandexDictionaryUtils;
 import ru.herooo.mylanguageutils.yandexdictionary.yandexdic.YandexDicUtils;
 import ru.herooo.mylanguageutils.yandexdictionary.yandexlangs.YandexLangsUtils;
 import ru.herooo.mylanguageweb.projectcookie.ProjectCookiesUtils;
@@ -19,6 +20,9 @@ import ru.herooo.mylanguageweb.projectcookie.ProjectCookiesUtils;
 public class MyLanguageApplication {
     public static void main(String[] args) {
         SpringApplication.run(MyLanguageApplication.class, args);
+
+        // Генерируем файл ключей, если его не существует
+        new YandexDictionaryUtils().getProperties();
     }
 
     @Bean

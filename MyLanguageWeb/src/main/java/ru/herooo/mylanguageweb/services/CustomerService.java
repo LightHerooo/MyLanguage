@@ -92,7 +92,7 @@ public class CustomerService {
                 try {
                     OutsideFolder outsideFolder = OutsideFolders.CUSTOMER_AVATARS.FOLDER;
 
-                    avatarFile = outsideFolder.createNewFile(avatar.getBytes(), fileName);
+                    avatarFile = outsideFolder.createNewFile(avatar.getBytes(), fileName, true);
                     if (avatarFile != null && avatarFile.exists()) {
                         // Удаляем предыдущую аватарку
                         String oldFileName = FILE_UTILS.getFileName(customer.getPathToAvatar());

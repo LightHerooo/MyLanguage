@@ -3,31 +3,31 @@
     <head>
         <meta charset="UTF-8">
         <title th:text="|${WEB_APP_NAME} - Слова с текущим статусом|"></title>
-        <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
+        <link rel="icon" type="image/x-icon" th:href="@{/images/logo/logo.ico}">
 
-        <link rel="stylesheet" type="text/css" href="/css/root.css">
-        <link rel="stylesheet" type="text/css" href="/css/main.css">
-        <link rel="stylesheet" type="text/css" href="/css/img_sizes.css">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/root.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/img_sizes.css}">
 
-        <link rel="stylesheet" type="text/css" href="/css/elements/span/span_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/span/span_flag_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/span/span_loading_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/span/span_rule_element.css">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_flag_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_loading_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_rule_element.css}">
 
-        <link rel="stylesheet" type="text/css" href="/css/elements/table/table_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/table/instruments_for_table.css">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/table/table_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/table/instruments_for_table.css}">
 
-        <link rel="stylesheet" type="text/css" href="/css/elements/input/input_text_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/select/select_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/button/button_element.css">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/input/input_text_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/select/select_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/button/button_element.css}">
 
-        <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_header.css">
-        <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_big_header.css">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/info_block/info_block_header.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/info_block/info_block_big_header.css}">
 
-        <link rel="stylesheet" type="text/css" href="/css/templates/special_actions/words/show_with_current_status.css">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/templates/special_actions/words/show_with_current_status.css}">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
 
-        <script type="module" src="/js/templates/special_actions/words/show_with_current_status.js"></script>
+        <script type="module" th:src="@{/js/templates/special_actions/words/show_with_current_status.js}"></script>
     </head>
     <body>
         <header>
@@ -36,8 +36,9 @@
         <main>
             <div class="div-info-block-big-header-container">
                 <div class="div-info-block-big-header-img-container">
-                    <img src="/images/templates/words/word.png"
-                         alt="cards.png"/>
+                    <img th:src="@{/images/templates/words/word.png}"
+                         src=""
+                         alt=""/>
                 </div>
                 <div class="div-info-block-big-header-data-container">
                     <h1>Слова с текущим статусом</h1>
@@ -64,7 +65,9 @@
             </div>
 
             <div class="div-info-block-header-container-margin">
-                <img src="/images/templates/words/word.png" alt="logo.png"/>
+                <img th:src="@{/images/templates/words/word.png}"
+                     src=""
+                     alt=""/>
                 <h1>Список слов</h1>
             </div>
             <div class="div-actions-container">
@@ -74,8 +77,9 @@
                         Удалить слова со статусом, отличным от "Активный", из коллекций пользователей</span>
                     <span>
                         <img id="img_delete_inactive_words_in_collections"
-                             src="/images/elements/button/delete.png"
-                             alt="delete.png"/>
+                             th:src="@{/images/elements/button/delete.png}"
+                             src=""
+                             alt=""/>
                     </span>
                 </button>
                 <button id="button_delete_all_unclaimed_words"
@@ -83,8 +87,9 @@
                     <span id="span_delete_all_unclaimed_words">Удалить все слова со статусом "Невостребованный"</span>
                     <span>
                         <img id="img_delete_all_unclaimed_words"
-                             src="/images/elements/button/delete.png"
-                             alt="delete.png"/>
+                             th:src="@{/images/elements/button/delete.png}"
+                             src=""
+                             alt=""/>
                     </span>
                 </button>
             </div>
@@ -114,8 +119,9 @@
                             class="button-with-img-element-32 button-element-default"
                             title="Обновить" disabled>
                         <img id="img_button_refresh"
-                             src="/images/other/refresh.png"
-                             alt="refresh.png"/>
+                             th:src="@{/images/other/refresh.png}"
+                             src=""
+                             alt=""/>
                     </button>
                 </div>
             </div>

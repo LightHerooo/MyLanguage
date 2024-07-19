@@ -3,34 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <title th:text="|${WEB_APP_NAME} - ${CURRENT_CUSTOMER.nickname}|">Пользователь</title>
-    <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
+    <link rel="icon" type="image/x-icon" th:href="@{/images/logo/logo.ico}">
 
-    <link rel="stylesheet" type="text/css" href="/css/root.css">
-    <link rel="stylesheet" type="text/css" href="/css/main.css">
-    <link rel="stylesheet" type="text/css" href="/css/img_sizes.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/root.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/img_sizes.css}">
 
-    <link rel="stylesheet" type="text/css" href="/css/elements/span/span_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/elements/span/span_flag_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/elements/span/span_loading_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/elements/span/span_rule_element.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_element.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_flag_element.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_loading_element.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_rule_element.css}">
 
-    <link rel="stylesheet" type="text/css" href="/css/elements/table/table_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/elements/table/instruments_for_table.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/table/table_element.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/table/instruments_for_table.css}">
 
-    <link rel="stylesheet" type="text/css" href="/css/elements/div/div_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/elements/div/div_with_data_builder_element.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/div/div_element.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/div/div_with_data_builder_element.css}">
 
-    <link rel="stylesheet" type="text/css" href="/css/elements/a/a_button_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/elements/select/select_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/elements/button/button_element.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/a/a_button_element.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/select/select_element.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/button/button_element.css}">
 
-    <link rel="stylesheet" type="text/css" href="/css/info_block/info_block.css">
-    <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_header.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/info_block/info_block.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/info_block/info_block_header.css}">
 
-    <link rel="stylesheet" type="text/css" href="/css/templates/customers/show_info_one.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/templates/customers/show_info_one.css}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
 
-    <script type="module" src="/js/templates/customers/show_info_one.js"></script>
+    <script type="module" th:src="@{/js/templates/customers/show_info_one.js}"></script>
 </head>
 <body>
     <header>
@@ -39,11 +39,12 @@
     <main>
         <div th:class="${IS_CUSTOMER_OWNER == true ? 'div-customer-info-with-actions-container-owner' : ''}">
             <div class="div-info-block-container div-customer-info-container">
-                <img class="img-avatar"
-                     src="#"
-                     th:src="${CURRENT_CUSTOMER.pathToAvatar != null
+                <img th:src="@{${CURRENT_CUSTOMER.pathToAvatar != null
                     ? CURRENT_CUSTOMER.pathToAvatar
-                    : '/customers/avatars/0'}" alt="customer.png"/>
+                    : '/images/entity/customer/default.png'}}"
+                     class="img-avatar"
+                     src=""
+                     alt=""/>
                 <div class="div-customer-data-container">
                     <div class="div-nickname-container">
                         <span th:class="'fi fi-' + ${CURRENT_CUSTOMER.country.code}"
@@ -77,24 +78,27 @@
                 </div>
             </div>
             <div class="div-customer-actions-container" th:if="${IS_CUSTOMER_OWNER == true}">
-                <a href="/customers/edit"
+                <a th:href="@{/customers/edit}"
                    class="a-button-with-img-element-64 a-button-element-blue"
                    title="Изменить профиль">
-                    <img src="/images/other/pencil.png"
-                         alt="pencil.png"/>
+                    <img th:src="@{/images/other/pencil.png}"
+                         src=""
+                         alt=""/>
                 </a>
-                <a href="/customers/exit"
+                <a th:href="@{/customers/exit}"
                    class="a-button-with-img-element-64 a-button-element-red"
                    title="Выйти">
-                    <img src="/images/templates/customers/entry.png"
-                         alt="entry.png"/>
+                    <img th:src="@{/images/templates/customers/entry.png}"
+                         src=""
+                         alt=""/>
                 </a>
             </div>
         </div>
 
         <div class="div-info-block-header-container-margin">
-            <img src="/images/other/statistic.png"
-                 alt="statistic.png"/>
+            <img th:src="@{/images/other/statistic.png}"
+                 src=""
+                 alt=""/>
             <h1>Статистика</h1>
         </div>
         <div class="div-instruments-for-table-container div-instruments-for-find-statistic-container">
@@ -104,7 +108,9 @@
                     <select id="select_workout_types_workouts_customer_statistic" class="select-element" disabled></select>
                     <div>
                         <div>
-                            <img id="img_select_workout_types_workouts_customer_statistic" src="#" alt=""/>
+                            <img id="img_select_workout_types_workouts_customer_statistic"
+                                 src=""
+                                 alt=""/>
                         </div>
                     </div>
                 </div>
@@ -120,8 +126,9 @@
                         class="button-with-img-element-32 button-element-default"
                         title="Обновить" disabled>
                     <img id="img_button_refresh_workouts_customer_statistic"
-                         src="/images/other/refresh.png"
-                         alt="refresh.png"/>
+                         th:src="@{/images/other/refresh.png}"
+                         src=""
+                         alt=""/>
                 </button>
             </div>
         </div>
@@ -130,8 +137,9 @@
              style="min-height: 200px"></div>
 
         <div class="div-info-block-header-container-margin">
-            <img src="/images/other/history.png"
-                 alt="history.png"/>
+            <img th:src="@{/images/other/history.png}"
+                 src=""
+                 alt=""/>
             <h1>История тренировок</h1>
         </div>
         <div class="div-instruments-for-table-container div-instruments-for-find-workouts-container">
@@ -141,7 +149,9 @@
                     <select id="select_workout_types_workouts_history" class="select-element" disabled></select>
                     <div>
                         <div>
-                            <img id="img_select_workout_types_workouts_history" src="#" alt=""/>
+                            <img id="img_select_workout_types_workouts_history"
+                                 src=""
+                                 alt=""/>
                         </div>
                     </div>
                 </div>
@@ -152,8 +162,9 @@
                         class="button-with-img-element-32 button-element-default"
                         title="Обновить" disabled>
                     <img id="img_button_refresh_workouts_history"
-                         src="/images/other/refresh.png"
-                         alt="refresh.png"/>
+                         th:src="@{/images/other/refresh.png}"
+                         src=""
+                         alt=""/>
                 </button>
             </div>
         </div>

@@ -50,6 +50,10 @@ import {
     ProjectCookies
 } from "../../../project_cookies.js";
 
+import {
+    UrlPath
+} from "../../../../url/path/url_path.js";
+
 const _WORKOUT_TYPES_API = new WorkoutTypesAPI();
 const _CUSTOMERS_API = new CustomersAPI();
 
@@ -119,7 +123,7 @@ export class DivWithTimerElementWorkoutTypes extends DivWithTimerAbstractElement
                 aButtonWithImgAndSpanElement.changeAButtonWithImgAndTextElementSize(
                     _A_BUTTON_WITH_IMG_AND_SPAN_ELEMENT_VERTICAL_SIZE.SIZE_128);
                 aButtonWithImgAndSpanElement.changeTo(_A_BUTTON_WITH_IMG_AND_SPAN_ELEMENT_TYPES.DEFAULT);
-                aButtonWithImgAndSpanElement.changeSpanText("..");
+                aButtonWithImgAndSpanElement.changeSpanText("...");
                 aButtonWithImgAndSpanElement.changeDisabledStatus(true, false);
 
                 if (i < json.length) {
@@ -127,7 +131,7 @@ export class DivWithTimerElementWorkoutTypes extends DivWithTimerAbstractElement
 
                     let pathToImage = workoutType.getPathToImage();
                     if (pathToImage) {
-                        aButtonWithImgAndSpanElement.changeImgSrc(pathToImage);
+                        aButtonWithImgAndSpanElement.changeImgSrc(new UrlPath(pathToImage).createFullPath());
                     }
 
                     aButtonWithImgAndSpanElement.changeSpanText(workoutType.getTitle());
@@ -141,7 +145,7 @@ export class DivWithTimerElementWorkoutTypes extends DivWithTimerAbstractElement
                             aButtonWithImgAndSpanElement.changeTitle(description);
 
                             aButtonWithImgAndSpanElement.changeHref(
-                                `${_URL_PATHS.WORKOUTS.PREPARE.getPath()}/${workoutType.getCode()}`);
+                                `${_URL_PATHS.WORKOUTS.PREPARE.createFullPath()}/${workoutType.getCode()}`);
                             aButtonWithImgAndSpanElement.changeHrefType(_HREF_TYPES.OPEN_IN_THIS_PAGE);
                         } else {
                             aButtonWithImgAndSpanElement.changeDisabledStatus(true, true);

@@ -197,7 +197,9 @@ export class TableWithTimerElementWorkoutsNotOver extends TableWithTimerAbstract
             aButtonWithImgElementContinue.changeTo(_A_BUTTON_WITH_IMG_ELEMENT_TYPES.ARROW_RIGHT);
             aButtonWithImgElementContinue.changeAButtonWithImgElementSize(_A_BUTTON_WITH_IMG_ELEMENT_SIZES.SIZE_32);
             aButtonWithImgElementContinue.changeTitle(`Продолжить тренировку №${workoutId}`);
-            aButtonWithImgElementContinue.changeHref(`${_URL_PATHS.WORKOUTS.START.getPath()}/${workoutId}`);
+
+            let path = _URL_PATHS.WORKOUTS.START.createFullPath();
+            aButtonWithImgElementContinue.changeHref(`${path}/${workoutId}`);
             aButtonWithImgElementContinue.changeHrefType(_HREF_TYPES.OPEN_IN_THIS_PAGE);
 
             let a = aButtonWithImgElementContinue.getA();

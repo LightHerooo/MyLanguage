@@ -9,7 +9,7 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>my-lang-db</artifactId>
+    <artifactId>my-language-db</artifactId>
     <name>MyLanguageDB</name>
 
     <properties>

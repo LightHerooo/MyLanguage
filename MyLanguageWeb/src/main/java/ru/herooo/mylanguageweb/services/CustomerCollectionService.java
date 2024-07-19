@@ -101,7 +101,7 @@ public class CustomerCollectionService {
                 try {
                     OutsideFolder outsideFolder = OutsideFolders.CUSTOMER_COLLECTION_IMAGES.FOLDER;
 
-                    imageFile = outsideFolder.createNewFile(image.getBytes(), fileName);
+                    imageFile = outsideFolder.createNewFile(image.getBytes(), fileName, true);
                     if (imageFile != null && imageFile.exists()) {
                         // Удаляем предыдущую аватарку
                         String oldFileName = FILE_UTILS.getFileName(customerCollection.getPathToImage());
@@ -134,7 +134,13 @@ public class CustomerCollectionService {
 
 
 
-    public void delete(CustomerCollection collection) {
-        CUSTOMER_COLLECTION_CRUD_REPOSITORY.delete(collection);
+    public void delete(CustomerCollection customerCollection) {
+        if (customerCollection != null) {
+            // Пытаемся удалить картинку
+            OutsideFolder outsideFolder = OutsideFolders.CUSTOMER_COLLECTION_IMAGES.FOLDER;
+            outsideFolder.deleteFile(FILE_UTILS.getFileName(customerCollection.getPathToImage()));
+
+            CUSTOMER_COLLECTION_CRUD_REPOSITORY.delete(customerCollection);
+        }
     }
 }

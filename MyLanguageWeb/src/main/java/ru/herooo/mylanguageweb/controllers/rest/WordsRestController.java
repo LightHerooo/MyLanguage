@@ -9,6 +9,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.herooo.mylanguagedb.entities.*;
 import ru.herooo.mylanguagedb.entities.word.Word;
+import ru.herooo.mylanguagedb.repositories.customerrole.CustomerRoles;
 import ru.herooo.mylanguagedb.repositories.wordstatus.WordStatuses;
 import ru.herooo.mylanguagedb.entities.word.types.WordsStatistic;
 import ru.herooo.mylanguageweb.dto.other.request.entity.EntityAuthKeyRequestDTO;
@@ -211,6 +212,9 @@ public class WordsRestController {
 
         Word word = WORD_SERVICE.add(dto);
         if (word != null) {
+            // Добавляем новый статус добавленному слову
+            WORD_STATUS_HISTORY_SERVICE.addWordStatusToWord(word.getId(), WordStatuses.NEW.CODE);
+
             WordResponseDTO responseDTO = WORD_MAPPING.mapToResponseDTO(word);
             return ResponseEntity.ok(responseDTO);
         } else {

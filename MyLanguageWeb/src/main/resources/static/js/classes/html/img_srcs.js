@@ -1,8 +1,13 @@
-const _MAIN_PATH_TO_FOLDER = "/images";
+import {
+    UrlPath
+} from "../url/path/url_path.js";
+
+const _IMAGES_PATH = new UrlPath("/images").createFullPath();
 
 export class ImgSrcs {
     ELEMENTS = new ImgSrcsElements();
-    OTHER = new OtherFolder();
+    ENTITY = new ImgSrcsEntity();
+    OTHER = new ImgSrcsOther();
 }
 
 // Элементы ---
@@ -11,30 +16,49 @@ class ImgSrcsElements {
 }
 
 class ImgSrcsButton {
-    #PATH_TO_FOLDER = `${_MAIN_PATH_TO_FOLDER}/elements/button`;
+    #PATH = `${_IMAGES_PATH}/elements/button`;
 
-    ACCEPT = `${this.#PATH_TO_FOLDER}/accept.png`;
-    DENY = `${this.#PATH_TO_FOLDER}/deny.png`;
-    ADD = `${this.#PATH_TO_FOLDER}/add.png`;
-    DELETE = `${this.#PATH_TO_FOLDER}/delete.png`;
-    INFO = `${this.#PATH_TO_FOLDER}/info.png`;
-    QUESTION = `${this.#PATH_TO_FOLDER}/question.png`;
-    ARROW_UP = `${this.#PATH_TO_FOLDER}/arrow_up.png`;
-    ARROW_RIGHT = `${this.#PATH_TO_FOLDER}/arrow_right.png`;
-    ARROW_DOWN = `${this.#PATH_TO_FOLDER}/arrow_down.png`;
-    REFRESH = `${this.#PATH_TO_FOLDER}/refresh.png`;
-    EDIT = `${this.#PATH_TO_FOLDER}/edit.png`;
-    WAIT = `${this.#PATH_TO_FOLDER}/wait.png`;
+    ACCEPT = `${this.#PATH}/accept.png`;
+    DENY = `${this.#PATH}/deny.png`;
+    ADD = `${this.#PATH}/add.png`;
+    DELETE = `${this.#PATH}/delete.png`;
+    INFO = `${this.#PATH}/info.png`;
+    QUESTION = `${this.#PATH}/question.png`;
+    ARROW_UP = `${this.#PATH}/arrow_up.png`;
+    ARROW_RIGHT = `${this.#PATH}/arrow_right.png`;
+    ARROW_DOWN = `${this.#PATH}/arrow_down.png`;
+    REFRESH = `${this.#PATH}/refresh.png`;
+    EDIT = `${this.#PATH}/edit.png`;
+    WAIT = `${this.#PATH}/wait.png`;
 }
 //---
 
-class OtherFolder {
-    #PATH_TO_FOLDER = _MAIN_PATH_TO_FOLDER + "/other";
+// Энтити ---
+class ImgSrcsEntity {
+    CUSTOMER = new ImgSrcsCustomer();
+    CUSTOMER_COLLECTION = new ImgSrcsCustomerCollection();
+}
 
-    FLAME = `${this.#PATH_TO_FOLDER}/flame.png`;
-    BOOKS = `${this.#PATH_TO_FOLDER}/books.png`;
-    ACCEPT = `${this.#PATH_TO_FOLDER}/accept.png`;
-    DENY = `${this.#PATH_TO_FOLDER}/deny.png`;
-    EMPTY  = `${this.#PATH_TO_FOLDER}/empty.svg`;
-    QUESTION  = `${this.#PATH_TO_FOLDER}/question.png`;
+class ImgSrcsCustomer {
+    #PATH = `${_IMAGES_PATH}/entity/customer`;
+
+    DEFAULT = `${this.#PATH}/default.png`;
+}
+
+class ImgSrcsCustomerCollection {
+    #PATH = `${_IMAGES_PATH}/entity/customer_collection`;
+
+    DEFAULT = `${this.#PATH}/default.png`;
+}
+//---
+
+class ImgSrcsOther {
+    #PATH = _IMAGES_PATH + "/other";
+
+    FLAME = `${this.#PATH}/flame.png`;
+    BOOKS = `${this.#PATH}/books.png`;
+    ACCEPT = `${this.#PATH}/accept.png`;
+    DENY = `${this.#PATH}/deny.png`;
+    EMPTY  = `${this.#PATH}/empty.svg`;
+    QUESTION  = `${this.#PATH}/question.png`;
 }

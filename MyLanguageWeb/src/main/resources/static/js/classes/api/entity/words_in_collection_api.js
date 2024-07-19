@@ -1,8 +1,4 @@
 import {
-    UrlToAPI
-} from "../url_to_api.js";
-
-import {
     XmlUtils
 } from "../utils/xml_utils.js";
 
@@ -14,11 +10,15 @@ import {
     HttpMethods
 } from "../classes/http/http_methods.js";
 
+import {
+    UrlPaths
+} from "../../url/path/url_paths.js";
+
 const _JSON_UTILS = new JSONUtils();
 const _XML_UTILS = new XmlUtils();
 const _HTTP_METHODS = new HttpMethods();
 
-const _URL_TO_API_WORDS_IN_COLLECTION = `${new UrlToAPI().VALUE}/words_in_collection`;
+const _URL_TO_API_WORDS_IN_COLLECTION = `${new UrlPaths().API.createFullPath()}/words_in_collection`;
 const _URL_TO_API_WORDS_IN_COLLECTION_GET = `${_URL_TO_API_WORDS_IN_COLLECTION}/get`;
 const _URL_TO_API_WORDS_IN_COLLECTION_FIND = `${_URL_TO_API_WORDS_IN_COLLECTION}/find`;
 const _URL_TO_API_WORDS_IN_COLLECTION_VALIDATE = `${_URL_TO_API_WORDS_IN_COLLECTION}/validate`;

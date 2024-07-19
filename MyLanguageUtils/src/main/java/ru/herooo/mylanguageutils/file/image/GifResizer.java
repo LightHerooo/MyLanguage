@@ -45,7 +45,7 @@ public class GifResizer {
                     gif.delete();
                 }
             } else {
-                throw new IOException("Файл не является .gif-изображением.");
+                throw new IOException("Файл не является .gif-изображением");
             }
         }
 
@@ -68,7 +68,7 @@ public class GifResizer {
                     width = bi.getWidth();
                     height = bi.getHeight();
                 } else if (bi.getWidth() != width && bi.getHeight() != height) {
-                    throw new IOException("Некорректное .gif изображение. Выберите другое.");
+                    throw new IOException("Некорректное .gif изображение. Выберите другое");
                 }
 
                 bis.add(bi);

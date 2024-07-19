@@ -3,31 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <title th:text="|${WEB_APP_NAME} - Вход|">Вход</title>
-    <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
+    <link rel="icon" type="image/x-icon" th:href="@{/images/logo/logo.ico}">
 
-    <link rel="stylesheet" type="text/css" href="/css/root.css">
-    <link rel="stylesheet" type="text/css" href="/css/main.css">
-    <link rel="stylesheet" type="text/css" href="/css/img_sizes.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/root.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/img_sizes.css}">
 
-    <link rel="stylesheet" type="text/css" href="/css/elements/span/span_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/elements/span/span_rule_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/elements/span/span_loading_element.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_element.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_rule_element.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_loading_element.css}">
 
-    <link rel="stylesheet" type="text/css" href="/css/elements/input/input_text_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/elements/input/input_password_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/elements/input/input_checkbox_element.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/input/input_text_element.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/input/input_password_element.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/input/input_checkbox_element.css}">
 
-    <link rel="stylesheet" type="text/css" href="/css/elements/form/form_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/elements/label/label_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/elements/div/div_element.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/form/form_element.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/label/label_element.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/div/div_element.css}">
 
-    <link rel="stylesheet" type="text/css" href="/css/info_block/info_block.css">
-    <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_header.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/info_block/info_block.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/info_block/info_block_header.css}">
 
-    <link rel="stylesheet" type="text/css" href="/css/templates/customers/entry.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/templates/customers/entry.css}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
 
-    <script type="module" src="/js/templates/customers/entry.js"></script>
+    <script type="module" th:src="@{/js/templates/customers/entry.js}"></script>
 </head>
 <body>
     <header>
@@ -36,8 +36,9 @@
     <main>
         <div class="div-entry-container">
             <div class="div-info-block-header-container">
-                <img src="/images/templates/customers/entry.png"
-                     alt="entry.png"/>
+                <img th:src="@{/images/templates/customers/entry.png}"
+                     src=""
+                     alt=""/>
                 <h1>Вход</h1>
             </div>
             <div class="div-info-block-container">
@@ -83,7 +84,7 @@
             <div class="div-info-block-container">
                 <div class="div-dont-have-account-container">
                     <span>Нет аккаунта?</span>
-                    <a href="/customers/registration">Регистрация</a>
+                    <a th:href="@{/customers/registration}">Регистрация</a>
                 </div>
             </div>
         </div>

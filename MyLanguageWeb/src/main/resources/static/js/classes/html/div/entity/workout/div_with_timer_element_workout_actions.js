@@ -70,6 +70,10 @@ import {
     ImgSrcs
 } from "../../../img_srcs.js";
 
+import {
+    UrlPath
+} from "../../../../url/path/url_path.js";
+
 const _CUSTOMER_COLLECTIONS_API = new CustomerCollectionsAPI();
 
 const _CSS_ROOT = new CssRoot();
@@ -141,14 +145,14 @@ export class DivWithTimerElementWorkoutActions extends DivWithTimerAbstractEleme
                     spanText = `${spanText} "${workoutType.getTitle()}"`;
                     href = `${href}/${workoutType.getCode()}`;
                 } else {
-                    let href = _URL_PATHS.WORKOUTS.MAIN.getPath();
+                    href = _URL_PATHS.WORKOUTS.MAIN.getPath();
                 }
 
                 if (pathToImage) {
-                    aButtonWithImgAndTextElement.changeImgSrc(pathToImage);
+                    aButtonWithImgAndTextElement.changeImgSrc(new UrlPath(pathToImage).createFullPath());
                 }
                 aButtonWithImgAndTextElement.changeSpanText(spanText);
-                aButtonWithImgAndTextElement.changeHref(href);
+                aButtonWithImgAndTextElement.changeHref(new UrlPath(href).createFullPath());
                 aButtonWithImgAndTextElement.changeHrefType(_HREF_TYPES.OPEN_IN_THIS_PAGE);
 
                 let a = aButtonWithImgAndTextElement.getA();

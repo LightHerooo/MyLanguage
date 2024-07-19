@@ -27,10 +27,6 @@ import {
 } from "../../../date_parts.js";
 
 import {
-    UrlPaths
-} from "../../../../url/path/url_paths.js";
-
-import {
     DivWithTimerAbstractElement
 } from "../../abstracts/div_with_timer_abstract_element.js";
 
@@ -38,12 +34,20 @@ import {
     CssRoot
 } from "../../../../css/css_root.js";
 
+import {
+    UrlPath
+} from "../../../../url/path/url_path.js";
+
+import {
+    ImgSrcs
+} from "../../../img_srcs.js";
+
 const _CUSTOMER_COLLECTIONS_API = new CustomerCollectionsAPI();
 
 const _CSS_ROOT = new CssRoot();
 
 const _HTTP_STATUSES = new HttpStatuses();
-const _URL_PATHS = new UrlPaths();
+const _IMG_SRCS = new ImgSrcs();
 
 export class DivElementCustomerCollectionUtils {
     async createDivInfoById(customerCollectionId) {
@@ -67,8 +71,8 @@ export class DivElementCustomerCollectionUtils {
         // Изображение ---
         let pathToImage = customerCollectionResponseDTOObj.getPathToImage();
         divWithImgAndDataBuilderElement.setImageSrc(pathToImage
-            ? pathToImage
-            : _URL_PATHS.CUSTOMER_COLLECTIONS.IMAGE_DEFAULT.getPath());
+            ? new UrlPath(pathToImage).createFullPath()
+            : _IMG_SRCS.ENTITY.CUSTOMER_COLLECTION.DEFAULT);
         //---
 
         let spanElementCustomerCollection = new SpanElementCustomerCollection(null);

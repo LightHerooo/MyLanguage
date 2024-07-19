@@ -3,34 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <title th:text="|${WEB_APP_NAME} - Регистрация|">Регистрация</title>
-    <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
+    <link rel="icon" type="image/x-icon" th:href="@{/images/logo/logo.ico}">
 
-    <link rel="stylesheet" type="text/css" href="/css/root.css">
-    <link rel="stylesheet" type="text/css" href="/css/main.css">
-    <link rel="stylesheet" type="text/css" href="/css/img_sizes.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/root.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/img_sizes.css}">
 
-    <link rel="stylesheet" type="text/css" href="/css/elements/span/span_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/elements/span/span_flag_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/elements/span/span_loading_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/elements/span/span_rule_element.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_element.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_flag_element.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_loading_element.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_rule_element.css}">
 
-    <link rel="stylesheet" type="text/css" href="/css/elements/input/input_text_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/elements/input/input_password_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/elements/input/input_checkbox_element.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/input/input_text_element.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/input/input_password_element.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/input/input_checkbox_element.css}">
 
-    <link rel="stylesheet" type="text/css" href="/css/elements/button/button_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/elements/form/form_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/elements/label/label_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/elements/select/select_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/elements/div/div_element.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/button/button_element.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/form/form_element.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/label/label_element.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/select/select_element.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/div/div_element.css}">
 
-    <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_header.css">
-    <link rel="stylesheet" type="text/css" href="/css/info_block/info_block.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/info_block/info_block_header.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/info_block/info_block.css}">
 
-    <link rel="stylesheet" type="text/css" href="/css/templates/customers/registration.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/templates/customers/registration.css}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
 
-    <script type="module" src="/js/templates/customers/registration.js"></script>
+    <script type="module" th:src="@{/js/templates/customers/registration.js}"></script>
 </head>
 <body>
     <header>
@@ -39,8 +39,9 @@
     <main>
         <div class="div-registration-container">
             <div class="div-info-block-header-container">
-                <img src="/images/templates/customers/registration.png"
-                     alt="registration.png"/>
+                <img th:src="@{/images/templates/customers/registration.png}"
+                     src=""
+                     alt=""/>
                 <h1>Регистрация</h1>
             </div>
             <div class="div-registration-content-container">
@@ -51,23 +52,26 @@
                     <div class="div-registration-advantages-container">
                         <button class="button-with-img-and-span-element-vertical-128 button-element-default">
                             <span>
-                                <img src="/images/templates/words/new_words.png"
-                                     alt="new_words.png"/>
+                                <img th:src="@{/images/templates/words/new_words.png}"
+                                     src=""
+                                     alt=""/>
                             </span>
                             <span>Предложение новых слов</span>
                         </button>
                         <button class="button-with-img-and-span-element-vertical-128 button-element-default">
                             <span>
-                                <img src="/images/templates/customer_collections/new_collection.png"
-                                     alt="new_collection.png"/>
+                                <img th:src="@{/images/templates/customer_collections/new_collection.png}"
+                                     src=""
+                                     alt=""/>
                             </span>
                             <span>Создание коллекций слов</span>
                         </button>
                         <button class="button-with-img-and-span-element-vertical-128 button-element-default"
                            style="grid-column: 1 / 3">
                             <span>
-                                <img src="/images/other/brain.png"
-                                     alt="brain.png"/>
+                                <img th:src="@{/images/other/brain.png}"
+                                     src=""
+                                     alt=""/>
                             </span>
                             <span>Тренировка слов в различных режимах</span>
                         </button>

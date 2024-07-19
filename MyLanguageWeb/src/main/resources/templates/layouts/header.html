@@ -2,72 +2,84 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
   <head>
       <meta charset="UTF-8">
-      <title>Header</title>
-      <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
+      <title th:text="|${WEB_APP_NAME} - Header|"></title>
+      <link rel="icon" type="image/x-icon" th:href="@{/images/logo/logo.ico}">
 
-      <link rel="stylesheet" type="text/css" href="/css/root.css">
-      <link rel="stylesheet" type="text/css" href="/css/main.css">
+      <link rel="stylesheet" type="text/css" th:href="@{/css/root.css}">
+      <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
 
-      <link rel="stylesheet" type="text/css" href="/css/elements/span/span_flag_element.css">
-      <link rel="stylesheet" type="text/css" href="/css/elements/div/div_element.css">
+      <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_flag_element.css}">
+      <link rel="stylesheet" type="text/css" th:href="@{/css/elements/div/div_element.css}">
 
-      <link rel="stylesheet" type="text/css" href="/css/templates/layouts/header.css">
+      <link rel="stylesheet" type="text/css" th:href="@{/css/templates/layouts/header.css}">
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
   </head>
   <body>
     <nav>
         <div class="div-nav-left-container">
-            <a href="/" class="a-nav-logotype">
-                <img src="/images/logo/logo.png" alt="logo.png"/>
+            <a th:href="@{/}" class="a-nav-logotype">
+                <img th:src="@{/images/logo/logo.png}" alt="logo.png"/>
                 <span th:text="${WEB_APP_NAME}"></span>
             </a>
             <div class="div-element-vertical-delimiter-margin"></div>
-            <a href="/workouts" class="a-nav-item">
-                <img src="/images/templates/workouts/workout.png" alt="workout.png"/>
+            <a th:href="@{/workouts}" class="a-nav-item">
+                <img th:src="@{/images/templates/workouts/workout.png}"
+                     src=""
+                     alt=""/>
                 <span>Тренироваться</span>
             </a>
             <div class="div-element-vertical-delimiter-margin"></div>
-            <a href="/words" class="a-nav-item">
-                <img src="/images/templates/words/words.png" alt="words.png"/>
+            <a th:href="@{/words}" class="a-nav-item">
+                <img th:src="@{/images/templates/words/words.png}"
+                     src=""
+                     alt=""/>
                 <span>Слова</span>
             </a>
             <div class="div-element-vertical-delimiter-margin"></div>
-            <a href="/customer_collections" class="a-nav-item">
-                <img src="/images/templates/customer_collections/customer_collections.png" alt="customer_collections.png"/>
+            <a th:href="@{/customer_collections}" class="a-nav-item">
+                <img th:src="@{/images/templates/customer_collections/customer_collections.png}"
+                     src=""
+                     alt=""/>
                 <span>Мои коллекции</span>
             </a>
             <div class="div-element-vertical-delimiter-margin"></div>
         </div>
         <div class="div-nav-right-container" th:if="${AUTH_CUSTOMER == null}">
             <div class="div-element-vertical-delimiter-margin"></div>
-            <a class="a-nav-item" href="/customers/registration">
-                <img src="/images/templates/customers/registration.png" alt="registration.png"/>
+            <a th:href="@{/customers/registration}" class="a-nav-item">
+                <img th:src="@{/images/templates/customers/registration.png}"
+                     src=""
+                     alt=""/>
                 <span>Регистрация</span>
             </a>
             <div class="div-element-vertical-delimiter-margin"></div>
-            <a class="a-nav-item" href="/customers/entry">
-                <img src="/images/templates/customers/entry.png" alt="entry.png"/>
+            <a th:href="@{/customers/entry}" class="a-nav-item">
+                <img th:src="@{/images/templates/customers/entry.png}"
+                     src=""
+                     alt=""/>
                 <span>Вход</span>
             </a>
             <div class="div-element-vertical-delimiter-margin"></div>
         </div>
-        <div class="div-nav-right-container" th:if="${AUTH_CUSTOMER != null}">
-            <div class="div-element-vertical-delimiter-margin" th:if="${IS_SUPER_USER == true}"></div>
-            <a class="a-nav-item" href="/special_actions" th:if="${IS_SUPER_USER == true}">
-                <img src="#" th:src="${AUTH_CUSTOMER.role.pathToImage}"
-                     alt="role.png"/>
+        <div th:if="${AUTH_CUSTOMER != null}" class="div-nav-right-container">
+            <div th:if="${IS_SUPER_USER == true}" class="div-element-vertical-delimiter-margin"></div>
+            <a th:if="${IS_SUPER_USER == true}"
+               th:href="@{/special_actions}" class="a-nav-item">
+                <img th:src="@{${AUTH_CUSTOMER.role.pathToImage}}"
+                     src=""
+                     alt=""/>
                 <span th:style="${AUTH_CUSTOMER.role.color != null
                       ? 'color: #' + AUTH_CUSTOMER.role.color.hexCode
                       : ''}">Специальные возможности</span>
             </a>
             <div class="div-element-vertical-delimiter-margin"></div>
-            <a class="a-nav-customer" th:href="@{/customers/info/{id}(id = ${AUTH_CUSTOMER.id})}">
+            <a th:href="@{/customers/info/{id}(id = ${AUTH_CUSTOMER.id})}" class="a-nav-customer">
                 <div class="div-a-nav-customer-img-container">
-                    <img src="#"
-                         th:src="${AUTH_CUSTOMER.pathToAvatar != null
+                    <img th:src="@{${AUTH_CUSTOMER.pathToAvatar != null
                          ? AUTH_CUSTOMER.pathToAvatar
-                         : '/customers/avatars/0'}"
-                         alt="customer.png"/>
+                         : '/images/entity/customer/default.png'}}"
+                         src=""
+                         alt=""/>
                 </div>
                 <div class="div-a-nav-customer-info-container">
                     <div class="div-a-nav-customer-nickname-container">
@@ -81,7 +93,8 @@
                     </div>
                     <div class="div-a-nav-customer-info-extra-container">
                         <div class="div-a-nav-customer-info-extra-container-item">
-                            <img src="#" th:src="${AUTH_CUSTOMER.role.pathToImage}"
+                            <img th:src="@{${AUTH_CUSTOMER.role.pathToImage}}"
+                                 src=""
                                  alt="role.png"/>
                             <span th:text="${AUTH_CUSTOMER.role.title}"
                                   th:style="${AUTH_CUSTOMER.role.color != null

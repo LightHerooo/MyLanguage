@@ -6,8 +6,9 @@
         <artifactId>my-language</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
+    <packaging>war</packaging>
 
-    <artifactId>my-lang-web</artifactId>
+    <artifactId>my-language-web</artifactId>
     <name>MyLanguageWeb</name>
 
     <properties>
@@ -19,7 +20,7 @@
     <dependencies>
         <dependency>
             <groupId>ru.herooo.springapps</groupId>
-            <artifactId>my-lang-db</artifactId>
+            <artifactId>my-language-db</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
@@ -31,6 +32,6 @@
     </dependencies>
 
     <build>
-        <finalName>my-lang-web</finalName>
+        <finalName>MyLanguage</finalName>
     </build>
 </project>

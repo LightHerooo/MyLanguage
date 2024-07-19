@@ -168,7 +168,7 @@ export class TableWithTimerElementNewLangs extends TableWithTimerAbstractElement
             aButtonWithImgElementNew.changeTo(_A_BUTTON_WTIH_IMG_ELEMENT_TYPES.ADD);
             aButtonWithImgElementNew.changeTitle("Добавить новый язык");
 
-            let path = _URL_PATHS.SPECIAL_ACTIONS.LANGS.ADD.getPath();
+            let path = _URL_PATHS.SPECIAL_ACTIONS.LANGS.ADD.createFullPath();
             aButtonWithImgElementNew.changeHref(`${path}/${langCode}`);
             aButtonWithImgElementNew.changeHrefType(_HREF_TYPES.OPEN_IN_THIS_PAGE);
 

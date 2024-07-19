@@ -2,24 +2,24 @@ package ru.herooo.mylanguageutils.outsidefolder.types;
 
 import ru.herooo.mylanguageutils.file.FileUtils;
 import ru.herooo.mylanguageutils.StringUtils;
+import ru.herooo.mylanguageutils.ProjectPaths;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class OutsideFolder {
-    private final String MAIN_OUTSIDE_FOLDER_PATH = System.getProperty("user.dir");
     private final StringUtils STRING_UTILS = new StringUtils();
     private final FileUtils FILE_UTILS = new FileUtils();
 
-    private final String PATH_TO_FOLDER;
+    private final String PATH;
 
-    public OutsideFolder(String pathToFolder) {
-        this.PATH_TO_FOLDER = String.format("%s%s", MAIN_OUTSIDE_FOLDER_PATH, pathToFolder);
+    public OutsideFolder(String path) {
+        this.PATH = String.format("%s%s", ProjectPaths.MAIN_FOLDER.PATH, path);
     }
 
     public File getFolder() {
-        File folder = new File(PATH_TO_FOLDER);
+        File folder = new File(PATH);
         if (!folder.exists()) {
             folder.mkdirs();
         }
@@ -41,19 +41,23 @@ public class OutsideFolder {
         return result;
     }
 
-    public File createNewFile(byte[] fileBytes, String fileName) throws IOException {
+    public File createNewFile(byte[] fileBytes, String fileName, boolean doNeedToGenerateRandomFileName) throws IOException {
         File newFile = null;
         if (!STRING_UTILS.isStringVoid(fileName)) {
-            String extension = FILE_UTILS.getExtension(fileName);
-            String newFileName = String.format("%s.%s",
-                    STRING_UTILS.createRandomStrEn(30), extension) ;
+            String filePath;
+            if (doNeedToGenerateRandomFileName) {
+                String randomFileName = String.format("%s.%s",
+                        STRING_UTILS.createRandomStrEn(30), FILE_UTILS.getExtension(fileName));
+                filePath = String.format("%s/%s", getFolder().getPath(), randomFileName);
+            } else {
+                filePath = String.format("%s/%s", getFolder().getPath(), fileName);
+            }
 
-            String filePath = String.format("%s/%s", getFolder().getPath(), newFileName);
             try (FileOutputStream fos = new FileOutputStream(filePath)) {
                 fos.write(fileBytes);
             }
 
-            newFile = getFile(newFileName);
+            newFile = getFile(FILE_UTILS.getFileName(filePath));
         }
 
         return newFile;

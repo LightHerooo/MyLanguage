@@ -3,35 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <title th:text="${WEB_APP_NAME} + ' - Изменение коллекции №' + ${CUSTOMER_COLLECTION_ID}"></title>
-    <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
+    <link rel="icon" type="image/x-icon" th:href="@{/images/logo/logo.ico}">
 
-    <link rel="stylesheet" type="text/css" href="/css/root.css">
-    <link rel="stylesheet" type="text/css" href="/css/main.css">
-    <link rel="stylesheet" type="text/css" href="/css/img_sizes.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/root.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/img_sizes.css}">
 
-    <link rel="stylesheet" type="text/css" href="/css/elements/span/span_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/elements/span/span_flag_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/elements/span/span_loading_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/elements/span/span_rule_element.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_element.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_flag_element.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_loading_element.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_rule_element.css}">
 
-    <link rel="stylesheet" type="text/css" href="/css/elements/input/input_text_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/elements/input/input_file_element.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/input/input_text_element.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/input/input_file_element.css}">
 
-    <link rel="stylesheet" type="text/css" href="/css/elements/table/table_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/elements/table/instruments_for_table.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/table/table_element.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/table/instruments_for_table.css}">
 
-    <link rel="stylesheet" type="text/css" href="/css/elements/form/form_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/elements/label/label_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/elements/textarea/textarea_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/elements/div/div_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/elements/select/select_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/elements/button/button_element.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/form/form_element.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/label/label_element.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/textarea/textarea_element.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/div/div_element.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/select/select_element.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/button/button_element.css}">
 
-    <link rel="stylesheet" type="text/css" href="/css/info_block/info_block.css">
-    <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_header.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/info_block/info_block.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/info_block/info_block_header.css}">
 
-    <link rel="stylesheet" type="text/css" href="/css/templates/customer_collections/edit.css">
-    <script type="module" src="/js/templates/customer_collections/edit.js"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/templates/customer_collections/edit.css}">
+    <script type="module" th:src="@{/js/templates/customer_collections/edit.js}"></script>
 </head>
 <body>
     <header>
@@ -39,19 +39,22 @@
     </header>
     <main>
         <div class="div-info-block-header-container">
-            <img src="/images/templates/customer_collections/edit_customer_collection.png" alt="">
+            <img th:src="@{/images/templates/customer_collections/edit_customer_collection.png}"
+                 src=""
+                 alt="">
             <h1 th:text="'Изменение коллекции №' + ${CUSTOMER_COLLECTION_ID}"></h1>
         </div>
         <div class="div-info-block-container">
             <form id="form_customer_collection_edit"
-                  action="/customer_collections"
+                  th:action="@{/customer_collections}"
                   class="form-element">
                   <div class="div-customer-collection-edit-container">
                       <div id="div_input_img_customer_collection_image"
                            class="div-input-img-element-container">
                           <img id="img_customer_collection_image"
-                               src="#"
-                               alt="#"/>
+                               th:src="@{/images/entity/customer_collection/default.png}"
+                               src=""
+                               alt=""/>
                           <div class="div-form-element-item">
                               <label for="input_file_customer_collection_image"
                                      class="label-element">Изображение</label>
@@ -67,8 +70,9 @@
                                       <button id="button_drop_selected_files_customer_collection_image"
                                               class="button-drop-selected-files"
                                               type="button" disabled>
-                                          <img src="/images/elements/button/delete.png"
-                                               alt="delete.png"/>
+                                          <img th:src="@{/images/elements/button/delete.png}"
+                                               src=""
+                                               alt=""/>
                                       </button>
                                   </div>
                                   <div id="div_input_file_message_container_customer_collection_image"
@@ -130,7 +134,9 @@
         </div>
 
         <div class="div-info-block-header-container-margin">
-            <img src="/images/templates/words/word.png" alt="">
+            <img th:src="@{/images/templates/words/word.png}"
+                 src=""
+                 alt="">
             <h1>Список слов в коллекции</h1>
         </div>
         <div class="div-actions-container">
@@ -139,7 +145,8 @@
                 <span id="span_select_all_words_for_delete">Выделить все слова на удаление</span>
                 <span>
                     <img id="img_select_all_words_for_delete"
-                         src="/images/elements/button/accept.png"
+                         th:src="@{/images/elements/button/accept.png}"
+                         src=""
                          alt="">
                 </span>
             </button>
@@ -148,7 +155,8 @@
                 <span id="span_deselect_all_words_for_delete">Снять выделение на удаление со всех слов</span>
                 <span>
                     <img id="img_deselect_all_words_for_delete"
-                         src="/images/elements/button/deny.png"
+                         th:src="@{/images/elements/button/deny.png}"
+                         src=""
                          alt="">
                 </span>
             </button>
@@ -166,8 +174,9 @@
                         class="button-with-img-element-32 button-element-default"
                         title="Обновить" disabled>
                     <img id="img_refresh_words_in_collection"
-                         src="/images/elements/button/refresh.png"
-                         alt="refresh.png"/>
+                         th:src="@{/images/elements/button/refresh.png}"
+                         src=""
+                         alt=""/>
                 </button>
             </div>
         </div>

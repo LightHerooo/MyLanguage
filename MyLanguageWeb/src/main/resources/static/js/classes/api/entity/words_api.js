@@ -1,8 +1,4 @@
 import {
-    UrlToAPI
-} from "../url_to_api.js";
-
-import {
     XmlUtils
 } from "../utils/xml_utils.js";
 
@@ -18,11 +14,15 @@ import {
     DateParts
 } from "../../html/date_parts.js";
 
+import {
+    UrlPaths
+} from "../../url/path/url_paths.js";
+
 const _JSON_UTILS = new JSONUtils();
 const _XML_UTILS = new XmlUtils();
 const _HTTP_METHODS = new HttpMethods();
 
-const _URL_TO_API_WORDS = `${new UrlToAPI().VALUE}/words`;
+const _URL_TO_API_WORDS = `${new UrlPaths().API.createFullPath()}/words`;
 const _URL_TO_API_WORDS_GET = `${_URL_TO_API_WORDS}/get`;
 const _URL_TO_API_WORDS_COUNT = `${_URL_TO_API_WORDS}/count`;
 const _URL_TO_API_WORDS_VALIDATE = `${_URL_TO_API_WORDS}/validate`;

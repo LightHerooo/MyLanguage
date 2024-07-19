@@ -3,12 +3,12 @@ import {
 } from "../utils/xml_utils.js";
 
 import {
-    UrlToAPI
-} from "../url_to_api.js";
+    UrlPaths
+} from "../../url/path/url_paths.js";
 
 const _XML_UTILS = new XmlUtils();
 
-const _URL_TO_API_CUSTOMER_ROLES = `${new UrlToAPI().VALUE}/customer_roles`;
+const _URL_TO_API_CUSTOMER_ROLES = `${new UrlPaths().API.createFullPath()}/customer_roles`;
 const _URL_TO_API_CUSTOMER_ROLES_GET = `${_URL_TO_API_CUSTOMER_ROLES}/get`;
 const _URL_TO_API_CUSTOMER_ROLES_FIND = `${_URL_TO_API_CUSTOMER_ROLES}/find`;
 

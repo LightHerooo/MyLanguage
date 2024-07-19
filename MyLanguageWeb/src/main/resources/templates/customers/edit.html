@@ -3,34 +3,34 @@
     <head>
         <meta charset="UTF-8">
         <title th:text="|${WEB_APP_NAME} - Редактирование профиля|"></title>
-        <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
+        <link rel="icon" type="image/x-icon" th:href="@{/images/logo/logo.ico}">
 
-        <link rel="stylesheet" type="text/css" href="/css/root.css">
-        <link rel="stylesheet" type="text/css" href="/css/main.css">
-        <link rel="stylesheet" type="text/css" href="/css/img_sizes.css">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/root.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/img_sizes.css}">
 
-        <link rel="stylesheet" type="text/css" href="/css/elements/span/span_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/span/span_flag_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/span/span_loading_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/span/span_rule_element.css">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_flag_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_loading_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_rule_element.css}">
 
-        <link rel="stylesheet" type="text/css" href="/css/elements/input/input_text_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/input/input_file_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/input/input_checkbox_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/input/input_password_element.css">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/input/input_text_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/input/input_file_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/input/input_checkbox_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/input/input_password_element.css}">
 
-        <link rel="stylesheet" type="text/css" href="/css/elements/select/select_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/form/form_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/label/label_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/textarea/textarea_element.css">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/select/select_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/form/form_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/label/label_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/textarea/textarea_element.css}">
 
-        <link rel="stylesheet" type="text/css" href="/css/info_block/info_block.css">
-        <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_header.css">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/info_block/info_block.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/info_block/info_block_header.css}">
 
-        <link rel="stylesheet" type="text/css" href="/css/templates/customers/edit.css">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/templates/customers/edit.css}">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
 
-        <script type="module" src="/js/templates/customers/edit.js"></script>
+        <script type="module" th:src="@{/js/templates/customers/edit.js}"></script>
     </head>
     <body>
         <header>
@@ -39,15 +39,17 @@
         <main>
             <div class="div-customer-edit-container">
                 <div class="div-info-block-header-container">
-                    <img src="/images/other/pencil.png"
-                         alt="pencil.png"/>
+                    <img th:src="@{/images/other/pencil.png}"
+                         src=""
+                         alt=""/>
                     <h1>Редактирование пользователя</h1>
                 </div>
                 <div class="div-customer-edit-container-for-two-containers">
                     <div class="div-customer-edit-profile-container">
                         <div class="div-info-block-header-container">
-                            <img src="/images/templates/customers/edit_profile.png"
-                                 alt="edit_profile.png"/>
+                            <img th:src="@{/images/templates/customers/edit_profile.png}"
+                                 src=""
+                                 alt=""/>
                             <h1>Изменение профиля</h1>
                         </div>
                         <div class="div-info-block-container">
@@ -57,8 +59,9 @@
                                 <div id="div_input_img_customer_avatar"
                                      class="div-input-img-element-container">
                                     <img id="img_customer_avatar"
-                                         src="#"
-                                         alt="#"/>
+                                         th:src="@{/images/entity/customer/default.png}"
+                                         src=""
+                                         alt=""/>
                                     <div class="div-form-element-item">
                                         <label for="input_file_customer_avatar"
                                                class="label-element">Изображение</label>
@@ -74,14 +77,14 @@
                                                 <button id="button_drop_selected_files_customer_avatar"
                                                         class="button-drop-selected-files"
                                                         type="button" disabled>
-                                                    <img src="/images/elements/button/delete.png"
-                                                         alt="delete.png"/>
+                                                    <img th:src="@{/images/elements/button/delete.png}"
+                                                         src=""
+                                                         alt=""/>
                                                 </button>
                                             </div>
                                             <div id="div_input_file_message_container_customer_avatar"
                                                  class="div-input-file-element-message-container"></div>
                                         </div>
-
                                     </div>
                                 </div>
                                 <div class="div-form-element-item">
@@ -136,8 +139,9 @@
                     </div>
                     <div class="div-customer-edit-password-container">
                         <div class="div-info-block-header-container">
-                            <img src="/images/templates/customers/edit_password.png"
-                                 alt="edit_password.png"/>
+                            <img th:src="@{/images/templates/customers/edit_password.png}"
+                                 src=""
+                                 alt=""/>
                             <h1>Изменение пароля</h1>
                         </div>
                         <div class="div-info-block-container">

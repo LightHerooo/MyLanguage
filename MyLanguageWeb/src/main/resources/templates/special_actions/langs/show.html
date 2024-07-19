@@ -3,32 +3,32 @@
     <head>
         <meta charset="UTF-8">
         <title th:text="|${WEB_APP_NAME} - Языки|"></title>
-        <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
+        <link rel="icon" type="image/x-icon" th:href="@{/images/logo/logo.ico}">
 
-        <link rel="stylesheet" type="text/css" href="/css/root.css">
-        <link rel="stylesheet" type="text/css" href="/css/main.css">
-        <link rel="stylesheet" type="text/css" href="/css/img_sizes.css">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/root.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/img_sizes.css}">
 
-        <link rel="stylesheet" type="text/css" href="/css/elements/span/span_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/span/span_loading_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/span/span_flag_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/span/span_rule_element.css">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_loading_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_flag_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_rule_element.css}">
 
-        <link rel="stylesheet" type="text/css" href="/css/elements/table/table_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/table/instruments_for_table.css">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/table/table_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/table/instruments_for_table.css}">
 
-        <link rel="stylesheet" type="text/css" href="/css/elements/input/input_text_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/select/select_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/button/button_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/a/a_button_element.css">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/input/input_text_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/select/select_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/button/button_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/a/a_button_element.css}">
 
-        <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_big_header.css">
-        <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_header.css">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/info_block/info_block_big_header.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/info_block/info_block_header.css}">
 
-        <link rel="stylesheet" type="text/css" href="/css/templates/special_actions/langs/show.css">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/templates/special_actions/langs/show.css}">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
 
-        <script type="module" src="/js/templates/special_actions/langs/show.js"></script>
+        <script type="module" th:src="@{/js/templates/special_actions/langs/show.js}"></script>
     </head>
     <body>
         <header>
@@ -37,8 +37,9 @@
         <main>
             <div class="div-info-block-big-header-container">
                 <div class="div-info-block-big-header-img-container">
-                    <img src="/images/logo/logo.png"
-                         alt="logo.png"/>
+                    <img th:src="@{/images/templates/langs/lang.png}"
+                         src=""
+                         alt=""/>
                 </div>
                 <div class="div-info-block-big-header-data-container">
                     <h1>Языки</h1>
@@ -53,8 +54,9 @@
             </div>
 
             <div class="div-info-block-header-container-margin">
-                <img src="/images/templates/langs/lang.png"
-                     alt="lang.png"/>
+                <img th:src="@{/images/templates/langs/lang.png}"
+                     src=""
+                     alt=""/>
                 <h1>Список языков</h1>
             </div>
             <div class="div-actions-container">
@@ -63,8 +65,9 @@
                     <span id="span_turn_on_supported_langs_in">Включить все поддерживаемые входящие языки</span>
                     <span>
                         <img id="img_turn_on_supported_langs_in"
-                             src="/images/elements/button/accept.png"
-                             alt="add.png"/>
+                             th:src="@{/images/elements/button/accept.png}"
+                             src=""
+                             alt=""/>
                     </span>
                 </button>
                 <button id="button_turn_off_unsupported_langs_in"
@@ -72,8 +75,9 @@
                     <span id="span_turn_off_unsupported_langs_in">Отключить все неподдерживаемые входящие языки</span>
                     <span>
                         <img id="img_turn_off_unsupported_langs_in"
-                             src="/images/elements/button/deny.png"
-                             alt="deny.png"/>
+                             th:src="@{/images/elements/button/deny.png}"
+                             src=""
+                             alt=""/>
                     </span>
                 </button>
                 <button id="button_turn_off_langs_in"
@@ -81,8 +85,9 @@
                     <span id="span_turn_off_langs_in">Отключить все входящие языки</span>
                     <span>
                         <img id="img_turn_off_langs_in"
-                             src="/images/elements/button/deny.png"
-                             alt="deny.png"/>
+                             th:src="@{/images/elements/button/deny.png}"
+                             src=""
+                             alt=""/>
                     </span>
                 </button>
                 <button id="button_turn_on_supported_langs_out"
@@ -90,8 +95,9 @@
                     <span id="span_turn_on_supported_langs_out">Включить все поддерживаемые выходящие языки</span>
                     <span>
                         <img id="img_turn_on_supported_langs_out"
-                             src="/images/elements/button/accept.png"
-                             alt="add.png"/>
+                             th:src="@{/images/elements/button/accept.png}"
+                             src=""
+                             alt=""/>
                     </span>
                 </button>
 
@@ -100,8 +106,9 @@
                     <span id="span_turn_off_unsupported_langs_out">Отключить все неподдерживаемые выходящие языки</span>
                     <span>
                         <img id="img_turn_off_unsupported_langs_out"
-                             src="/images/elements/button/deny.png"
-                             alt="deny.png"/>
+                             th:src="@{/images/elements/button/deny.png}"
+                             src=""
+                             alt=""/>
                     </span>
                 </button>
                 <button id="button_turn_off_langs_out"
@@ -109,8 +116,9 @@
                     <span id="span_turn_off_langs_out">Отключить все выходящие языки</span>
                     <span>
                         <img id="img_turn_off_langs_out"
-                             src="/images/elements/button/deny.png"
-                             alt="deny.png"/>
+                             th:src="@{/images/elements/button/deny.png}"
+                             src=""
+                             alt=""/>
                     </span>
                 </button>
             </div>
@@ -135,8 +143,9 @@
                             class="button-with-img-element-32 button-element-default"
                             title="Обновить" disabled>
                         <img id="img_button_refresh"
-                             src="/images/other/refresh.png"
-                             alt="refresh.png"/>
+                             th:src="@{/images/other/refresh.png}"
+                             src=""
+                             alt=""/>
                     </button>
                 </div>
             </div>

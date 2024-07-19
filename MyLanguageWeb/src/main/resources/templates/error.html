@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <title th:text="|${WEB_APP_NAME} - Ошибка ${ERROR_CODE}|"></title>
-    <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
+    <link rel="icon" type="image/x-icon" th:href="@{/images/logo/logo.ico}">
 
-    <link rel="stylesheet" type="text/css" href="/css/root.css">
-    <link rel="stylesheet" type="text/css" href="/css/main.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/root.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
 
-    <link rel="stylesheet" type="text/css" href="/css/elements/div/div_element.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/div/div_element.css}">
 
-    <link rel="stylesheet" type="text/css" href="/css/info_block/info_block.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/info_block/info_block.css}">
 
-    <link rel="stylesheet" type="text/css" href="/css/templates/error.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/templates/error.css}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
 </head>
 <body>

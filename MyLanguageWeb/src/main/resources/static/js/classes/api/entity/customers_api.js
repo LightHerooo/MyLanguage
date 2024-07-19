@@ -1,8 +1,4 @@
 import {
-    UrlToAPI
-} from "../url_to_api.js";
-
-import {
     XmlUtils
 } from "../utils/xml_utils.js";
 
@@ -18,12 +14,16 @@ import {
     HttpMethods
 } from "../classes/http/http_methods.js";
 
+import {
+    UrlPaths
+} from "../../url/path/url_paths.js";
+
 const _XML_UTILS = new XmlUtils();
 const _JSON_UTILS = new JSONUtils();
 const _HTTP_METHODS = new HttpMethods();
 const _FORM_DATA_UTILS = new FormDataUtils();
 
-const _URL_TO_API_CUSTOMERS = `${new UrlToAPI().VALUE}/customers`;
+const _URL_TO_API_CUSTOMERS = `${new UrlPaths().API.createFullPath()}/customers`;
 const _URL_TO_API_CUSTOMERS_GET = `${_URL_TO_API_CUSTOMERS}/get`;
 const _URL_TO_API_CUSTOMERS_FIND = `${_URL_TO_API_CUSTOMERS}/find`;
 const _URL_TO_API_CUSTOMERS_EXISTS = `${_URL_TO_API_CUSTOMERS}/exists`;

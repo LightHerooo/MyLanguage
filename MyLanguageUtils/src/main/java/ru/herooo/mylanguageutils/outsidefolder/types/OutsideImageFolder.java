@@ -20,8 +20,8 @@ public class OutsideImageFolder extends OutsideFolder {
     }
 
     @Override
-    public File createNewFile(byte[] fileBytes, String fileName) throws IOException {
-        File file = super.createNewFile(fileBytes, fileName);
+    public File createNewFile(byte[] fileBytes, String fileName, boolean doNeedToGenerateRandomFileName) throws IOException {
+        File file = super.createNewFile(fileBytes, fileName, doNeedToGenerateRandomFileName);
 
         if (file != null && file.exists()) {
             try {
@@ -32,7 +32,7 @@ public class OutsideImageFolder extends OutsideFolder {
                             ? GIF_RESIZER.resize(file, SIZE_FOR_RESIZE)
                             : IMAGE_RESIZER.resize(file, SIZE_FOR_RESIZE);
                 } else {
-                    throw new IOException(String.format("Формат '%s' не поддерживается.", extension));
+                    throw new IOException(String.format("Формат '%s' не поддерживается", extension));
                 }
             } catch (IOException e) {
                 file.delete();

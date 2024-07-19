@@ -1,8 +1,4 @@
 import {
-    UrlToAPI
-} from "../url_to_api.js";
-
-import {
     XmlUtils
 } from "../utils/xml_utils.js";
 
@@ -18,12 +14,16 @@ import {
     FormDataUtils
 } from "../utils/form_data_utils.js";
 
+import {
+    UrlPaths
+} from "../../url/path/url_paths.js";
+
 const _JSON_UTILS = new JSONUtils();
 const _XML_UTILS = new XmlUtils();
 const _HTTP_METHODS = new HttpMethods();
 const _FORM_DATA_UTILS = new FormDataUtils();
 
-const _URL_TO_API_CUSTOMER_COLLECTIONS = `${new UrlToAPI().VALUE}/customer_collections`;
+const _URL_TO_API_CUSTOMER_COLLECTIONS = `${new UrlPaths().API.createFullPath()}/customer_collections`;
 const _URL_TO_API_CUSTOMER_COLLECTIONS_GET = `${_URL_TO_API_CUSTOMER_COLLECTIONS}/get`;
 const _URL_TO_API_CUSTOMER_COLLECTIONS_COUNT = `${_URL_TO_API_CUSTOMER_COLLECTIONS}/count`;
 const _URL_TO_API_CUSTOMER_COLLECTIONS_FIND = `${_URL_TO_API_CUSTOMER_COLLECTIONS}/find`;

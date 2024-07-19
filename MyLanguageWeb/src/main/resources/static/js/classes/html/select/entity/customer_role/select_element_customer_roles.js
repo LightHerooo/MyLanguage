@@ -18,6 +18,10 @@ import {
     ImgSrcs
 } from "../../../img_srcs.js";
 
+import {
+    UrlPath
+} from "../../../../url/path/url_path.js";
+
 const _CUSTOMER_ROLES_API = new CustomerRolesAPI();
 
 const _HTTP_STATUSES = new HttpStatuses();
@@ -73,7 +77,7 @@ export class SelectElementCustomerRoles extends SelectWithImgAbstractElement {
                 if (jsonResponse.getStatus() === _HTTP_STATUSES.OK) {
                     let customerRole = new CustomerRoleResponseDTO(jsonResponse.getJson());
 
-                    src = customerRole.getPathToImage();
+                    src = new UrlPath(customerRole.getPathToImage()).createFullPath();
                     title = customerRole.getTitle();
                 }
             }

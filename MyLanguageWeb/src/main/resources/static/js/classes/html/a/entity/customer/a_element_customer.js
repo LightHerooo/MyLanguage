@@ -41,7 +41,7 @@ export class AElementCustomer extends AAbstractElement {
         if (a && customerResponseDTO) {
             a.style.textDecoration = "none";
 
-            this.changeHref(`${_URL_PATHS.CUSTOMERS.INFO.getPath()}/${customerResponseDTO.getId()}`);
+            this.changeHref(`${_URL_PATHS.CUSTOMERS.INFO.createFullPath()}/${customerResponseDTO.getId()}`);
         }
     }
 

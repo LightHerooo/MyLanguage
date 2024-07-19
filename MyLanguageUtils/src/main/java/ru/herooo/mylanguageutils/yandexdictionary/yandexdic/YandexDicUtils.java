@@ -63,14 +63,14 @@ public class YandexDicUtils {
             }
         }
 
-        String message = "Неизвестная ошибка обращения к переводам API словаря.";
+        String message = "Неизвестная ошибка обращения к переводам API словаря";
         if (yandexDictionaryError != null) {
             switch (yandexDictionaryError.getCode()) {
-                case 401 -> message = "Ключ API невалиден.";
-                case 402 -> message = "Ключ API заблокирован.";
-                case 403 -> message = "Превышено суточное ограничение на количество запросов.";
-                case 413 -> message = "Превышен максимальный размер текста.";
-                case 501 -> message = "Заданное направление перевода не поддерживается.";
+                case 401 -> message = "Ключ API невалиден";
+                case 402 -> message = "Ключ API заблокирован";
+                case 403 -> message = "Превышено суточное ограничение на количество запросов";
+                case 413 -> message = "Превышен максимальный размер текста";
+                case 501 -> message = "Заданное направление перевода не поддерживается";
             }
 
             yandexDictionaryError.setMessage(message);

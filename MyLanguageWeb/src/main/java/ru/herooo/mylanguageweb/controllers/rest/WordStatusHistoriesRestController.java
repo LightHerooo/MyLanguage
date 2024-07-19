@@ -26,7 +26,6 @@ public class WordStatusHistoriesRestController {
     private final LangsRestController LANGS_REST_CONTROLLER;
 
     private final WordStatusHistoryService WORD_STATUS_HISTORY_SERVICE;
-    private final CustomerService CUSTOMER_SERVICE;
 
     private final WordStatusHistoryMapping WORD_STATUS_HISTORY_MAPPING;
 
@@ -37,7 +36,6 @@ public class WordStatusHistoriesRestController {
                                              LangsRestController langsRestController,
 
                                              WordStatusHistoryService wordStatusHistoryService,
-                                             CustomerService customerService,
 
                                              WordStatusHistoryMapping wordStatusHistoryMapping) {
         this.WORDS_REST_CONTROLLER = wordsRestController;
@@ -46,7 +44,6 @@ public class WordStatusHistoriesRestController {
         this.LANGS_REST_CONTROLLER = langsRestController;
 
         this.WORD_STATUS_HISTORY_SERVICE = wordStatusHistoryService;
-        this.CUSTOMER_SERVICE = customerService;
 
         this.WORD_STATUS_HISTORY_MAPPING = wordStatusHistoryMapping;
     }
@@ -107,7 +104,7 @@ public class WordStatusHistoriesRestController {
             return ResponseEntity.ok(responseDTOs);
         } else {
             ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1,
-                    "История слов по указанным фильтрам не найдена");
+                    "Слова с текущим сататусом по указанным фильтрам не найдена");
             return ResponseEntity.badRequest().body(message);
         }
     }

@@ -18,7 +18,6 @@ import ru.herooo.mylanguageweb.controllers.Redirects;
 import ru.herooo.mylanguageweb.controllers.usual.utils.ControllerUtils;
 import ru.herooo.mylanguageweb.dto.entity.customer.request.CustomerEntryRequestDTO;
 import ru.herooo.mylanguageweb.dto.entity.customer.CustomerMapping;
-import ru.herooo.mylanguageweb.dto.other.response.ResponseMessageResponseDTO;
 import ru.herooo.mylanguageweb.dto.entity.customer.response.CustomerResponseDTO;
 import ru.herooo.mylanguageweb.services.CustomerService;
 
@@ -34,8 +33,6 @@ public class CustomersController {
     private final String DATE_OF_CREATE_ATTRIBUTE_NAME = "DATE_OF_CREATE";
     private final String DATE_OF_LAST_VISIT_ATTRIBUTE_NAME = "DATE_OF_LAST_VISIT";
     private final String IS_CUSTOMER_OWNER_ATTRIBUTE_NAME = "IS_CUSTOMER_OWNER";
-
-    private final String DEFAULT_AVATAR_FILE_NAME = "default.png";
 
 
     private final CustomerService CUSTOMER_SERVICE;
@@ -136,17 +133,14 @@ public class CustomersController {
     public ResponseEntity<?> getAvatar(@PathVariable("avatar_name") String avatarName) {
         OutsideFolder currentFolder = OutsideFolders.CUSTOMER_AVATARS.FOLDER;
 
+        byte[] bytes = new byte[0];
         File file = currentFolder.getFile(avatarName);
-        if (file == null || !file.exists()) {
-            file = currentFolder.getFile(DEFAULT_AVATAR_FILE_NAME);
-        }
+        if (file != null && file.exists()) {
+            try (FileInputStream fis = new FileInputStream(file.getPath())) {
+                bytes = fis.readAllBytes();
+            } catch (IOException e) {
 
-        byte[] bytes;
-        try (FileInputStream fis = new FileInputStream(file.getPath())) {
-            bytes = fis.readAllBytes();
-        } catch (IOException e) {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Не удалось прочитать аватар");
-            return ResponseEntity.badRequest().body(message);
+            }
         }
 
         return ResponseEntity.ok(bytes);

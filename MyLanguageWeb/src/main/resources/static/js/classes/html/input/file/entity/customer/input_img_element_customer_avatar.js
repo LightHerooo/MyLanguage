@@ -3,10 +3,14 @@ import {
 } from "../../input_img_element.js";
 
 import {
-    UrlPaths
-} from "../../../../../url/path/url_paths.js";
+    ImgSrcs
+} from "../../../../img_srcs.js";
 
-const _URL_PATHS = new UrlPaths();
+import {
+    UrlPath
+} from "../../../../../url/path/url_path.js";
+
+const _IMG_SRCS = new ImgSrcs();
 
 export class InputImgElementCustomerAvatar extends InputImgElement {
     #customerResponseDTO;
@@ -26,11 +30,14 @@ export class InputImgElementCustomerAvatar extends InputImgElement {
 
         let customerResponseDTO = this.#customerResponseDTO;
         if (customerResponseDTO) {
-            src = customerResponseDTO.getPathToAvatar();
+            let pathToAvatar = customerResponseDTO.getPathToAvatar();
+            if (pathToAvatar) {
+                src = new UrlPath(pathToAvatar).createFullPath();
+            }
         }
 
         if (!src) {
-            src = _URL_PATHS.CUSTOMERS.AVATAR_DEFAULT.getPath();
+            src = _IMG_SRCS.ENTITY.CUSTOMER.DEFAULT;
         }
 
         return src;

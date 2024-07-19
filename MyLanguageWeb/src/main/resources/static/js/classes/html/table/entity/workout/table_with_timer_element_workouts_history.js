@@ -171,7 +171,9 @@ export class TableWithTimerElementWorkoutsHistory extends TableWithTimerAbstract
             aButtonWithImgElement.changeAButtonWithImgElementSize(_A_BUTTON_WITH_IMG_ELEMENT_SIZES.SIZE_32);
             aButtonWithImgElement.changeTo(_A_BUTTON_WITH_IMG_ELEMENT_TYPES.INFO);
             aButtonWithImgElement.changeTitle(`Информация о тренировке №${workoutResponseDTOObj.getId()}`);
-            aButtonWithImgElement.changeHref(`${_URL_PATHS.WORKOUTS.INFO.getPath()}/${workoutResponseDTOObj.getId()}`);
+
+            let href = _URL_PATHS.WORKOUTS.INFO.createFullPath();
+            aButtonWithImgElement.changeHref(`${href}/${workoutResponseDTOObj.getId()}`);
             aButtonWithImgElement.changeHrefType(_HREF_TYPES.OPEN_IN_NEW_PAGE);
 
             let a = aButtonWithImgElement.getA();

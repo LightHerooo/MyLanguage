@@ -18,6 +18,10 @@ import {
     CssRoot
 } from "../../../../css/css_root.js";
 
+import {
+    UrlPath
+} from "../../../../url/path/url_path.js";
+
 const _CSS_DIV_ELEMENT = new CssDivElement();
 const _CSS_IMG_SIZES = new CssImgSizes();
 const _CSS_ROOT = new CssRoot();
@@ -62,7 +66,7 @@ export class DivElementWorkoutType extends DivAbstractElement {
 
                 let img = document.createElement("img");
                 img.classList.add(_CSS_IMG_SIZES.IMG_SIZE_64_CLASS_ID);
-                img.src = workoutTypeResponseDTO.getPathToImage();
+                img.src = new UrlPath(workoutTypeResponseDTO.getPathToImage()).createFullPath();
                 divContentCenter.appendChild(img);
 
                 div.appendChild(divContentCenter);

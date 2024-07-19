@@ -3,10 +3,14 @@ import {
 } from "../../input_img_element.js";
 
 import {
-    UrlPaths
-} from "../../../../../url/path/url_paths.js";
+    UrlPath
+} from "../../../../../url/path/url_path.js";
 
-const _URL_PATHS = new UrlPaths();
+import {
+    ImgSrcs
+} from "../../../../img_srcs.js";
+
+const _IMG_SRCS = new ImgSrcs();
 
 export class InputImgElementCustomerCollectionImage extends InputImgElement {
     #customerCollectionResponseDTO;
@@ -26,11 +30,14 @@ export class InputImgElementCustomerCollectionImage extends InputImgElement {
 
         let customerCollectionResponseDTO = this.#customerCollectionResponseDTO;
         if (customerCollectionResponseDTO) {
-            src = customerCollectionResponseDTO.getPathToImage();
+            let pathToImage = customerCollectionResponseDTO.getPathToImage();
+            if (pathToImage) {
+                src = new UrlPath(pathToImage).createFullPath();
+            }
         }
 
         if (!src) {
-            src = _URL_PATHS.CUSTOMER_COLLECTIONS.IMAGE_DEFAULT.getPath();
+            src = _IMG_SRCS.ENTITY.CUSTOMER_COLLECTION.DEFAULT;
         }
 
         return src;

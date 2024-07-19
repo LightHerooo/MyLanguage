@@ -243,7 +243,7 @@ public class LangsRestController {
             return ResponseEntity.ok(responseDTO);
         } else {
             ResponseMessageResponseDTO responseDTO = new ResponseMessageResponseDTO(1,
-                    String.format("Языка с названием '%s' не существует.", title));
+                    String.format("Языка с названием '%s' не существует", title));
             return ResponseEntity.badRequest().body(responseDTO);
         }
     }
@@ -443,11 +443,11 @@ public class LangsRestController {
         Lang lang = LANG_SERVICE.findByTitle(title);
         if (lang != null) {
             ResponseMessageResponseDTO responseDTO = new ResponseMessageResponseDTO(1,
-                    "Язык с таким названием уже существует.");
+                    "Язык с таким названием уже существует");
             return ResponseEntity.ok(responseDTO);
         } else {
             ResponseMessageResponseDTO responseDTO = new ResponseMessageResponseDTO(1,
-                    String.format("Языка с названием '%s' не существует.", title));
+                    String.format("Языка с названием '%s' не существует", title));
             return ResponseEntity.badRequest().body(responseDTO);
         }
     }
@@ -491,7 +491,7 @@ public class LangsRestController {
         response = find(dto.getLangCode());
         if (response.getStatusCode() == HttpStatus.OK) {
             ResponseMessageResponseDTO responseDTO = new ResponseMessageResponseDTO(3,
-                    String.format("Язык с кодом '%s' уже существует.", dto.getLangCode()));
+                    String.format("Язык с кодом '%s' уже существует", dto.getLangCode()));
             return ResponseEntity.badRequest().body(responseDTO);
         }
 
@@ -503,17 +503,17 @@ public class LangsRestController {
         }
 
         // Проверяем страну
-        /*response = COUNTRIES_REST_CONTROLLER.find(dto.getCountryCode());
+        response = COUNTRIES_REST_CONTROLLER.find(dto.getCountryCode());
         if (response.getStatusCode() != HttpStatus.OK) {
             return response;
-        }*/
+        }
 
         Lang lang = LANG_SERVICE.add(dto);
         if (lang != null) {
             LangResponseDTO responseDTO = LANG_MAPPING.mapToResponseDTO(lang);
             return ResponseEntity.ok(responseDTO);
         } else {
-            ResponseMessageResponseDTO responseDTO = new ResponseMessageResponseDTO(4, "Не удалось добавить язык.");
+            ResponseMessageResponseDTO responseDTO = new ResponseMessageResponseDTO(4, "Не удалось добавить язык");
             return ResponseEntity.badRequest().body(responseDTO);
         }
     }
@@ -590,7 +590,7 @@ public class LangsRestController {
             LangResponseDTO responseDTO = LANG_MAPPING.mapToResponseDTO(lang);
             return ResponseEntity.ok(responseDTO);
         } else {
-            ResponseMessageResponseDTO responseDTO = new ResponseMessageResponseDTO(4, "Не удалось изменить язык.");
+            ResponseMessageResponseDTO responseDTO = new ResponseMessageResponseDTO(4, "Не удалось изменить язык");
             return ResponseEntity.badRequest().body(responseDTO);
         }
     }

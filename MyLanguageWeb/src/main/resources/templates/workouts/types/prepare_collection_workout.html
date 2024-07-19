@@ -4,35 +4,35 @@
         <meta charset="UTF-8">
         <title th:text="${WEB_APP_NAME} + ' - Настройка режима тренировки ' +
                           '&quot;' + ${WORKOUT_TYPE.title} + '&quot;'">Настройка режима тренировки</title>
-        <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
+        <link rel="icon" type="image/x-icon" th:href="@{/images/logo/logo.ico}">
 
-        <link rel="stylesheet" type="text/css" href="/css/elements/span/span_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/span/span_loading_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/span/span_rule_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/span/span_flag_element.css">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_loading_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_rule_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_flag_element.css}">
 
-        <link rel="stylesheet" type="text/css" href="/css/elements/table/table_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/table/instruments_for_table.css">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/table/table_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/table/instruments_for_table.css}">
 
-        <link rel="stylesheet" type="text/css" href="/css/elements/div/div_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/div/div_with_data_builder_element.css">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/div/div_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/div/div_with_data_builder_element.css}">
 
-        <link rel="stylesheet" type="text/css" href="/css/elements/form/form_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/label/label_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/input/input_text_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/select/select_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/button/button_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/a/a_button_element.css">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/form/form_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/label/label_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/input/input_text_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/select/select_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/button/button_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/a/a_button_element.css}">
 
-        <link rel="stylesheet" type="text/css" href="/css/info_block/info_block.css">
-        <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_header.css">
-        <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_big_header.css">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/info_block/info_block.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/info_block/info_block_header.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/info_block/info_block_big_header.css}">
 
-        <link rel="stylesheet" type="text/css" href="/css/templates/workouts/types/prepare_workout_general.css">
-        <link rel="stylesheet" type="text/css" href="/css/templates/workouts/types/prepare_collection_workout.css">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/templates/workouts/types/prepare_workout_general.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/templates/workouts/types/prepare_collection_workout.css}">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
 
-        <script type="module" src="/js/templates/workouts/types/prepare_collection_workout.js"></script>
+        <script type="module" th:src="@{/js/templates/workouts/types/prepare_collection_workout.js}"></script>
     </head>
     <body>
         <header>
@@ -41,9 +41,9 @@
         <main>
             <div class="div-info-block-big-header-container">
                 <div class="div-info-block-big-header-img-container">
-                    <img src="#"
-                         th:src="${WORKOUT_TYPE.pathToImage}"
-                         alt="workout_type.png"/>
+                    <img th:src="@{${WORKOUT_TYPE.pathToImage}}"
+                         src=""
+                         alt=""/>
                 </div>
                 <div class="div-info-block-big-header-data-container">
                     <h1 th:text="${WORKOUT_TYPE.title}"></h1>
@@ -56,14 +56,14 @@
             <div class="div-prepare-to-start-workout-container">
                 <div class="div-prepare-workout">
                     <div class="div-info-block-header-container">
-                        <img src="#"
-                             th:src="${WORKOUT_TYPE.pathToImage}"
-                             alt="collection_workout.png"/>
+                        <img th:src="@{${WORKOUT_TYPE.pathToImage}}"
+                             src=""
+                             alt=""/>
                         <h1>Новая тренировка</h1>
                     </div>
                     <div class="div-info-block-container">
                         <form id="form_workout_prepare_collection_workout"
-                              action="/workouts/start"
+                              th:action="@{/workouts/start}"
                               class="form-element">
                             <div class="div-form-element-item">
                                 <label for="select_customer_collections" class="label-required-element">
@@ -105,8 +105,9 @@
                                         type="reset"
                                         class="button-reset"
                                         title="Сбросить настройки" disabled>
-                                    <img src="/images/elements/button/delete.png"
-                                         alt="delete.png"/>
+                                    <img th:src="@{/images/elements/button/delete.png}"
+                                         src=""
+                                         alt=""/>
                                 </button>
                             </div>
                             <div id="div_message_container_workout_prepare_collection_workout"
@@ -116,8 +117,9 @@
                 </div>
                 <div class="div-not-over-workouts">
                     <div class="div-info-block-header-container">
-                        <img src="/images/other/history.png"
-                             alt="history.png"/>
+                        <img th:src="@{/images/other/history.png}"
+                             src=""
+                             alt=""/>
                         <h1>Незавершённые тренировки</h1>
                     </div>
                     <div class="div-instruments-for-table-container div-instruments-for-find-not-over-workouts-container">
@@ -131,8 +133,9 @@
                                     class="button-with-img-element-32 button-element-default"
                                     title="Обновить" disabled>
                                 <img id="img_refresh_workouts_not_over"
-                                     src="/images/elements/button/refresh.png"
-                                     alt="refresh.png"/>
+                                     th:src="@{/images/elements/button/refresh.png}"
+                                     src=""
+                                     alt=""/>
                             </button>
                         </div>
                     </div>
@@ -158,7 +161,8 @@
                 </div>
             </div>
             <div class="div-info-block-header-container-margin">
-                <img src="/images/templates/words/word.png"
+                <img th:src="@{/images/templates/words/word.png}"
+                     src=""
                      alt=""/>
                 <h1>Список слов в коллекции</h1>
             </div>
@@ -175,8 +179,9 @@
                             class="button-with-img-element-32 button-element-default"
                             title="Обновить" disabled>
                         <img id="img_refresh_words_in_collection"
-                             src="/images/elements/button/refresh.png"
-                             alt="refresh.png"/>
+                             th:src="@{/images/elements/button/refresh.png}"
+                             src=""
+                             alt=""/>
                     </button>
                 </div>
             </div>

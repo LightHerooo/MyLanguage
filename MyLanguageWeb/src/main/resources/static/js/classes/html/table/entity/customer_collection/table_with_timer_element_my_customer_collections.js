@@ -300,7 +300,9 @@ export class TableWithTimerElementMyCustomerCollections extends TableWithTimerAb
             aButtonWithImgElement.changeTo(_A_BUTTON_WITH_IMG_ELEMENT_TYPES.EDIT);
             aButtonWithImgElement.changeAButtonWithImgElementSize(_A_BUTTON_WITH_IMG_ELEMENT_SIZES.SIZE_32);
             aButtonWithImgElement.changeTitle("Изменить коллекцию");
-            aButtonWithImgElement.changeHref(`${_URL_PATHS.CUSTOMER_COLLECTIONS.EDIT.getPath()}/${customerCollectionResponseDTOObj.getId()}`);
+
+            let path = _URL_PATHS.CUSTOMER_COLLECTIONS.EDIT.createFullPath();
+            aButtonWithImgElement.changeHref(`${path}/${customerCollectionResponseDTOObj.getId()}`);
             aButtonWithImgElement.changeHrefType(_HREF_TYPES.OPEN_IN_THIS_PAGE);
 
             let a = aButtonWithImgElement.getA();

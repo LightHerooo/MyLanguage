@@ -1,5 +1,8 @@
 package ru.herooo.mylanguageutils.yandexdictionary;
 
+import ru.herooo.mylanguageutils.ProjectPaths;
+import ru.herooo.mylanguageutils.outsidefolder.OutsideFolders;
+
 import java.io.*;
 import java.util.Properties;
 
@@ -11,14 +14,14 @@ public class YandexDictionaryUtils {
         final String APIPathForLangsPropertyKey = "API_PATH_FOR_LANGS";
         final String APIKeyForLangsPropertyKey = "API_KEY_FOR_LANGS";
 
-        String propertiesPath = String.format("%s/%s", System.getProperty("user.dir"), "yandex_dictionary.conf");
-        File propertiesFile = new File(propertiesPath);
         Properties properties = new Properties();
+        File propertiesFile = new File(String.format("%s/%s", OutsideFolders.MAIN.FOLDER.getFolder().getPath(),
+                "yandex_dictionary.conf"));
         if (propertiesFile.exists()) {
             try (FileInputStream fis = new FileInputStream(propertiesFile)) {
                 properties.load(fis);
             } catch (IOException e) {
-                throw new RuntimeException("Не удалось прочитать конфигурационный файл Yandex.Dictionary.");
+                throw new RuntimeException("Не удалось прочитать конфигурационный файл Yandex.Dictionary");
             }
         } else {
             properties.put(APIPathForTranslatePropertyKey, "https://dictionary.yandex.net/api/v1/dicservice.json/lookup");
@@ -29,7 +32,7 @@ public class YandexDictionaryUtils {
             try (FileOutputStream fos = new FileOutputStream(propertiesFile)) {
                 properties.store(fos, null);
             } catch (IOException e) {
-                throw new RuntimeException("Не удалось создать конфигурационный файл Yandex.Dictionary.");
+                throw new RuntimeException("Не удалось создать конфигурационный файл Yandex.Dictionary");
             }
         }
 

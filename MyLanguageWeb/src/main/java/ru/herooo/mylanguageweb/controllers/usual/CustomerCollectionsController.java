@@ -15,7 +15,6 @@ import ru.herooo.mylanguageutils.outsidefolder.OutsideFolders;
 import ru.herooo.mylanguageutils.outsidefolder.types.OutsideFolder;
 import ru.herooo.mylanguageweb.controllers.Redirects;
 import ru.herooo.mylanguageweb.controllers.usual.utils.ControllerUtils;
-import ru.herooo.mylanguageweb.dto.other.response.ResponseMessageResponseDTO;
 import ru.herooo.mylanguageweb.services.CustomerCollectionService;
 import ru.herooo.mylanguageweb.services.CustomerService;
 
@@ -27,8 +26,6 @@ import java.io.IOException;
 @RequestMapping("/customer_collections")
 public class CustomerCollectionsController {
     private final String CUSTOMER_COLLECTION_ID_ATTRIBUTE_NAME = "CUSTOMER_COLLECTION_ID";
-
-    private final String DEFAULT_IMAGE_FILE_NAME = "default.png";
 
     private final CustomerService CUSTOMER_SERVICE;
     private final CustomerCollectionService CUSTOMER_COLLECTION_SERVICE;
@@ -100,17 +97,14 @@ public class CustomerCollectionsController {
     public ResponseEntity<?> getImage(@PathVariable("image_name") String imageName) {
         OutsideFolder currentFolder = OutsideFolders.CUSTOMER_COLLECTION_IMAGES.FOLDER;
 
+        byte[] bytes = new byte[0];
         File file = currentFolder.getFile(imageName);
-        if (file == null || !file.exists()) {
-            file = currentFolder.getFile(DEFAULT_IMAGE_FILE_NAME);
-        }
+        if (file != null && file.exists()) {
+            try (FileInputStream fis = new FileInputStream(file.getPath())) {
+                bytes = fis.readAllBytes();
+            } catch (IOException e) {
 
-        byte[] bytes;
-        try (FileInputStream fis = new FileInputStream(file.getPath())) {
-            bytes = fis.readAllBytes();
-        } catch (IOException e) {
-            ResponseMessageResponseDTO message = new ResponseMessageResponseDTO(1, "Не удалось прочитать изображение");
-            return ResponseEntity.badRequest().body(message);
+            }
         }
 
         return ResponseEntity.ok(bytes);

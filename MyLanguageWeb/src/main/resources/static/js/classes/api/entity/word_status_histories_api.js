@@ -1,14 +1,14 @@
 import {
-    UrlToAPI
-} from "../url_to_api.js";
-
-import {
     XmlUtils
 } from "../utils/xml_utils.js";
 
+import {
+    UrlPaths
+} from "../../url/path/url_paths.js";
+
 const _XML_UTILS = new XmlUtils();
 
-const _URL_TO_API_WORD_STATUS_HISTORIES = `${new UrlToAPI().VALUE}/word_status_histories`;
+const _URL_TO_API_WORD_STATUS_HISTORIES = `${new UrlPaths().API.createFullPath()}/word_status_histories`;
 const _URL_TO_API_WORD_STATUS_HISTORIES_GET = `${_URL_TO_API_WORD_STATUS_HISTORIES}/get`;
 
 export class WordStatusHistoriesAPI {

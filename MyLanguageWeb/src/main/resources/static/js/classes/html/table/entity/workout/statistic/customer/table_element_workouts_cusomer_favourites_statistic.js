@@ -43,8 +43,12 @@ import {
 } from "../../../../../../dto/entity/workout/types/favourite/favourite_customer_collection_response_dto.js";
 
 import {
-    UrlPaths
-} from "../../../../../../url/path/url_paths.js";
+    UrlPath
+} from "../../../../../../url/path/url_path.js";
+
+import {
+    ImgSrcs
+} from "../../../../../img_srcs.js";
 
 const _WORKOUTS_API = new WorkoutsAPI();
 
@@ -54,7 +58,7 @@ const _CSS_TABLE_ELEMENT = new CssTableElement();
 const _CSS_DIV_ELEMENT = new CssDivElement();
 
 const _HTTP_STATUSES = new HttpStatuses();
-const _URL_PATHS = new UrlPaths();
+const _IMG_SRCS = new ImgSrcs();
 
 export class TableElementWorkoutsCustomerFavouritesStatistic extends TableAbstractElement{
     #customerId;
@@ -240,7 +244,7 @@ export class TableElementWorkoutsCustomerFavouritesStatistic extends TableAbstra
 
                     let img = document.createElement("img");
                     img.classList.add(_CSS_IMG_SIZES.IMG_SIZE_128_CLASS_ID);
-                    img.src = workoutType.getPathToImage();
+                    img.src = new UrlPath(workoutType.getPathToImage()).createFullPath();
 
                     divContentCenter.appendChild(img);
                     td.appendChild(divContentCenter);
@@ -288,8 +292,8 @@ export class TableElementWorkoutsCustomerFavouritesStatistic extends TableAbstra
 
                 let pathToImage = customerCollection.getPathToImage();
                 img.src = pathToImage
-                    ? pathToImage
-                    : _URL_PATHS.CUSTOMER_COLLECTIONS.IMAGE_DEFAULT.getPath();
+                    ? new UrlPath(pathToImage).createFullPath()
+                    : _IMG_SRCS.ENTITY.CUSTOMER_COLLECTION.DEFAULT;
 
                 divContentCenter.appendChild(img)
                 td.appendChild(divContentCenter);

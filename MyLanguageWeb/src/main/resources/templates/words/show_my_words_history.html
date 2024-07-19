@@ -3,34 +3,34 @@
     <head>
         <meta charset="UTF-8">
         <title th:text="|${WEB_APP_NAME} - История моих предложенных слов|">История моих предложенных слов</title>
-        <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
+        <link rel="icon" type="image/x-icon" th:href="@{/images/logo/logo.ico}">
 
-        <link rel="stylesheet" type="text/css" href="/css/root.css">
-        <link rel="stylesheet" type="text/css" href="/css/main.css">
-        <link rel="stylesheet" type="text/css" href="/css/img_sizes.css">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/root.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/img_sizes.css}">
 
-        <link rel="stylesheet" type="text/css" href="/css/elements/span/span_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/span/span_flag_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/span/span_loading_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/span/span_rule_element.css">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_flag_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_loading_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_rule_element.css}">
 
-        <link rel="stylesheet" type="text/css" href="/css/elements/div/div_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/div/div_with_data_builder_element.css">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/div/div_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/div/div_with_data_builder_element.css}">
 
-        <link rel="stylesheet" type="text/css" href="/css/elements/table/instruments_for_table.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/table/table_element.css">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/table/instruments_for_table.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/table/table_element.css}">
 
-        <link rel="stylesheet" type="text/css" href="/css/elements/input/input_text_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/select/select_element.css">
-        <link rel="stylesheet" type="text/css" href="/css/elements/button/button_element.css">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/input/input_text_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/select/select_element.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/elements/button/button_element.css}">
 
-        <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_header.css">
-        <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_big_header.css">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/info_block/info_block_header.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/info_block/info_block_big_header.css}">
 
-        <link rel="stylesheet" type="text/css" href="/css/templates/words/show_my_words_history.css">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/templates/words/show_my_words_history.css}">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
 
-        <script type="module" src="/js/templates/words/show_my_words_history.js"></script>
+        <script type="module" th:src="@{/js/templates/words/show_my_words_history.js}"></script>
     </head>
     <body>
         <header>
@@ -39,8 +39,9 @@
         <main>
             <div class="div-info-block-big-header-container">
                 <div class="div-info-block-big-header-img-container">
-                    <img src="/images/templates/words/my_words_history.png"
-                         alt="my_words_history.png"/>
+                    <img th:src="@{/images/templates/words/my_words_history.png}"
+                         src=""
+                         alt=""/>
                 </div>
                 <div class="div-info-block-big-header-data-container">
                     <h1>История моих предложенных слов</h1>
@@ -65,7 +66,9 @@
                 </div>
             </div>
             <div class="div-info-block-header-container-margin">
-                <img src="/images/templates/words/word.png" alt="word.png"/>
+                <img th:src="@{/images/templates/words/word.png}"
+                     src=""
+                     alt=""/>
                 <h1>Список предложенных слов</h1>
             </div>
             <div class="div-instruments-for-table-container div-instruments-for-find-word-histories-container">
@@ -94,8 +97,9 @@
                             class="button-with-img-element-32 button-element-default"
                             title="Обновить" disabled>
                         <img id="img_button_refresh"
-                             src="/images/other/refresh.png"
-                             alt="refresh.png"/>
+                             th:src="@{/images/other/refresh.png}"
+                             src=""
+                             alt=""/>
                     </button>
                 </div>
             </div>

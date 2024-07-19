@@ -1,8 +1,4 @@
 import {
-    UrlToAPI
-} from "../url_to_api.js";
-
-import {
     XmlUtils
 } from "../utils/xml_utils.js";
 
@@ -14,11 +10,15 @@ import {
     HttpMethods
 } from "../classes/http/http_methods.js";
 
+import {
+    UrlPaths
+} from "../../url/path/url_paths.js";
+
 const _XML_UTILS = new XmlUtils();
 const _JSON_UTILS = new JSONUtils();
 const _HTTP_METHODS = new HttpMethods();
 
-const _URL_TO_API_LANGS = `${new UrlToAPI().VALUE}/langs`;
+const _URL_TO_API_LANGS = `${new UrlPaths().API.createFullPath()}/langs`;
 const _URL_TO_API_LANGS_GET = `${_URL_TO_API_LANGS}/get`;
 const _URL_TO_API_LANGS_FIND = `${_URL_TO_API_LANGS}/find`;
 const _URL_TO_API_LANGS_VALIDATE = `${_URL_TO_API_LANGS}/validate`;

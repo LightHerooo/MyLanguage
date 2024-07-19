@@ -30,6 +30,10 @@ import {
     DateParts
 } from "../../../date_parts.js";
 
+import {
+    UrlPath
+} from "../../../../url/path/url_path.js";
+
 const _WORKOUTS_API = new WorkoutsAPI();
 
 const _HTTP_STATUSES = new HttpStatuses();
@@ -56,7 +60,7 @@ export class DivElementWorkoutUtils {
 
             let workoutType = workoutResponseDTOObj.getWorkoutType();
             if (workoutType) {
-                divWithImgAndDataBuilderElement.setImageSrc(workoutType.getPathToImage());
+                divWithImgAndDataBuilderElement.setImageSrc(new UrlPath(workoutType.getPathToImage()).createFullPath());
                 divWithImgAndDataBuilderElement.setHeaderByStr(workoutType.getTitle());
             }
 

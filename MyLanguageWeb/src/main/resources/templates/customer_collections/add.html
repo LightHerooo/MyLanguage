@@ -3,28 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <title th:text="|${WEB_APP_NAME} - Создание новых коллекций|">Создание новых коллекций</title>
-    <link rel="icon" type="image/x-icon" href="/images/logo/logo.ico">
+    <link rel="icon" type="image/x-icon" th:href="@{/images/logo/logo.ico}">
 
-    <link rel="stylesheet" type="text/css" href="/css/root.css">
-    <link rel="stylesheet" type="text/css" href="/css/main.css">
-    <link rel="stylesheet" type="text/css" href="/css/img_sizes.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/root.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/img_sizes.css}">
 
-    <link rel="stylesheet" type="text/css" href="/css/elements/span/span_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/elements/span/span_flag_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/elements/span/span_loading_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/elements/span/span_rule_element.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_element.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_flag_element.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_loading_element.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/span/span_rule_element.css}">
 
-    <link rel="stylesheet" type="text/css" href="/css/elements/label/label_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/elements/input/input_text_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/elements/select/select_element.css">
-    <link rel="stylesheet" type="text/css" href="/css/elements/button/button_element.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/label/label_element.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/input/input_text_element.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/select/select_element.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/button/button_element.css}">
 
-    <link rel="stylesheet" type="text/css" href="/css/info_block/info_block_big_header.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/info_block/info_block_big_header.css}">
 
-    <link rel="stylesheet" type="text/css" href="/css/elements/form/dynamic_form_element.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/elements/form/dynamic_form_element.css}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
 
-    <script type="module" src="/js/templates/customer_collections/add.js"></script>
+    <script type="module" th:src="@{/js/templates/customer_collections/add.js}"></script>
 </head>
 <body>
     <header>
@@ -33,8 +33,9 @@
     <main>
         <div class="div-info-block-big-header-container">
             <div class="div-info-block-big-header-img-container">
-                <img src="/images/templates/customer_collections/new_collection.png"
-                     alt="new_collection.png"/>
+                <img th:src="@{/images/templates/customer_collections/new_collection.png}"
+                     src=""
+                     alt=""/>
             </div>
             <div class="div-info-block-big-header-data-container">
                 <h1>Создание новых коллекций</h1>
@@ -48,7 +49,7 @@
         </div>
         <form id="form_customer_collections_add"
               method="GET"
-              action="/customer_collections"
+              th:action="@{/customer_collections}"
               class="form-dynamic-form-element">
             <div id="div_rows_container_customer_collections_add"
                  class="div-dynamic-form-element-rows-container"></div>
