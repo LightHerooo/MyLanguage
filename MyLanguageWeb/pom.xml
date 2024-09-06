@@ -4,7 +4,7 @@
     <parent>
         <groupId>ru.herooo.springapps</groupId>
         <artifactId>my-language</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0.3</version>
     </parent>
     <packaging>war</packaging>
 
@@ -21,12 +21,12 @@
         <dependency>
             <groupId>ru.herooo.springapps</groupId>
             <artifactId>my-language-db</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0.3</version>
         </dependency>
         <dependency>
             <groupId>ru.herooo.springapps</groupId>
             <artifactId>my-language-utils</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0.3</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
