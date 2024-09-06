@@ -3,21 +3,23 @@
 
 ## Стэк
 - Java 21 ([JDK](https://www.oracle.com/java/technologies/javase/jdk21-archive-downloads.html))
-- PostgreSQL JDBC Dirver 42.7.0
-- Spring Boot 3.2.0
-- Spring Boot Web 3.2.0
-- Spring Boot Data 3.2.0
-- Spring Boot Validation 3.2.0
-- Spring Boot Thymeleaf 3.2.0
-- Yandex Dictionary API 1.0
-- Imgscalr 4.2
+- PostgreSQL JDBC Dirver 42.7.0 ([Maven]())
+- Spring Boot 3.2.0 ([Сайт](https://spring.io/projects/spring-boot) | [Maven](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot/3.2.0))
+- Spring Boot Web 3.2.0 ([Сайт](https://docs.spring.io/spring-boot/reference/web/index.html) | [Maven](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web/3.2.0))
+- Spring Boot Data 3.2.0 ([Сайт](https://docs.spring.io/spring-boot/reference/data/index.html) | [Maven](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-jpa/3.2.0))
+- Spring Boot Validation 3.2.0 ([Сайт](https://docs.spring.io/spring-boot/reference/io/validation.html#page-title) | [Maven](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-validation/3.2.0))
+- Spring Boot Thymeleaf 3.2.0 ([Maven](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-thymeleaf/3.2.0))
+- Yandex Dictionary API 1.0 ([Сайт](https://yandex.ru/dev/dictionary/))
+- Imgscalr 4.2 ([Git](https://github.com/rkalla/imgscalr) | [Maven](https://mvnrepository.com/artifact/org.imgscalr/imgscalr-lib/4.2))
 - HTML/CSS
-- JavaScript Vanila
+- JavaScript (Vanila)
 
 ## Основная идея
-Пользователи создают коллекции слов на одном языке, после чего используют их для тренировки на любом из языков, поддерживаемом [Yandex Dictionary API]().
+Пользователи создают коллекции слов на одном языке, после чего используют их для тренировки на любом из языков, поддерживаемом [Yandex Dictionary API](https://yandex.ru/dev/dictionary/).
 
 <img src="./readme/workout/workout.gif"/>
+
+Тренировка разделена на **раунды**. Все неправильные ответы отправляются в следующий раунд. Тренировка проводится до тех пор, пока пользователь не ответит на все вопросы правильно. Ответы проверяются на корректность [Yandex Dictionary API](https://yandex.ru/dev/dictionary/). Такой подход даёт возможность ответить по-разному на одно слово.
 
 ## Содержимое проекта
 ### Регистрация
@@ -61,7 +63,62 @@
 
 <img src="./readme/collection/add_words_to_collection.gif"/>
 
-### Изменение коллекции
-Допустили ошибку в названии? Захотелось изменить изображение? Не беда! На **MyLanguage** предусмотрено изменение коллекций. Разрешено изменять изображение, название, видимость, описание и слова, находящиеся в изменяемой коллекции. Также существует возможность удаления коллеции, если она больше не нужна.
+### Изменение коллекций
+Допустили ошибку в названии? Захотелось изменить изображение? Не вопрос! На **MyLanguage** предусмотрено изменение коллекций. Разрешено изменять изображение, название, видимость, описание и слова, находящиеся в изменяемой коллекции. Также существует возможность удаления коллеции, если она больше не нужна.
 
 <img src="./readme/collection/change_collection.gif"/>
+
+### Режимы тренировки
+**MyLanguage** предоставляет различные режимы тренировки слов. На данный момент доступны следующие режимы:
+- **Случайные слова** (Слова выбираются из общей базы слов случайным образом на основе языка, с которого вы будете переводить)
+- **Тренировка коллекции** (Тренируйте слова в собственных коллекциях)
+
+Принцип подготовки к тренировке в каждом режиме примерно одинаковая. Так, например, проводится подготовка к тренировке в режиме "Тренировка коллекции".
+
+<img src="./readme/workout/collection_workout.gif"/>
+
+### Возобновление тренировки
+В случае, если вам необходимо прервать тренировку, вы всегда можете это сделать без каких-либо последствий. **MyLanguage** позволит возобновить прерванную тренировку без потери прогресса!
+
+<img src="./readme/workout/restore_workout.gif"/>
+
+### Результат тренировки
+После завершения любой тренировки, вам будет предоставлена подробная статистика: затраченное время, количество правильных/неправильных ответов, процент успеха, ответы в каждом раунде и так далее.
+
+<img src="./readme/workout/workout_result.gif"/>
+
+### Создание коллекции на основе тренировки
+Понравился набор слов в тренировке, но вы тренировались в режиме "Случайные слова"? Не беда! На **MyLanguage** есть функция создания коллекции на основе тренировки.
+
+<img src="./readme/workout/create_collection_by_workout.gif"/>
+
+Вы также можете использовать эту функцию для создания коллекций на основе тренировок других пользователей! Для этого нужно знать ID тренировки и перейти на страницу с соответствующим ID.
+
+### Личный кабинет
+В личном кабинете пользователя можно рассмотреть общую статистику по тренировкам и историю тренировок за определённый период.
+
+<img src="./readme/account/account.gif"/>
+
+### Изменение данных пользователя
+Пользователь имеет возможность изменить аватарку, никнейм, страну и описание.
+
+<img src="./readme/account/change_account.gif"/>
+
+### Изменение пароля
+Там же, где и изменение данных пользователя, находится изменение пароля. Пользователь должен ввести старый пароль для изменения.
+
+<img src="./readme/account/change_password.gif"/>
+
+## P.S.
+**MyLanguage** имеет ещё множество других функций, но я опустил их и постарался описать только самые основные.
+
+В перспективе (если будет желание :D), проект будет обрастать новыми фишками. Так, например, в планах следующее:
+- Уйти от большой зависимости от [Yandex Dictionary API](https://yandex.ru/dev/dictionary/) в пользу переводов пользователей
+- Добавить каталог коллекций, чтобы пользователи могли использовать уже готовые решения без собственных сборок
+- Добавить систему друзей
+- Добавить рейтинги по различным критериям
+
+Для меня это первый опыт написания такого крупного проекта, доведённого до ума. До этого момента уже были попытки, но всё заканчивалось, даже не достигнув 50% задумок.
+
+Спасибо за внимание!
+
